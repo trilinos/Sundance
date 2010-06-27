@@ -38,6 +38,7 @@
 #include "SundanceBasisFamily.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
 #include "SundanceHNDoFMapBase.hpp"
+#include "SundanceMatrixStore.hpp"
 
 namespace Sundance
 {
@@ -53,6 +54,7 @@ public:
   NodalDOFMapHN(const Mesh& mesh, int nFuncs,
     const CellFilter& maxCellFilter, 
     int setupVerb);
+
       
   /** */
   virtual ~NodalDOFMapHN(){;}
@@ -79,6 +81,23 @@ public:
 	    int& trafoMatrixSize,
 	    bool& doTransform,
 	    Array<double>& transfMatrix ) const;
+
+	/** Function to apply transformation for facets
+	 * @param cellDim , the facet dimension
+	 * @param cellLID , facet LID
+	 * @param facetIndex , facet index in the maxCofacet
+	 * @param funcID  [in] the function ID
+	 * @param trafoMatrixSize [in/out]
+	 * @param doTransform [out]
+	 * @param transfMatrix [out] (we assume that the array is already pre-sized )*/
+  void getTrafoMatrixForFacet(
+		  int cellDim,
+		  int cellLID,
+		  int facetIndex,
+		  int funcID,
+		  int& trafoMatrixSize,
+		  bool& doTransform,
+		  Array<double>& transfMatrix ) const;
 
 
   /** See subclass for docu */
@@ -144,14 +163,17 @@ protected:
   /** maps one Cell index to the point LIDs, where are global DoFs which  */
   Sundance::Map< int , Array<int> > cells_To_NodeLIDs_;
 
-  /** Maps the local (hanging) node (Point) LID to the global DoFs */
-  Sundance::Map< int , Array<int> >  hangingNodeLID_to_NodesLIDs_;//globalDoFsOfHangingDoF_;
+  /** Maps the local (hanging) node (Point) LID to the global DoFs index */
+  Sundance::Map< int , Array<int> >  hangingNodeLID_to_NodesLIDs_;
 
   /** Maps the local (hanging) node (Point) DoF to the global DoFs */
   Sundance::Map< int , Array<double> > hangindNodeLID_to_Coefs_;
 
-  /** Maps the local (hanging) node (Point) DoF to the global DoFs */
-  Sundance::Map< int , Array<double> > maxCellLIDwithHN_to_TrafoMatrix_;
+  /** Maps the local (hanging) node (Point) DoF to the matrix index*/
+  Sundance::Map< int , int > maxCellLIDwithHN_to_TrafoMatrix_;
+
+  /** The object to store all the transformation matrixes */
+  MatrixStore                          matrixStore_;
 
   /** */
   Array<int> facetLID_;

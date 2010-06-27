@@ -136,9 +136,10 @@ void PeanoMesh3D::getJacobians(int cellDim, const Array<int>& cellLID,
 	    "cellDim=" << cellDim << " is not in expected range [0, " << spatialDim() << "]");
 	  int nCells = cellLID.size();
  	  int tmp_index , tmp;
- 	  int tmp_index1;
+ 	  int tmp_index1 , tmp_index2;
  	  Point pnt(0.0,0.0,0.0);
  	  Point pnt1(0.0,0.0,0.0);
+ 	  Point pnt2(0.0,0.0,0.0);
 	  jBatch.resize(cellLID.size(), spatialDim(), cellDim);
 	  if (cellDim < spatialDim()) // they need the Jacobian of a lower dinemsional element
 	  {
@@ -159,14 +160,16 @@ void PeanoMesh3D::getJacobians(int cellDim, const Array<int>& cellLID,
 			    	 pnt = pnt1 - pnt;
 		             *detJ = sqrt(pnt * pnt); // the length of the edge
 		        break;
-		        case 2:
+		        case 2:{
 			    	 tmp_index = this->facetLID(cellDim,  cellLID[i] , 0 , 0 , tmp );
-			    	 tmp_index1= this->facetLID(cellDim,  cellLID[i] , 0 , 3 , tmp );
+			    	 tmp_index1= this->facetLID(cellDim,  cellLID[i] , 0 , 1 , tmp );
+			    	 tmp_index2= this->facetLID(cellDim,  cellLID[i] , 0 , 2 , tmp );
 			    	 pnt = nodePosition(tmp_index);
 			    	 pnt1 = nodePosition(tmp_index1);
-			    	 pnt = pnt1 - pnt;
-		             *detJ = sqrt(pnt * pnt); // the length of the edge
-		        break;
+			    	 pnt2 = nodePosition(tmp_index2);
+			    	 Point directedArea = cross( pnt1 - pnt , pnt2 - pnt );
+		             *detJ = sqrt(directedArea * directedArea); // the are of the face
+		        break;}
 		        default:
 		          TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value "
 		            "cellDim=" << cellDim << " in PeanoMesh3D::getJacobians()");

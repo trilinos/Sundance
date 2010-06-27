@@ -19,6 +19,7 @@ namespace Sundance
   }
 
   void InequivalentElementTransformation::preApply( const int funcID,
+		                    int cellDim ,
 						    const CellJacobianBatch& JTrans,
 						    const CellJacobianBatch& JVol,
 						    const Array<int>& facetIndex,
@@ -27,6 +28,9 @@ namespace Sundance
 						    ) const
   
   {
+	// do integration for MaxDimCells
+	if ( mesh_.spatialDim() > cellDim) return;
+
 	if (chunkBases_[map_->chunkForFuncID( funcID )]->requiresBasisTransformation())
 	{
 	   CellJacobianBatch JVol1;
@@ -36,6 +40,7 @@ namespace Sundance
   }
 
   void InequivalentElementTransformation::postApply( const int funcID,
+		                     int cellDim ,
 						     const CellJacobianBatch& JTrans,
 						     const CellJacobianBatch& JVol,
 						     const Array<int>& facetIndex,
@@ -43,6 +48,9 @@ namespace Sundance
 						     RCP<Array<double> >& A
 						     ) const
   {
+	// do integration for MaxDimCells
+	if ( mesh_.spatialDim() > cellDim) return;
+
 	if (chunkBases_[map_->chunkForFuncID( funcID )]->requiresBasisTransformation())
 	{
 	   CellJacobianBatch JVol1;

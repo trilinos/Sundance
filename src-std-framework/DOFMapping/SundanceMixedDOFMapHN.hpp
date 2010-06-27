@@ -38,6 +38,7 @@
 #include "SundanceCellFilter.hpp"
 #include "SundanceHNDoFMapBase.hpp"
 #include "SundanceBasisFamilyBase.hpp"
+#include "SundanceMatrixStore.hpp"
 
 namespace Sundance
 {
@@ -86,6 +87,22 @@ public:
 	    bool& doTransform,
 	    Array<double>& transfMatrix ) const;
 
+	/** Function to apply transformation for facets
+	 * @param cellDim , the facet dimension
+	 * @param cellLID , facet LID
+	 * @param facetIndex , facet index in the maxCofacet
+	 * @param funcID  [in] the function ID
+	 * @param trafoMatrixSize [in/out]
+	 * @param doTransform [out]
+	 * @param transfMatrix [out] (we assume that the array is already pre-sized )*/
+     void getTrafoMatrixForFacet(
+		  int cellDim,
+		  int cellLID,
+		  int facetIndex,
+		  int funcID,
+		  int& trafoMatrixSize,
+		  bool& doTransform,
+		  Array<double>& transfMatrix ) const;
 
   /** See subclass for docu
    * We can be sure that this is used only for nodal data (for VTK plotting)<br>
@@ -227,8 +244,11 @@ private:
 
    /** Maps one maxCell LID to one transformation matrix, only maxDim elements and basisChunck ID
     * with hanging nodes should have transformation matrix
-    * [maxCellLID].get -> [basisChunckID][] is the trafo matrix */
-   Sundance::Map< int , Array < Array<double> > > maxCellLIDwithHN_to_TrafoMatrix_;
+    * [maxCellLID].get -> [basisChunckID][] is the index of trafo matrix */
+   Sundance::Map< int , Array < int > > maxCellLIDwithHN_to_TrafoMatrix_;
+
+   /** The object to store all the transformation matrixes */
+   MatrixStore                          matrixStore_;
 
    /** The basis for the transformation */
    mutable Array<RCP<BasisFamilyBase> > basis_;

@@ -1,5 +1,15 @@
 #include "Sundance.hpp"
 
+REFINE_MESH(MyRefClass , {return false;})
+// int refine( const int cellLevel ,  const Point& cellPos , const Point& cellDimameter)
+// int estimateRefinementLevel( const Point& cellPos, const Point& cellDimameter)
+//REFINE_MESH_ESTIMATE(MeshRefEst , {return false;} , {return 1;} )
+REFINE_MESH_ESTIMATE(MeshRefEst , { \
+      if (  (cellPos[0] > 1.0) && (cellPos[0] < 3.0) && (cellPos[1] < 1.51) && (cellPos[1] > 0.49) && (cellLevel < 2)) \
+                                      return true;\
+                                 else return false; } , {return 1;} )
+MESH_DOMAIN( MeshDomain , {return true;})
+
 int main(int argc, char** argv)
 {
   try
@@ -15,37 +25,31 @@ int main(int argc, char** argv)
     ny = ny*np;
 
     VectorType<double> vecType = new EpetraVectorType();
-/*
-    MeshType meshType = new BasicSimplicialMeshType();     
-    MeshSource mesher;
+    
+    /* refinement criterion object */
+    RefinementClass refCl = new MyRefClass();
+    RefinementClass refCl1 = new MeshRefEst();
+    /* mesh domain estimation */
+    MeshDomainDef meshDom = new MeshDomain();
 
-    int npx = -1;
-    int npy = -1;
-    PartitionedRectangleMesher::balanceXY(np, &npx, &npy);
-    TEST_FOR_EXCEPT(npx < 1);
-    TEST_FOR_EXCEPT(npy < 1);
-    TEST_FOR_EXCEPT(npx * npy != np);
-    mesher = new PartitionedRectangleMesher(0.0, 1.0, nx, npx, 
-      0.0,  1.0, ny, npy, meshType); */
-
-    MeshType meshType = new HNodeMeshType2D();
-    MeshSource mesher = new HNodeMesher2D(0.0, 0.0, 1.0 , 1.0 , 0.1 , 0.1, meshType);
+    MeshType meshType = new HNMeshType2D();
+    MeshSource mesher = new HNMesher2D(0.0, 0.0, 4.0 , 2.0 , 4 , 2 , meshType , refCl1 , meshDom );
     //MeshType meshType = new PeanoMeshType2D();
     //MeshSource mesher = new PeanoMesher2D(0.0, 0.0,  1.0 , 1.0 , 0.4, meshType);
 
     Mesh mesh = mesher.getMesh();
 
     CellFilter interior = new MaximalCellFilter();
-/*
+
     WatchFlag watchMe("watch me");
     watchMe.setParam("symbolic preprocessing", 0);
     watchMe.setParam("discrete function evaluation", 0);
     watchMe.setParam("integration setup", 1);
-    watchMe.setParam("integral transformation", 1);
+    watchMe.setParam("integral transformation", 1);  
     watchMe.setParam("integration", 6);
     watchMe.setParam("fill", 0);
     watchMe.setParam("evaluation", 0); 
-  */  
+
     BasisFamily basis0 = new Lagrange(0);
     BasisFamily basis1 = new Lagrange(1);
     BasisFamily basis2 = new Lagrange(2);
@@ -70,10 +74,10 @@ int main(int argc, char** argv)
     Expr x = new CoordExpr(0);
     Expr y = new CoordExpr(1);
 
-    /* We need a quadrature rule for doing the integrations */
+    // We need a quadrature rule for doing the integrations 
     QuadratureFamily quad = new GaussianQuadrature(4);
 
-    /* Define the weak form */
+    // Define the weak form 
     Expr exactP = 2.0*x*y + 3.0*x*x + 4.0*y*y;
     Expr exactS = List(2.0*y+6.0*x, 2.0*x+8.0*y);
     Expr exactU = List(6.0, 8.0);
@@ -85,7 +89,10 @@ int main(int argc, char** argv)
       quad );
     Expr bc;
 
-    /* We can now set up the linear problem! */
+    //DOFMapBase::classVerbosity() = 5;
+
+    // We can now set up the linear problem!
+    
     LinearProblem prob(mesh, eqn, bc, 
       List(q, vx, vy, tx, ty),
       List(p, ux, uy, sx, sy), vecType);
@@ -106,7 +113,7 @@ int main(int argc, char** argv)
 
     Expr soln = prob.solve(solver);
 
-    FieldWriter w = new VTKWriter( "MixedTest2D" );
+    FieldWriter w = new VTKWriter( "MixedTest2D_HN" );
     w.addMesh( mesh );
     w.addField( "p" , new ExprFieldWrapper( soln[0] ) );
     w.addField( "ux" , new ExprFieldWrapper( soln[1] ) );

@@ -139,6 +139,7 @@ APPEND_SET(HEADERS
 
 APPEND_SET(SOURCES
   DOFMapping/SundanceDOFMapBase.cpp
+  DOFMapping/SundanceHNDoFMapBase.cpp
   DOFMapping/SundanceDOFMapBuilder.cpp
   DOFMapping/SundanceInhomogeneousNodalDOFMap.cpp
   DOFMapping/SundanceMapStructure.cpp
@@ -309,6 +310,7 @@ APPEND_SET(HEADERS
   ElementTransformation/SundanceDiscreteSpaceTransfBuilder.hpp
   ElementTransformation/SundanceTransformationHN.hpp
   ElementTransformation/SundanceInequivalentElementTransformation.hpp
+  ElementTransformation/SundanceMatrixStore.hpp
 )
 
 APPEND_SET(SOURCES
@@ -317,6 +319,7 @@ APPEND_SET(SOURCES
   ElementTransformation/SundanceDiscreteSpaceTransfBuilder.cpp
   ElementTransformation/SundanceTransformationHN.cpp
   ElementTransformation/SundanceInequivalentElementTransformation.cpp
+  ElementTransformation/SundanceMatrixStore.cpp  
   )
 
 

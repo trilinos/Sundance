@@ -360,9 +360,11 @@ void VTKWriter::writeDataArray(ostream& os, const string& name,
             {
               for (int j=0; j < expr->numElems(); j++)
                 {
-                  if (expr->isDefined(0,i,j))
-                    os << (float) expr->getData(0, i, j) << std::endl;
-                  else
+                  if (expr->isDefined(0,i,j)){
+                	double val = expr->getData(0, i, j);
+                    val = (fabs(val) > 1e-16) ? val : 0.0;
+                    os << (float) val << std::endl;
+                  }else
                     os << undefinedValue() << std::endl;
                 }
               // write the rest with 0.0 if it is a zero component
@@ -380,9 +382,11 @@ void VTKWriter::writeDataArray(ostream& os, const string& name,
             {
               for (int j=0; j < expr->numElems(); j++)
                 {
-                  if (expr->isDefined(dim,c,j))
-                    os << (float) expr->getData(dim, c, j) << std::endl;
-                  else
+                  if (expr->isDefined(dim,c,j)){
+                   	double val = expr->getData(dim, c, j);
+                    val = (fabs(val) > 1e-16) ? val : 0.0;
+                    os << (float) val << std::endl;
+                  }else
                     os << undefinedValue() << std::endl;
                 }
               // write the rest with 0.0 if it is a zero component

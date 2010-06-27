@@ -354,12 +354,14 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/ParametrizedCurves)
 APPEND_SET(HEADERS
   ParametrizedCurves/SundanceCurveBase.hpp
   ParametrizedCurves/SundanceCircle.hpp
+  ParametrizedCurves/SundanceBox2D.hpp
   ParametrizedCurves/SundanceParametrizedCurve.hpp
   ParametrizedCurves/SundanceDummyParametrizedCurve.hpp
   )
 
 APPEND_SET(SOURCES
   ParametrizedCurves/SundanceCircle.cpp
+  ParametrizedCurves/SundanceBox2D.cpp
   ParametrizedCurves/SundanceParametrizedCurve.cpp
   )
 

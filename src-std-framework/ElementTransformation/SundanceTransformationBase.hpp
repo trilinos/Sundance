@@ -23,6 +23,7 @@ namespace Sundance {
     /** The transformation method */
     // this will potentially used in assembly  process
     virtual void preApply( const int funcID,
+		       int cellDim ,
 			   const CellJacobianBatch& JTrans,
 			   const CellJacobianBatch& JVol,
 			   const Array<int>& facetIndex,
@@ -33,6 +34,7 @@ namespace Sundance {
     /** */
     // this will potentially used in assembly  process
     virtual void postApply( const int funcID,
+		        int cellDim ,
 			    const CellJacobianBatch& JTrans,
 			    const CellJacobianBatch& JVol,
 			    const Array<int>& facetIndex,

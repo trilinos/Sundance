@@ -6,6 +6,8 @@
  */
 
 #include "SundanceTransformationHN.hpp"
+#include "SundanceOut.hpp"
+#include "SundanceTabs.hpp"
 
 using std::ios_base;
 using std::setw;
@@ -35,6 +37,7 @@ TransformationHN::~TransformationHN() {
 }
 
 void TransformationHN::preApply( const int funcID,
+		         int cellDim ,
 				 const CellJacobianBatch& JTrans,
 				 const CellJacobianBatch& JVol,
 				 const Array<int>& facetIndex,
@@ -42,10 +45,14 @@ void TransformationHN::preApply( const int funcID,
 				 RCP<Array<double> >& A
 				 ) const 
 {
+
+  // if we do not operate on the maxCellType then do nothing
+  //if (dofMap_->getSpacialMeshDim() != cellDim ) return;
+
   int nrRow = (nrRow_ == 0)? 1 : nrRow_;
   int nrCol = (nrCol_ == 0)? 1 : nrCol_;
   int                 cellLID , matrixSize , i;
-  bool                doTransform;
+  bool                doTransform = false;
   Array<double>       M;
   const Array<int>*   cellLIDAray = cellLIDs.get();
   double*             matrixAray = &((*A)[0]);
@@ -56,9 +63,13 @@ void TransformationHN::preApply( const int funcID,
     cellLID = (*cellLIDAray)[i];
     //get the Matrix transformation
     SUNDANCE_MSG2( verb() , "TransformationHN::preApply() cellLID:" << cellLID );
-    dofMap_->getTrafoMatrixForCell( cellLID , funcID , matrixSize, doTransform, M );
-    if (doTransform){
+    if (cellDim == dofMap_->getSpacialMeshDim())
+      dofMap_->getTrafoMatrixForCell( cellLID , funcID , matrixSize, doTransform, M );
+    else
+      dofMap_->getTrafoMatrixForFacet( cellDim , cellLID , facetIndex[i] , funcID , matrixSize, doTransform, M );
 
+    if (doTransform)
+    {
       for (int ii = 0 ; ii < nrRow*nrCol ; ii++) tmpArray[ii] = matrixAray[ i*nrRow*nrCol + ii];
 
       //SUNDANCE_MSG2( verb() , " TransformationHN::preApply() cellLID: " << cellLID << "  doTransform:" <<
@@ -73,6 +84,7 @@ void TransformationHN::preApply( const int funcID,
 
 /** */
 void TransformationHN::postApply( const int funcID,
+		          int cellDim ,
 				  const CellJacobianBatch& JTrans,
 				  const CellJacobianBatch& JVol,
 				  const Array<int>& facetIndex,
@@ -81,10 +93,13 @@ void TransformationHN::postApply( const int funcID,
 				  ) const 
 {
 
+  // if we do not operate on the maxCellType then do nothing
+  //if (dofMap_->getSpacialMeshDim() != cellDim ) return;
+
   int nrRow = (nrRow_ == 0)? 1 : nrRow_;
   int nrCol = (nrCol_ == 0)? 1 : nrCol_;
   int                 cellLID , matrixSize;
-  bool                doTransform;
+  bool                doTransform = false;
   Array<double>       M;
   const Array<int>*   cellLIDAray = cellLIDs.get();
   double*             matrixAray = &((*A)[0]);
@@ -95,9 +110,13 @@ void TransformationHN::postApply( const int funcID,
     cellLID = (*cellLIDAray)[i];
     //get the Matrix transformation
     //SUNDANCE_MSG2( verb() ,"TransformationHN::postApply() cellLID:" << cellLID);
-    dofMap_->getTrafoMatrixForCell( cellLID , funcID , matrixSize, doTransform, M );
-    if (doTransform){
+    if (cellDim == dofMap_->getSpacialMeshDim())
+      dofMap_->getTrafoMatrixForCell( cellLID , funcID , matrixSize, doTransform, M );
+    else
+      dofMap_->getTrafoMatrixForFacet( cellDim , cellLID , facetIndex[i] , funcID , matrixSize, doTransform, M );
 
+    if (doTransform)
+    {
       for (int ii = 0 ; ii < nrRow*nrCol ; ii++) tmpArray[ii] = matrixAray[ i*nrRow*nrCol + ii];
 
       //SUNDANCE_MSG2( verb() , " TransformationHN::postApply() cellLID: " << cellLID << "  doTransform:" <<
@@ -120,7 +139,7 @@ void TransformationHN::preapplyTranspose( const int cellDim,
 {
 
   // if we do not operate on the maxCellType then do nothing
-  if (dofMap_->getSpacialMeshDim() != cellDim ) return;
+  //if (dofMap_->getSpacialMeshDim() != cellDim ) return;
 
   // Todo: in this function we can be sure that we we apply this to a vector
   int                 cellLID , matrixSize;
@@ -137,9 +156,13 @@ void TransformationHN::preapplyTranspose( const int cellDim,
     // get the Cell ID
     cellLID = cellLIDs[i];
     //get the Matrix transformation
-    dofMap_->getTrafoMatrixForCell( cellLID , funcID , matrixSize, doTransform, M );
-    if (doTransform){
+    if (cellDim == dofMap_->getSpacialMeshDim())
+      dofMap_->getTrafoMatrixForCell( cellLID , funcID , matrixSize, doTransform, M );
+    else
+      dofMap_->getTrafoMatrixForFacet( cellDim , cellLID , facetIndex[i] , funcID , matrixSize, doTransform, M );
 
+    if (doTransform)
+    {
       SUNDANCE_MSG2( verb() ," TransformationHN::postApply() A.size(): " << A.size() << "  cellLIDs.size():" <<
 		     cellLIDs.size());
 
@@ -169,20 +192,37 @@ void TransformationHN::multiplyFromLeftWithTransp(Array<double>& M , double* A_e
   const double* B =  A_copy;
   const double beta = 0.0;
   const double alpha = 1.0;
-
+/*
+  int ii,jj,kk;
+  SUNDANCE_MSG2( 3 , " nrRow = " << nrRow << " nrCol = " << nrCol);
+  SUNDANCE_MSG2( 3 , " A = ");
+  for (ii = 0 ; ii < nrRow ; ii++){
+      for(jj = 0 ; jj < nrRow ; jj++){ std::cout << setw(12) <<  A[ii*nrRow + jj] << " ,"; }
+	  std::cout << std::endl;
+  }
+  SUNDANCE_MSG2( 3 , " B = ");
+  for (ii = 0 ; ii < nrRow ; ii++){
+      for(jj = 0 ; jj < nrCol ; jj++){ std::cout << setw(12) << B[ii*nrCol + jj] << " ,"; }
+	  std::cout << std::endl;
+  }
+*/
   // C := alpha*op( A )*op( B ) + beta*C,
   //with op( A )  an m by k matrix,  op( B )  a  k by n matrix and  C an m by n matrix.
   //dgemm(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC)
 
-  // todo : check why we do not need transpose A, if we do then gives wrong ... ?! might be the matrix ordering ?
-  /*
-    ::dgemm_("N", "N", &nrRow, &nrCol , &nrRow,  &alpha, A ,
-    &nrRow, B , &nrRow, &beta,
-    A_end, &nrRow);
-  */
+    ::dgemm_("N", "T", &nrCol, &nrRow , &nrRow,  &alpha, B ,
+    &nrCol, A , &nrRow, &beta,
+    A_end, &nrCol);
 
-  int ii,jj,kk;
-  double sum = 0;
+    // ----------------- plotting ---------------
+/*
+    SUNDANCE_MSG2( 3 , " nrRow = " << nrRow << " nrCol = " << nrCol);
+    SUNDANCE_MSG2( 3 , " A_end = ");
+    for (ii = 0 ; ii < nrRow ; ii++){
+        for(jj = 0 ; jj < nrCol ; jj++){ std::cout << setw(12) << A_end[ii*nrCol + jj] << " ,"; }
+  	  std::cout << std::endl;
+    }*/
+/*double sum = 0;
   // M is nrRow X nrRow   and A is nrCol X nrRow
   for (ii = 0 ; ii < nrRow ; ii++){
     for(jj = 0 ; jj < nrCol ; jj++){
@@ -192,7 +232,15 @@ void TransformationHN::multiplyFromLeftWithTransp(Array<double>& M , double* A_e
       }
       A_end[ii*nrCol + jj] = sum;
     }
-  }
+  }*/
+    /*  // ----------------- plotting ---------------
+  SUNDANCE_MSG2( 3 , " nrRow = " << nrRow << " nrCol = " << nrCol);
+  SUNDANCE_MSG2( 3 , " A_end = ");
+  for (ii = 0 ; ii < nrRow ; ii++){
+      for(jj = 0 ; jj < nrCol ; jj++){ std::cout << setw(12) << A_end[ii*nrCol + jj] << " ,"; }
+	  std::cout << std::endl;
+  }*/
+
 }
 
 void TransformationHN::multiplyFromRight(double* A_end , Array<double>& M , const double* A_copy) const{
@@ -204,18 +252,15 @@ void TransformationHN::multiplyFromRight(double* A_end , Array<double>& M , cons
   const double beta = 0.0;
   const double alpha = 1.0;
 
-
   // C := alpha*op( A )*op( B ) + beta*C,
   //with op( A )  an m by k matrix,  op( B )  a  k by n matrix and  C an m by n matrix.
   //dgemm(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC)
-  /*
-    ::dgemm_("N", "N", &nrRow, &nrCol , &nrCol,  &alpha, A ,
-    &nrRow, B , &nrCol, &beta,
-    A_end, &nrRow);
-  */
 
-  int ii,jj,kk;
-  double sum = 0;
+    ::dgemm_("N", "N", &nrCol, &nrRow , &nrCol,  &alpha, B ,
+    &nrCol, A , &nrCol, &beta,
+    A_end, &nrCol);
+
+/* double sum = 0;
   // M is nrCol X nrCol   and A is nrCol X nrRow
   for (ii = 0 ; ii < nrRow ; ii++){
     for(jj = 0 ; jj < nrCol ; jj++){
@@ -225,7 +270,7 @@ void TransformationHN::multiplyFromRight(double* A_end , Array<double>& M , cons
       }
       A_end[ii*nrCol + jj] = sum;
     }
-  }
+  } */
 }
 
 void TransformationHN::multiplyFromLeft(Array<double>& M , double* A_end , const double* A_copy
@@ -240,13 +285,11 @@ void TransformationHN::multiplyFromLeft(Array<double>& M , double* A_end , const
   //with op( A )  an m by k matrix,  op( B )  a  k by n matrix and  C an m by n matrix.
   //dgemm(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC)
 
-  /*
-  // todo: this should work with transpose
-  ::dgemm_("T", "N", &nrRow, &nrCol , &nrRow,  &alpha, A ,
-  &nrRow, B , &nrRow, &beta,
-  A_end, &nrRow);
-  */
-  int ii,jj,kk;
+    ::dgemm_("N", "N", &nrCol, &nrRow , &nrRow,  &alpha, B ,
+    &nrCol, A , &nrRow, &beta,
+    A_end, &nrCol);
+
+/* int ii,jj,kk;
   double sum = 0; // todo: A_copy is always a column
   // M is nrRow X nrRow   and A is nrCol X nrRow
   for (ii = 0 ; ii < nrRow ; ii++){
@@ -257,5 +300,5 @@ void TransformationHN::multiplyFromLeft(Array<double>& M , double* A_end , const
       }
       A_end[ii*nrCol + jj] = sum;
     }
-  }
+  }*/
 }

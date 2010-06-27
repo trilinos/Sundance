@@ -39,6 +39,7 @@ namespace Sundance {
     void applyTransformsToAssembly( int groupIndex ,
 				    int entryPerCell ,
 				    CellType cellType ,
+				    int cellDim,
 				    CellType maxCellType ,
 				    const CellJacobianBatch& JTrans,
 				    const CellJacobianBatch& JVol,

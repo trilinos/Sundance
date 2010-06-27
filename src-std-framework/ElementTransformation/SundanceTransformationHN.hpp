@@ -25,6 +25,7 @@ public:
 
 	/** */
   virtual void preApply( const int funcID ,
+	         int cellDim ,
 			 const CellJacobianBatch& JTrans,
 			 const CellJacobianBatch& JVol,
 			 const Array<int>& facetIndex,
@@ -33,6 +34,7 @@ public:
 
 	/** */
   virtual void postApply( const int funcID ,
+		      int cellDim ,
 			  const CellJacobianBatch& JTrans,
 			  const CellJacobianBatch& JVol,
 			  const Array<int>& facetIndex,

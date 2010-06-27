@@ -38,6 +38,8 @@
 #include "Teuchos_TimeMonitor.hpp"
 
 using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 NodalDOFMapHN::NodalDOFMapHN(const Mesh& mesh,
@@ -52,7 +54,7 @@ NodalDOFMapHN::NodalDOFMapHN(const Mesh& mesh,
     nNodes_(mesh.numCells(0)),
     nNodesPerElem_(mesh.numFacets(mesh.spatialDim(),0,0)),
     elemDofs_(nElems_ * nFuncs * nNodesPerElem_),
-    nodeDofs_(mesh.numCells(0)*nFuncs_, -1),
+    nodeDofs_(mesh.numCells(0)*nFuncs_, -2),
     structure_(rcp(new MapStructure(nFuncs_, rcp(new Lagrange(1))))),
     hasCellHanging_(nElems_),
     nodeIsHanging_(nElems_ * nFuncs * nNodesPerElem_),
@@ -60,8 +62,11 @@ NodalDOFMapHN::NodalDOFMapHN(const Mesh& mesh,
     cells_To_NodeLIDs_(),
     hangingNodeLID_to_NodesLIDs_(),
     hangindNodeLID_to_Coefs_(),
+    matrixStore_(),
     facetLID_()
 {
+  // init the matrix store with one chunck
+  matrixStore_.init(1);
   init();
 }
 
@@ -106,7 +111,8 @@ void NodalDOFMapHN::init()
           SUNDANCE_MSG2(setupVerb(), "NodalDOFMapHN::init() CellLID:"<< c <<"Try point LID:" << fLID << " facet:" << f);
           if (hasProcessedCell[fLID] == 0) {
               /* the facet may be owned by another processor */
-              if (isRemote(0, fLID, owner)) {
+        	  /* Do this only when that node is not HANGING! */
+              if ( isRemote(0, fLID, owner) && (!mesh().isElementHangingNode(0,fLID)) ) {
                   int facetGID 
                     = mesh().mapLIDToGID(0, fLID);
                   remoteNodes[owner].append(facetGID);
@@ -146,6 +152,8 @@ void NodalDOFMapHN::init()
        }
   }
   
+  //SUNDANCE_MSG2(setupVerb(), "Before Communication: " << nodeDofs_);
+
   /* Compute offsets for each processor */
   int localCount = nextDOF;
   computeOffsets(localCount);
@@ -153,16 +161,16 @@ void NodalDOFMapHN::init()
   /* Resolve remote DOF numbers */
   shareRemoteDOFs(remoteNodes);
 
+  //SUNDANCE_MSG2(setupVerb(), "After Communication: " << nodeDofs_);
 
   /* Assign DOFs for elements */
   for (int c=0; c<nElems_; c++)
     {
 	    if (hasCellHanging_[c]){
-	    	Array<int> HNDoFs;
+	    	Array<int> HNDoFs(nFacets_);
 	    	Array<double> transMatrix;
 	    	Array<double> coefs;
 
-	  		HNDoFs.resize(4);
 	    	transMatrix.resize(nFacets_*nFacets_);
 	    	for (int ii = 0 ; ii < nFacets_*nFacets_ ; ii++) transMatrix[ii] = 0.0;
 
@@ -193,7 +201,9 @@ void NodalDOFMapHN::init()
               }
 	    	}
 	    	// store the matrix corresponding to this cell
-	    	maxCellLIDwithHN_to_TrafoMatrix_.put( c , transMatrix );
+	    	int matrixIndex = matrixStore_.addMatrix(0,transMatrix);
+	    	maxCellLIDwithHN_to_TrafoMatrix_.put( c , matrixIndex );
+
 	    	// store the point LID's which contribute to this cell
 	    	cellsWithHangingDoF_globalDoFs_.put( c , HNDoFs );
 
@@ -203,13 +213,13 @@ void NodalDOFMapHN::init()
 	    	// add the global DOFs to the array
 	    	for (int f=0; f<nFacets_; f++)
 	    	{
-	    		int fLID = HNDoFs[f];
-	    		for (int i=0; i<nFuncs_; i++)
-	    		{
-	    			elemDofs_[(c*nFuncs_+i)*nFacets_ + f] = nodeDofs_[fLID*nFuncs_ + i];
-	    		}
+	    	   int fLID = HNDoFs[f];
+    		   for (int i=0; i<nFuncs_; i++) {
+    			  elemDofs_[(c*nFuncs_+i)*nFacets_ + f] = nodeDofs_[fLID*nFuncs_ + i];
+    		   }
+
 	    	}
-	    	SUNDANCE_MSG2(setupVerb(),tab << "NodalDOFMapHN initializing cellLID:" << c << " elemDofs_:" << elemDofs_);
+	    	SUNDANCE_MSG2(setupVerb(),tab << "NodalDOFMapHN HN initializing cellLID:" << c << " elemDofs_:" << elemDofs_);
 	    }
 	    else {
 		/* set the element DOFs given the dofs of the facets */
@@ -224,6 +234,8 @@ void NodalDOFMapHN::init()
 	    	  SUNDANCE_MSG2(setupVerb(),tab << "NodalDOFMapHN initializing cellLID:" << c << " elemDofs_:" << elemDofs_);
 	    }
     }
+  SUNDANCE_MSG2(setupVerb(),tab << "NodalDOFMapHN initializing DONE");
+
 }
 
 RCP<const MapStructure>
@@ -313,11 +325,28 @@ NodalDOFMapHN::getDOFsForCellBatch(int cellDim,
                 {
                   dof0[(c*nFuncs_+i)*nFacets + f]
                     = nodeDofs_[facetCellLID*nFuncs_+i];
-                  tmpArray[f*nFuncs_+i] = nodeDofs_[facetCellLID*nFuncs_+i];
+                  // when we want to pass a hanging DoF , we correct the result
+                  if ( nodeDofs_[facetCellLID*nFuncs_+i] < 0){
+                	  int tmp = 1;
+                	  // get any cell which has this element
+                	  int maxCell = mesh().maxCofacetLID( cellDim , cellLID[c] , 0 , tmp);
+                      Array<int> facetsLIDs;
+                      mesh().returnParentFacets( maxCell , 0 , facetsLIDs , tmp );
+                      // get in the same way the point children from the child cell
+                      Array<int> childFacets(mesh().numFacets(mesh().spatialDim(),0,0));
+                      for (int jk = 0 ; jk < childFacets.size() ; jk++)
+                    	  childFacets[jk] = mesh().facetLID( mesh().spatialDim() , maxCell, 0 , jk , tmp);
+                      int fIndex = 0;
+                      // get the correct point facet index, by comparing the child cell point facets to the HN LID
+                      for (int jk = 0 ; jk < childFacets.size() ; jk++)
+                    	  if ( childFacets[jk] == facetCellLID) { fIndex = jk; break;}
+                      dof0[(c*nFuncs_+i)*nFacets + f] = nodeDofs_[facetsLIDs[fIndex]*nFuncs_ + i];
+                  }
+                  tmpArray[f*nFuncs_+i] = dof0[(c*nFuncs_+i)*nFacets + f];
                 }
             }
           SUNDANCE_MSG2(verbosity,tab << "NodalDOFMapHN::getDOFsForCellBatch cellDim:" <<
-          		cellDim << " edgeLID:" << cellLID[c] << " array:" << tmpArray);
+          		cellDim << " edge or face LID:" << cellLID[c] << " array:" << tmpArray);
         }
     }
   SUNDANCE_MSG2(verbosity,
@@ -338,7 +367,38 @@ void NodalDOFMapHN::getTrafoMatrixForCell(
 	if (cellsWithHangingDoF_globalDoFs_.containsKey(cellLID))
 	{
 		// return the transformation matrix from the Map
-		transfMatrix = maxCellLIDwithHN_to_TrafoMatrix_.get( cellLID ); // this should return a valid array
+		int matrixIndex = maxCellLIDwithHN_to_TrafoMatrix_.get( cellLID ); // this should return a valid array
+		matrixStore_.getMatrix( 0 , matrixIndex , transfMatrix );
+		doTransform = true;
+	}
+	else  // no transformation needed, return false
+	{
+		doTransform = false;
+	}
+}
+
+void NodalDOFMapHN::getTrafoMatrixForFacet(
+		  int cellDim,
+		  int cellLID,
+		  int facetIndex,
+		  int funcID,
+		  int& trafoMatrixSize,
+		  bool& doTransform,
+		  Array<double>& transfMatrix ) const {
+
+	int fIndex;
+	int maxCellLID;
+	// here we ask for cofacet 0 , assuming that these are anyhow boundary facets
+	SUNDANCE_MSG2(setupVerb() , "NodalDOFMapHN::getTrafoMatrixForFacet() cellDim :" << cellDim << ", cellLID:" << cellLID);
+	maxCellLID = mesh().maxCofacetLID( cellDim, cellLID, 0 , fIndex);
+	SUNDANCE_MSG2(setupVerb() , "NodalDOFMapHN::getTrafoMatrixForFacet() testing :" << maxCellLID);
+
+	// todo: we might pre filter cases when this is not necessary
+
+	if (cellsWithHangingDoF_globalDoFs_.containsKey(maxCellLID))
+	{
+		int matrixIndex    =    maxCellLIDwithHN_to_TrafoMatrix_.get( maxCellLID );
+		matrixStore_.getMatrix( 0 , matrixIndex , transfMatrix );
 		doTransform = true;
 	}
 	else  // no transformation needed, return false
@@ -415,14 +475,87 @@ void NodalDOFMapHN::getPointLIDsForHN( int pointLID , int facetIndex ,
 		            nodeIndex[0] = 2;  nodeIndex[1] = 3;  break;}
 		}
 		 coefsArray.resize(2); coefsArray[0] = 1 - divRatio; coefsArray[1] = divRatio;
-		  SUNDANCE_MSG2(setupVerb(),"NodalDOFMapHN::getPointLIDsForHN() fc=" << facetCase << " R=" << divRatio
+		 SUNDANCE_MSG2(setupVerb(),"NodalDOFMapHN::getPointLIDsForHN() fc=" << facetCase << " R=" << divRatio
 		               << " facetIndex:" << facetIndex <<   " indexInParent:" << indexInParent <<" glbLIDs:"
 		               << glbLIDs << " maxCellIndex:" << maxCellIndex << " nodeIndex:" << nodeIndex);
 		break;
-	case 3:
-		glbLIDs.resize(4);
-        // Todo: implement this for 3D , this might get here much complicated ...
+	case 3:{
+        // 3D hanging node
+		double ind_x = 0 , ind_y = 0 , ind_z = 0;
+		double f_x = 0.0 , f_y = 0.0 , f_z = 0.0;
+		double xx = 0.0  , yy = 0.0  , zz = 0.0;
+		double values[8];
+		indexInParent = mesh().indexInParent(maxCellIndex);
+		mesh().returnParentFacets(maxCellIndex , 0 ,facets , parentLID );
+		//
+		switch (indexInParent){
+		  case 0:  { ind_x = 0.0; ind_y = 0.0; ind_z = 0.0; break;}
+		  case 1:  { ind_x = 1.0; ind_y = 0.0; ind_z = 0.0; break;}
+		  case 2:  { ind_x = 2.0; ind_y = 0.0; ind_z = 0.0; break;}
+		  case 3:  { ind_x = 0.0; ind_y = 1.0; ind_z = 0.0; break;}
+		  case 4:  { ind_x = 1.0; ind_y = 1.0; ind_z = 0.0; break;}
+		  case 5:  { ind_x = 2.0; ind_y = 1.0; ind_z = 0.0; break;}
+		  case 6:  { ind_x = 0.0; ind_y = 2.0; ind_z = 0.0; break;}
+		  case 7:  { ind_x = 1.0; ind_y = 2.0; ind_z = 0.0; break;}
+		  case 8:  { ind_x = 2.0; ind_y = 2.0; ind_z = 0.0; break;}
+		  case 9:  { ind_x = 0.0; ind_y = 0.0; ind_z = 1.0; break;}
+		  case 10: { ind_x = 1.0; ind_y = 0.0; ind_z = 1.0; break;}
+		  case 11: { ind_x = 2.0; ind_y = 0.0; ind_z = 1.0; break;}
+		  case 12: { ind_x = 0.0; ind_y = 1.0; ind_z = 1.0; break;}
+		  case 14: { ind_x = 2.0; ind_y = 1.0; ind_z = 1.0; break;}
+		  case 15: { ind_x = 0.0; ind_y = 2.0; ind_z = 1.0; break;}
+		  case 16: { ind_x = 1.0; ind_y = 2.0; ind_z = 1.0; break;}
+		  case 17: { ind_x = 2.0; ind_y = 2.0; ind_z = 1.0; break;}
+		  case 18: { ind_x = 0.0; ind_y = 0.0; ind_z = 2.0; break;}
+		  case 19: { ind_x = 1.0; ind_y = 0.0; ind_z = 2.0; break;}
+		  case 20: { ind_x = 2.0; ind_y = 0.0; ind_z = 2.0; break;}
+		  case 21: { ind_x = 0.0; ind_y = 1.0; ind_z = 2.0; break;}
+		  case 22: { ind_x = 1.0; ind_y = 1.0; ind_z = 2.0; break;}
+		  case 23: { ind_x = 2.0; ind_y = 1.0; ind_z = 2.0; break;}
+		  case 24: { ind_x = 0.0; ind_y = 2.0; ind_z = 2.0; break;}
+		  case 25: { ind_x = 1.0; ind_y = 2.0; ind_z = 2.0; break;}
+		  case 26: { ind_x = 2.0; ind_y = 2.0; ind_z = 2.0; break;}
+		  default: {}// error this should not occur
+		}
+		switch (facetIndex){
+		  case 0:  { f_x = 0.0 , f_y = 0.0 , f_z = 0.0; break;}
+		  case 1:  { f_x = 1.0 , f_y = 0.0 , f_z = 0.0; break;}
+		  case 2:  { f_x = 0.0 , f_y = 1.0 , f_z = 0.0; break;}
+		  case 3:  { f_x = 1.0 , f_y = 1.0 , f_z = 0.0; break;}
+		  case 4:  { f_x = 0.0 , f_y = 0.0 , f_z = 1.0; break;}
+		  case 5:  { f_x = 1.0 , f_y = 0.0 , f_z = 1.0; break;}
+		  case 6:  { f_x = 0.0 , f_y = 1.0 , f_z = 1.0; break;}
+		  case 7:  { f_x = 1.0 , f_y = 1.0 , f_z = 1.0; break;}
+		  default: {}// error this should not occur
+		}
+		// evaluate the bilinear basis function at the given point
+		  xx = (ind_x + f_x)/3.0;
+		  yy = (ind_y + f_y)/3.0;
+		  zz = (ind_z + f_z)/3.0;
+		  values[0] = (1.0 - xx)*(1.0 - yy)*(1.0 - zz);
+		  values[1] = (xx)*(1.0 - yy)*(1.0 - zz);
+		  values[2] = (1.0 - xx)*(yy)*(1.0 - zz);
+		  values[3] = (xx)*(yy)*(1.0 - zz);
+		  values[4] = (1.0 - xx)*(1.0 - yy)*(zz);
+		  values[5] = (xx)*(1.0 - yy)*(zz);
+		  values[6] = (1.0 - xx)*(yy)*(zz);
+		  values[7] = (xx)*(yy)*(zz);
+		// resize the array to zero and add
+		  glbLIDs.resize(0);
+		  nodeIndex.resize(0);
+		  coefsArray.resize(0);
+		  for (int ii = 0 ; ii < 8 ; ii++ ){
+			  // add the facet point if the basis is not zero
+			  if (fabs(values[ii]) > 1e-5){
+				  glbLIDs.append(facets[ii]);
+				  nodeIndex.append(ii);
+				  coefsArray.append(values[ii]);
+			  }
+		  }
+		  SUNDANCE_MSG2(setupVerb(),"NodalDOFMapHN::getPointLIDsForHN()" << " facetIndex:" << facetIndex << " indexInParent:"
+				 << indexInParent <<" glbLIDs:" << glbLIDs << " maxCellIndex:" << maxCellIndex << " nodeIndex:" << nodeIndex);
 		break;
+	    }
 	}
 
 }
@@ -437,10 +570,12 @@ void NodalDOFMapHN::computeOffsets(int localCount)
   int np = mesh().comm().getNProc();
   if (np > 1)
     {
+	  SUNDANCE_MSG2(setupVerb(),"NodalDOFMapHN::computeOffsets, localCount:" << localCount);
       MPIContainerComm<int>::accumulate(localCount, dofOffsets, totalDOFCount,
                                         mesh().comm());
       myOffset = dofOffsets[mesh().comm().getRank()];
 
+      SUNDANCE_MSG2(setupVerb(),"NodalDOFMapHN::computeOffsets, offset:" << myOffset);
       int nDofs = nNodes_ * nFuncs_;
       for (int i=0; i<nDofs; i++)
         {
@@ -489,7 +624,7 @@ void NodalDOFMapHN::shareRemoteDOFs(const Array<Array<int> >& outgoingCellReques
       const Array<int>& requestsFromProc = incomingCellRequests[p];
       int nReq = requestsFromProc.size();
 
-      SUNDANCE_MSG4(setupVerb(), "p=" << mesh().comm().getRank() 
+      SUNDANCE_MSG3(setupVerb(),"p=" << mesh().comm().getRank()
                             << " recv'd from proc=" << p
                             << " reqs for DOFs for cells " 
                             << requestsFromProc);

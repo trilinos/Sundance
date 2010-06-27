@@ -28,20 +28,28 @@
 // ************************************************************************
 /* @HEADER@ */
 /*
- * SundanceHNodeMesh2D.h
+ * SundanceHNMesh2D.h
  *
- *  Created on: March 10, 2010
+ *  Created on: April 30, 2010
  *      Author: benk
  */
 
-#ifndef SUNDANCEHNODEMESH2D_H_
-#define SUNDANCEHNODEMESH2D_H_
+#ifndef SUNDANCEHNMESH2D_H_
+#define SUNDANCEHNMESH2D_H_
 
 #include "SundanceDefs.hpp"
 #include "SundanceMeshBase.hpp"
 #include "SundanceSet.hpp"
 #include "SundancePoint.hpp"
 #include "SundanceCellType.hpp"
+
+#include "Teuchos_Array.hpp"
+#include "Teuchos_Hashtable.hpp"
+
+#include "SundanceRefinementBase.hpp"
+#include "SundanceRefinementClass.hpp"
+
+#include "SundanceDomainDefinition.hpp"
 
 
 namespace Sundance
@@ -50,27 +58,38 @@ namespace Sundance
     using namespace Teuchos;
     using namespace std;
 
-class HNodeMesh2D : public MeshBase{
+/**
+ * Class for 2D hierarchical structured quad Mesh <br>
+ * The main internal idea of the mesh ist that there are different numberings of the elements
+ * ID -> each element has an ID (also those which are completely outside the mesh domain, and those
+ * which are not leaf) <br>
+ * In the code sometimes internaly LID is used instead of ID due to legacy !! :-P <br>
+ * GID -> all leaf elements which are visible to Sundance (only the leaf elements should be visible) <br>
+ * LID -> all the elements which have GID and belong and either belong to the local processor or are in the ghost cells <br>*/
+
+class HNMesh2D : public MeshBase{
 
 public:
 	/**
-	 * The constuctor for the dummy grid with hanging nodes */
-	HNodeMesh2D(int dim,
+	 * The Ctor for the dummy grid with hanging nodes */
+	HNMesh2D(int dim,
     const MPIComm& comm,
     const MeshEntityOrder& order);
 
   /**
-   * The constuctor for the HNodeMesh2D grid in 2D*/
+   * The Ctor for the HNMesh2D grid in 2D*/
 	void createMesh(
     double position_x,
     double position_y,
     double offset_x,
     double offset_y,
-    double resolution_x,
-    double resolution_y);
+    int resolution_x,
+    int resolution_y,
+    const RefinementClass& refineClass,
+    const MeshDomainDef& meshDomain );
 
 	/** Dtor */
-	virtual ~HNodeMesh2D(){;}
+	virtual ~HNMesh2D(){;}
 
   /**
    * Get the number of cells having dimension dim
@@ -290,78 +309,171 @@ private:
    int facetLID_tree(int cellDim, int cellLID,
                         int facetDim, int facetIndex) const;
 
+   /** adds one vertex to the mesh */
+   void addVertex(int vertexLID , int ownerProc , bool isHanging ,
+		         double coordx , double coordy , const Array<int> &maxCoF);
+
+   /** adds one edge to the mesh */
+   void addEdge(int edgeLID , int ownerProc , bool isHanging , int edgeVertex ,
+	            bool isProcBoundary , bool isMeshBoundary ,
+		        const Array<int> &vertexLIDs , const Array<int> &maxCoF);
+
+   /** adds one cell(2D) to the mesh <br>
+    * cell must be always leaf*/
+   void addCell(int cellLID , int ownerProc ,
+           int indexInParent , int parentCellLID , int level ,
+           const Array<int> &edgeLIDs , const Array<int> &vertexLIDs);
+
+   /** creates the mesh on the coarsest level as it is specified */
+   void createCoarseMesh();
+
+   /** Does one single refinement iteration. <br>
+    *  Iterates trough all cells which are owned by the processor and refines if necessary */
+   bool oneRefinementIteration();
+
+   /** refine the given cell by cellID, (method assumes that this cell can be refined)*/
+   void refineCell(int cellLID);
+
+   /** Create Leaf numbering */
+   void createLeafNumbering();
+
   /** The dimension of the grid*/
   int _dimension;
-
+  /** Number of processors */
+  int nrProc_;
+  int myRank_;
   /** The communicator */
   const MPIComm& _comm;
-
   /** */
   double _pos_x;
-
   /** */
   double _pos_y;
-
   /** */
   double _ofs_x;
-
   /** */
   double _ofs_y;
-
   /**  */
-  double _res_x;
-
+  int _res_x;
   /**  */
-  double _res_y;
-
-  static const double _point_x_coords[29];
-
-  static double _point_y_coords[29];
-
-  static int _edgePoints[52][2];
-
-  static int _cellPoints[19][4];
-
-  static int _cellEdges[19][4];
-
-  static int _isCellLeaf[19];
-
-  static int _isEdgeLeaf[52];
-
-// Reindex the cells in the tree so that there will be only those elements visible
-// which are needed for computation, not leaf elements will be ignored
-  static int _Cellindex[19];
-  static int _Edgeindex[52];
-  static int _CellReindex[19];
-  static int _EdgeReindex[52];
-
-
-  static int _parentCellIndex[19];
-
-  static int _IndexInParentCell[19];
-
-  static int _pointMaxCoFacet[29][4];
-
-  static int _edgeMaxCoFacet[52][2];
-
-  static int _pointIsHanging[29];
-
-  static int _edgeIsHanging[52];
-
-  static int _cellLevel[19];
-
-  static double _divFact[4];
-
+  int _res_y;
   /** */
-  static double _returnDoubleVect[2];
+  mutable RefinementClass refineClass_;
+  /** */
+  mutable MeshDomainDef meshDomain_;
 
-  static int _returnIntVect[4];
+//------ Point storage ----
+  /** all the global points index is [ID] */
+  Array<Point> points_;
+  /** [3] the nr of ID per dim*/
+  Array<int> nrElem_;
+  /** [3] the nr of owned elements per dim*/
+  Array<int> nrElemOwned_;
 
-  /** The Point which is used as a returned argument */
-  static Point returnPoint;
+//----- Facets ----- ;  -1 -> MeshBoundary , -2 -> ProcBoundary
+
+  /** [cellID][4]*/
+  Array< Array<int> > cellsPoints_;
+  /** [cellID][4]*/
+  Array< Array<int> > cellsEdges_;
+  /** [edgeID][2]*/
+  Array< Array<int> > edgePoints_;
+  /** Information from the edge needs to be stored in one vertex <br>
+   * We use the traditional mapping , information is put into the 0th Vertex of the Edge <br>*/
+  Array<int> edgeVertex_;
+
+// ----- MaxCofacets ----;  -1 -> MeshBoundary , -2 -> ProcBoundary
+
+  /** [edgeID][2] */
+  Array< Array<int> > edgeMaxCoF_;
+  /** [pointID][4]*/
+  Array< Array<int> > pointMaxCoF_;
+
+// ---- Different mesh boundaries ------
+  Array<bool> edgeIsProcBonudary_;
+  Array<bool> edgeIsMeshDomainBonudary_;
+
+//------ Element (processor) ownership -----
+  /** contains the ownership of the local elements [dim][ID] */
+  Array< Array< short int > > elementOwner_;
+
+//---- hierarchical storage -----
+
+  /** [cellID] , the child index in the parent */
+  Array<short int> indexInParent_;
+  /** [cellID] , the LID of the parent cell */
+  Array<int> parentCellLID_;
+  /** [cellID] , actual level of the cell*/
+  Array<short int> cellLevel_;
+  /** [cellID] , if the element is leaf */
+  Array<bool> isCellLeaf_;
+  /** [cellID] , if the cell is complete outside the user defined mesh domain*/
+  Array<bool> isCellOut_;
+  /** [cellID] , children of the cell*/
+  Array< Array<int> > cellsChildren_;
+  // ---- "hanging" info storage ---
+  /** [pointID] , true if the node is hanging , false otherwise */
+  Array<bool> isPointHanging_;
+  /** [edgeID] , true if the edge is hanging , false otherwise*/
+  Array<bool> isEdgeHanging_;
+
+// ---- hanging element and refinement (temporary) storage ---
+
+  /** [vertexID] - > { h P1 LID , h P2 LID , h E1 LID , h E2 LID , h E3 LID } */
+  Array< Hashtable< int, Array<int> > > hangElmStore_;
+  /** Neighbor Cell can mark the cell to provoke refinement */
+  Array<short int> refineCell_;
+
+// ---- leaf mapping , GID and LID --- (points do not need this, all points are also leaf points)
+
+  /** [leaf_vertexLID] , the value must be a positive number */
+  Array<int> vertexLeafToLIDMapping_;
+  /** [leaf_edgeLID] , the value must be a positive number */
+  Array<int> edgeLeafToLIDMapping_;
+  /** [leaf_cellLID] , the value must be a positive number */
+  Array<int> cellLeafToLIDMapping_;
+  /** [vertexLID] if vertex is inside the domain then > 0 , -1 otherwise */
+  Array<int> vertexLIDToLeafMapping_;
+  /** [edgeLID] if edge is leaf(or inside the domain) then > 0 , -1 otherwise */
+  Array<int> edgeLIDToLeafMapping_;
+  /** [cellLID] if cell is leaf(or inside the domain) then > 0 , -1 otherwise */
+  Array<int> cellLIDToLeafMapping_;
+
+  /** leaf LID numbering*/
+  int nrVertexLeafLID_;
+  int nrCellLeafLID_;
+  int nrEdgeLeafLID_;
+
+  /** [leaf_vertexGID] , the value must be a positive number */
+  Array<int> vertexLeafToGIDMapping_;
+  /** [leaf_edgeGID] , the value must be a positive number */
+  Array<int> edgeLeafToGIDMapping_;
+  /** [leaf_cellGID] , the value must be a positive number */
+  Array<int> cellLeafToGIDMapping_;
+  /** [vertexGID] if vertex is inside the domain then > 0 , -1 otherwise */
+  Array<int> vertexGIDToLeafMapping_;
+  /** [edgeGID] if edge is leaf(or inside the domain) then > 0 , -1 otherwise */
+  Array<int> edgeGIDToLeafMapping_;
+  /** [cellGID] if cell is leaf(or inside the domain) then > 0 , -1 otherwise */
+  Array<int> cellGIDToLeafMapping_;
+
+  /** leaf GID numbering*/
+  int nrVertexLeafGID_;
+  int nrCellLeafGID_;
+  int nrEdgeLeafGID_;
+
+// ------------- static data -------------------
+
+  /** the offset in the X coordinate on the reference cell*/
+  static int offs_Points_x_[4];
+
+  /** the offset in the Y coordinate on the reference cell*/
+  static int offs_Points_y_[4];
+
+  /** stores the facet information on the reference Cell*/
+  static int edge_Points_localIndex[4][2];
 
 };
 }
 
 
-#endif /* SUNDANCEHNODEMESH2D_H_ */
+#endif /* SUNDANCEHNMESH2D_H_ */

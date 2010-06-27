@@ -62,6 +62,7 @@
 
 /* Parametrized Curves */
 #include "SundanceCircle.hpp"
+#include "SundanceBox2D.hpp"
 #include "SundanceDummyParametrizedCurve.hpp"
 #include "SundanceParametrizedCurve.hpp"
 
@@ -81,8 +82,11 @@
 #include "SundanceExodusMeshReader.hpp"
 #include "SundanceMeshBuilder.hpp"
 #include "SundanceBamgMeshReader.hpp"
-#include "SundanceHNodeMesher2D.hpp"
-#include "SundanceHNodeMeshType2D.hpp"
+#include "SundanceHNMesher2D.hpp"
+#include "SundanceHNMeshType2D.hpp"
+#include "SundanceHNMesher3D.hpp"
+#include "SundanceHNMeshType3D.hpp"
+
 
 #ifdef HAVE_SUNDANCE_PEANO
 	#ifdef HAVE_SUNDANCE_PEANO_NO_2D
@@ -97,12 +101,17 @@
 	#endif
 #endif
 
+/* Mesh refinement*/
+#include "SundanceRefinementBase.hpp"
+#include "SundanceRefinementClass.hpp"
+
 /* Cell filters */
 #include "SundanceCellFilter.hpp"
 #include "SundanceMaximalCellFilter.hpp"
 #include "SundanceBoundaryCellFilter.hpp"
 #include "SundanceDimensionalCellFilter.hpp"
 #include "SundancePositionalCellPredicate.hpp"
+#include "SundanceDomainDefinition.hpp"
 
 /* Writers */
 #include "SundanceFieldWriter.hpp"

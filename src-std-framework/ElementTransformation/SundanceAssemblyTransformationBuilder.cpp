@@ -44,8 +44,8 @@ AssemblyTransformationBuilder::AssemblyTransformationBuilder( const RCP<Integral
 	// this means we have to multiply Matrix
 	hasPreTransformation_ = true;
 	hasPostTransformation_ = true;
-	_myColDOFMap = colMaps[group->unkBlock()[0]].get(); // group->unkBlock(), has alway one element ;-)
-	_myRowDOFMap = rowMaps[group->testBlock()[0]].get(); // group->testBlock(), has alway one element ;-)
+	_myColDOFMap = colMaps[group->unkBlock()[0]].get(); // group->unkBlock(), has always one element ;-)
+	_myRowDOFMap = rowMaps[group->testBlock()[0]].get(); // group->testBlock(), has always one element ;-)
 	SUNDANCE_MSG2(verb(), "Trafo the Maps to HN Maps" );
 	// create the NH transformation, for pre and post apply
 	const HNDoFMapBase* colMap
@@ -109,8 +109,8 @@ AssemblyTransformationBuilder::AssemblyTransformationBuilder( const RCP<Integral
     {
       if (group->nUnkNodes() > 0)  // two-form
 	{
-	  _myColDOFMap = colMaps[group->unkBlock()[0]].get(); // group->unkBlock(), has alway one element ;-)
-	  _myRowDOFMap = rowMaps[group->testBlock()[0]].get(); // group->testBlock(), has alway one element ;-)
+	  _myColDOFMap = colMaps[group->unkBlock()[0]].get(); // group->unkBlock(), has always one element ;-)
+	  _myRowDOFMap = rowMaps[group->testBlock()[0]].get(); // group->testBlock(), has always one element ;-)
 	  const MixedDOFMap* colMap
 	    = dynamic_cast<const MixedDOFMap*>(_myColDOFMap);
 	  const MixedDOFMap* rowMap
@@ -131,7 +131,7 @@ AssemblyTransformationBuilder::AssemblyTransformationBuilder( const RCP<Integral
 	}
       else if (group->nTestNodes() > 0) // one-form
 	{
-	  _myRowDOFMap = rowMaps[group->testBlock()[0]].get(); // group->testBlock(), has alway one element ;-)
+	  _myRowDOFMap = rowMaps[group->testBlock()[0]].get(); // group->testBlock(), has always one element ;-)
 	  const MixedDOFMap* rowMap
 	    = dynamic_cast<const MixedDOFMap*>(_myRowDOFMap);
 
@@ -153,6 +153,7 @@ AssemblyTransformationBuilder::~AssemblyTransformationBuilder() {
 void AssemblyTransformationBuilder::applyTransformsToAssembly( int groupIndex ,
 							       int entryPerCell ,
 							       CellType cellType ,
+							       int cellDim ,
 							       CellType maxCellType ,
 							       const CellJacobianBatch& JTrans,
 							       const CellJacobianBatch& JVol,
@@ -163,21 +164,23 @@ void AssemblyTransformationBuilder::applyTransformsToAssembly( int groupIndex ,
   
   // if the integration is not on a MaxCell then no HangingNode Trafo!
   // caz in some cases this would incease the size of the elem matrix
-  if (cellType != maxCellType){
-    hasTransformation_ = false;
-    return;
-  }
+  //if (cellType != maxCellType){
+    //hasTransformation_ = false;
+    // in 3D for boundary faces we need a 2D transformation
+    // eventhrough boundary faces might be hanging faces, we might need to integrate on them !!!
+    //return;
+  //}
 
   if (hasTransformation_)
     {
       if (hasPreTransformation_) 
 	{
-	  preTransformation_->preApply( testFuncID_ ,
+	  preTransformation_->preApply( testFuncID_ , cellDim ,
 					JTrans, JVol, facetNum, cellLIDs, A);
 	}
       if (hasPostTransformation_)
 	{
-	  postTransformation_->postApply( unkFuncID_ ,
+	  postTransformation_->postApply( unkFuncID_ , cellDim ,
 					  JTrans, JVol, facetNum, cellLIDs, A);
 	}
     }

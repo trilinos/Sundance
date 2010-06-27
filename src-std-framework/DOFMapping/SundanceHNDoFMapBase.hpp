@@ -43,6 +43,25 @@ public:
 		    bool& doTransform,
 		    Array<double>& transfMatrix ) const=0;
 
+	/** Function to apply transformation for facets
+	 * @param cellDim , the facet dimension
+	 * @param cellLID , facet LID
+	 * @param facetIndex , facet index in the maxCofacet
+	 * @param funcID  [in] the function ID
+	 * @param trafoMatrixSize [in/out]
+	 * @param doTransform [out]
+	 * @param transfMatrix [out] (we assume that the array is already pre-sized )*/
+	  virtual void getTrafoMatrixForFacet(
+			  int cellDim,
+			  int cellLID,
+			  int facetIndex,
+			  int funcID,
+			  int& trafoMatrixSize,
+			  bool& doTransform,
+			  Array<double>& transfMatrix ) const = 0;
+
+
+
 	  /** Function used for plotting for hanging node DOFMaps
 	   *  Returns for one hanging node (element) the global DoFs which contribute to that hanging local DoF
 	   * @param cellDim [in] the dimension

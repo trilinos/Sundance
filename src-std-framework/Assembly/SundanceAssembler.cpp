@@ -1055,7 +1055,7 @@ void Assembler::assemblyLoop(const ComputationType& compType,
 	  {
 		  const RCP<IntegralGroup>& group = groups[r][g];
 		  /* Here we create the transformation object, if they are not needed
-		   * there would be no operation done to the array of local stiffnes matrix */
+		   * there would be no operation done to the array of local stiffness matrix */
 		  transformations[r][g] = rcp(new AssemblyTransformationBuilder( group , rowMap_ , colMap_ , mesh_));
 	  }
   }
@@ -1336,12 +1336,12 @@ void Assembler::assemblyLoop(const ComputationType& compType,
             vectorCoeffs, constantCoeffs, localValues)) continue;
 
         /* Here we call the transformation object, if they are not needed
-         * (the function migh be one return) there would be no operation
-         * done to the array of local stiffnes matrix
+         * (the function might be one return) there would be no operation
+         * done to the array of local stiffness matrix
          * Do the actual transformation (transformations for Matrix)*/
         transformations[r][g]->applyTransformsToAssembly(
         		g , (localValues->size() / workSet->size()),
-                cellType, maxCellType,
+                cellType, cellDim , maxCellType,
         		JTrans, JVol, facetIndices, workSet, localValues);
 
         /* add the integration results into the output objects by a call

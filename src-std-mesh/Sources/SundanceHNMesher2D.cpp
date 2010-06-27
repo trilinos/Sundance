@@ -28,53 +28,42 @@
 // ************************************************************************
 /* @HEADER@ */
 
-/*
- * SundanceHNodeMeshType2D.hpp
- *
- *  Created on: Mar 10, 2010
- *      Author: benk
- */
 
-#ifndef SUNDANCE_HNODEMESHTYPE2D_HPP_
-#define SUNDANCE_HNODEMESHTYPE2D_HPP_
+#include "SundanceHNMesher2D.hpp"
 
-#include "SundanceDefs.hpp"
-#include "SundanceMeshBase.hpp"
-#include "SundanceHNodeMesh2D.hpp"
+using namespace Sundance;
+using namespace Teuchos;
 
-namespace Sundance
+REFINE_MESH_ESTIMATE( DummyNoRefineClass , { return false; } , {return 0;} )
+MESH_DOMAIN( DummyAllMeshDomain , {return true;})
+
+const RefinementClass HNMesher2D::dummyRefineClass_ = (new DummyNoRefineClass());
+
+const MeshDomainDef HNMesher2D::dummyMeshDomain_ = (new DummyAllMeshDomain());
+
+HNMesher2D::HNMesher2D(const ParameterList& params)
+: MeshSourceBase(params),
+  _position_x(params.get<double>("position_x")),
+  _position_y(params.get<double>("position_y")),
+  _offset_x(params.get<double>("offset_x")),
+  _offset_y(params.get<double>("offset_y")),
+  _resolution_x(params.get<int>("resolution_x")),
+  _resolution_y(params.get<int>("resolution_y")),
+  refineClass_(HNMesher2D::dummyRefineClass_),
+  meshDomain_(HNMesher2D::dummyMeshDomain_)
 {
-  using namespace Teuchos;
-
-  /**
-   *
-   */
-  class HNodeMeshType2D : public MeshTypeBase
-  {
-  public:
-    /** Empty ctor */
-	  HNodeMeshType2D(const MeshEntityOrder& order=ExodusMeshOrder)
-	    : order_(order) {;}
-
-    /** virtual dtor */
-    virtual ~HNodeMeshType2D(){;}
-
-    /** Create a mesh of the given dimension */
-    virtual RCP<MeshBase> createEmptyMesh(int dim,
-                                          const MPIComm& comm) const
-    // this line is never used since we create directly the mesh at the Mesher
-    {return rcp(new HNodeMesh2D(dim, comm, order_));}
-
-    /** */
-    string description() const {return "HNodeMeshType2D";}
-
-    /** Return a ref count pointer to self */
-    virtual RCP<MeshTypeBase> getRcp() {return rcp(this);}
-
-  private:
-    MeshEntityOrder order_;
-
-  };
+	// nothing to do here
 }
 
-#endif /* SUNDANCEHNODEMESHTYPE2D_HPP_ */
+Mesh HNMesher2D::fillMesh() const
+{
+	// here we create the mesh and return to the Sundance
+	HNMesh2D *hnodegrid;
+	Mesh mesh = createMesh(2);
+	// get the pointer
+	hnodegrid = (HNMesh2D*) mesh.ptr().get();
+	hnodegrid->createMesh( _position_x , _position_y , _offset_x , _offset_y , _resolution_x , _resolution_y ,
+			                refineClass_ , meshDomain_);
+	return (mesh);
+}
+

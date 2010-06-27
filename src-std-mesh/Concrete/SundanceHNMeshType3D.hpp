@@ -28,33 +28,54 @@
 // ************************************************************************
 /* @HEADER@ */
 
+/*
+ * SundanceHNMeshType3D.hpp
+ *
+ *  Created on: May 30, 2010
+ *      Author: benk
+ */
 
-#include "SundanceHNodeMesher2D.hpp"
+#ifndef SUNDANCE_HNMESHTYPE3D_HPP_
+#define SUNDANCE_HNMESHTYPE3D_HPP_
 
-using namespace Sundance;
-using namespace Teuchos;
+#include "SundanceDefs.hpp"
+#include "SundanceMeshBase.hpp"
+#include "SundanceHNMesh3D.hpp"
 
-
-HNodeMesher2D::HNodeMesher2D(const ParameterList& params)
-: MeshSourceBase(params),
-  _position_x(params.get<double>("position_x")),
-  _position_y(params.get<double>("position_y")),
-  _offset_x(params.get<int>("offset_x")),
-  _offset_y(params.get<double>("offset_y")),
-  _resolution_x(params.get<double>("resolution_x")),
-  _resolution_y(params.get<double>("resolution_y"))
+namespace Sundance
 {
-	// nothing to do here
+  using namespace Teuchos;
+
+  /**
+   * Class for a simple capable to refine, and to work in parallel structured 3D mesh type <br>
+   * Mesh is based on the trisection refinement.
+   */
+  class HNMeshType3D : public MeshTypeBase
+  {
+  public:
+    /** Empty ctor */
+	  HNMeshType3D(const MeshEntityOrder& order=ExodusMeshOrder)
+	    : order_(order) {;}
+
+    /** virtual dtor */
+    virtual ~HNMeshType3D(){;}
+
+    /** Create a mesh of the given dimension */
+    virtual RCP<MeshBase> createEmptyMesh(int dim,
+                                          const MPIComm& comm) const
+    // this line is never used since we create directly the mesh at the Mesher
+    {return rcp(new HNMesh3D(dim, comm, order_));}
+
+    /** */
+    string description() const {return "HNMeshType3D";}
+
+    /** Return a ref count pointer to self */
+    virtual RCP<MeshTypeBase> getRcp() {return rcp(this);}
+
+  private:
+    MeshEntityOrder order_;
+
+  };
 }
 
-Mesh HNodeMesher2D::fillMesh() const
-{
-	// here we create the mesh and return to the Sundance
-	HNodeMesh2D *hnodegrid;
-	Mesh mesh = createMesh(2);
-	// get the pointer
-	hnodegrid = (HNodeMesh2D*) mesh.ptr().get();
-	hnodegrid->createMesh( _position_x , _position_y , _offset_x , _offset_y , _resolution_x , _resolution_y );
-	return (mesh);
-}
-
+#endif /* SUNDANCEHNMESHTYPE3D_HPP_ */

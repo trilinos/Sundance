@@ -36,7 +36,6 @@ SET(SerialTests
   PoissonPeano3D
   StokesPeano2D 
   MixedTest
-  MixedTest_HN
 )
 
 
@@ -66,6 +65,10 @@ SET(MPITests
              SteadyBurgers1D
              NitschePoisson2D 
              HelmholtzEigen2D
+             MixedTest_HN
+             NavStok_Chanel_stat_HN
+             Poisson3DTest_HN_Q1Q1
+             Poisson3DTest_HN_Q2Q1
    )
 
 

@@ -182,7 +182,7 @@ void Lagrange::getReferenceDOFs(
       for (int f=0; f<numFacets(cellType, d); f++) dd.append(Array<int>());
       dofs[d] = dd;
     }
-    if (cellType!=PointCell) dofs[dim] = tuple<Aint>(tuple(0));
+    if (cellType==maximalCellType) dofs[dim] = tuple<Aint>(tuple(0));
     else dofs[dim] = tuple<Aint>(Array<int>());
     return;
   }
@@ -958,10 +958,11 @@ void Lagrange::getConstrainsForHNDoF(
 	parentFacetIndex.resize(0);
 	parentFacetNode.resize(0);
 
+	CellType maximalCellType;
 
 	switch (maxCellDim){
 	case 2:{ // 2D
-		const CellType maximalCellType = QuadCell;
+		maximalCellType = QuadCell;
 
 		switch (maxNrChild){
 		case 9:{ //trisection on quads
@@ -975,6 +976,7 @@ void Lagrange::getConstrainsForHNDoF(
 			dofPos = dofPos/3.0;
 			SUNDANCE_OUT(this->verb() > 3 ,  "dofPos=" << dofPos );
 
+			// shitf the position of the DOFs according to the position of the child in the parent cell
 			switch (indexInParent){
 			  case 0: {/* nothing to add */  break;}
 			  case 1: {dofPos[0] += 1.0/3.0; break;}
@@ -997,52 +999,104 @@ void Lagrange::getConstrainsForHNDoF(
 		   break;
 		   }
 		}
-        // evalute the results from the bi or trisection
-		Array<double>& res = result[0][0];
-		SUNDANCE_OUT(this->verb() > 3 , "res=" << res );
+	break;} // ------ end 2D -------
+	case 3:{ //  ----- 3D ------------
 
-		// get those data only once (since it is rather costly)
-		if (doFInfromationCalculated_ == false)
-		{
-		  getDoFsOrdered( maximalCellType, res.size() , facetD_, facetI_, facetN_);
-		  doFInfromationCalculated_ = true;
-		}
+		maximalCellType = BrickCell;
 
-		// here take the "result" array and get the nonzero elements
-		index = 0;
-		for ( int i=0 ; i < res.size() ; i++){
-			// take only those DoFs which are non zero
-			if ( fabs(res[i]) > 1e-5 ){
-				localDoFs.resize(index+1);
-				coefs.resize(index+1);
-				parentFacetDim.resize(index+1);
-				parentFacetIndex.resize(index+1);
-				parentFacetNode.resize(index+1);
-				localDoFs[index] = i;
-				coefs[index] = res[i];
-				parentFacetDim[index] = facetD_[i];
-				parentFacetIndex[index] = facetI_[i];
-				parentFacetNode[index] = facetN_[i];
-				index++;
-			}
-		}
+		Point dofPos( 0.0 , 0.0 , 0.0);
+        // get the position of the DoF on the refCell
+		SUNDANCE_OUT(this->verb() > 3 , ",maxCellDim=" << maxCellDim << ",facetDim="
+				<< facetDim << ",facetIndex=" << facetIndex << ",nodeIndex=" << nodeIndex
+				<< ",dofPos=" << dofPos);
+		returnDoFPositionOnRef( maxCellDim,
+		  facetDim, facetIndex, nodeIndex, dofPos);
+		dofPos = dofPos/3.0;
+		SUNDANCE_OUT(this->verb() > 3 ,  "dofPos=" << dofPos );
 
-		SUNDANCE_OUT(this->verb() > 3 , "localDoFs=" << localDoFs );
-		SUNDANCE_OUT(this->verb() > 3 , "coefs=" << coefs );
-		SUNDANCE_OUT(this->verb() > 3 , "parentFacetDim=" << parentFacetDim );
-		SUNDANCE_OUT(this->verb() > 3 , "parentFacetIndex=" << parentFacetIndex );
-		SUNDANCE_OUT(this->verb() > 3 , "parentFacetNode=" << parentFacetNode );
-	break;} // end 2D
-	case 3:{ // Todo: 3D
-		//const CellType maximalCellType = BrickCell;
+		// shitf the position of the DOFs according to the position of the child in the parent cell
 		switch (maxNrChild){
-		case 27:{ //trisection on bricks
+		case 27:{ // tri section on bricks
+			switch (indexInParent){
+			  case 0:  {dofPos[0] += 0.0/3.0; dofPos[1] += 0.0/3.0; dofPos[2] += 0.0/3.0; break;}
+			  case 1:  {dofPos[0] += 1.0/3.0; dofPos[1] += 0.0/3.0; dofPos[2] += 0.0/3.0; break;}
+			  case 2:  {dofPos[0] += 2.0/3.0; dofPos[1] += 0.0/3.0; dofPos[2] += 0.0/3.0; break;}
+			  case 3:  {dofPos[0] += 0.0/3.0; dofPos[1] += 1.0/3.0; dofPos[2] += 0.0/3.0; break;}
+			  case 4:  {dofPos[0] += 1.0/3.0; dofPos[1] += 1.0/3.0; dofPos[2] += 0.0/3.0; break;}
+			  case 5:  {dofPos[0] += 2.0/3.0; dofPos[1] += 1.0/3.0; dofPos[2] += 0.0/3.0; break;}
+			  case 6:  {dofPos[0] += 0.0/3.0; dofPos[1] += 2.0/3.0; dofPos[2] += 0.0/3.0; break;}
+			  case 7:  {dofPos[0] += 1.0/3.0; dofPos[1] += 2.0/3.0; dofPos[2] += 0.0/3.0; break;}
+			  case 8:  {dofPos[0] += 2.0/3.0; dofPos[1] += 2.0/3.0; dofPos[2] += 0.0/3.0; break;}
+			  case 9:  {dofPos[0] += 0.0/3.0; dofPos[1] += 0.0/3.0; dofPos[2] += 1.0/3.0; break;}
+			  case 10: {dofPos[0] += 1.0/3.0; dofPos[1] += 0.0/3.0; dofPos[2] += 1.0/3.0; break;}
+			  case 11: {dofPos[0] += 2.0/3.0; dofPos[1] += 0.0/3.0; dofPos[2] += 1.0/3.0; break;}
+			  case 12: {dofPos[0] += 0.0/3.0; dofPos[1] += 1.0/3.0; dofPos[2] += 1.0/3.0; break;}
+			  // 13 should never occur !!!!
+			  case 13: {dofPos[0] += 1.0/3.0; dofPos[1] += 1.0/3.0; dofPos[2] += 1.0/3.0; break;}
+			  case 14: {dofPos[0] += 2.0/3.0; dofPos[1] += 1.0/3.0; dofPos[2] += 1.0/3.0; break;}
+			  case 15: {dofPos[0] += 0.0/3.0; dofPos[1] += 2.0/3.0; dofPos[2] += 1.0/3.0; break;}
+			  case 16: {dofPos[0] += 1.0/3.0; dofPos[1] += 2.0/3.0; dofPos[2] += 1.0/3.0; break;}
+			  case 17: {dofPos[0] += 2.0/3.0; dofPos[1] += 2.0/3.0; dofPos[2] += 1.0/3.0; break;}
+			  case 18: {dofPos[0] += 0.0/3.0; dofPos[1] += 0.0/3.0; dofPos[2] += 2.0/3.0; break;}
+			  case 19: {dofPos[0] += 1.0/3.0; dofPos[1] += 0.0/3.0; dofPos[2] += 2.0/3.0; break;}
+			  case 20: {dofPos[0] += 2.0/3.0; dofPos[1] += 0.0/3.0; dofPos[2] += 2.0/3.0; break;}
+			  case 21: {dofPos[0] += 0.0/3.0; dofPos[1] += 1.0/3.0; dofPos[2] += 2.0/3.0; break;}
+			  case 22: {dofPos[0] += 1.0/3.0; dofPos[1] += 1.0/3.0; dofPos[2] += 2.0/3.0; break;}
+			  case 23: {dofPos[0] += 2.0/3.0; dofPos[1] += 1.0/3.0; dofPos[2] += 2.0/3.0; break;}
+			  case 24: {dofPos[0] += 0.0/3.0; dofPos[1] += 2.0/3.0; dofPos[2] += 2.0/3.0; break;}
+			  case 25: {dofPos[0] += 1.0/3.0; dofPos[1] += 2.0/3.0; dofPos[2] += 2.0/3.0; break;}
+			  case 26: {dofPos[0] += 2.0/3.0; dofPos[1] += 2.0/3.0; dofPos[2] += 2.0/3.0; break;}
+			}
 		break;}
-		case 8:{ //bisection on bricks
+		case 8:{ // todo: bisection on bricks
 		break;}
 		}
+
+		SUNDANCE_OUT(this->verb() > 3 , "dofPos=" << dofPos );
+		Array<Point> tmp_points(1);
+		tmp_points[0] = dofPos;
+		refEval( maximalCellType , tmp_points ,
+		     deriv,  result , 4);
+
 	break;} //end 3D
 	}
+
+    // evalute the results from the bi or trisection
+	Array<double>& res = result[0][0];
+	SUNDANCE_OUT(this->verb() > 3 , "res=" << res );
+
+	// get those data only once (since it is rather costly)
+	if (doFInfromationCalculated_ == false)
+	{
+	  getDoFsOrdered( maximalCellType, res.size() , facetD_, facetI_, facetN_);
+	  doFInfromationCalculated_ = true;
+	}
+
+	// here take the "result" array and get the nonzero elements
+	index = 0;
+	for ( int i=0 ; i < res.size() ; i++){
+		// take only those DoFs which are non zero
+		if ( fabs(res[i]) > 1e-5 ){
+			localDoFs.resize(index+1);
+			coefs.resize(index+1);
+			parentFacetDim.resize(index+1);
+			parentFacetIndex.resize(index+1);
+			parentFacetNode.resize(index+1);
+			localDoFs[index] = i;
+			coefs[index] = res[i];
+			parentFacetDim[index] = facetD_[i];
+			parentFacetIndex[index] = facetI_[i];
+			parentFacetNode[index] = facetN_[i];
+			index++;
+		}
+	}
+
+	SUNDANCE_OUT(this->verb() > 3 , "localDoFs=" << localDoFs );
+	SUNDANCE_OUT(this->verb() > 3 , "coefs=" << coefs );
+	SUNDANCE_OUT(this->verb() > 3 , "parentFacetDim=" << parentFacetDim );
+	SUNDANCE_OUT(this->verb() > 3 , "parentFacetIndex=" << parentFacetIndex );
+	SUNDANCE_OUT(this->verb() > 3 , "parentFacetNode=" << parentFacetNode );
+
 }
 
 /* -------------- Get the position of one DoF ----------------------- */
@@ -1090,12 +1144,38 @@ void Lagrange::returnDoFPositionOnRef(
 			case 3: {pos[0] = 0.0+posOnEdge; pos[1] = 1.0; break;}
 			}
 			break;}
-		case 3:{ // todo: implement & check this
+		case 3:{ // Edge in the brick test this
+			double posOnEdge = (1.0/ (double)(order())) +(double)(nodeIndex) / (double)(order()-1);
+			switch (facetIndex){
+			case 0: {pos[0] = 0.0+posOnEdge; pos[1] = 0.0; pos[2] = 0.0; break;}
+			case 1: {pos[0] = 0.0; pos[1] = 0.0+posOnEdge; pos[2] = 0.0; break;}
+			case 2: {pos[0] = 0.0; pos[1] = 0.0; pos[2] = 0.0+posOnEdge; break;}
+			case 3: {pos[0] = 1.0; pos[1] = 0.0+posOnEdge; pos[2] = 0.0; break;}
+			case 4: {pos[0] = 1.0; pos[1] = 0.0; pos[2] = 0.0+posOnEdge; break;}
+			case 5: {pos[0] = 0.0+posOnEdge; pos[1] = 1.0; pos[2] = 0.0; break;}
+			case 6: {pos[0] = 0.0; pos[1] = 1.0; pos[2] = 0.0+posOnEdge; break;}
+			case 7: {pos[0] = 1.0; pos[1] = 1.0; pos[2] = 0.0+posOnEdge; break;}
+			case 8: {pos[0] = 0.0+posOnEdge; pos[1] = 0.0; pos[2] = 1.0; break;}
+			case 9: {pos[0] = 0.0; pos[1] = 0.0+posOnEdge; pos[2] = 1.0; break;}
+			case 10: {pos[0] = 1.0; pos[1] = 0.0+posOnEdge; pos[2] = 1.0; break;}
+			case 11: {pos[0] = 0.0+posOnEdge; pos[1] = 1.0; pos[2] = 1.0; break;}
+			}
 			break;}
 		}
 		break;}
 	case 2:{ //face DoFs only in 3D
-		// todo: implement & check this
+		// DoFs position on the face
+		int nrDoFoFace = (order()-1)*(order()-1);
+		double posOnFace1 = (1.0/ (double)(order())) +(double)(nodeIndex % nrDoFoFace) / (double)(order()-1);
+		double posOnFace2 = (1.0/ (double)(order())) +(double)(nodeIndex / nrDoFoFace) / (double)(order()-1);
+		switch (facetIndex){
+		case 0: {pos[0] = 0.0+posOnFace1; pos[1] = 0.0+posOnFace2; pos[2] = 0.0; break;}
+		case 1: {pos[0] = 0.0+posOnFace1; pos[1] = 0.0; pos[2] = 0.0+posOnFace2; break;}
+		case 2: {pos[0] = 0.0; pos[1] = 0.0+posOnFace1; pos[2] = 0.0+posOnFace2; break;}
+		case 3: {pos[0] = 1.0; pos[1] = 0.0+posOnFace1; pos[2] = 0.0+posOnFace2; break;}
+		case 4: {pos[0] = 0.0+posOnFace1; pos[1] = 1.0; pos[2] = 0.0+posOnFace2; break;}
+		case 5: {pos[0] = 0.0+posOnFace1; pos[1] = 0.0+posOnFace2; pos[2] = 1.0; break;}
+		}
 		break;}
 	}
 
