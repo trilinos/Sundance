@@ -7,7 +7,7 @@
 
   // Sundance includes
 #include "SundanceLinearEigenproblem.hpp"
-#include "TSFAnasaziEigensolver.hpp"
+#include "TSFAnasaziEigensolverDecl.hpp"
 #include "PySundanceLinearSolver.hpp"
 
   %}

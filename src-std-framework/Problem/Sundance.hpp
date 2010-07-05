@@ -174,7 +174,7 @@
 #include "TSFNOXSolver.H"
 
 /* Eigensolvers */
-#include "TSFAnasaziEigensolver.hpp"
+#include "TSFAnasaziEigensolverDecl.hpp"
 #include "TSFEigensolver.hpp"
 
 
