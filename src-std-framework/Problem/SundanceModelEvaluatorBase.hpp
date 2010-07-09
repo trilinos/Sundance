@@ -33,7 +33,7 @@
 
 #include "SundanceDefs.hpp"
 
-#ifdef HAVE_ENABLED_MOOCHO
+#ifdef HAVE_SUNDANCE_MOOCHO
 
 #include "Sundance.hpp"
 #include "Thyra_StateFuncModelEvaluatorBase.hpp"

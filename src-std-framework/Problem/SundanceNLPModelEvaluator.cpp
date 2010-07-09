@@ -40,7 +40,7 @@
 #include "TSFVectorImpl.hpp"
 #endif
 
-#ifdef HAVE_ENABLED_MOOCHO
+#ifdef HAVE_SUNDANCE_MOOCHO
 
 SundanceNLPModelEvaluator::SundanceNLPModelEvaluator(const VectorType<double>& vecType)
   : SundanceModelEvaluator(vecType),

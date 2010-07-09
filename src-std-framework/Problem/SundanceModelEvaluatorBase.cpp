@@ -35,7 +35,7 @@
 #include "SundanceTabs.hpp"
 #include "SundanceModelEvaluatorBase.hpp"
 
-#ifdef HAVE_ENABLED_MOOCHO
+#ifdef HAVE_SUNDANCE_MOOCHO
 #include "Thyra_DefaultSpmdVectorSpace.hpp"
 
 

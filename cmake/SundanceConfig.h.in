@@ -12,8 +12,14 @@
 /* define if we want to use Exodus */
 #cmakedefine HAVE_SUNDANCE_EXODUS
 
-/* define if we want to use Exodus */
+/* define if we want to use Chaco */
 #cmakedefine HAVE_SUNDANCE_CHACO
+
+/* define if we want to use Moocho */
+#cmakedefine HAVE_SUNDANCE_MOOCHO
+
+/* define if we want to use Stokhos */
+#cmakedefine HAVE_SUNDANCE_STOKHOS
 
 /* define if we have enabled broken code */
 #cmakedefine HAVE_SUNDANCE_BROKEN_CODE
