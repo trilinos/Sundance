@@ -334,4 +334,5 @@ PACKAGE_ADD_LIBRARY(
   sundanceStdFwk
   HEADERS ${HEADERS}
   SOURCES ${SOURCES}
+  DEPLIBS sundanceCore sundanceStdMesh TSFExtended sundanceInterop sundanceUtils
   )

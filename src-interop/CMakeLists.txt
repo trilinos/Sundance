@@ -53,4 +53,5 @@ PACKAGE_ADD_LIBRARY(
   sundanceInterop
   HEADERS ${HEADERS}
   SOURCES ${SOURCES}
+  DEPLIBS sundanceUtils
   )

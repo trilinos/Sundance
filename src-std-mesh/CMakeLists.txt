@@ -320,4 +320,5 @@ PACKAGE_ADD_LIBRARY(
   sundanceStdMesh
   HEADERS ${HEADERS}
   SOURCES ${SOURCES}
+  DEPLIBS sundanceCore sundanceInterop sundanceUtils
   )
