@@ -36,11 +36,13 @@
 #include "TSFNOXSolver.H"
 #include "SundanceNLPModelEvaluator.hpp"
 
+
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
 #include "TSFVectorImpl.hpp"
 #endif
 
-#ifdef HAVE_SUNDANCE_MOOCHO
+#ifdef HAVE_SUNDANCE_MOOCHO 
+#ifdef BROKEN
 
 SundanceNLPModelEvaluator::SundanceNLPModelEvaluator(const VectorType<double>& vecType)
   : SundanceModelEvaluator(vecType),
@@ -296,6 +298,6 @@ Expr SundanceNLPModelEvaluator
   
 }
 
-
+#endif
 #endif
 
