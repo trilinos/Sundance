@@ -12,6 +12,7 @@ SET(Tests
         SimpleEval 
         SensitivityTest 
         SensEqnTest 
+        PCEBasisTest 
         TestEval 
         PolynomialTest          
         VariationTest 

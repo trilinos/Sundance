@@ -306,12 +306,14 @@ APPEND_SET(HEADERS
   Spectral/SundanceSpectralBasisBase.hpp
   Spectral/SundanceSpectralExpr.hpp 
   Spectral/SundanceSpectralPreprocessor.hpp 
+  Spectral/SundanceStokhosBasisWrapper.hpp 
   )
 
 APPEND_SET(SOURCES
   Spectral/SundanceHermiteSpectralBasis.cpp
   Spectral/SundanceSpectralExpr.cpp
   Spectral/SundanceSpectralPreprocessor.cpp 
+  Spectral/SundanceStokhosBasisWrapper.cpp 
   )
 
 #

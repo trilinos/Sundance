@@ -37,6 +37,7 @@
 #include "Teuchos_Array.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 #include "SundanceSpectralBasisBase.hpp"
+#include "SundanceStokhosBasisWrapper.hpp"
 
 
 
@@ -45,42 +46,63 @@ using namespace Sundance;
 
 namespace Sundance
 {
-  /** Doxygen doc for SpectralBasis */
-  class SpectralBasis : public Sundance::Handle<SpectralBasisBase>
-  {
-  public:
-    /* boilerplate handle ctors */
-    HANDLE_CTORS(SpectralBasis, SpectralBasisBase);
+/** Doxygen doc for SpectralBasis */
+class SpectralBasis : public Sundance::Handle<SpectralBasisBase>
+{
+public:
 
-    /** Return the dim of the Spectral Basis */
-    int getDim() const {return ptr()->getDim();}
+  /* boilerplate handle ctors */
+  HANDLE_CTORS(SpectralBasis, SpectralBasisBase);
 
-    /** Return the order of the Spectral Basis */
-    int getOrder() const {return ptr()->getOrder();}
 
-    /** Return the maximum number of terms */
-    int nterms() const {return ptr()->nterms();}
+#ifdef HAVE_SUNDANCE_STOKHOS
+  /** */
+  typedef Stokhos::OrthogPolyBasis<int, double> PolyBasis;
+  /** */
+  typedef Stokhos::OneDOrthogPolyBasis<int, double> PolyBasis1D;
+
+  /** */
+  SpectralBasis(const PolyBasis* basis)
+    : Handle<SpectralBasisBase>(
+      rcp(new StokhosBasisWrapper(rcp(basis)))
+      ) 
+    {}
+
+  /** */
+  SpectralBasis(const PolyBasis1D* basis)
+    : Handle<SpectralBasisBase>(rcp(new StokhosBasisWrapper(rcp(basis))))
+    {}
+#endif
+
+  /** Return the dim of the Spectral Basis */
+  int getDim() const {return ptr()->getDim();}
+
+  /** Return the order of the Spectral Basis */
+  int getOrder() const {return ptr()->getOrder();}
+
+  /** Return the maximum number of terms */
+  int nterms() const {return ptr()->nterms();}
     
-    /** Return the basis element stored in the basis array index */
-    int getElement(int i) const {return ptr()->getElement(i);}
+  /** Return the basis element stored in the basis array index */
+  int getElement(int i) const {return ptr()->getElement(i);}
     
-    /** expectation operator */
-    double expectation(int i, int j, int k) const 
+  /** expectation operator */
+  double expectation(int i, int j, int k) const 
     {return ptr()->expectation(i,j,k);}
 
-    /** Write to a string */
-    string toString() const {return ptr()->toString();}
-  };
+  /** Write to a string */
+  string toString() const {return ptr()->toString();}
+};
 }
 
 namespace std
 {
-  /** \relates  Sundance::SpectralBasis */
-  inline ostream& operator<<(ostream& os, const Sundance::SpectralBasis& s)
-  {
-    os << s.toString();
-    return os;
-  }
+/** \relates  Sundance::SpectralBasis */
+inline ostream& operator<<(ostream& os, const Sundance::SpectralBasis& s)
+{
+  os << s.toString();
+  return os;
+}
 }
 
 #endif
