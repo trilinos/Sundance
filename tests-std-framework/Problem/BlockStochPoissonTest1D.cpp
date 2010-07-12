@@ -22,6 +22,9 @@
  */
 #include "Sundance.hpp"
 #include "SundanceStochBlockJacobiSolver.hpp"
+#ifdef HAVE_SUNDANCE_STOKHOS
+#include "Stokhos_HermiteBasis.hpp"
+#endif
 
 /* </Ignore> */
 
@@ -57,8 +60,13 @@ int main(int argc, char** argv)
     /* Create the stochastic coefficients */
     int nDim = 1;
     int order = 6;
+#ifdef HAVE_SUNDANCE_STOKHOS
+    Out::root() << "using Stokhos hermite basis" << endl;
+    SpectralBasis pcBasis = new Stokhos::HermiteBasis<int,double>(order);
+#else
+    Out::root() << "using George's hermite basis" << endl;
     SpectralBasis pcBasis = new HermiteSpectralBasis(nDim, order);
-    
+#endif
     
     Array<Expr> q(pcBasis.nterms());
     Array<Expr> kappa(pcBasis.nterms());
