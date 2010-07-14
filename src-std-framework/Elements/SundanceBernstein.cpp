@@ -114,11 +114,8 @@ int Bernstein::nReferenceDOFsWithoutFacets(
       return order_-1;
     case TriangleCell:
       if (order_ < 3) return 0;
-      if (order_ == 3) return 1;
-      TEST_FOR_EXCEPTION(order_>3, RuntimeError, 
-        "Bernstein order > 3 not implemented "
-        "for triangle cells");
-      return 0;
+      if (order_ >= 3) return (order_-1)*(order_-2)/2;
+      break;
     case QuadCell:
       if (order_==1) return 0;
       if (order_==2) return 1;

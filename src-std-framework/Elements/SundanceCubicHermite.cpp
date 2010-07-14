@@ -509,56 +509,68 @@ void CubicHermite::getVertexH( const Mesh &mesh,
 			       const Array<int> &cellLIDs ,
 			       Array<double> &cellVertexH ) const
 {
-    // now I get the vertices that are included in the batch of cells
-    map<int,double> vert_h;
+  cellVertexH.resize(3*cellLIDs.size());
+  const int N = mesh.numCells(2);
+  const double h = 1.0 / sqrtl( N );
+  for (int i=0;i<cellVertexH.size();i++) 
+    {
+      cellVertexH[i] = h;
+    }
+//     // now I get the vertices that are included in the batch of cells
 
-    Array<int> cellVertLIDs(3);
-    Array<int> vertOrient(3);
-    const int cellDim = mesh.spatialDim();
-    // set up map structure
-    for (int i=0;i<cellLIDs.size();i++) 
-      {
-	const int cellLID = cellLIDs[i];
-	mesh.getFacetArray( cellDim , cellLID , 0 , cellVertLIDs , vertOrient );
-	for (int j=0;j<3;j++)
-	  {
-	    map<int,double>::iterator vert_h_cur = vert_h.find(cellVertLIDs[j]);
-	    if (vert_h_cur == vert_h.end())
-	      {
-		vert_h[cellVertLIDs[j]] = 0.0;
-	      }
-	  }
-      }
+
+//     map<int,double> vert_h;
+
+//     Array<int> cellVertLIDs(3);
+//     Array<int> vertOrient(3);
+//     const int cellDim = mesh.spatialDim();
+//     // set up map structure
+//     for (int i=0;i<cellLIDs.size();i++) 
+//       {
+// 	const int cellLID = cellLIDs[i];
+// 	mesh.getFacetArray( cellDim , cellLID , 0 , cellVertLIDs , vertOrient );
+// 	for (int j=0;j<3;j++)
+// 	  {
+// 	    map<int,double>::iterator vert_h_cur = vert_h.find(cellVertLIDs[j]);
+// 	    if (vert_h_cur == vert_h.end())
+// 	      {
+// 		vert_h[cellVertLIDs[j]] = 0.0;
+// 	      }
+// 	  }
+//       }
     
-    // fill in numbers
-    for (map<int,double>::iterator it=vert_h.begin();it!=vert_h.end();++it)
-      {
-	const int vert = it->first;
-	it->second = 0.0;
-	// loop over maximal cofacets of each vertex
-	Array<int> incident_cells;
-	Array<double> cell_diams;
-	mesh.getCofacets( 0 , vert , cellDim , incident_cells );
-	mesh.getCellDiameters( 2 , incident_cells , cell_diams );
-	for (int i=0;i<cell_diams.size();i++) 
-	  {
-	    it->second += cell_diams[i];
-	  }
-	it->second /= cell_diams.size();
+//     // fill in numbers
+//     for (map<int,double>::iterator it=vert_h.begin();it!=vert_h.end();++it)
+//       {
+// 	const int vert = it->first;
+// 	it->second = 0.0;
+// 	// loop over maximal cofacets of each vertex
+// 	Array<int> incident_cells;
+// 	Array<double> cell_diams;
+// 	mesh.getCofacets( 0 , vert , cellDim , incident_cells );
+// 	mesh.getCellDiameters( 2 , incident_cells , cell_diams );
+// 	for (int i=0;i<cell_diams.size();i++) 
+// 	  {
+// 	    it->second += cell_diams[i];
+// 	  }
+// 	it->second /= cell_diams.size();
 
-      }
+//       }
 
-    cellVertexH.resize( 3 * cellLIDs.size() );
+//     cellVertexH.resize( 3 * cellLIDs.size() );
 
-    for (int i=0;i<cellLIDs.size();i++) 
-      {
-	const int cellLID = cellLIDs[i];
-	mesh.getFacetArray( cellDim , cellLID , 0 , cellVertLIDs , vertOrient );
-	for (int j=0;j<3;j++) 
-	  {
-	    cellVertexH[3*i+j] = vert_h[cellVertLIDs[j]];
-	  }
-      }
+//     for (int i=0;i<cellLIDs.size();i++) 
+//       {
+// 	const int cellLID = cellLIDs[i];
+// 	mesh.getFacetArray( cellDim , cellLID , 0 , cellVertLIDs , vertOrient );
+// 	for (int j=0;j<3;j++) 
+// 	  {
+// 	    cellVertexH[3*i+j] = 1./vert_h[cellVertLIDs[j]];
+// 	  }
+//       }
+
+
+
 
     return;
 

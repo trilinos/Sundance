@@ -11,8 +11,9 @@ SET(MPITests
         MultiVectorOpTest
         BlockOpTest)
 
-SET(SerialTests 
-  SVDTest)
+SET(SerialTests )
+#  SVDTest)
+
 
 ADD_TEST_BATCH(
         MPITests
