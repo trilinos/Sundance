@@ -129,6 +129,8 @@ APPEND_SET(HEADERS
   Concrete/SundanceHNMeshType2D.hpp
   Concrete/SundanceHNMesh3D.hpp
   Concrete/SundanceHNMeshType3D.hpp
+  Concrete/SundancePeriodicMesh1D.hpp
+  Concrete/SundancePeriodicMeshType1D.hpp
   )
 
 APPEND_SET(SOURCES
@@ -136,6 +138,7 @@ APPEND_SET(SOURCES
   Concrete/SundanceBasicVertexView.cpp
   Concrete/SundanceHNMesh2D.cpp
   Concrete/SundanceHNMesh3D.cpp
+  Concrete/SundancePeriodicMesh1D.cpp
   )
 
 
@@ -185,6 +188,7 @@ APPEND_SET(HEADERS
   Sources/SundanceHNMesher2D.hpp
   Sources/SundanceHNMesher3D.hpp
   Sources/SundanceOneCellTestMesher.hpp
+  Sources/SundancePeriodicLineMesher.hpp
   )
 
 APPEND_SET(SOURCES
