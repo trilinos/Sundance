@@ -30,6 +30,7 @@
 
 #include "Sundance.hpp"
 #include "SundancePeriodicLineMesher.hpp"
+#include "SundanceUnfoldPeriodicDF.hpp"
 #include "SundancePeriodicMeshType1D.hpp"
 
 /** 
@@ -53,7 +54,7 @@ int main(int argc, char** argv)
       VectorType<double> vecType = new EpetraVectorType();
 
       /* Create a periodic mesh */
-      int nx = 100;
+      int nx = 1000;
       const double pi = 4.0*atan(1.0);
       MeshType meshType = new PeriodicMeshType1D();
       MeshSource mesher = new PeriodicLineMesher(0.0, 2.0*pi, nx, meshType);
@@ -94,7 +95,7 @@ int main(int argc, char** argv)
         = LinearSolverBuilder::createSolver(solverParams);
 
 
-
+      Out::os() << "solving problem " << endl;
       Expr soln = prob.solve(solver);
 
       Expr uExact = -1.0/25.0 * (4.0*cos(2.0*x) + 3.0*sin(2.0*x));
@@ -110,8 +111,27 @@ int main(int argc, char** argv)
       double uErrorSq = uErrInt.evaluate();
       cerr << "u error norm = " << sqrt(uErrorSq) << endl << endl;
 
+
+      /* make sure the unfolded solution is also correct */
+
+      Out::os() << "unfolding " << endl;
+      Expr unfoldedSoln = unfoldPeriodicDiscreteFunction(soln);
+      
+
+      Expr ufErr = uExact - unfoldedSoln;
+      
+      Expr ufErrExpr = Integral(interior, 
+                              ufErr*ufErr,
+                              new GaussianQuadrature(6));
+      
+      Mesh unfoldedMesh = DiscreteFunction::discFunc(unfoldedSoln)->mesh();
+      FunctionalEvaluator ufErrInt(unfoldedMesh, ufErrExpr);
+
+      double ufErrorSq = ufErrInt.evaluate();
+      cerr << "unfolded error norm = " << sqrt(ufErrorSq) << endl << endl;
+
       double tol = 1.0e-3;
-      Sundance::passFailTest(sqrt(uErrorSq), tol);
+      Sundance::passFailTest(sqrt(uErrorSq + ufErrorSq), tol);
 
     }
 	catch(exception& e)

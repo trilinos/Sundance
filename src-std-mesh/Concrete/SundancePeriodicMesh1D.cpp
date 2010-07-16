@@ -76,7 +76,7 @@ int PeriodicMesh1D::numCells(int cellDim) const
   switch(cellDim)
   {
     case 0 :
-      return numElems_+1;
+      return numElems_;
     case 1:
       return numElems_;
     default:
