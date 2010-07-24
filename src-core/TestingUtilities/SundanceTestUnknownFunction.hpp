@@ -50,7 +50,7 @@ namespace SundanceTesting
   {
   public:
     /** */
-    TestUnknownFunction(const ADField& field, const string& name="")
+    TestUnknownFunction(const ADField& field, const std::string& name="")
       : UnknownFunctionStub(name, 0,1, rcp(new TestUnknownFuncData(field)))
     {;}
     

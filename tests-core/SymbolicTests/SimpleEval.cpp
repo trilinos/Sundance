@@ -25,7 +25,8 @@
 
 using namespace Sundance;
 using namespace Teuchos;
-
+using std::exception;
+using std::endl;
 
 
 static Time& totalTimer() 
@@ -78,15 +79,15 @@ void doit(const Expr& e,
     MatrixAndVector);
 
   Tabs tab;
-  Out::os() << tab << *ev->sparsitySuperset(region) << endl;
+  Out::os() << tab << *ev->sparsitySuperset(region) << std::endl;
 
   Array<double> constantResults;
   Array<RCP<EvalVector> > vectorResults;
 
-  Out::os() << tab << "evaluating..." << endl;
+  Out::os() << tab << "evaluating..." << std::endl;
   ev->evaluate(mgr, constantResults, vectorResults);
 
-  Out::os() << tab << "done evaluating..." << endl;
+  Out::os() << tab << "done evaluating..." << std::endl;
   ev->sparsitySuperset(region)->print(Out::os(), vectorResults, constantResults);
 
 }
@@ -99,20 +100,20 @@ void testExpr(const Expr& e,
   const Expr& u0, 
   const EvalContext& region)
 {
-  Out::os() << endl 
-            << "------------------------------------------------------------- " << endl;
-  Out::os()  << "-------- testing " << e.toString() << " -------- " << endl;
-  Out::os() << endl 
-            << "------------------------------------------------------------- " << endl;
+  Out::os() << std::endl 
+            << "------------------------------------------------------------- " << std::endl;
+  Out::os()  << "-------- testing " << e.toString() << " -------- " << std::endl;
+  Out::os() << std::endl 
+            << "------------------------------------------------------------- " << std::endl;
 
   try
   {
     doit(e, tests, unks, u0, region);
   }
-  catch(exception& ex)
+  catch(std::exception& ex)
   {
-    Out::os() << "EXCEPTION DETECTED!" << endl;
-    Out::os() << ex.what() << endl;
+    Out::os() << "EXCEPTION DETECTED!" << std::endl;
+    Out::os() << ex.what() << std::endl;
     exit(1);
   }
 }
@@ -174,7 +175,7 @@ int main(int argc, char** argv)
 
     TimeMonitor::summarize();
   }
-	catch(exception& e)
+	catch(std::exception& e)
   {
     Out::println(e.what());
   }

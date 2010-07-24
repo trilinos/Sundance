@@ -253,7 +253,7 @@ void ElementIntegral::setVerbosity(
   transformVerb_ = transformVerb;
 }
 
-void ElementIntegral::describe(ostream& os) const 
+void ElementIntegral::describe(std::ostream& os) const 
 {
   Tabs tab(0);
   bool hasTest = testDerivOrder() >= 0;
@@ -261,30 +261,30 @@ void ElementIntegral::describe(ostream& os) const
 
   if (hasTest)
   {
-    os << tab << "Test functions:" << endl;
+    os << tab << "Test functions:" << std::endl;
     Tabs tab1;
-    os << tab1 << "test basis = " << testBasis() << endl;
-    os << tab1 << "test differentiation order = " << testDerivOrder() << endl;
-    os << tab1 << "alpha = " << alpha() << endl;
-    os << tab1 << "num test gradient components=" << nRefDerivTest() << endl;
+    os << tab1 << "test basis = " << testBasis() << std::endl;
+    os << tab1 << "test differentiation order = " << testDerivOrder() << std::endl;
+    os << tab1 << "alpha = " << alpha() << std::endl;
+    os << tab1 << "num test gradient components=" << nRefDerivTest() << std::endl;
   }
   if (hasUnk)
   {
-    os << tab << "Unknown functions:" << endl;
+    os << tab << "Unknown functions:" << std::endl;
     Tabs tab1;
-    os << tab1 << "unk basis = " << unkBasis() << endl;
-    os << tab1 << "unk differentiation order = " << unkDerivOrder() << endl;
-    os << tab1 << "beta = " << beta() << endl;
-    os << tab1  << "num unk gradient components=" << nRefDerivUnk() << endl;
+    os << tab1 << "unk basis = " << unkBasis() << std::endl;
+    os << tab1 << "unk differentiation order = " << unkDerivOrder() << std::endl;
+    os << tab1 << "beta = " << beta() << std::endl;
+    os << tab1  << "num unk gradient components=" << nRefDerivUnk() << std::endl;
   }
-  os << tab << "Geometry:" << endl;
+  os << tab << "Geometry:" << std::endl;
   Tabs tab1;
   os << tab1 << "cell type on which integral is defined: " << cellType()
-     << endl;
-  os << tab1 << "maximal cell type: " << maxCellType() << endl;
+     << std::endl;
+  os << tab1 << "maximal cell type: " << maxCellType() << std::endl;
   os << tab1 << "cell type on which quad pts defined: " << evalCellType()
-     << endl;
-  os << tab << "Number of evaluation cases: " << nFacetCases() << endl;
+     << std::endl;
+  os << tab << "Number of evaluation cases: " << nFacetCases() << std::endl;
 }
 
 

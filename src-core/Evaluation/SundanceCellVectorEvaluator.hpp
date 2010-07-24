@@ -66,7 +66,7 @@ private:
   int basisVectorIndex_;
   int componentIndex_;
 
-  string stringRep_;
+  std::string stringRep_;
 };
 }
 

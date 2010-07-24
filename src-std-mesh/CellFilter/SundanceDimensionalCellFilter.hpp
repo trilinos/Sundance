@@ -70,10 +70,10 @@ public:
   virtual XMLObject toXML() const ;
 
   /** */
-  virtual string typeName() const {return "DimensionalCellFilter";}
+  virtual std::string typeName() const {return "DimensionalCellFilter";}
 
   /** */
-  virtual string description() const 
+  virtual std::string description() const 
     {return "Cells(d=" + Teuchos::toString(dim_) + ")";}
 
   /** */

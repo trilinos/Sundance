@@ -60,7 +60,7 @@ public:
     {return rcp(new BasicSimplicialMesh(dim, comm, order_));}
 
   /** */
-  string description() const {return "BasicSimplicialMeshType";}
+  std::string description() const {return "BasicSimplicialMeshType";}
 
   /** Return a ref count pointer to self */
   virtual RCP<MeshTypeBase> getRcp() {return rcp(this);}

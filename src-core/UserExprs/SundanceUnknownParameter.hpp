@@ -40,8 +40,8 @@ namespace Sundance
 using namespace Sundance;
 using namespace Teuchos;
 
-using std::string;
-using std::ostream;
+
+
 
 /** 
  *
@@ -50,7 +50,7 @@ class UnknownParameter : public SymbolicFunc
 {
 public:
   /** */
-  UnknownParameter(const string& name);
+  UnknownParameter(const std::string& name);
 
   /** virtual destructor */
   virtual ~UnknownParameter() {;}

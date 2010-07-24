@@ -64,7 +64,7 @@ public:
     const MPIComm& comm) const = 0 ;
 
   /** */
-  virtual void print(ostream& os) const {os << description();}
+  virtual void print(std::ostream& os) const {os << description();}
 };
 }
 

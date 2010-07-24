@@ -39,10 +39,7 @@
 
 namespace Sundance
 {
-using namespace Sundance;
 using namespace Teuchos;
-using std::string;
-using std::ostream;
 
 /** 
  * UnknownFunctionStub is the base class for unknown functions. 
@@ -68,12 +65,12 @@ class UnknownFunctionStub : public SymbolicFunc
 {
 public:
   /** */
-  UnknownFunctionStub(const string& name, 
+  UnknownFunctionStub(const std::string& name, 
     int tensorOrder=0, int dim=1,
     const RCP<const UnknownFuncDataStub>& data=RCP<const UnknownFuncDataStub>());
 
   /** */
-  UnknownFunctionStub(const string& name, const SpectralBasis& sbasis, 
+  UnknownFunctionStub(const std::string& name, const SpectralBasis& sbasis, 
     int tensorOrder=0, int dim=1,
     const RCP<const UnknownFuncDataStub>& data=RCP<const UnknownFuncDataStub>());
   

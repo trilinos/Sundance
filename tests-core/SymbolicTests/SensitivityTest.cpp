@@ -25,7 +25,6 @@
 using namespace Sundance;
 using namespace Teuchos;
 
-
 static Time& doitTimer() 
 {
   static RCP<Time> rtn 
@@ -59,8 +58,8 @@ void doit(const Expr& e,
   Expr fixed;
   Expr fixed0;
 
-  Out::os() << "params = " << unkParams << endl;
-  Out::os() << "param vals = " << paramVals << endl;
+  Out::os() << "params = " << unkParams << std::endl;
+  Out::os() << "param vals = " << paramVals << std::endl;
 
   DerivSet d = SymbPreprocessor::setupSensitivities(e[0], 
                                                     tests,
@@ -76,8 +75,8 @@ void doit(const Expr& e,
     Sensitivities);
 
   Tabs tab;
-  Out::os() << tab << "done setup" << endl;
-  Out::os() << tab << *ev->sparsitySuperset(region) << endl;
+  Out::os() << tab << "done setup" << std::endl;
+  Out::os() << tab << *ev->sparsitySuperset(region) << std::endl;
   //  ev->showSparsity(Out::os(), region);
 
   // RCP<EvalVectorArray> results;
@@ -85,7 +84,7 @@ void doit(const Expr& e,
   Array<double> constantResults;
   Array<RCP<EvalVector> > vectorResults;
 
-  Out::os() << tab << "starting eval" << endl;
+  Out::os() << tab << "starting eval" << std::endl;
   ev->evaluate(mgr, constantResults, vectorResults);
 
   ev->sparsitySuperset(region)->print(Out::os(), vectorResults, constantResults);
@@ -104,22 +103,22 @@ void testExpr(const Expr& e,
           const Expr& paramVals, 
               const EvalContext& region)
 {
-  Out::os() << endl 
-       << "------------------------------------------------------------- " << endl;
-  Out::os()  << "-------- testing " << e.toString() << " -------- " << endl;
-  Out::os() << endl 
-       << "------------------------------------------------------------- " << endl;
+  Out::os() << std::endl 
+       << "------------------------------------------------------------- " << std::endl;
+  Out::os()  << "-------- testing " << e.toString() << " -------- " << std::endl;
+  Out::os() << std::endl 
+       << "------------------------------------------------------------- " << std::endl;
 
   try
     {
       doit(e, tests, unks, u0, unkParams, paramVals, region);
     }
-  catch(exception& ex)
+  catch(std::exception& ex)
     {
-      Out::os() << "EXCEPTION DETECTED!" << endl;
-      Out::os() << ex.what() << endl;
-      // Out::os() << "repeating with increased verbosity..." << endl;
-      //       Out::os() << "-------- testing " << e.toString() << " -------- " << endl;
+      Out::os() << "EXCEPTION DETECTED!" << std::endl;
+      Out::os() << ex.what() << std::endl;
+      // Out::os() << "repeating with increased verbosity..." << std::endl;
+      //       Out::os() << "-------- testing " << e.toString() << " -------- " << std::endl;
       //       Evaluator::verbosity() = 2;
       //       EvalVector::verbosity() = 2;
       //       EvaluatableExpr::verbosity() = 2;
@@ -155,9 +154,9 @@ int main(int argc, char** argv)
 			Expr beta0 = new Parameter(2.72, "beta0");
 			Expr v = new TestFunctionStub("v");
 
-      Out::os() << "u=" << u << endl;
-      Out::os() << "v=" << v << endl;
-      Out::os() << "alpha=" << alpha << endl;
+      Out::os() << "u=" << u << std::endl;
+      Out::os() << "v=" << v << std::endl;
+      Out::os() << "alpha=" << alpha << std::endl;
 
       Expr x = new CoordExpr(0);
       Expr y = new CoordExpr(1);
@@ -191,7 +190,7 @@ int main(int argc, char** argv)
 
       
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
 			Out::println(e.what());
 		}

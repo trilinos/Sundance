@@ -44,22 +44,22 @@ string expand(const Expr& e)
   SpectralPreprocessor::expandSpectral(e, terms);
   TeuchosOStringStream os;
 
-  os << endl << tab << "Terms: " << endl;
+  os << std::endl << tab << "Terms: " << std::endl;
   for (int i=0; i<terms.size(); i++)
   {
     Tabs tab1;
-    os << tab1 << "term=" << i << endl;
+    os << tab1 << "term=" << i << std::endl;
     for (int j=0; j<terms[i].size(); j++)
     {
       Tabs tab2;
-      os << tab2 << "factor " << j << " = " << terms[i][j] << endl;
+      os << tab2 << "factor " << j << " = " << terms[i][j] << std::endl;
     }
   }
 
-  os << endl << tab << "projected expr: " << endl;
+  os << std::endl << tab << "projected expr: " << std::endl;
   {
     Tabs tab1;
-    os << tab1 << SpectralPreprocessor::projectSpectral(terms) << endl;
+    os << tab1 << SpectralPreprocessor::projectSpectral(terms) << std::endl;
   }
 
   return os.str();
@@ -106,16 +106,16 @@ int main(int argc, char** argv)
 
     SpectralBasis sbasis = new HermiteSpectralBasis(ndim, order); 
 
-    Out::os() << "created the spectral basis" << endl;
+    Out::os() << "created the spectral basis" << std::endl;
 
     /* Create the Spectral Unknown and test functions */
 
     Expr u = new UnknownFunction(new Lagrange(2),sbasis, "u");
     Expr v = new TestFunction(new Lagrange(2), sbasis, "v");
 
-    Out::os() <<"Unknown and Test Functions " << endl; 
-    Out::os() << "u=" << u << endl;
-    Out::os() << "v=" << v << endl;
+    Out::os() <<"Unknown and Test Functions " << std::endl; 
+    Out::os() << "u=" << u << std::endl;
+    Out::os() << "v=" << v << std::endl;
 
     /* Create differential operator and coordinate function */
     Expr dx = new Derivative(0);
@@ -159,8 +159,8 @@ int main(int argc, char** argv)
     {
       Tabs tab1;
       Out::os() << tab1 << "--------------------------------------------"
-                << endl;
-      Out::os() << tab1 << "k=" << k << endl;
+                << std::endl;
+      Out::os() << tab1 << "k=" << k << std::endl;
       for (int i=0; i<sbasis.nterms(); i++)
       {
         Tabs tab2;
@@ -169,7 +169,7 @@ int main(int argc, char** argv)
         {
           Out::os() << sbasis.expectation(i,j,k) << " \t" ;
         }
-        Out::os() << endl;
+        Out::os() << std::endl;
       }
     }
 
@@ -191,7 +191,7 @@ int main(int argc, char** argv)
     /* Define the Dirichlet BC */
     Expr bc = EssentialBC(leftPoint, v*u, quad);
 
-    Out::os() << "done eq and bc " << endl;
+    Out::os() << "done eq and bc " << std::endl;
 
 
     /* We can now set up the linear problem! */
@@ -205,7 +205,7 @@ int main(int argc, char** argv)
       ParameterXMLFileReader reader("bicgstab.xml");
 #endif
     ParameterList solverParams = reader.getParameters();
-    Out::os() << "params = " << solverParams << endl;
+    Out::os() << "params = " << solverParams << std::endl;
 
 
     LinearSolver<double> solver 
@@ -225,7 +225,7 @@ int main(int argc, char** argv)
       double errorSq = evaluateIntegral(mesh, errExpr);
       totErrSq += errorSq;
       Out::os() << "error norm [" << i << "] = " 
-                << sqrt(errorSq) << endl << endl;
+                << sqrt(errorSq) << std::endl << std::endl;
       writer.addField("u["+Teuchos::toString(i)+"]", 
         new ExprFieldWrapper(soln[i]));
     }
@@ -236,7 +236,7 @@ int main(int argc, char** argv)
     double tol = 1.0e-10;
     Sundance::passFailTest(sqrt(totErrSq), tol);
   }
-	catch(exception& e)
+	catch(std::exception& e)
   {
     Sundance::handleException(e);
   }

@@ -80,48 +80,48 @@ int main(int argc, char** argv)
 
       Expr I1 = Integral(interior, x*sin(pi*x), quad4);
       double f1 = evaluateIntegral(mesh, I1);
-      cout << "integral of x sin(pi*x) = " << f1 << endl;
+      cout << "integral of x sin(pi*x) = " << f1 << std::endl;
       double I1Exact = 1.0/pi;
-      cout << "exact: " << I1Exact << endl;
+      cout << "exact: " << I1Exact << std::endl;
 
       double error = fabs(f1 - I1Exact);
-      cout << "error = " << fabs(f1 - I1Exact) << endl;
+      cout << "error = " << fabs(f1 - I1Exact) << std::endl;
 
       MPIComm::world().synchronize();
       MPIComm::world().synchronize();
 
       Expr I2 = Integral(interior, x*x*sin(pi*x), quad4);
       double f2 = evaluateIntegral(mesh, I2);
-      cout << "integral of x^2 sin(pi*x) = " << f2 << endl;
+      cout << "integral of x^2 sin(pi*x) = " << f2 << std::endl;
       double I2Exact = (1.0 - 4.0/pi/pi)/pi;
-      cout << "exact: " << I2Exact << endl;
+      cout << "exact: " << I2Exact << std::endl;
 
       error = max(error, fabs(f2 - I2Exact));
-      cout << "error = " << fabs(f2 - I2Exact) << endl; 
+      cout << "error = " << fabs(f2 - I2Exact) << std::endl; 
 
       MPIComm::world().synchronize();
       MPIComm::world().synchronize();
 
       Expr I3 = Integral(interior, sin(pi*x)*sin(pi*x), quad4);
       double f3 = evaluateIntegral(mesh, I3);
-      cout << "integral of sin^2(pi*x) = " << f3 << endl;
+      cout << "integral of sin^2(pi*x) = " << f3 << std::endl;
       double I3Exact = 0.5;
-      cout << "exact: " << I3Exact << endl;
+      cout << "exact: " << I3Exact << std::endl;
 
       error = max(error, fabs(f3 - I3Exact));
-      cout << "error = " << fabs(f3 - I3Exact) << endl;
+      cout << "error = " << fabs(f3 - I3Exact) << std::endl;
 
       MPIComm::world().synchronize();
       MPIComm::world().synchronize();
 
       Expr I4 = Integral(interior, x*x*(pi-x)*(pi-x), quad4);
       double f4 = evaluateIntegral(mesh, I4);
-      cout << "integral of x^2 (pi-x)^2 = " << f4 << endl;
+      cout << "integral of x^2 (pi-x)^2 = " << f4 << std::endl;
       double I4Exact = pi*pi/3.0 - pi/2 + 1.0/5.0;
-      cout << "exact: " << I4Exact << endl;
+      cout << "exact: " << I4Exact << std::endl;
 
       error = max(error, fabs(f4 - I4Exact));
-      cout << "error = " << fabs(f4 - I4Exact) << endl;
+      cout << "error = " << fabs(f4 - I4Exact) << std::endl;
 
       MPIComm::world().synchronize();
       MPIComm::world().synchronize();
@@ -129,12 +129,12 @@ int main(int argc, char** argv)
 
       Expr I5 = Integral(interior, 1.0, quad4);
       double f5 = evaluateIntegral(mesh, I5);
-      cout << "integral of 1.0 = " << f5 << endl;
+      cout << "integral of 1.0 = " << f5 << std::endl;
       double I5Exact = 1.0;
-      cout << "exact: " << I5Exact << endl;
+      cout << "exact: " << I5Exact << std::endl;
 
       error = max(error, fabs(f5 - I5Exact));
-      cout << "error = " << fabs(f5 - I5Exact) << endl;
+      cout << "error = " << fabs(f5 - I5Exact) << std::endl;
 
       MPIComm::world().synchronize();
       MPIComm::world().synchronize();
@@ -149,7 +149,7 @@ int main(int argc, char** argv)
       Expr alpha0 = projector.project();
 
       cout << "computing Integral(0.5*pow(alpha-sin(pi*x), 2)) at alpha0=x*(pi-x)"
-           << endl;
+           << std::endl;
       //#define BLAHBLAH 1
 #ifdef BLAHBLAH
       verbosity<Evaluator>() = 5;
@@ -185,47 +185,47 @@ int main(int argc, char** argv)
 
       FunctionalEvaluator gEval = G.evaluator(alpha, alpha0);
 
-      cout << "computing function value: " << endl;
+      cout << "computing function value: " << std::endl;
       double gVal = gEval.evaluate();
-      cout << "integral value = " << gVal << endl;
-      cout << "exact value = " << gExact << endl;
+      cout << "integral value = " << gVal << std::endl;
+      cout << "exact value = " << gExact << std::endl;
       error = max(error, fabs(gVal - gExact));
-      cout << "error = " << fabs(gVal - gExact) << endl;
+      cout << "error = " << fabs(gVal - gExact) << std::endl;
 
       MPIComm::world().synchronize();
       MPIComm::world().synchronize();
       
       /* now compute the derivative of a functional wrt a field variable */
  
-      cout << "computing function value and gradient together: " << endl;
+      cout << "computing function value and gradient together: " << std::endl;
       Expr dGdAlpha = gEval.evalGradient(gVal);
-      cout << "getting vector " << endl;
+      cout << "getting vector " << std::endl;
       Vector<double> dgNumVec 
         = DiscreteFunction::discFunc(dGdAlpha)->getVector();
       Vector<double> dgDiff = dgVec - dgNumVec;
-      cout << "grad diff = " << endl << dgDiff.norm2() << endl; 
+      cout << "grad diff = " << std::endl << dgDiff.norm2() << std::endl; 
 
-      cout << "integral value = " << gVal << endl;
+      cout << "integral value = " << gVal << std::endl;
       error = max(error, fabs(gVal - gExact));
-      cout << "error = " << fabs(gVal - gExact) << endl;
+      cout << "error = " << fabs(gVal - gExact) << std::endl;
 
       MPIComm::world().synchronize();
       MPIComm::world().synchronize();
-      cout << "*********************** FD check ***************************** " << endl;
+      cout << "*********************** FD check ***************************** " << std::endl;
       double h = 1.0e-2;
       double diffErr = gEval.fdGradientCheck(h);
 
       error = max(error, fabs(diffErr));
-      cout << "max error = " << error << endl;
+      cout << "max error = " << error << std::endl;
 
       double tol = 1.0e-8;
       Sundance::passFailTest(error, tol);
 
 
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
-      cout << e.what() << endl;
+      cout << e.what() << std::endl;
 		}
   Sundance::finalize(); return Sundance::testStatus(); 
 }

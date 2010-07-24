@@ -115,7 +115,7 @@ int main(int argc, char** argv)
 #endif
       ParameterList noxParams = reader.getParameters();
 
-      cerr << "solver params = " << noxParams << endl;
+      std::cerr << "solver params = " << noxParams << std::endl;
 
       NOXSolver solver(noxParams);
 
@@ -133,12 +133,12 @@ int main(int argc, char** argv)
 
       FunctionalEvaluator errInt(mesh, err);
       double errorSq = errInt.evaluate();
-      cerr << "error norm = " << sqrt(errorSq) << endl << endl;
+      std::cerr << "error norm = " << sqrt(errorSq) << std::endl << std::endl;
 
       Expr err2 = Integral(D, pow(dx*(u0[0] - x), 2.0), quad);
       FunctionalEvaluator err2Int(mesh, err);
       double error2Sq = err2Int.evaluate();
-      cerr << "derivative error norm = " << sqrt(error2Sq) << endl << endl;
+      std::cerr << "derivative error norm = " << sqrt(error2Sq) << std::endl << std::endl;
 
       /* Write the field in VTK format */
       FieldWriter w = new VTKWriter("PartialDomain2d");
@@ -150,7 +150,7 @@ int main(int argc, char** argv)
       Sundance::passFailTest(sqrt(errorSq), 1.0e-4);
       
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
       Sundance::handleException(e);
 		}

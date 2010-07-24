@@ -45,7 +45,7 @@ namespace Sundance
   {
   public:
     /** */
-    TriangleWriter(const string& filename="", int indexOffset=0) 
+    TriangleWriter(const std::string& filename="", int indexOffset=0) 
       : FieldWriterBase(filename), indexOffset_(indexOffset) {;}
     
     /** virtual dtor */
@@ -61,22 +61,22 @@ namespace Sundance
 
   protected:
     /** */
-      void writePoints(const string& filename) const ;
+      void writePoints(const std::string& filename) const ;
 
     /** */
-    void writeCells(const string& filename) const ;
+    void writeCells(const std::string& filename) const ;
     
     /** */
-    void writeEdges(const string& filename) const ;
+    void writeEdges(const std::string& filename) const ;
     
     /** */
-    void writeFaces(const string& filename) const ;
+    void writeFaces(const std::string& filename) const ;
     
     /** */
-    void writeHeader(const string& filename) const ;
+    void writeHeader(const std::string& filename) const ;
     
     /** */
-    void writeParallelInfo(const string& filename) const ;
+    void writeParallelInfo(const std::string& filename) const ;
     
     int indexOffset_;
   };

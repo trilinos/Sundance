@@ -350,7 +350,7 @@ void ChainRuleEvaluator::init(const ExprWithChildren* expr,
             Tabs tab5;
             Array<MultiSet<int> > K = j->first();
             Array<MultipleDeriv> L = j->second();
-            SUNDANCE_MSG3(verb, tab5 << "K=" << K << endl << tab5 << "L=" << L);
+            SUNDANCE_MSG3(verb, tab5 << "K=" << K << std::endl << tab5 << "L=" << L);
             double weight = chainRuleMultiplicity(nu, K, L);
             SUNDANCE_MSG3(verb, tab5 << "weight=" << weight);
             DerivProduct prod(weight);
@@ -428,7 +428,7 @@ void ChainRuleEvaluator::internalEval(const EvalManager& mgr,
 
   
   SUNDANCE_MSG2(mgr.verb(), tabs << "max diff order = " << mgr.getRegion().topLevelDiffOrder());
-  SUNDANCE_MSG2(mgr.verb(), tabs << "return sparsity " << endl << tabs << *(this->sparsity()));
+  SUNDANCE_MSG2(mgr.verb(), tabs << "return sparsity " << std::endl << tabs << *(this->sparsity()));
   
   constantResults.resize(this->sparsity()->numConstantDerivs());
   vectorResults.resize(this->sparsity()->numVectorDerivs());
@@ -458,14 +458,14 @@ void ChainRuleEvaluator::internalEval(const EvalManager& mgr,
     if (mgr.verb() > 2)
     {
       Out::os() << tabs << "constant arg #" << i << 
-        " results:" << *(constantArgResults[i]) << endl;
-      Out::os() << tabs << "variable arg #" << i << " derivs:" << endl;
+        " results:" << *(constantArgResults[i]) << std::endl;
+      Out::os() << tabs << "variable arg #" << i << " derivs:" << std::endl;
       for (int j=0; j<varArgResults[i]->size(); j++)
       {
         Tabs tab1;
         Out::os() << tab1 << j << " ";
         (*(varArgResults[i]))[j]->print(Out::os());
-        Out::os() << endl;
+        Out::os() << std::endl;
       }
     }
   }
@@ -476,14 +476,14 @@ void ChainRuleEvaluator::internalEval(const EvalManager& mgr,
   
   if (mgr.verb() > 2)
   {
-    Out::os() << tabs << "constant arg derivs:" << constantArgDerivs << endl;
-    Out::os() << tabs << "variable arg derivs:" << endl;
+    Out::os() << tabs << "constant arg derivs:" << constantArgDerivs << std::endl;
+    Out::os() << tabs << "variable arg derivs:" << std::endl;
     for (int i=0; i<varArgDerivs.size(); i++)
     {
       Tabs tab1;
       Out::os() << tab1 << i << " ";
       varArgDerivs[i]->print(Out::os());
-      Out::os() << endl;
+      Out::os() << std::endl;
     }
   }
   
@@ -495,7 +495,7 @@ void ChainRuleEvaluator::internalEval(const EvalManager& mgr,
     bool isConstant = expansions_[i]->resultIsConstant();
     SUNDANCE_MSG3(mgr.verb(), tab1 << "doing expansion for deriv #" << i
       << ", result index="
-      << resultIndex << endl << tab1
+      << resultIndex << std::endl << tab1
       << "deriv=" << expansions_[i]->deriv());
     if (isConstant)
     {
@@ -533,7 +533,7 @@ void ChainRuleEvaluator::internalEval(const EvalManager& mgr,
   if (mgr.verb() > 2)
   {
     Tabs tab1;
-    Out::os() << tab1 << "chain rule results " << endl;
+    Out::os() << tab1 << "chain rule results " << std::endl;
     this->sparsity()->print(Out::os(), vectorResults,
       constantResults);
   }

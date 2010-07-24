@@ -239,30 +239,24 @@ bool SumOfIntegrals::hasTestFunctions() const
 
 
 
-ostream& SumOfIntegrals::toText(ostream& os, bool paren) const
+std::ostream& SumOfIntegrals::toText(std::ostream& os, bool paren) const
 {
-  os << "Sum of Integrals[" << endl;
+  os << "Sum of Integrals[" << std::endl;
   for (Sundance::Map<RegionQuadCombo, Expr>::const_iterator 
          i=rqcToExprMap_.begin(); i!=rqcToExprMap_.end(); i++)
   {
     const RegionQuadCombo& rqc = i->first;
     Expr e = i->second;
-    os << "Integral[" << endl;
-    os << "rqc=" << rqc.toString() << endl;
-    os << "expr=" << e.toString() << endl;
-    os << "]" << endl;
+    os << "Integral[" << std::endl;
+    os << "rqc=" << rqc.toString() << std::endl;
+    os << "expr=" << e.toString() << std::endl;
+    os << "]" << std::endl;
   }
-  os << "]" << endl;
+  os << "]" << std::endl;
 
   return os;
 }
 
-ostream& SumOfIntegrals::toLatex(ostream& os, bool paren) const
-{
-  TEST_FOR_EXCEPTION(true, InternalError, 
-                     "SumOfIntegrals::toLatex is undefined");
-  return os;
-}
 
 XMLObject SumOfIntegrals::toXML() const 
 {

@@ -53,7 +53,7 @@ public:
   virtual XMLObject toXML() const ;
 
   /** */
-  virtual string typeName() const {return "MaximalCellSet";}
+  virtual std::string typeName() const {return "MaximalCellSet";}
 
   /** */
   virtual bool lessThan(const CellSetBase* other) const ;

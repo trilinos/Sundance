@@ -76,7 +76,7 @@ class CellPredicateFunctorBase
 {
 public:
   /** */
-  CellPredicateFunctorBase(const string& name="Functor(" + Teuchos::toString(topID()) + ")")
+  CellPredicateFunctorBase(const std::string& name="Functor(" + Teuchos::toString(topID()) + ")")
     : name_(name) {;}
 
   /** */
@@ -86,10 +86,10 @@ public:
   virtual bool operator()(const Point& x) const = 0 ;
 
   /** */
-  virtual string description() const {return name_;}
+  virtual std::string description() const {return name_;}
 private:
   static int& topID() {static int rtn=0; rtn++; return rtn;}
-  string name_;
+  std::string name_;
 };
 
   
@@ -120,7 +120,7 @@ public:
   virtual bool lessThan(const CellPredicateBase* other) const ;
 
   /** */
-  virtual string description() const {return func_->description();}
+  virtual std::string description() const {return func_->description();}
 
   /* */
   GET_RCP(CellPredicateBase);

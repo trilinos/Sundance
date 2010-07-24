@@ -265,8 +265,8 @@ RCP<Array<Array<Array<double> > > > QuadratureEvalMediator
     if (verb() >= 2)
     {
       Out::os() << tab << "alwaysUseCofacets = " 
-                << ElementIntegral::alwaysUseCofacets() << endl;
-      Out::os() << tab << "diffOrder = " << diffOrder << endl;
+                << ElementIntegral::alwaysUseCofacets() << std::endl;
+      Out::os() << tab << "diffOrder = " << diffOrder << std::endl;
     }
     if (ElementIntegral::alwaysUseCofacets() || diffOrder>0)
     {
@@ -295,17 +295,17 @@ RCP<Array<Array<Array<double> > > > QuadratureEvalMediator
     if (verb() >= 2)
     {
       Out::os() << tab << "numEvalCases = " << numEvaluationCases()
-                << endl;
-      Out::os() << tab << "diff order = " << diffOrder << endl;
-      Out::os() << tab << "cell type = " << cellType() << endl;
+                << std::endl;
+      Out::os() << tab << "diff order = " << diffOrder << std::endl;
+      Out::os() << tab << "cell type = " << cellType() << std::endl;
       Out::os() << tab << "quad pt map = ";
       if (evalCellType!=cellType())
       { 
-        Out::os() << quadPtsReferredToMaxCell_ << endl;
+        Out::os() << quadPtsReferredToMaxCell_ << std::endl;
       }
       else
       {
-        Out::os() << quadPtsForReferenceCell_ << endl;
+        Out::os() << quadPtsForReferenceCell_ << std::endl;
       }
     }
 
@@ -420,10 +420,10 @@ void QuadratureEvalMediator
     const MultiIndex& mi = multiIndices[i];
     SUNDANCE_MSG2(dfVerb(),
       tab1 << "evaluating DF " << expr->name() 
-      << " for multiindex " << mi << endl
-      << tab1 << "num cells = " << cellLID()->size() << endl
-      << tab1 << "num quad points = " << nQuad << endl
-      << tab1 << "my index = " << expr->myIndex() << endl
+      << " for multiindex " << mi << std::endl
+      << tab1 << "num cells = " << cellLID()->size() << std::endl
+      << tab1 << "num quad points = " << nQuad << std::endl
+      << tab1 << "my index = " << expr->myIndex() << std::endl
       << tab1 << "num funcs = " << f->discreteSpace().nFunc());
 
     vec[i]->resize(cellLID()->size() * nQuad);
@@ -446,7 +446,7 @@ void QuadratureEvalMediator
       int funcIndex = mapStruct->indexForFuncID(myIndex);
       int nFuncs = mapStruct->numFuncs(chunk);
 
-      SUNDANCE_MSG3(dfVerb(),tab2 << "chunk number = " << chunk << endl
+      SUNDANCE_MSG3(dfVerb(),tab2 << "chunk number = " << chunk << std::endl
         << tab2 << "function index=" << funcIndex << " of nFuncs=" 
         << nFuncs);
 
@@ -479,14 +479,14 @@ void QuadratureEvalMediator
         for (int c=0; c<cellLID()->size(); c++)
         {
           Out::os() << tab2 << "-------------------------------------------"
-                    << endl;
+                    << std::endl;
           Out::os() << tab2 << "c=" << c << " cell LID=" << (*cellLID())[c]
-                    << endl;
+                    << std::endl;
           Tabs tab3;
           for (int q=0; q<nQuad; q++, k++)
           {
             Out::os() << tab3 << "q=" << q << " " << physQuadPts_[k]
-                      << " val=" << vecPtr[k] << endl;
+                      << " val=" << vecPtr[k] << std::endl;
           }
         }
       }
@@ -510,7 +510,7 @@ void QuadratureEvalMediator
       int nFuncs = mapStruct->numFuncs(chunk);
 
 
-      SUNDANCE_MSG3(dfVerb(),tab2 << "chunk number = " << chunk << endl
+      SUNDANCE_MSG3(dfVerb(),tab2 << "chunk number = " << chunk << std::endl
         << tab2 << "function index=" << funcIndex << " of nFuncs=" 
         << nFuncs);
 
@@ -547,14 +547,14 @@ void QuadratureEvalMediator
         for (int c=0; c<cellLID()->size(); c++)
         {
           Out::os() << tab2 << "-------------------------------------------"
-                    << endl;
+                    << std::endl;
           Out::os() << tab2 << "c=" << c << " cell LID=" << (*cellLID())[c]
-                    << endl;
+                    << std::endl;
           Tabs tab3;
           for (int q=0; q<nQuad; q++, k++)
           {
             Out::os() << tab3 << "q=" << q << " " << physQuadPts_[k]
-                      << " val=" << vecPtr[k] << endl;
+                      << " val=" << vecPtr[k] << std::endl;
           }
         }
       }
@@ -596,8 +596,8 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
         if (dfVerb() >= 2)
         {
           Out::os() << tab2 << "alwaysUseCofacets = " 
-                    << ElementIntegral::alwaysUseCofacets() << endl;
-          Out::os() << tab2 << "diffOrder = " << diffOrder << endl;
+                    << ElementIntegral::alwaysUseCofacets() << std::endl;
+          Out::os() << tab2 << "diffOrder = " << diffOrder << std::endl;
         }
         if (ElementIntegral::alwaysUseCofacets() || diffOrder>0)
         {
@@ -780,13 +780,13 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
       if (dfVerb() >= 5)
       {
         Tabs tab3;
-        Out::os() << tab2 << "Printing values at nodes" << endl;
+        Out::os() << tab2 << "Printing values at nodes" << std::endl;
         for (int c=0; c<nCells; c++)
         {
           Out::os() << tab3 << "-------------------------------------------"
-                    << endl;
+                    << std::endl;
           Out::os() << tab3 << "c=" << c << " cell LID=" << (*cellLID())[c]
-                    << endl;
+                    << std::endl;
           Tabs tab4;
           int offset = c*nNodes*nFuncs;
           for (int n=0; n<nNodes; n++)
@@ -796,16 +796,16 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
             {
               Out::os() << " " << (*localValues)[chunk][offset + n*nFuncs + f];
             }
-            Out::os() << endl;
+            Out::os() << std::endl;
           }
         }
         Out::os() << tab2 << "-------------------------------------------";
-        Out::os() << tab2 << "Printing reference basis at nodes" << endl;
+        Out::os() << tab2 << "Printing reference basis at nodes" << std::endl;
         Out::os() << tab2 << "-------------------------------------------"
-                  << endl;
+                  << std::endl;
         for (int n=0; n<nNodes; n++)
         {
-          Out::os() << tab3 << "node=" << n << endl;
+          Out::os() << tab3 << "node=" << n << std::endl;
           for (int q=0; q<nQuad; q++)
           {
             Tabs tab4;
@@ -815,7 +815,7 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
               Out::os () << " " 
                          << (*refBasisValues)[vecComp][(n*nQuad + q)*nDir + r];
             }
-            Out::os() << endl;
+            Out::os() << std::endl;
           }
         }
       }
@@ -909,21 +909,21 @@ void QuadratureEvalMediator::computePhysQuadPts() const
 }
 
 
-void QuadratureEvalMediator::print(ostream& os) const 
+void QuadratureEvalMediator::print(std::ostream& os) const 
 {
   if (cacheIsValid())
   {
     Tabs tab0;
-    os << tab0 << "Physical quadrature points" << endl;
+    os << tab0 << "Physical quadrature points" << std::endl;
     int i=0;
     for (int c=0; c<cellLID()->size(); c++)
     {
       Tabs tab1;
-      os << tab1 << "cell " << c << endl;
+      os << tab1 << "cell " << c << std::endl;
       for (int q=0; q<physQuadPts_.size()/cellLID()->size(); q++, i++)
       {
         Tabs tab2;
-        os << tab2 << "q=" << q << " " << physQuadPts_[i] << endl;
+        os << tab2 << "q=" << q << " " << physQuadPts_[i] << std::endl;
       }
     }
   }

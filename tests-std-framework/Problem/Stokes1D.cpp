@@ -140,15 +140,15 @@ int main(int argc, char** argv)
       FunctionalEvaluator errInt(mesh, errExpr);
 
       double errorSq = errInt.evaluate();
-      cerr << "error norm = " << sqrt(errorSq) << endl << endl;
+      std::cerr << "error norm = " << sqrt(errorSq) << std::endl << std::endl;
 
       
       double tol = 1.0e-10;
       Sundance::passFailTest(sqrt(errorSq), tol);
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
-      cerr << e.what() << endl;
+      std::cerr << e.what() << std::endl;
 		}
   TimeMonitor::summarize();
   

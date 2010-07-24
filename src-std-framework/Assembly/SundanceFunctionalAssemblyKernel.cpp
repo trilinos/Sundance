@@ -77,7 +77,7 @@ void FunctionalAssemblyKernel::fill(
 {
   Tabs tab;
   SUNDANCE_MSG2(verb(), tab << "adding local increment " << (*localValues)[0]
-    << " to local value" << endl << tab << "Before: " << localValue_);
+    << " to local value" << std::endl << tab << "Before: " << localValue_);
   
   localValue_ += (*localValues)[0];
   SUNDANCE_MSG2(verb(), tab << "After: " << localValue_);

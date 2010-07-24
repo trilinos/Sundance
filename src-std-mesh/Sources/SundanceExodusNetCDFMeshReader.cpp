@@ -9,7 +9,7 @@ using namespace Teuchos;
 using namespace Sundance;
 
 
-ExodusNetCDFMeshReader::ExodusNetCDFMeshReader(const string& fname,
+ExodusNetCDFMeshReader::ExodusNetCDFMeshReader(const std::string& fname,
                                                const MeshType& meshType,
                                                const MPIComm& comm)
   : MeshReaderBase(fname, meshType, comm)
@@ -34,7 +34,7 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
 
   RCP<std::ifstream> is = openFile(filename(), "NetCDF");
 
-  string line;
+  std::string line;
   Array<string> tokens;
 
   /* read the header line */
@@ -67,8 +67,8 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
       getNextLine(*is, line, tokens, '#');
 
       if (tokens[0] == "variables:") break;
-      string keyword = tokens[0];
-      string equals = tokens[1];
+      std::string keyword = tokens[0];
+      std::string equals = tokens[1];
       TEST_FOR_EXCEPTION(equals!="=", RuntimeError, "ExodusNetCDF reader "
                          "expected [=] as second token, found "
                          << equals);

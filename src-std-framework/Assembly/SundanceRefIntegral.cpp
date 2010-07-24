@@ -241,7 +241,7 @@ RefIntegral::RefIntegral(int spatialDim,
           Tabs tab3;
           Out::os() << tab3 << setw(10) << nt 
                     << setw(12) << std::setprecision(5) << value(fc, r, nt) 
-                    << endl;
+                    << std::endl;
         }
         Out::os().flags(oldFlags);
       }
@@ -416,7 +416,7 @@ RefIntegral::RefIntegral(int spatialDim,
               Out::os() << setw(12) << std::setprecision(5)
                         << value(fc, rt, nt, ru, nu) ;
             }
-            Out::os() << endl;
+            Out::os() << std::endl;
           }
           Out::os().flags(oldFlags);
         }

@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
   catch(std::exception& e)
     {
       stat = -1;
-      cerr << "Caught exception: " << e.what() << endl;
+      std::cerr << "Caught exception: " << e.what() << std::endl;
     }
   return stat;
 }

@@ -99,7 +99,7 @@ void StringEvalMediator
       coordNames[2] = "z";
     }
 
-  string funcName = expr->name();
+  std::string funcName = expr->name();
   
   for (int i=0; i<mi.size(); i++)
     {
@@ -112,7 +112,7 @@ void StringEvalMediator
       else
         {
           int dir = mi[i].firstOrderDirection();
-          string deriv = "D[" + funcName + ", " + coordNames[dir] + "]";
+          std::string deriv = "D[" + funcName + ", " + coordNames[dir] + "]";
           vec[i]->setString(deriv);
         }
     }

@@ -74,7 +74,7 @@ public:
   /** virtual dtor */
   virtual ~CellReordererImplemBase(){;}
 
-  /** return a descriptive string */
+  /** return a descriptive std::string */
   virtual std::string typeName() const {return typeid(*this).name();}
     
   /** */

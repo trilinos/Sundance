@@ -41,7 +41,7 @@ namespace Sundance
 {
 using namespace Sundance;
 using namespace Teuchos;
-using std::string;
+
 
 /** 
  * ExprWithChildren is a base class for any evaluatable expression
@@ -106,7 +106,7 @@ public:
   internalFindV(int order, const EvalContext& context) const ;
 
   /** */
-  virtual void displayNonzeros(ostream& os, 
+  virtual void displayNonzeros(std::ostream& os, 
     const EvalContext& context) const ;
 
   /** */
@@ -156,7 +156,7 @@ public:
   virtual bool hasUnkFunctions() const ;
 
   /** */
-  virtual void showSparsity(ostream& os, 
+  virtual void showSparsity(std::ostream& os, 
     const EvalContext& context) const ;
 
   /** */

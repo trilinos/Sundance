@@ -40,8 +40,8 @@ using namespace Sundance;
 using namespace Teuchos;
 using namespace Sundance;
 
-using std::string;
-using std::ostream;
+
+
 
 /**
  * Apply a standard set of transformations

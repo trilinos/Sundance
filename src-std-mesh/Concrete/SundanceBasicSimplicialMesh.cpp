@@ -2258,7 +2258,7 @@ void BasicSimplicialMesh::resolveEdgeOwnership(int cellDim)
 
 string BasicSimplicialMesh::cellStr(int dim, const int* verts) const
 {
-  string rtn="(";
+  std::string rtn="(";
   for (int i=0; i<dim; i++)
   {
     if (i!=0) rtn += ", ";

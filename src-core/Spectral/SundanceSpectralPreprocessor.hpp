@@ -47,8 +47,8 @@ class UnaryMinus;
 class DiffOp;
 class MultiIndex;
   
-using std::string;
-using std::ostream;
+
+
 
 /** */
 class SpectralPreprocessor

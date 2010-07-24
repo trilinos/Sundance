@@ -103,7 +103,7 @@ Expr::Expr(const double& c)
 	: Sundance::Handle<ExprBase>(new ConstantExpr(c))
 {}
 
-Expr::Expr(const complex<double>& c)
+Expr::Expr(const std::complex<double>& c)
 	: Sundance::Handle<ExprBase>(new ComplexExpr(new ConstantExpr(c.real()),
       new ConstantExpr(c.imag())))
 {}
@@ -139,15 +139,6 @@ string Expr::toString() const
 	return TEUCHOS_OSTRINGSTREAM_GET_C_STR(ss);
 }
 
-string Expr::toLatex() const 
-{
-  TimeMonitor t(outputTimer());
-
-  TeuchosOStringStream ss;
-	ptr()->toLatex(ss, false);
-  //	ss << ends;
-	return TEUCHOS_OSTRINGSTREAM_GET_C_STR(ss);
-}
 
 bool Expr::sameAs(const Expr& other) const 
 {

@@ -56,7 +56,6 @@ namespace Sundance
 {
     using namespace Sundance;
     using namespace Teuchos;
-    using namespace std;
 
 /**
  * Class for 3D hierarchical structured quad Mesh <br>

@@ -25,7 +25,7 @@ namespace TSFExtended
                               const Vector<double>& rhs,
                               Vector<double>& soln) const ;
 
-    string description() const {return "I'm a PySundanceLinearSolver";}
+    std::string description() const {return "I'm a PySundanceLinearSolver";}
 
     PyObject* pySolve(PyObject* op, PyObject* rhs, PyObject* x0) const ;
   protected:

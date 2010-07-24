@@ -132,13 +132,13 @@ int SparsitySuperset::getIndex(const MultipleDeriv& d) const
 
 
 
-void SparsitySuperset::print(ostream& os,
+void SparsitySuperset::print(std::ostream& os,
                              const Array<RCP<EvalVector> >& vecResults,
                              const Array<double>& constantResults) const 
 {
   Tabs tabs;
 
-  /* find the maximum size of the string reps of the derivatives.
+  /* find the maximum size of the std::string reps of the derivatives.
    * We'll use this to set the field width for printing derivatives. */
   int maxlen = 25;
   for (int i=0; i<derivs_.size(); i++)
@@ -183,11 +183,11 @@ void SparsitySuperset::print(ostream& os,
 
 
 
-void SparsitySuperset::print(ostream& os) const 
+void SparsitySuperset::print(std::ostream& os) const 
 {
   Tabs tabs;
 
-  /* find the maximum size of the string reps of the derivatives.
+  /* find the maximum size of the std::string reps of the derivatives.
    * We'll use this to set the field width for printing derivatives. */
   int maxlen = 25;
   for (int i=0; i<derivs_.size(); i++)

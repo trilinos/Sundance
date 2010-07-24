@@ -44,7 +44,7 @@ namespace Sundance
   {
   public:
     /** */
-    MatlabWriter(const string& filename="") 
+    MatlabWriter(const std::string& filename="") 
       : FieldWriterBase(filename) {;}
     
     /** virtual dtor */

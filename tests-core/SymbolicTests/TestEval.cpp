@@ -27,13 +27,10 @@
 #include "SundanceStringEvalMediator.hpp"
 #include "SundanceEvaluationTester.hpp"
 
-using namespace Sundance;
 using namespace SundanceTesting;
-using namespace Sundance;
 using Sundance::List;
-using namespace Sundance;
 using namespace Teuchos;
-
+using std::exception;
 
 /* a^b */
 Expr myPow( Expr a , Expr b )
@@ -120,9 +117,9 @@ inline Expr FD(const Expr& f, const Expr& u)
 #define TESTER_N(expr, adExpr, order)                                   \
   {                                                                     \
     Tabs tabs1;                                                         \
-    Out::os() << tabs1 << endl << tabs1                                      \
+    Out::os() << tabs1 << std::endl << tabs1                                      \
               << "------------- Testing " << #expr << " -----------"        \
-              << endl << tabs1 << endl;                                      \
+              << std::endl << tabs1 << std::endl;                                      \
     bool thisTestIsOK = true;                                           \
     try                                                                 \
     {                                                                 \
@@ -134,12 +131,12 @@ inline Expr FD(const Expr& f, const Expr& u)
       }                                                               \
       double adf = (adExpr).value();                                    \
       Out::os() << tabs1 << "expr value = " << f << " check=" << adf         \
-                << " |f-check|=" << fabs(f-adf) << endl;                     \
+                << " |f-check|=" << fabs(f-adf) << std::endl;                     \
       double fError = fabs(f-adf);                                      \
       if (fError > tol1)                                                \
       {                                                               \
         thisTestIsOK=false;                                           \
-        Out::os() << "value computation FAILED" << endl;                   \
+        Out::os() << "value computation FAILED" << std::endl;                   \
         isOK = false;                                                 \
       }                                                               \
     }                                                                 \
@@ -147,16 +144,16 @@ inline Expr FD(const Expr& f, const Expr& u)
     {                                                                 \
       thisTestIsOK = false;                                           \
       isOK=false;                                                     \
-      Out::os() << "exception: " << ex.what() << endl ;                    \
+      Out::os() << "exception: " << ex.what() << std::endl ;                    \
     }                                                                 \
     if (!thisTestIsOK)                                                  \
     {                                                                 \
       failures.append(#expr);                                         \
-      Out::os() << "test " << (expr).toString() << " FAILED" << endl << endl;\
+      Out::os() << "test " << (expr).toString() << " FAILED" << std::endl << std::endl;\
     }                                                                 \
     else                                                                \
     {                                                                 \
-      Out::os() << "test " << (expr).toString() << " PASSED" << endl << endl; \
+      Out::os() << "test " << (expr).toString() << " PASSED" << std::endl << std::endl; \
     }\
   }
 
@@ -688,27 +685,27 @@ int main(int argc, char** argv)
   finish:
     if (isOK)
     {
-      Out::os() << "all tests PASSED!" << endl;
+      Out::os() << "all tests PASSED!" << std::endl;
     }
     else
     {
       stat = -1;
-      Out::os() << "overall test FAILED!" << endl;
-      Out::os() << endl << "failed exprs: " << endl
-                << endl;
+      Out::os() << "overall test FAILED!" << std::endl;
+      Out::os() << std::endl << "failed exprs: " << std::endl
+                << std::endl;
       for (int i=0; i<failures.size(); i++)
       {
-        Out::os() << failures[i] << endl;
+        Out::os() << failures[i] << std::endl;
       }
-      Out::os() << endl;
+      Out::os() << std::endl;
     }
     TimeMonitor::summarize();
   }
-	catch(exception& e)
+	catch(std::exception& e)
   {
     stat = -1;
-    Out::os() << "overall test FAILED!" << endl;
-    Out::os() << "detected exception: " << e.what() << endl;
+    Out::os() << "overall test FAILED!" << std::endl;
+    Out::os() << "detected exception: " << e.what() << std::endl;
   }
   return stat;
 }

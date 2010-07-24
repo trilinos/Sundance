@@ -42,19 +42,19 @@ int main(int argc, char** argv)
     MPIComm self = world;
 #endif
 
-    string infile = "cyl-coarse";
+    std::string infile = "cyl-coarse";
     int numProc = world.getNProc();
     
 
 #ifdef HAVE_SUNDANCE_CHACO
-    Out::os() << "have chaco!" << endl;
+    Out::os() << "have chaco!" << std::endl;
     /* If in parallel, partition the mesh */
     if (world.getNProc() > 1)
     {
       /* Partition on the root only */
       if (world.getRank()==0)
       {
-        Out::os() << "root processor is working on the partitioning" << endl;
+        Out::os() << "root processor is working on the partitioning" << std::endl;
         MeshType meshType = new BasicSimplicialMeshType();
         MeshSource mesher = new ExodusMeshReader(infile, meshType, self);
 
@@ -73,17 +73,17 @@ int main(int argc, char** argv)
     double err = 0.0;
     if (world.getRank()==0)
     {
-      Out::os() << "partitioning..." << endl;
+      Out::os() << "partitioning..." << std::endl;
       err = readbackTester(infile, self);
-      Out::os() << "done partitioning..." << endl;
+      Out::os() << "done partitioning..." << std::endl;
     }
     else
     {
-      Out::os() << "waiting..." << endl;
+      Out::os() << "waiting..." << std::endl;
     }
-    Out::os() << "synching..." << endl;
+    Out::os() << "synching..." << std::endl;
     MPIComm::world().synchronize();
-    Out::os() << "sharing erro..." << endl;
+    Out::os() << "sharing erro..." << std::endl;
     MPIComm::world().bcast(&err, 1, MPIComm::INT, 0);
 #endif
     
@@ -91,7 +91,7 @@ int main(int argc, char** argv)
      * essentially exact */
     Sundance::passFailTest(err, 1.0e-15);
   }
-	catch(exception& e)
+	catch(std::exception& e)
   {
     Sundance::handleException(e);
   }

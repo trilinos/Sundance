@@ -42,7 +42,7 @@ public:
   /** \name Describable interface */
   //@{
   /** Print to a stream */
-  virtual string description() const 
+  virtual std::string description() const 
     {return "NullCellFilterStub";}
   //@}
 

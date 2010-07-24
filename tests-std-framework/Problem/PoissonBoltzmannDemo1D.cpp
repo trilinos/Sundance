@@ -82,7 +82,7 @@ int main(int argc, char** argv)
     /*
      * Initialization code
      */
-    string solverFile = "nox-amesos.xml";
+    std::string solverFile = "nox-amesos.xml";
     Sundance::setOption("solver", solverFile, 
       "name of XML file for solver");
 
@@ -211,11 +211,11 @@ int main(int argc, char** argv)
     Expr fluxExpr 
       = Integral(left+right, (n*grad)*u0, quad2); 
     double flux = evaluateIntegral(mesh, fluxExpr);
-    Out::os() << "numerical flux = " << flux << endl;
+    Out::os() << "numerical flux = " << flux << std::endl;
     Expr sourceExpr 
       = Integral(interior, exp(-u0/10.0), quad2); 
     double src = evaluateIntegral(mesh, sourceExpr);
-    Out::os() << "numerical src = " << src << endl;
+    Out::os() << "numerical src = " << src << std::endl;
 
 
 
@@ -235,7 +235,7 @@ int main(int argc, char** argv)
      */
 
   }
-	catch(exception& e) 
+	catch(std::exception& e) 
   {
     Sundance::handleException(e);
   }

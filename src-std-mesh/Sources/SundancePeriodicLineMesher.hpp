@@ -68,8 +68,8 @@ public:
       return rtn;
     }
 
-  /** Print a short descriptive string */
-  virtual string description() const 
+  /** Print a short descriptive std::string */
+  virtual std::string description() const 
     {return "PeriodicLineMesher";}
       
 

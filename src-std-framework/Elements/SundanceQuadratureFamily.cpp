@@ -452,7 +452,7 @@ void printQuad(std::ostream& os,
   {
     os << setw(w) << names[i] ;
   }
-  os << endl;
+  os << std::endl;
   os.setf(ios_base::right);    
   for (int i=0; i<pts.size(); i++)
   {
@@ -461,7 +461,7 @@ void printQuad(std::ostream& os,
     {
       os << setw(w) << setprecision(prec) << pts[i][d];
     }
-    os << endl;
+    os << std::endl;
   }
   os.flags(oldFlags);
 }

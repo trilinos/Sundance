@@ -517,9 +517,9 @@ InhomogeneousNodalDOFMap::getDOFsForCellBatch(int cellDim,
       mesh().getFacetLIDs(cellDim, cellLID, 0, facetLID, facetOrientations);
       if (verb >= 2)
       {
-        Out::os() << tab2 << "cellLID = " << cellLID << endl;
-        Out::os() << tab2 << "facetLID = " << facetLID << endl;
-        Out::os() << tab2 << "elem func sets = " << elemFuncSets_ << endl;
+        Out::os() << tab2 << "cellLID = " << cellLID << std::endl;
+        Out::os() << tab2 << "facetLID = " << facetLID << std::endl;
+        Out::os() << tab2 << "elem func sets = " << elemFuncSets_ << std::endl;
       }
       const Set<int>& funcSet = elemFuncSets_[firstFuncSet];
       TEST_FOR_EXCEPT(requestedFuncSet.setDifference(funcSet).size() != 0);
@@ -561,7 +561,7 @@ InhomogeneousNodalDOFMap::getDOFsForCellBatch(int cellDim,
 
 
 
-void InhomogeneousNodalDOFMap::print(ostream& os) const
+void InhomogeneousNodalDOFMap::print(std::ostream& os) const
 {
   Tabs tab0;
   std::cout << tab0 << "dof map: " << std::endl;

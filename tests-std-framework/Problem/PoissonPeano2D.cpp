@@ -46,8 +46,8 @@ int main(int argc, char** argv)
   {
     unsigned int nx = 2;
     unsigned int ny = 2;
-    string meshFile="builtin";
-    string solverFile = "aztec-ml.xml";
+    std::string meshFile="builtin";
+    std::string solverFile = "aztec-ml.xml";
 
     Sundance::init(&argc, &argv);
     unsigned int np = MPIComm::world().getNProc();
@@ -107,11 +107,11 @@ int main(int argc, char** argv)
     bool meshOK = mesh.checkConsistency(meshFile+"-check");
     if (meshOK) 
     {
-      cout << "mesh is OK" << endl;
+      cout << "mesh is OK" << std::endl;
     }
     else
     {
-      cout << "mesh is INCONSISTENT" << endl;
+      cout << "mesh is INCONSISTENT" << std::endl;
     }
     mesh.dump(meshFile+"-dump");
 
@@ -255,23 +255,23 @@ int main(int argc, char** argv)
     FunctionalEvaluator derivErrInt(mesh, derivErrExpr);
 
     double errorSq = errInt.evaluate();
-    cout << "error norm = " << sqrt(errorSq) << endl << endl;
+    cout << "error norm = " << sqrt(errorSq) << std::endl << std::endl;
 
     double derivErrorSq = derivErrInt.evaluate();
-    cout << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;
+    cout << "deriv error norm = " << sqrt(derivErrorSq) << std::endl << std::endl;
 
 
     double fluxErrorSq = evaluateIntegral(mesh, fluxErrExpr);
-    cout << "flux error norm = " << sqrt(fluxErrorSq) << endl << endl;
+    cout << "flux error norm = " << sqrt(fluxErrorSq) << std::endl << std::endl;
 
 
-    cout << "exact flux = " << evaluateIntegral(mesh, exactFluxExpr) << endl;
-    cout << "numerical flux = " << evaluateIntegral(mesh, numFluxExpr) << endl;
+    cout << "exact flux = " << evaluateIntegral(mesh, exactFluxExpr) << std::endl;
+    cout << "numerical flux = " << evaluateIntegral(mesh, numFluxExpr) << std::endl;
 
     Sundance::passFailTest(sqrt(errorSq + derivErrorSq + fluxErrorSq), 1.0e-9);
 
   }
-	catch(exception& e)
+	catch(std::exception& e)
   {
     Sundance::handleException(e);
   }

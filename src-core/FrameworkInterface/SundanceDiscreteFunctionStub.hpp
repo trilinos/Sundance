@@ -38,9 +38,6 @@
 
 namespace Sundance
 {
-using namespace Sundance;
-using std::string;
-using std::ostream;
 
 /** 
  * DiscreteFunctionStub is the base class for discrete functions. 
@@ -66,7 +63,7 @@ class DiscreteFunctionStub : public ListExpr
 {
 public:
   /** */
-  DiscreteFunctionStub(const string& name, 
+  DiscreteFunctionStub(const std::string& name, 
     int tensorOrder=0, int dim=1,
     const RCP<DiscreteFuncDataStub>& data=RCP<DiscreteFuncDataStub>(),
     int listIndex=0);
@@ -76,7 +73,7 @@ public:
     const RCP<DiscreteFuncDataStub>& data=RCP<DiscreteFuncDataStub>());
      
   /** */
-  DiscreteFunctionStub(const string& name, 
+  DiscreteFunctionStub(const std::string& name, 
     const SpectralBasis& sbasis, 
     int tensorOrder=0, int dim=1,
     const RCP<DiscreteFuncDataStub>& data=RCP<DiscreteFuncDataStub>(),
@@ -96,12 +93,12 @@ public:
 
 protected:
   /** */
-  void initTensor(const string& name, 
+  void initTensor(const std::string& name, 
     int tensorOrder, int dim,
     const RCP<DiscreteFuncDataStub>& data,
     int listIndex);
   /** */
-  void initTensorSpectral(const string& name, 
+  void initTensorSpectral(const std::string& name, 
     const SpectralBasis& sbasis, 
     int tensorOrder, int dim,
     const RCP<DiscreteFuncDataStub>& data,

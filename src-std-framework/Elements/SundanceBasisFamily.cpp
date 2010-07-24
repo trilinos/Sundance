@@ -40,8 +40,6 @@
 
 
 using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -163,11 +161,12 @@ void BasisFamily::refEval(
 			  Array<Array<Array<double> > >& result,
 			  int verbosity) const
 {
+  using std::setw;
   Tabs tab;
   SUNDANCE_MSG3(verbosity, tab << "evaluating basis " << *this 
 		<< " with spatial derivative " << deriv);
   ptr()->refEval(cellType, pts, deriv, result, verbosity);
-  string f = deriv.toString()+ "[phi_n]";
+  std::string f = deriv.toString()+ "[phi_n]";
 
   if (verbosity >= 4)
     {
@@ -175,21 +174,21 @@ void BasisFamily::refEval(
       for (int q=0; q<pts.size(); q++)
 	{
 	  Tabs tab2;
-	  Out::os() << tab1 << "evaluation point = " << pts[q] << endl;
+	  Out::os() << tab1 << "evaluation point = " << pts[q] << std::endl;
 	  Out::os() << tab2 << setw(5) << "n";
 	  int nComps = result.size();
 	  if (nComps == 1)
 	    {
-	      Out::os() << setw(20) <<  f << endl;
+	      Out::os() << setw(20) <<  f << std::endl;
 	    }
 	  else
 	    {
 	      for (int d=0; d<nComps; d++)
 		{
-		  string fd = f + "[" + Teuchos::toString(d) + "]";
+		  std::string fd = f + "[" + Teuchos::toString(d) + "]";
 		  Out::os() << setw(20) <<  fd;
 		}
-	      Out::os() << endl;
+	      Out::os() << std::endl;
 	    }
 	  for (int n=0; n<result[0][q].size(); n++)
 	    {
@@ -198,7 +197,7 @@ void BasisFamily::refEval(
 		{
 		  Out::os() << setw(20) <<  result[d][q][n];
 		}
-	      Out::os() << endl;
+	      Out::os() << std::endl;
 	    }
 	}
     }

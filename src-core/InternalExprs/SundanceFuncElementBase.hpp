@@ -46,8 +46,8 @@ namespace Sundance
 using namespace Sundance;
 using namespace Teuchos;
 
-using std::string;
-using std::ostream;
+
+
 
 
 /** 
@@ -62,30 +62,27 @@ class FuncElementBase : public virtual ScalarExpr,
 {
 public:
   /** */
-  FuncElementBase(const string& rootName,
-    const string& suffix,
+  FuncElementBase(const std::string& rootName,
+    const std::string& suffix,
     const FunctionIdentifier& fid);
   /** */
-  FuncElementBase(const string& rootName);
+  FuncElementBase(const std::string& rootName);
 
   /** virtual destructor */
   virtual ~FuncElementBase() {;}
 
   /** Return the name of this function */
-  const string& name() const {return name_;}
+  const std::string& name() const {return name_;}
 
   /** Return the root name of this function */
-  const string& rootName() const {return rootName_;}
+  const std::string& rootName() const {return rootName_;}
 
   /** Return the root name of this function */
-  const string& suffix() const {return suffix_;}
+  const std::string& suffix() const {return suffix_;}
 
   /** Write self in text form */
-  virtual ostream& toText(ostream& os, bool paren) const ;
+  virtual std::ostream& toText(std::ostream& os, bool paren) const ;
 
-  /** Write self in Latex form */
-  virtual ostream& toLatex(ostream& os, bool paren) const ;
-      
   /** Ordering operator for use in transforming exprs to standard form */
   virtual bool lessThan(const ScalarExpr* other) const ;
 
@@ -93,11 +90,11 @@ public:
 protected:
 private:
 
-  string name_;
+  std::string name_;
 
-  string rootName_;
+  std::string rootName_;
 
-  string suffix_;
+  std::string suffix_;
 };
 
 }

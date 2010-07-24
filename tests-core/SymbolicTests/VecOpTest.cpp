@@ -39,9 +39,9 @@ static Time& totalTimer()
 #define TESTER(func, equiv)\
 {\
 Tabs tabs1;\
-cerr << tabs1 << endl << tabs1\
+cerr << tabs1 << std::endl << tabs1\
 << "------------- Testing " #func " -----------"\
-<< endl << tabs1 << endl;\
+<< std::endl << tabs1 << std::endl;\
 bool thisTestIsOK = true;\
 aSave=a;\
   bSave=b;\
@@ -50,11 +50,11 @@ aSave=a;\
 func;\
 error = fabs(a - (equiv));\
 cerr << tabs1 << "vec op value = " << a << " check=" << equiv \
-<< " |value-check|=" << fabs(a-equiv) << endl;\
+<< " |value-check|=" << fabs(a-equiv) << std::endl;\
 if (error > tol)\
 {\
 thisTestIsOK=false;\
-cerr << "value computation FAILED" << endl;\
+cerr << "value computation FAILED" << std::endl;\
 isOK = false;\
 }\
 if (!thisTestIsOK)\
@@ -104,13 +104,13 @@ int main(int argc, char** argv)
       C->setString("C");
       D->setString("D");
 
-      cerr << "A = " << *A << endl;
+      std::cerr << "A = " << *A << std::endl;
 
-      cerr << "B = " << *B << endl;
+      std::cerr << "B = " << *B << std::endl;
 
-      cerr << "C = " << *C << endl;
+      std::cerr << "C = " << *C << std::endl;
 
-      cerr << "D = " << *D << endl;
+      std::cerr << "D = " << *D << std::endl;
 
       double aSave;
       double bSave;
@@ -169,20 +169,20 @@ int main(int argc, char** argv)
 
       if (isOK)
         {
-          cerr << "all tests PASSED!" << endl;
+          std::cerr << "all tests PASSED!" << std::endl;
         }
       else
         {
           stat = -1;
-          cerr << "test FAILED!" << endl;
+          std::cerr << "test FAILED!" << std::endl;
         }
       TimeMonitor::summarize();
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
       stat = -1;
-      cerr << "test FAILED!" << endl;
-      cerr << "detected exception: " << e.what() << endl;
+      std::cerr << "test FAILED!" << std::endl;
+      std::cerr << "detected exception: " << e.what() << std::endl;
 		}
 
   return stat;

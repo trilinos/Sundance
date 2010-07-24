@@ -63,18 +63,18 @@ bool ProductExpr::isHungryDiffOp() const
 
 
 
-const string& ProductExpr::xmlTag() const 
+const std::string& ProductExpr::xmlTag() const 
 {
-	static string timesStr = "Times";
-	static string divideStr = "Divide";
+	static std::string timesStr = "Times";
+	static std::string divideStr = "Divide";
 	if (sign() < 0) return divideStr;
 	return timesStr;
 }
 
-const string& ProductExpr::opChar() const 
+const std::string& ProductExpr::opChar() const 
 {
-	static string timesStr = "*";
-	static string divideStr = "/";
+	static std::string timesStr = "*";
+	static std::string divideStr = "/";
 	if (sign() < 0) return divideStr;
 	return timesStr;
 }

@@ -41,8 +41,6 @@
 namespace Sundance
 {
 using namespace Teuchos;
-using namespace Sundance;
-using std::string;
 
 /** 
  * 

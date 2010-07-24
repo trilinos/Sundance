@@ -57,8 +57,8 @@ namespace Sundance
     /** Apply the filter to an input mesh, returning an output mesh */
     virtual Mesh apply(const Mesh& inputMesh) const ;
 
-    /** Print a short descriptive string */
-    virtual string description() const 
+    /** Print a short descriptive std::string */
+    virtual std::string description() const 
     {return "ExtrusionMeshTransformation[z0=" + Teuchos::toString(z0_)
        + ", z1=" + Teuchos::toString(z1_)
        + ", nz=" + Teuchos::toString(nzLevels_) + "]";}

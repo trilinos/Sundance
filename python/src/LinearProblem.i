@@ -35,10 +35,10 @@ class Block
   %extend Block
   {
     using namespace std;
-    string __str__() 
+    std::string __str__() 
     {
-      string rtn; 
-      stringstream os;
+      std::string rtn; 
+      std::stringstream os;
       os << *self;
       rtn = os.str();
       return rtn;
@@ -48,10 +48,10 @@ class Block
   %extend BlockArray
   {
     using namespace std;
-    string __str__() 
+    std::string __str__() 
     {
-      string rtn; 
-      stringstream os;
+      std::string rtn; 
+      std::stringstream os;
       os << *self;
       rtn = os.str();
       return rtn;

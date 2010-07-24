@@ -128,7 +128,7 @@ int main(int argc, char** argv)
 #endif
       ParameterList noxParams = reader.getParameters();
 
-      cerr << "solver params = " << noxParams << endl;
+      std::cerr << "solver params = " << noxParams << std::endl;
 
       NOXSolver solver(noxParams);
 
@@ -138,10 +138,10 @@ int main(int argc, char** argv)
         {
           double Re = r*finalReynolds/((double) numReynolds-1);
           reynolds.setParameterValue(Re);
-          cerr << "--------------------------------------------------------- " << endl;
-          cerr << " solving for Reynolds Number = " << Re << endl;
-          cerr << " reynolds = " << reynolds << endl;
-          cerr << "--------------------------------------------------------- " << endl;
+          std::cerr << "--------------------------------------------------------- " << std::endl;
+          std::cerr << " solving for Reynolds Number = " << Re << std::endl;
+          std::cerr << " reynolds = " << reynolds << std::endl;
+          std::cerr << "--------------------------------------------------------- " << std::endl;
           // Solve the nonlinear system
           NOX::StatusTest::StatusType status = prob.solve(solver);
           TEST_FOR_EXCEPTION(status != NOX::StatusTest::Converged,
@@ -160,15 +160,15 @@ int main(int argc, char** argv)
        * of the velocity around the boundary. */
       Expr totalVorticityExpr = Integral(interior, u0[1], quad2);
       double totalVorticity = evaluateIntegral(mesh, totalVorticityExpr);
-      cerr << "total vorticity = " << totalVorticity << endl;
+      std::cerr << "total vorticity = " << totalVorticity << std::endl;
 
       double tol = 1.0e-3;
       Sundance::passFailTest(fabs(totalVorticity-1.0), tol);
       TimeMonitor::summarize();
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
-      cerr << e.what() << endl;
+      std::cerr << e.what() << std::endl;
 		}
 
   

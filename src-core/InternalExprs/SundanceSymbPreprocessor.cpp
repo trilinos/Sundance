@@ -198,23 +198,23 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
   SUNDANCE_MSG1(verb,
     tab << "************ setting up variations of expr: " 
     << expr 
-    << endl << tab << "context is " << context 
-    << endl << tab << "conp type is " << compType
-    << endl << tab << "vars are " << vars
-    << endl << tab << "unks are " << unks
-    << endl << tab << "unk parameters " << unkParams
-    << endl << tab << "fixed parameters " << fixedParams
-    << endl << tab << "the eval points for the vars are " 
+    << std::endl << tab << "context is " << context 
+    << std::endl << tab << "conp type is " << compType
+    << std::endl << tab << "vars are " << vars
+    << std::endl << tab << "unks are " << unks
+    << std::endl << tab << "unk parameters " << unkParams
+    << std::endl << tab << "fixed parameters " << fixedParams
+    << std::endl << tab << "the eval points for the vars are " 
     << varEvalPts
-    << endl << tab << "the eval points for the unks are " 
+    << std::endl << tab << "the eval points for the unks are " 
     << unkEvalPts
-    << endl << tab 
+    << std::endl << tab 
     << "the eval points for the unknown parameters are " 
     << unkParamEvalPts 
-    << endl << tab 
+    << std::endl << tab 
     << "the eval points for the fixed parameters are " 
     << fixedParamEvalPts 
-    << tab << endl);
+    << tab << std::endl);
 
   TEST_FOR_EXCEPTION(e==0, InternalError,
     "Non-evaluatable expr " << expr.toString()
@@ -285,8 +285,8 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
       }
     }
   }
-  SUNDANCE_MSG3(verb, tab << endl << tab 
-    << " ************* Finding nonzeros for expr " << endl << tab);
+  SUNDANCE_MSG3(verb, tab << std::endl << tab 
+    << " ************* Finding nonzeros for expr " << std::endl << tab);
   for (int i=0; i<=context.topLevelDiffOrder(); i++)
   {
     Tabs tab2;
@@ -299,34 +299,34 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
   e->registerSpatialDerivs(context, miSet);
   
   SUNDANCE_MSG3(verb,
-    tab << endl << tab 
-    << " ************* finding required functions" << endl << tab);
+    tab << std::endl << tab 
+    << " ************* finding required functions" << std::endl << tab);
 
   Array<Set<MultipleDeriv> > RInput 
     = e->computeInputR(context, activeFuncIDs, spatialDerivs);
 
   SUNDANCE_MSG3(verb,
-    tab << endl << tab 
-    << " ************* Top-level required funcs are " << RInput << endl << tab);
+    tab << std::endl << tab 
+    << " ************* Top-level required funcs are " << RInput << std::endl << tab);
 
 
   SUNDANCE_MSG3(verb,
-    tab << endl << tab 
-    << " ************* Calling determineR()" << endl << tab);
+    tab << std::endl << tab 
+    << " ************* Calling determineR()" << std::endl << tab);
   
   e->determineR(context, RInput);
 
 
   SUNDANCE_MSG3(verb,
-    tab << endl << tab 
-    << " ************* Setting up evaluators for expr " << endl << tab);
+    tab << std::endl << tab 
+    << " ************* Setting up evaluators for expr " << std::endl << tab);
 
   e->setupEval(context);
 
   if (verb>1)
   { 
     SUNDANCE_MSG1(verb,
-      tab << endl << tab 
+      tab << std::endl << tab 
       << " ************* Nonzeros are:");
     e->displayNonzeros(Out::os(), context);
   }
@@ -335,7 +335,7 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
 
 
   SUNDANCE_MSG1(verb,
-    tab << endl << tab 
+    tab << std::endl << tab 
     << "Nonzero deriv set = " << derivs);
 
   return derivs;

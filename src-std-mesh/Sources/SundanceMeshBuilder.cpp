@@ -23,7 +23,7 @@ Mesh MeshBuilder::createMesh(const ParameterList& params)
                      "field name 'type' expected but not found in MeshBuilder "
                      "input parameter list: " << params);
 
-  string type = params.get<string>("type");
+  std::string type = params.get<string>("type");
 
   MeshSource mesher;
 

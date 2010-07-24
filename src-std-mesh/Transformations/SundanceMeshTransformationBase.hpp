@@ -74,7 +74,7 @@ namespace Sundance
  * example of how to write a mesh filter subtype. 
  *
  * Optionally, you can override the description() method to 
- * provide more informative descriptive output than the string
+ * provide more informative descriptive output than the std::string
  * <tt>"MeshTransformationBase[unknown subtype]".</tt>
  */
 class MeshTransformationBase : public Sundance::Handleable<MeshTransformationBase>,
@@ -100,13 +100,13 @@ public:
   /** \name Printable interface */
   //@{
   /** Print to a stream */
-  virtual void print(ostream& os) const {os << description();}
+  virtual void print(std::ostream& os) const {os << description();}
   //@}
 
   /** \name Describable interface */
   //@{
   /** Print to a stream */
-  virtual string description() const 
+  virtual std::string description() const 
     {return "MeshTransformationBase[unknown subtype]";}
   //@}
       

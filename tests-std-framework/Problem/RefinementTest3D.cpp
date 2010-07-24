@@ -87,19 +87,19 @@ int main(int argc, char** argv)
       
       for (int i=0; i<10; i++)
       {
-        Out::os() << "mesh has " << mesh.numCells(0) << " nodes " << endl;
-        Out::os() << "solving" << endl;
+        Out::os() << "mesh has " << mesh.numCells(0) << " nodes " << std::endl;
+        Out::os() << "solving" << std::endl;
         Expr soln = poissonSolve(mesh, vecType, solver);         
-        Out::os() << "computing error estimate" << endl;
+        Out::os() << "computing error estimate" << std::endl;
         Expr err = errEstimate(mesh, vecType, soln, errEst);
         DiscreteSpace ds(mesh, new Lagrange(0), vecType);
         L2Projector pr(ds, soln - exactSoln(new CoordExpr(0)));
         Expr exactDiff = pr.project();
 
-        Out::os() << "error estimate = " << errEst << endl;
+        Out::os() << "error estimate = " << errEst << std::endl;
         errNorm = evaluateIntegral(mesh, Integral(interior, exactDiff*exactDiff, quad4));
         errNorm = std::sqrt(errNorm);
-        Out::os() << "error norm = " << errNorm << endl;
+        Out::os() << "error norm = " << errNorm << std::endl;
 
         FieldWriter w = new VTKWriter("refined-" + Teuchos::toString(i));
         w.addMesh(mesh);
@@ -108,7 +108,7 @@ int main(int argc, char** argv)
         w.addField("err ex", new ExprFieldWrapper(exactDiff));
         w.write();
 
-        Out::os() << "refining" << endl;
+        Out::os() << "refining" << std::endl;
         RefinementTransformation ref(meshType, err, localTol, 1.0e-12);
         mesh = ref.apply(mesh);
         int numRefined = ref.numRefined();
@@ -120,7 +120,7 @@ int main(int argc, char** argv)
     }
 	catch(std::exception& e)
 		{
-      cerr << e.what() << endl;
+      std::cerr << e.what() << std::endl;
 		}
 	Sundance::finalize();
   return Sundance::testStatus(); 

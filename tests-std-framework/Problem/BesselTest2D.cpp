@@ -179,7 +179,7 @@ int main(int argc, char** argv)
       double tol = 4.0e-6;
       Sundance::passFailTest(::sqrt(errorSq), tol);
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
       Sundance::handleException(e);
 		}

@@ -330,7 +330,7 @@ bool IntegralGroup
         InternalError,
         "zero-length coeff vector detected in "
         "quadrature integration branch of "
-        "IntegralGroup::evaluate(). String value is ["
+        "IntegralGroup::evaluate(). std::string value is ["
         << vectorCoeffs[resultIndices_[i]]->str()
         << "]");
 
@@ -351,7 +351,7 @@ bool IntegralGroup
         InternalError,
         "zero-length coeff vector detected in "
         "quadrature integration branch of "
-        "IntegralGroup::evaluate(). String value is ["
+        "IntegralGroup::evaluate(). std::string value is ["
         << vectorCoeffs[resultIndices_[i]]->str()
         << "]");
 

@@ -31,9 +31,9 @@ int main()
   Expr beta0 = new Parameter(2.72, "beta0");
   Expr v = new TestFunctionStub("v");
 
-  Out::os() << "u=" << u << endl;
-  Out::os() << "v=" << v << endl;
-  Out::os() << "alpha=" << alpha << endl;
+  Out::os() << "u=" << u << std::endl;
+  Out::os() << "v=" << v << std::endl;
+  Out::os() << "alpha=" << alpha << std::endl;
 
   Expr x = new CoordExpr(0);
   Expr y = new CoordExpr(1);
@@ -55,8 +55,8 @@ int main()
   EquationSet eqn(w, dum, tuple(v), tuple(u), tuple(u0), 
     dum, dum, alpha, alpha0,  dum2, dum2);
 
-  Out::os() << "num unk params=" << eqn.numUnkParams() << endl;
-  Out::os() << "num fixed params=" << eqn.numFixedParams() << endl;
+  Out::os() << "num unk params=" << eqn.numUnkParams() << std::endl;
+  Out::os() << "num fixed params=" << eqn.numFixedParams() << std::endl;
 
   for (int r=0; r<eqn.numRegions(); r++)
   {
@@ -66,12 +66,12 @@ int main()
     for (DerivSet::const_iterator i=derivs.begin(); i!=derivs.end(); i++)
     {
       const MultipleDeriv& d = *i;
-      Out::os() << "d=" << d << endl;
+      Out::os() << "d=" << d << std::endl;
       for (MultipleDeriv::const_iterator j=d.begin(); j!=d.end(); j++)
       {
         Out::os() << "j=" << *j;
         if (j->isParameter()) Out::os() << " (parameter) ";
-        Out::os() << endl;
+        Out::os() << std::endl;
       }
     }
   }

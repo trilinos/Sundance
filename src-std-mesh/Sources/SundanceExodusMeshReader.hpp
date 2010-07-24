@@ -47,7 +47,7 @@ namespace Sundance
   {
   public:
     /** */
-    ExodusMeshReader(const string& filename, 
+    ExodusMeshReader(const std::string& filename, 
                            const MeshType& meshType,
                            const MPIComm& comm = MPIComm::world());
 
@@ -58,8 +58,8 @@ namespace Sundance
     /** Create a mesh */
     virtual Mesh fillMesh() const ;
 
-    /** Print a short descriptive string */
-    virtual string description() const 
+    /** Print a short descriptive std::string */
+    virtual std::string description() const 
     {return "ExodusMeshReader[file=" + filename() + "]";}
 
     /** Return a ref count pointer to self */
@@ -71,9 +71,9 @@ namespace Sundance
                           Array<int>& elemGID, Array<int>& elemOwner) const ;
     
     /** */
-    string exoFilename_;
+    std::string exoFilename_;
     /** */
-    string parFilename_;
+    std::string parFilename_;
     
                         };
 }

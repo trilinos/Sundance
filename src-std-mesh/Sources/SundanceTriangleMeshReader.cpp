@@ -9,7 +9,7 @@ using namespace Teuchos;
 using namespace Sundance;
 
 
-TriangleMeshReader::TriangleMeshReader(const string& fname,
+TriangleMeshReader::TriangleMeshReader(const std::string& fname,
                                        const MeshType& meshType,
                                        const MPIComm& comm)
   : MeshReaderBase(fname, meshType, comm),
@@ -23,7 +23,7 @@ TriangleMeshReader::TriangleMeshReader(const string& fname,
 
   if (nProc() > 1)
     {
-      string suffix =  "." + Teuchos::toString(nProc()) 
+      std::string suffix =  "." + Teuchos::toString(nProc()) 
         + "." + Teuchos::toString(myRank());
       nodeFilename_ = nodeFilename_ + suffix;
       parFilename_ = parFilename_ + suffix;
@@ -54,7 +54,7 @@ TriangleMeshReader::TriangleMeshReader(const ParameterList& params)
 
   if (nProc() > 1)
     {
-      string suffix =  "." + Teuchos::toString(nProc()) 
+      std::string suffix =  "." + Teuchos::toString(nProc()) 
         + "." + Teuchos::toString(myRank());
       nodeFilename_ = nodeFilename_ + suffix;
       parFilename_ = parFilename_ + suffix;
@@ -103,7 +103,7 @@ void TriangleMeshReader::readParallelInfo(Array<int>& ptGID,
 {
   int nPoints;
   int nElems;
-  string line;
+  std::string line;
   Array<string> tokens;
   try
     {
@@ -224,7 +224,7 @@ Mesh TriangleMeshReader::readNodes(Array<int>& ptGID,
                                    Array<int>& ptOwner) const 
 {
   Mesh mesh;
-  string line;
+  std::string line;
   Array<string> tokens;
   int nPoints = -1;
 
@@ -350,7 +350,7 @@ void TriangleMeshReader::readElems(Mesh& mesh,
 {
   try
     {
-      string line;  
+      std::string line;  
       Array<string> tokens;
       /* Open the element file */
 	
@@ -450,7 +450,7 @@ void TriangleMeshReader::readSides(Mesh& mesh) const
 {
   try
     {
-      string line;  
+      std::string line;  
       Array<string> tokens;
       /* Open the side file */
       RCP<std::ifstream> sideStream;

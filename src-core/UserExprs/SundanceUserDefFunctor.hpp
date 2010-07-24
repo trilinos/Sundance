@@ -45,8 +45,8 @@ namespace Sundance
 using namespace Sundance;
 using namespace Teuchos;
 
-using std::string;
-using std::ostream;
+
+
 
 class EvalVector;
 class EvalManager;
@@ -59,16 +59,16 @@ class UserDefFunctor
 {
 public:
   /** ctor */
-  UserDefFunctor(const string& name, int domainDim, int rangeDim) ;
+  UserDefFunctor(const std::string& name, int domainDim, int rangeDim) ;
 
   /** */
   virtual ~UserDefFunctor(){;}
 
   /** */
-  const string& name(int elemIndex) const {return elemNames_[elemIndex];}
+  const std::string& name(int elemIndex) const {return elemNames_[elemIndex];}
 
   /** */
-  const string& name() const {return name_;}
+  const std::string& name() const {return name_;}
 
 
   /** */
@@ -105,7 +105,7 @@ public:
   void reset() const ;
 
 private:
-  const string name_;
+  const std::string name_;
   Array<string> elemNames_;
   const int domainDim_;
   const int rangeDim_;

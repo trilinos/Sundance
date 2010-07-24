@@ -50,14 +50,14 @@ void writeTable(std::ostream& os, const Tabs& tab,
     os << tab << setw(10) << i << ":";
     for (int j=0; j<cols; j++) 
       os << setw(12) << setprecision(6) << a[i*cols+j];
-    os << endl;
+    os << std::endl;
   }
   int n = a.size() - rows * cols;
   if (n==0) return ;
   os << tab << setw(10) << rows << ":" ;
   for (int j=0; j<n; j++) 
     os << setw(12) << setprecision(6) << a[rows*cols+j];
-  os << endl;
+  os << std::endl;
 }
 
 
@@ -71,14 +71,14 @@ void writeTable(std::ostream& os, const Tabs& tab,
     os << tab << setw(10) << i << ":";
     for (int j=0; j<cols; j++) 
       os << setw(10) << a[i*cols+j];
-    os << endl;
+    os << std::endl;
   }
   int n = a.size() - rows * cols;
   if (n==0) return ;
   os << tab << setw(10) << rows << ":" ;
   for (int j=0; j<n; j++) 
     os << setw(10) << a[rows*cols+j];
-  os << endl;
+  os << std::endl;
 }
 
 

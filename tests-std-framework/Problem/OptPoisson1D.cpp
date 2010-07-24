@@ -129,11 +129,11 @@ int main(int argc, char** argv)
       FunctionalEvaluator alphaInt(mesh, alphaErr);
       FunctionalEvaluator lambdaInt(mesh, lambdaErr);
 
-      cerr << "|u - u_exact| = " << sqrt(uInt.evaluate()) << endl;
-      cerr << "|lambda - lambda_exact| = " 
-           << sqrt(lambdaInt.evaluate()) << endl;
-      cerr << "|alpha - alpha_exact| = " 
-           << sqrt(alphaInt.evaluate()) << endl;
+      std::cerr << "|u - u_exact| = " << sqrt(uInt.evaluate()) << std::endl;
+      std::cerr << "|lambda - lambda_exact| = " 
+           << sqrt(lambdaInt.evaluate()) << std::endl;
+      std::cerr << "|alpha - alpha_exact| = " 
+           << sqrt(alphaInt.evaluate()) << std::endl;
 
       double tol = 1.0e-5;
       Sundance::passFailTest(sqrt(uInt.evaluate()) 
@@ -141,9 +141,9 @@ int main(int argc, char** argv)
                              + sqrt(alphaInt.evaluate()),
                              tol);
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
-      cerr << e.what() << endl;
+      std::cerr << e.what() << std::endl;
 		}
   
 }

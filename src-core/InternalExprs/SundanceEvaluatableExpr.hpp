@@ -51,8 +51,8 @@ using namespace Sundance;
 using namespace Teuchos;
 using namespace Sundance;
 
-using std::string;
-using std::ostream;
+
+
 class Expr;
 class MultipleDeriv;
 
@@ -130,7 +130,7 @@ public:
   const RCP<Evaluator>& evaluator(const EvalContext& context) const; 
 
   /** */
-  virtual void showSparsity(ostream& os, 
+  virtual void showSparsity(std::ostream& os, 
     const EvalContext& context) const ;
 
 
@@ -213,7 +213,7 @@ public:
   const Set<MultipleDeriv>& findC(const EvalContext& context) const ;
 
   /** */
-  virtual void displayNonzeros(ostream& os, 
+  virtual void displayNonzeros(std::ostream& os, 
     const EvalContext& context) const ;
 
 
@@ -276,7 +276,7 @@ protected:
   const Set<MultiIndex>& activeSpatialDerivs(const EvalContext& context) const ;
 
   /** */
-  string derivType(const DerivSubsetSpecifier& dss) const;
+  std::string derivType(const DerivSubsetSpecifier& dss) const;
 
 private:
       

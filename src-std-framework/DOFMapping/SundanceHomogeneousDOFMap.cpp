@@ -827,13 +827,13 @@ void HomogeneousDOFMap::computeOffsets(int dim, int localCount)
 
 
 
-void HomogeneousDOFMap::print(ostream& os) const
+void HomogeneousDOFMap::print(std::ostream& os) const
 {
   int myRank = mesh().comm().getRank();
 
   Tabs tabs;
 
-  os << "DOFS = " << dofs_ << endl;
+  os << "DOFS = " << dofs_ << std::endl;
 
   for (int p=0; p<mesh().comm().getNProc(); p++)
     {
@@ -842,23 +842,23 @@ void HomogeneousDOFMap::print(ostream& os) const
       if (p == myRank)
         {
           os << tabs << 
-            "========= DOFMap on proc p=" << p << " =============" << endl;
+            "========= DOFMap on proc p=" << p << " =============" << std::endl;
           for (int d=dim_; d>=0; d--)
             {
               Tabs tabs1;
-              os << tabs1 << "dimension = " << d << endl;
+              os << tabs1 << "dimension = " << d << std::endl;
               for (int c=0; c<mesh().numCells(d); c++)
                 {
                   Tabs tabs2;
                   os << tabs2 << "Cell LID=" << c << " GID=" 
-                     << mesh().mapLIDToGID(d, c) << endl;
+                     << mesh().mapLIDToGID(d, c) << std::endl;
                   for (int f=0; f<funcIDList().size(); f++)
                     {
                       Tabs tabs3;
                       Array<int> dofs;
                       getDOFsForCell(d, c, funcIDList()[f], dofs);
                       os << tabs3 << "f=" << funcIDList()[f] << " " 
-                         << dofs << endl;
+                         << dofs << std::endl;
                       if (false)
                         {
                           os << tabs3 << "{";
@@ -868,7 +868,7 @@ void HomogeneousDOFMap::print(ostream& os) const
                               if (isLocalDOF(dofs[i])) os << "L";
                               else os << "R";
                             }
-                          os << "}" << endl;
+                          os << "}" << std::endl;
                         }
                     }
                 }

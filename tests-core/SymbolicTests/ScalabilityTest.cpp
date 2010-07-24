@@ -23,10 +23,10 @@
 
 using namespace Sundance;
 using namespace SundanceTesting;
-using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
 
+using std::cout;
+using std::exception;
 
 static Time& totalTimer() 
 {
@@ -112,12 +112,12 @@ int main(int argc, char** argv)
           double t1 = stopwatch.wallTime();
           int nNodes = tester.numNodes();
           int nnz = tester.numNonzeros();
-          cerr << n << "   " << nNodes << "   " 
-               << nnz << "    " << t1-t0 << endl;
+          std::cerr << n << "   " << nNodes << "   " 
+               << nnz << "    " << t1-t0 << std::endl;
           TimeMonitor::summarize();
         }
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
 			Out::println(e.what());
 		}

@@ -24,7 +24,6 @@
 namespace Sundance {
 
   using namespace Teuchos;
-  using namespace std;
   using namespace TSFExtended;
 
   /** This builds a transformation for one discrete space <br>

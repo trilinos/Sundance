@@ -145,24 +145,24 @@ int main(int argc, char** argv)
       verbosity<Assembler>() = VerbExtreme;
 #endif
 
-      cerr << "Expr with children verbosity = " << verbosity<ExprWithChildren>() << endl;
+      std::cerr << "Expr with children verbosity = " << verbosity<ExprWithChildren>() << std::endl;
       /* We can now set up the linear problem! */
       
       LinearProblem prob(mesh, eqn, bc, List(vx, vy , q), 
                          List(ux ,uy ,p), vecType);
 	 
-      cerr << "Expr with children verbosity = " << verbosity<ExprWithChildren>() << endl;
+      std::cerr << "Expr with children verbosity = " << verbosity<ExprWithChildren>() << std::endl;
 
 
 #ifdef BLAHBLAH     
-      cout << "row map = " << endl;
+      cout << "row map = " << std::endl;
       prob.rowMap(0)->print(cout);
 #endif
      
 
       ParameterXMLFileReader reader("bicgstab.xml");
       ParameterList solverParams = reader.getParameters();
-      cerr << "params = " << solverParams << endl;
+      std::cerr << "params = " << solverParams << std::endl;
 
 
       LinearSolver<double> solver 
@@ -200,16 +200,16 @@ int main(int argc, char** argv)
 
       double errorXSq = errXInt.evaluate();
       double errorYSq = errYInt.evaluate();
-      cerr << "error norm |u_x - u_x(0)| = " << sqrt(errorXSq) << endl << endl;
-      cerr << "error norm |u_y - u_y(0)| = " << sqrt(errorYSq) << endl << endl;
+      std::cerr << "error norm |u_x - u_x(0)| = " << sqrt(errorXSq) << std::endl << std::endl;
+      std::cerr << "error norm |u_y - u_y(0)| = " << sqrt(errorYSq) << std::endl << std::endl;
       
       double tol = 1.0e-1;
       Sundance::passFailTest(sqrt(errorXSq+errorYSq), tol); 
 //*/
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
-      cerr << e.what() << endl;
+      std::cerr << e.what() << std::endl;
 		}
   Sundance::finalize(); 
   return Sundance::testStatus(); 

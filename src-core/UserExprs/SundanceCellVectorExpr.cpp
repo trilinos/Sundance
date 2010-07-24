@@ -74,7 +74,7 @@ Expr CellTangentExpr(int dimension, const std::string& name)
 CellVectorExpr::CellVectorExpr(int tangentBasisIndex, 
 			       int tangentComponentIndex,
 			       int dim,
-			       const string& name)
+			       const std::string& name)
   : EvaluatableExpr(), name_(name), dim_(dim), type_(CellTangentSpace),
     basisMemberIndex_(tangentBasisIndex), 
     componentIndex_(tangentComponentIndex)
@@ -82,7 +82,7 @@ CellVectorExpr::CellVectorExpr(int tangentBasisIndex,
 
 
 CellVectorExpr::CellVectorExpr(int normalComponentIndex, int dim,
-  const string& name)
+  const std::string& name)
   : EvaluatableExpr(), name_(name), dim_(dim), type_(CellNormalVector),
     basisMemberIndex_(-1), componentIndex_(normalComponentIndex)
 {}
@@ -123,17 +123,12 @@ CellVectorExpr::internalFindW(int order, const EvalContext& context) const
 
 
 
-ostream& CellVectorExpr::toText(ostream& os, bool paren) const
+std::ostream& CellVectorExpr::toText(std::ostream& os, bool paren) const
 {
   os << name();
   return os;
 }
 
 
-ostream& CellVectorExpr::toLatex(ostream& os, bool paren) const
-{
-  os << name();
-  return os;
-}
 
 

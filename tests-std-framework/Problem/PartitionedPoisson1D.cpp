@@ -48,7 +48,7 @@ CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
 
     if (np > 1)
     {
-      cout << "parallel partioned poisson test INACTIVE" << endl;
+      cout << "parallel partioned poisson test INACTIVE" << std::endl;
       return 0;
     }
     else
@@ -100,7 +100,7 @@ CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
       Vector<double> b = prob.getRHS()[0];
       b.scale(-1.0);
 
-      cout << "b=" << b << endl;
+      cout << "b=" << b << std::endl;
 
 #ifdef HAVE_CONFIG_H
       ParameterXMLFileReader reader(searchForFile("SolverParameters/aztec-ifpack.xml"));;
@@ -108,7 +108,7 @@ CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
       ParameterXMLFileReader reader("aztec-ifpack.xml");
 #endif
       ParameterList solverParams = reader.getParameters();
-      cout << "params = " << solverParams << endl;
+      cout << "params = " << solverParams << std::endl;
 
 
       LinearSolver<double> solver 
@@ -126,8 +126,8 @@ CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
       Vector<double> c = bi - Aib * xb;
       solver.solve(Aii, c, xi);
 
-      cout << "x_i=" << endl << xi << endl;
-      cout << "x_b=" << endl << xb << endl;
+      cout << "x_i=" << std::endl << xi << std::endl;
+      cout << "x_b=" << std::endl << xb << std::endl;
 
       Vector<double> solnVec = prob.convertToMonolithicVector(tuple(xi), tuple(xb));
       Expr soln = prob.formSolutionExpr(tuple(solnVec));
@@ -148,15 +148,15 @@ CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
         new GaussianQuadrature(2));
 
       double errorSq = evaluateIntegral(mesh, errExpr);
-      cout << "error norm = " << sqrt(errorSq) << endl << endl;
+      cout << "error norm = " << sqrt(errorSq) << std::endl << std::endl;
 
 
 
       double derivErrorSq = evaluateIntegral(mesh, derivErrExpr);
-      cout << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;
+      cout << "deriv error norm = " << sqrt(derivErrorSq) << std::endl << std::endl;
 
       double fluxErrorSq = evaluateIntegral(mesh, fluxErrExpr);
-      cout << "flux error norm = " << sqrt(fluxErrorSq) << endl << endl;
+      cout << "flux error norm = " << sqrt(fluxErrorSq) << std::endl << std::endl;
 
       Expr exactFluxExpr = Integral(leftPoint, 
         dx*exactSoln,
@@ -166,15 +166,15 @@ CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
         dx*soln,
         new GaussianQuadrature(2));
 
-      cout << "exact flux = " << evaluateIntegral(mesh, exactFluxExpr) << endl;
-      cout << "computed flux = " << evaluateIntegral(mesh, numFluxExpr) << endl;
+      cout << "exact flux = " << evaluateIntegral(mesh, exactFluxExpr) << std::endl;
+      cout << "computed flux = " << evaluateIntegral(mesh, numFluxExpr) << std::endl;
 
 
       double tol = 1.0e-12;
       Sundance::passFailTest(sqrt(errorSq + derivErrorSq + fluxErrorSq), tol);
     }
   }
-	catch(exception& e)
+	catch(std::exception& e)
   {
     Sundance::handleException(e);
   }

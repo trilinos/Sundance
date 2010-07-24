@@ -47,8 +47,8 @@ namespace Sundance
     class DiscreteFuncElement;
     using namespace Teuchos;
 
-    using std::string;
-    using std::ostream;
+    
+    
 
     /** 
      * SymbolicFuncElement represents a scalar-valued element of a (possibly)
@@ -61,8 +61,8 @@ namespace Sundance
     {
     public:
       /** */
-      SymbolicFuncElement(const string& name, 
-        const string& suffix,
+      SymbolicFuncElement(const std::string& name, 
+        const std::string& suffix,
         const FunctionIdentifier& fid,
         const RCP<const CommonFuncDataStub>& data);
       

@@ -73,12 +73,12 @@ public:
     Expr soln, int verb) const ;
 
   /** Filename for dump of bad matrix */
-  static string& badMatrixFilename() 
-    {static string rtn = "badMatrix.dat"; return rtn;}
+  static std::string& badMatrixFilename() 
+    {static std::string rtn = "badMatrix.dat"; return rtn;}
 
   /** Filename for dump of bad vector */
-  static string& badVectorFilename() 
-    {static string rtn = "badVector.dat"; return rtn;}
+  static std::string& badVectorFilename() 
+    {static std::string rtn = "badVector.dat"; return rtn;}
 
   /** Whether a solve failure throws an exception */
   static bool& solveFailureIsFatal()

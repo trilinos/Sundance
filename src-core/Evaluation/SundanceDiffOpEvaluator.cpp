@@ -75,9 +75,9 @@ DiffOpEvaluator
   {
     Tabs tab0;
   
-    SUNDANCE_MSG2(verb, tab0 << "return sparsity " << endl << *(this->sparsity)());
+    SUNDANCE_MSG2(verb, tab0 << "return sparsity " << std::endl << *(this->sparsity)());
 
-    SUNDANCE_MSG2(verb, tab0 << "argument sparsity subset " << endl 
+    SUNDANCE_MSG2(verb, tab0 << "argument sparsity subset " << std::endl 
       << *(argSparsitySuperset()));
 
     Map<const DiscreteFuncElementEvaluator*, int> funcToIndexMap;
@@ -303,31 +303,31 @@ DiffOpEvaluator
 
   if (verb > 2)
   {
-    Out::os() << tabs << "instruction tables for summing spatial/functional chain rule" << endl;
+    Out::os() << tabs << "instruction tables for summing spatial/functional chain rule" << std::endl;
     for (int i=0; i<this->sparsity()->numDerivs(); i++)
     {
       Tabs tab1;
-      Out::os() << tab1 << "deriv " << sparsity()->deriv(i) << endl;
+      Out::os() << tab1 << "deriv " << sparsity()->deriv(i) << std::endl;
       {
         Tabs tab2;
         Out::os() << tab2 << "constant monomials: " << constantMonomials_[i]
-                  << endl;
+                  << std::endl;
         Out::os() << tab2 << "vector monomials: " << vectorMonomials_[i]
-                  << endl;
+                  << std::endl;
             
-        Out::os() << tab2 << "constant coeff functions: " << endl;
+        Out::os() << tab2 << "constant coeff functions: " << std::endl;
         for (int j=0; j<constantFuncCoeffs_[i].size(); j++)
         {
           Tabs tab3;
           Out::os() << tab3 << "func=" << constantCoeffFuncIndices_[i][j]
-                    << " mi=" << constantCoeffFuncMi_[i][j] << endl;
+                    << " mi=" << constantCoeffFuncMi_[i][j] << std::endl;
         } 
-        Out::os() << tab2 << "vector coeff functions: " << endl;
+        Out::os() << tab2 << "vector coeff functions: " << std::endl;
         for (int j=0; j<vectorFuncCoeffs_[i].size(); j++)
         {
           Tabs tab3;
           Out::os() << tab3 << "func=" << vectorCoeffFuncIndices_[i][j]
-                    << " mi=" << vectorCoeffFuncMi_[i][j] << endl;
+                    << " mi=" << vectorCoeffFuncMi_[i][j] << std::endl;
         }
             
       }
@@ -435,7 +435,7 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
   if (mgr.verb() > 2)
   {
     Tabs tab1;
-    Out::os() << tabs << "DiffOp operand results" << endl;
+    Out::os() << tabs << "DiffOp operand results" << std::endl;
     argSparsitySuperset()->print(Out::os(), argVectorResults,
       argConstantResults);
   }
@@ -622,7 +622,7 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
 
   if (mgr.verb() > 2)
   {
-    Out::os() << tabs << "operand results" << endl;
+    Out::os() << tabs << "operand results" << std::endl;
     sparsity()->print(Out::os(), vectorResults,
       constantResults);
   }

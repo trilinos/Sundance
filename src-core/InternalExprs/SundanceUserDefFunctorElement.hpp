@@ -46,8 +46,8 @@ namespace Sundance
 using namespace Sundance;
 using namespace Teuchos;
 
-using std::string;
-using std::ostream;
+
+
 
 /**
  * Scalar-valued element of a vector-valued functor
@@ -63,10 +63,10 @@ public:
   virtual ~UserDefFunctorElement(){;}
 
   /** */
-  const string& name() const {return master_->name(myIndex());}
+  const std::string& name() const {return master_->name(myIndex());}
 
   /** */
-  const string& masterName() const {return master_->name();}
+  const std::string& masterName() const {return master_->name();}
 
   /** */
   void evalArgDerivs(int maxOrder, 

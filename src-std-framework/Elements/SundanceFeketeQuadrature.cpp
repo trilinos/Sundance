@@ -196,7 +196,7 @@ void FeketeQuadrature::getAdaptedWeights(const CellType& cellType, int cellDim,
 	weightsChanged = true;
 	std::cout << "Geschnitten!" << std::endl;
 	// Number of investigated triangles
-	unsigned int nTris = 1;
+	int nTris = 1;
 
 	// Create stack
 	std::stack<Point> s;
@@ -300,7 +300,7 @@ void FeketeQuadrature::getAdaptedWeights(const CellType& cellType, int cellDim,
 					vec2, vec1ref, vec2ref, globalCurve, results2);
 
 			// Check results
-			for (unsigned int i = 0; i < results2.size(); i++)
+			for (int i = 0; i < results2.size(); i++)
 			{
 				if (::fabs(results2[i] - results1[i]) > sqrt(0.5 * area * tol))
 				{
@@ -387,7 +387,7 @@ void FeketeQuadrature::integrateRegion(const CellType& cellType,
 	// Get 'inner integration' points
 	Array<double> innerQuadPts;
 	Array<double> innerQuadWgts;
-	unsigned int nrInnerQuadPts = innerOrder + 3;
+	int nrInnerQuadPts = innerOrder + 3;
 	nrInnerQuadPts = (nrInnerQuadPts + nrInnerQuadPts % 2) / 2;
 	GaussLobatto1D innerQuad(nrInnerQuadPts, 0.0, 1.0);
 
@@ -475,10 +475,10 @@ void FeketeQuadrature::evaluateAllBasisFunctions(const Point& q,
 
 	// ToDo: BLAS dgemv (with matrix transposed) ?
 	// For each Lagrange basis function
-	for (unsigned int m = 0; m < nFeketePts; m++)
+	for (int m = 0; m < nFeketePts; m++)
 	{
 		// Sum up weighted PKD polynomials
-		for (unsigned int n = 0; n < nFeketePts; n++)
+		for (int n = 0; n < nFeketePts; n++)
 		{
 			// Coefficients of m-th basis function are in m-th column
 			result[m] += _basisCoeffs[m + n * nFeketePts] * pkdVals[n];

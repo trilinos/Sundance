@@ -13,7 +13,7 @@ void Point::boundsCheck(int i) const
 
 namespace std
 {
-  ostream& operator<<(ostream& os, const Point& point)
+  ostream& operator<<(std::ostream& os, const Point& point)
   {
     os << "(";
     os.precision(12);

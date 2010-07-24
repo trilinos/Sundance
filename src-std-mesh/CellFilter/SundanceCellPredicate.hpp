@@ -71,7 +71,7 @@ public:
   XMLObject toXML() const {return ptr()->toXML();}
 
   /** */
-  string description() const {return ptr()->description();}
+  std::string description() const {return ptr()->description();}
 
 
 
@@ -89,9 +89,9 @@ public:
 
 namespace std
 {
-inline ostream& operator<<(ostream& os, const Sundance::CellPredicate& pred)
+inline ostream& operator<<(std::ostream& os, const Sundance::CellPredicate& pred)
 {
-  os << pred.toXML() << endl;
+  os << pred.toXML() << std::endl;
   return os;
 }
 }

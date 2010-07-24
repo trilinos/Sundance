@@ -71,7 +71,7 @@ public:
    * otherwise, throw an exception. */
   int direction() const ;
 
-  /** Write a string representation */
+  /** Write a std::string representation */
   std::string toString() const ;
 
   /** Comparison operator for use in sorted containers */
@@ -99,9 +99,9 @@ AlgebraSpecifier coordAlgebraSpec(int dir);
 namespace std
 {
 /** \relates AlgebraSpecifier */
-ostream& operator<<(ostream& os, const Sundance::AlgebraSpecifier& vcs);
+ostream& operator<<(std::ostream& os, const Sundance::AlgebraSpecifier& vcs);
 /** \relates AlgebraSpecifier */
-ostream& operator<<(ostream& os, const Sundance::AlgebraType& vct);
+ostream& operator<<(std::ostream& os, const Sundance::AlgebraType& vct);
 }
 
 

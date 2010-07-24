@@ -55,7 +55,7 @@ Expr readNodalFields(const MeshSource& mesher, const Mesh& mesh,
 
 
 
-Expr readSerialGridField(const string& gridFile, 
+Expr readSerialGridField(const std::string& gridFile, 
   double ax, double bx,
   double ay, double by,
   const VectorType<double>& vecType,
@@ -240,7 +240,7 @@ void serialPartition(
   /* Now write the submeshes using the specified writer */
   for (int p=0; p<numProc; p++)
   {
-    Out::os() << "writing part=" << p << " of " << numProc << endl; 
+    Out::os() << "writing part=" << p << " of " << numProc << std::endl; 
     FieldWriter writer = new ExodusWriter(outfile);
     /* Set the mesh for writing */
     writer.impersonateParallelProc(numProc, p);

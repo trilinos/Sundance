@@ -42,8 +42,8 @@ int main(int argc, char** argv)
     CommandLineProcessor clp;
     TimeMonitor t(totalTimer());
 
-    string infile="wheel";
-    string outfile=infile;
+    std::string infile="wheel";
+    std::string outfile=infile;
     int numProc = 4;
     bool help=false;
     clp.setOption("i", &infile, "Input mesh filename");
@@ -63,8 +63,8 @@ int main(int argc, char** argv)
     if (help)
     {
       cout << "Usage: partitionExo --i=inputFilename --o=outputFilename "
-        "--np=numberOfPartitions" << endl;
-      cout << "Do not include .exo suffix on filenames" << endl;
+        "--np=numberOfPartitions" << std::endl;
+      cout << "Do not include .exo suffix on filenames" << std::endl;
     }
     else
     {

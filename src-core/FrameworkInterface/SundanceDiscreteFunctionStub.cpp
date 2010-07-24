@@ -42,7 +42,7 @@ using namespace Teuchos;
 
 
 
-DiscreteFunctionStub::DiscreteFunctionStub(const string& name, 
+DiscreteFunctionStub::DiscreteFunctionStub(const std::string& name, 
   int tensorOrder,
   int dim, 
   const RCP<DiscreteFuncDataStub>& data,
@@ -52,7 +52,7 @@ DiscreteFunctionStub::DiscreteFunctionStub(const string& name,
   initTensor(name, tensorOrder, dim, data,  listIndex);
 }
 
-void DiscreteFunctionStub::initTensor(const string& name, 
+void DiscreteFunctionStub::initTensor(const std::string& name, 
   int tensorOrder,
   int dim, 
   const RCP<DiscreteFuncDataStub>& data,
@@ -67,7 +67,7 @@ void DiscreteFunctionStub::initTensor(const string& name,
   {
     for (int d=0; d<dim; d++)
     {
-      string suffix="[" + Teuchos::toString(d) + "]";
+      std::string suffix="[" + Teuchos::toString(d) + "]";
       FunctionIdentifier fid = myFid.createComponent(d);
       append(new DiscreteFuncElement(data, name, suffix, fid, listIndex));
     }
@@ -80,7 +80,7 @@ void DiscreteFunctionStub::initTensor(const string& name,
 }
 
 
-void DiscreteFunctionStub::initTensorSpectral(const string& name, 
+void DiscreteFunctionStub::initTensorSpectral(const std::string& name, 
   const SpectralBasis& sbasis, 
   int tensorOrder,
   int dim, 
@@ -101,7 +101,7 @@ void DiscreteFunctionStub::initTensorSpectral(const string& name,
     Array<Expr> coeffs(sbasis.nterms());
     for (int n=0; n<sbasis.nterms(); n++)
     {
-      string suffix="";
+      std::string suffix="";
       if (sbasis.nterms()>1) suffix = "[" + Teuchos::toString(n) + "]";
       coeffs[n] = new DiscreteFuncElement(data, name, suffix, cFid[n], listIndex[n]);
     }
@@ -111,7 +111,7 @@ void DiscreteFunctionStub::initTensorSpectral(const string& name,
   {
     for (int d=0; d<dim; d++)
     {
-      string suffix="[" + Teuchos::toString(d) + "]";
+      std::string suffix="[" + Teuchos::toString(d) + "]";
       Array<Expr> coeffs(sbasis.nterms());
       for (int n=0; n<sbasis.nterms(); n++)
       {
@@ -149,7 +149,7 @@ DiscreteFunctionStub::DiscreteFunctionStub(const Array<string>& name,
   {
     for (int i=0; i<tensorStructure.size(); i++)
     {
-      string nm;
+      std::string nm;
       if (name.size()==1) nm = name[0] + "[" + Teuchos::toString(i) + "]";
       else nm = name[i];
       append(new DiscreteFunctionStub(
@@ -163,7 +163,7 @@ DiscreteFunctionStub::DiscreteFunctionStub(const Array<string>& name,
 
 
 
-DiscreteFunctionStub::DiscreteFunctionStub(const string& name, 
+DiscreteFunctionStub::DiscreteFunctionStub(const std::string& name, 
   const SpectralBasis& sbasis, int tensorOrder, int dim,
   const RCP<DiscreteFuncDataStub>& data,
   int listIndex)
@@ -191,7 +191,7 @@ DiscreteFunctionStub::DiscreteFunctionStub(const Array<string>& name,
   {
     for (int i=0; i<tensorStructure.size(); i++)
     {
-      string nm;
+      std::string nm;
       if (name.size()==1) nm = name[0] + "[" + Teuchos::toString(i) + "]";
       else nm = name[i];
       append(new DiscreteFunctionStub(

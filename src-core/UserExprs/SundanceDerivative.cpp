@@ -48,17 +48,12 @@ bool Derivative::lessThan(const ScalarExpr* other) const
 }
 
 
-ostream& Derivative::toText(ostream& os, bool /* paren */) const 
+std::ostream& Derivative::toText(std::ostream& os, bool /* paren */) const 
 {
 	os << "D[" << m_.toString() << "]";
 	return os;
 }
 
-ostream& Derivative::toLatex(ostream& os, bool /* paren */) const 
-{
-	os << "D^{" << m_.toString() << "}";
-	return os;
-}
 
 XMLObject Derivative::toXML() const 
 {

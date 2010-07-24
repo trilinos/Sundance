@@ -38,52 +38,52 @@
 
 namespace Sundance
 {
-  using namespace Teuchos;
-  using namespace TSFExtended;
+using namespace Teuchos;
+using namespace TSFExtended;
   
-  /** 
-   * 
-   */
-  class Block 
-  {
-  public:
-    /** */
-    Block()
-      : expr_(), vecType_() {;}
-
-    /** */
-    Block(const Expr& expr, const VectorType<double>& vecType)
-      : expr_(expr), vecType_(vecType) {;}
-
-    /** */
-    const Expr& expr() const {return expr_;}
-
-    /** */
-    const VectorType<double>& vecType() const {return vecType_;}
-
-  private:
-    Expr expr_;
-
-    VectorType<double> vecType_;
-  };
+/** 
+ * 
+ */
+class Block 
+{
+public:
+  /** */
+  Block()
+    : expr_(), vecType_() {;}
 
   /** */
-  class BlockArray : public Array<Block>
-  {
-  public:
-    /** */
-    BlockArray(const Array<Block>& a) : Array<Block>(a) {;}
-    /** explicit conversion needed for python wrappers */
-    BlockArray(int n) : Array<Block>(n) {;}
+  Block(const Expr& expr, const VectorType<double>& vecType)
+    : expr_(expr), vecType_(vecType) {;}
 
-  };
+  /** */
+  const Expr& expr() const {return expr_;}
 
-  /** \relates Block */
-  inline ostream& operator<<(ostream& os, const Block& block)
-  {
-    os << "Block[" << block.expr() << ", " << block.vecType() << "]";
-    return os;
-  }
+  /** */
+  const VectorType<double>& vecType() const {return vecType_;}
+
+private:
+  Expr expr_;
+
+  VectorType<double> vecType_;
+};
+
+/** */
+class BlockArray : public Array<Block>
+{
+public:
+  /** */
+  BlockArray(const Array<Block>& a) : Array<Block>(a) {;}
+  /** explicit conversion needed for python wrappers */
+  BlockArray(int n) : Array<Block>(n) {;}
+
+};
+
+/** \relates Block */
+inline std::ostream& operator<<(std::ostream& os, const Block& block)
+{
+  os << "Block[" << block.expr() << ", " << block.vecType() << "]";
+  return os;
+}
 
 }
 

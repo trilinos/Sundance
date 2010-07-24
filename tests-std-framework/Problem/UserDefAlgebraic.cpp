@@ -147,7 +147,7 @@ int main(int argc, char** argv)
 #endif
       ParameterList noxParams = reader.getParameters();
 
-      cerr << "solver params = " << noxParams << endl;
+      std::cerr << "solver params = " << noxParams << std::endl;
 
       NOXSolver solver(noxParams);
 
@@ -158,14 +158,14 @@ int main(int argc, char** argv)
                               new GaussianQuadrature(2));
 
       double errorSq = evaluateIntegral(mesh, errExpr);
-      cerr << "error norm = " << sqrt(errorSq) << endl << endl;
+      std::cerr << "error norm = " << sqrt(errorSq) << std::endl << std::endl;
 
       double tol = 1.0e-8;
       Sundance::passFailTest(sqrt(errorSq), tol);
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
-      cerr << e.what() << endl;
+      std::cerr << e.what() << std::endl;
 		}
   Sundance::finalize(); return Sundance::testStatus(); 
 }

@@ -74,18 +74,18 @@ bool SumExpr::isHungryDiffOp() const
 }
 
 
-const string& SumExpr::xmlTag() const 
+const std::string& SumExpr::xmlTag() const 
 {
-	static string plusStr = "Plus";
-	static string minusStr = "Minus";
+	static std::string plusStr = "Plus";
+	static std::string minusStr = "Minus";
 	if (sign() < 0) return minusStr;
 	return plusStr;
 }
 
-const string& SumExpr::opChar() const 
+const std::string& SumExpr::opChar() const 
 {
-	static string plusStr = "+";
-	static string minusStr = "-";
+	static std::string plusStr = "+";
+	static std::string minusStr = "-";
 	if (sign() < 0) return minusStr;
 	return plusStr;
 }

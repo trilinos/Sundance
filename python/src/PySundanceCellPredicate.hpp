@@ -23,7 +23,7 @@ namespace Sundance
     bool operator()(const Sundance::Point& x) const ;
 
     /** */
-    string description() const ;
+    std::string description() const ;
 
   protected:
     PyObject* setEvalOp(PyObject* pyClass);

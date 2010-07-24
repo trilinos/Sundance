@@ -96,8 +96,8 @@ int main(int argc, char** argv)
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, v, u, vecType); 
 
-      cerr << "matrix = " << endl << prob.getOperator() << endl;
-      cerr << "rhs = " << endl << prob.getRHS() << endl;
+      std::cerr << "matrix = " << std::endl << prob.getOperator() << std::endl;
+      std::cerr << "rhs = " << std::endl << prob.getRHS() << std::endl;
 
       TEST_FOR_EXCEPT(true);
 #ifdef HAVE_CONFIG_H
@@ -106,7 +106,7 @@ int main(int argc, char** argv)
       ParameterXMLFileReader reader("bicgstab.xml");
 #endif
       ParameterList solverParams = reader.getParameters();
-      cerr << "params = " << solverParams << endl;
+      std::cerr << "params = " << solverParams << std::endl;
 
 
       LinearSolver<double> solver 
@@ -121,12 +121,12 @@ int main(int argc, char** argv)
                               quad);
 
       double errorSq = evaluateIntegral(mesh, errExpr);
-      cerr << "error norm = " << sqrt(errorSq) << endl << endl;
+      std::cerr << "error norm = " << sqrt(errorSq) << std::endl << std::endl;
 
       double tol = 1.0e-12;
       Sundance::passFailTest(sqrt(errorSq), tol);
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
       Sundance::handleException(e);
 		}

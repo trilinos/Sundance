@@ -52,7 +52,7 @@ namespace SundanceTesting
   public:
     /** */
     TestDiscreteFunction(const ADField& field, 
-                         const string& name="")
+                         const std::string& name="")
       :  DiscreteFunctionStub(name, 0,1, rcp(new TestDiscreteFuncData(field))) {;}
    
     /** virtual destructor */

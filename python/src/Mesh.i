@@ -42,7 +42,7 @@ namespace Sundance
   %extend Point
   {
     using namespace std;
-    string __str__() 
+    std::string __str__() 
     {
       return self->toString();
     }
@@ -65,9 +65,9 @@ namespace Sundance
   %extend Mesh
   {
     using namespace std;
-    string __str__() 
+    std::string __str__() 
     {
-      string rtn; 
+      std::string rtn; 
       rtn = "Mesh[dim=" + Teuchos::toString(self->spatialDim()) + "]";
       return rtn;
     }

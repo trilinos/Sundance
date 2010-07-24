@@ -82,7 +82,7 @@ string AlgebraSpecifier::toString() const
 namespace std
 {
 
-ostream& operator<<(ostream& os, 
+ostream& operator<<(std::ostream& os, 
   const Sundance::AlgebraType& at)
 {
   switch(at)
@@ -105,7 +105,7 @@ ostream& operator<<(ostream& os,
   return os;
 }
 
-ostream& operator<<(ostream& os, const Sundance::AlgebraSpecifier& as)
+ostream& operator<<(std::ostream& os, const Sundance::AlgebraSpecifier& as)
 {
   os << as.type();
   if (as.isCoordinateComponent()) os << "(d=" << as.direction() << ")";

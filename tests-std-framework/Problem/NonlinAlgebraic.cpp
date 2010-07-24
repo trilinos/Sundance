@@ -95,14 +95,14 @@ int main(int argc, char** argv)
       Vector<double> solnVec;
       SolverState<double> state = solver.solve(J, b, solnVec);
 
-      Out::os() << "solver state = " << endl << state << endl;
+      Out::os() << "solver state = " << std::endl << state << std::endl;
 
       x0 = x0 - solnVec;
-      Out::os() << "step norm = " << solnVec.norm2() << endl;
+      Out::os() << "step norm = " << solnVec.norm2() << std::endl;
 
       if (solnVec.norm2() < 1.0e-14) 
       {
-        Out::os() << "Newton's method converged!" << endl;
+        Out::os() << "Newton's method converged!" << std::endl;
         converged = true;
         break;
       }
@@ -110,11 +110,11 @@ int main(int argc, char** argv)
       
     if (!converged) 
     {
-      Out::os() << "FAILED TO CONVERGE!" << endl;
+      Out::os() << "FAILED TO CONVERGE!" << std::endl;
     }
     else
     {
-      Out::os() << "solution is " << endl << x0 << endl;
+      Out::os() << "solution is " << std::endl << x0 << std::endl;
     }
 
     double err = 0.0;
@@ -124,13 +124,13 @@ int main(int argc, char** argv)
     }
     err = sqrt(err)/x0.space().dim();
 
-    Out::os() << "error norm is " << endl << err << endl;
+    Out::os() << "error norm is " << std::endl << err << std::endl;
     double tol = 1.0e-12;
     Sundance::passFailTest(err, tol);
   }
-	catch(exception& e)
+	catch(std::exception& e)
   {
-    Out::os() << e.what() << endl;
+    Out::os() << e.what() << std::endl;
   }
   
 }

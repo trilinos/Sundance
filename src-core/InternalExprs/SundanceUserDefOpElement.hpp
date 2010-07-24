@@ -48,8 +48,8 @@ namespace Sundance
 using namespace Sundance;
 using namespace Teuchos;
 
-using std::string;
-using std::ostream;
+
+
 
 
 class UserDefOp;
@@ -74,10 +74,7 @@ public:
 
 
   /** Write self in text form */
-  virtual ostream& toText(ostream& os, bool paren) const ;
-
-  /** Write self in Latex form */
-  virtual ostream& toLatex(ostream& os, bool paren) const ;
+  virtual std::ostream& toText(std::ostream& os, bool paren) const ;
 
   /** Write in XML */
   virtual XMLObject toXML() const ;

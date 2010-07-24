@@ -61,21 +61,21 @@ namespace Sundance
  * void f()
  * {
  *   Tabs tab;
- *   cout << tab << "in f()" << endl;
+ *   cout << tab << "in f()" << std::endl;
  *   g();
- *   cout << tab << "leaving f()" << endl;
+ *   cout << tab << "leaving f()" << std::endl;
  * }
  *
  * void g()
  * {
  *   Tabs tab0;
- *   cout << tab0 << "in g()" << endl;
+ *   cout << tab0 << "in g()" << std::endl;
  *   for (int i=0; i<3; i++)
  *     {
  *       Tabs tab1();
- *       cout << tab1 << "i=" << i << endl;
+ *       cout << tab1 << "i=" << i << std::endl;
  *     }
- *   cout << tab0 << "leaving g()" << endl;
+ *   cout << tab0 << "leaving g()" << std::endl;
  * }
  * \endcode
  * writes the following output 

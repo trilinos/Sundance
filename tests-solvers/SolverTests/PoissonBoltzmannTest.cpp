@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
 
       ParameterList noxParams = reader.getParameters();
 
-      cerr << "solver params = " << noxParams << endl;
+      std::cerr << "solver params = " << noxParams << std::endl;
 
       NOXSolver solver(noxParams);
 
@@ -84,33 +84,33 @@ int main(int argc, char *argv[])
       TEST_FOR_EXCEPTION(stat != NOX::StatusTest::Converged,
         runtime_error, "solve failed");
 
-      cerr << "solution = " << endl << soln << endl;
+      std::cerr << "solution = " << std::endl << soln << std::endl;
 
       Vector<double> exact = prob->exactSoln();
 
-      cerr << "exact solution = " << endl << exact << endl;
+      std::cerr << "exact solution = " << std::endl << exact << std::endl;
 
 //bvbw reddish port hack
       double temp_val = nLocalRows*nProc;
       double err = (exact-soln).norm2()/sqrt(temp_val);
-      cerr << "error norm = " << err << endl;
+      std::cerr << "error norm = " << err << std::endl;
       
 
       double tol = 1.0e-6;
       if (err > tol)
         {
-          cerr << "NOX Poisson-Boltzmann test FAILED" << endl;
+          std::cerr << "NOX Poisson-Boltzmann test FAILED" << std::endl;
           return 1;
         }
       else
         {
-          cerr << "NOX Poisson-Boltzmann test PASSED" << endl;
+          std::cerr << "NOX Poisson-Boltzmann test PASSED" << std::endl;
           return 0;
         }
     }
   catch(std::exception& e)
     {
-      cerr << "Caught exception: " << e.what() << endl;
+      std::cerr << "Caught exception: " << e.what() << std::endl;
       return -1;
     }
 }

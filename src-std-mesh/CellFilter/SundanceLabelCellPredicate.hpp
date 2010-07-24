@@ -46,7 +46,7 @@ using namespace Teuchos;
 class LabelCellPredicate : public CellPredicateBase 
 {
 public:
-  /** Construct with a label string */
+  /** Construct with a label std::string */
   LabelCellPredicate(int label) 
     : CellPredicateBase(), labelIndex_(label){;}
 
@@ -64,7 +64,7 @@ public:
   virtual bool lessThan(const CellPredicateBase* other) const ;
 
   /** */
-  virtual string description() const 
+  virtual std::string description() const 
     {return "Label(" + Teuchos::toString(labelIndex_) + ")";}
 
   /** */

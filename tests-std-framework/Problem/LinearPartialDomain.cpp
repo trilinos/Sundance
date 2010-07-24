@@ -103,7 +103,7 @@ int main(int argc, char** argv)
       ParameterXMLFileReader reader("aztec.xml");
 #endif
       ParameterList solverParams = reader.getParameters();
-      cout << "params = " << solverParams << endl;
+      cout << "params = " << solverParams << std::endl;
 
 
       LinearSolver<double> solver 
@@ -120,7 +120,7 @@ int main(int argc, char** argv)
 
       FunctionalEvaluator errInt(mesh, err);
       double errorSq = errInt.evaluate();
-      cerr << "error norm = " << sqrt(errorSq) << endl << endl;
+      std::cerr << "error norm = " << sqrt(errorSq) << std::endl << std::endl;
 
       /* Write the field in VTK format */
       FieldWriter w = new VTKWriter("PartialDomain2d");
@@ -133,7 +133,7 @@ int main(int argc, char** argv)
 
       Sundance::passFailTest(sqrt(errorSq), 1.0e-8);
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
       Sundance::handleException(e);
 		}

@@ -45,6 +45,8 @@ using namespace Sundance;
 using namespace Teuchos;
 using namespace TSFExtended;
 using std::setw;
+using std::setprecision;
+using std::ios_base;
 using std::endl;
       
 
@@ -181,9 +183,9 @@ void MatrixVectorAssemblyKernel::insertLocalMatrixBatch(
 
     SUNDANCE_MSG3(verb(), tab1 << "block row = " << br 
       << tab1 << "function ID = "<< testID[t] 
-      << " of " << testID.size() << endl
-      << tab1 << "is BC eqn = " << isBCRqc << endl
-      << tab1 << "num cells = " << nCells << endl
+      << " of " << testID.size() << std::endl
+      << tab1 << "is BC eqn = " << isBCRqc << std::endl
+      << tab1 << "num cells = " << nCells << std::endl
       << tab1 << "using cofacet cells = " << useCofacetCells);
 
     const RCP<DOFMapBase>& rowMap = rmb().dofMap(br);
@@ -197,12 +199,12 @@ void MatrixVectorAssemblyKernel::insertLocalMatrixBatch(
     int nTestFuncs = rmb().mapStruct(br, useCofacetCells)->numFuncs(testChunk);
     int nTestNodes = rmb().nNodesInChunk(br, useCofacetCells, testChunk);
 
-    SUNDANCE_MSG3(verb(), tab1 << "lowestLocalRow = " << lowestLocalRow << endl
-      << tab1 << "test chunk = " << testChunk << endl
+    SUNDANCE_MSG3(verb(), tab1 << "lowestLocalRow = " << lowestLocalRow << std::endl
+      << tab1 << "test chunk = " << testChunk << std::endl
       << tab1 << "func offset into local DOF map = " 
-      << testFuncIndex << endl
-      << tab1 << "local test dofs = " << testDofs << endl
-      << tab1 << "num test funcs in chunk = " << nTestFuncs << endl
+      << testFuncIndex << std::endl
+      << tab1 << "local test dofs = " << testDofs << std::endl
+      << tab1 << "num test funcs in chunk = " << nTestFuncs << std::endl
       << tab1 << "num test nodes in chunk = " << nTestNodes);
     
     int numRows = nCells * nTestNodes;
@@ -239,15 +241,15 @@ void MatrixVectorAssemblyKernel::insertLocalMatrixBatch(
 
 
       SUNDANCE_MSG3(verb(), tab2 << "lowestLocalCol = " 
-        << lowestLocalCol << endl
-        << tab2 << "block col = " << bc << endl
+        << lowestLocalCol << std::endl
+        << tab2 << "block col = " << bc << std::endl
         << tab2 << "unk ID = "<< unkID[t] 
-        << " of " << unkID.size() << endl
-        << tab2 << "unk chunk = " << unkChunk << endl
+        << " of " << unkID.size() << std::endl
+        << tab2 << "unk chunk = " << unkChunk << std::endl
         << tab2 << "func offset into local DOF map = " 
-        << unkFuncIndex << endl
-        << tab2 << "local unk dofs = " << unkDofs << endl
-        << tab2 << "num unk funcs in chunk = " << nUnkFuncs << endl
+        << unkFuncIndex << std::endl
+        << tab2 << "local unk dofs = " << unkDofs << std::endl
+        << tab2 << "num unk funcs in chunk = " << nUnkFuncs << std::endl
         << tab2 << "num unk nodes in chunk = " << nUnkNodes);
 
       cols.resize(nCells*nUnkNodes);
@@ -313,12 +315,12 @@ void MatrixVectorAssemblyKernel::writeLSMs(
   for (int c=0; c<nCells; c++)
   {
     Tabs tab3;
-    os << tab3 << endl 
-       << tab3 << "c="<< c << ", cellLID=" << (*workSet)[c] << endl;
+    os << tab3 << std::endl 
+       << tab3 << "c="<< c << ", cellLID=" << (*workSet)[c] << std::endl;
 
     os << tab3 << "num values per cell = " << localValues.size()/nCells 
        << ", num test nodes=" << nTestNodes << ", num unk nodes="
-       << nUnkNodes << endl;
+       << nUnkNodes << std::endl;
     Array<int> lsmCols(nUnkNodes);
     os << tab3 << setw(17);
 
@@ -329,7 +331,7 @@ void MatrixVectorAssemblyKernel::writeLSMs(
       lsmCols[n] = colDof;
       os << setw(12) << colDof;
     }
-    os << endl << tab3 << "---------------------------------------------------------------" << endl;        
+    os << std::endl << tab3 << "---------------------------------------------------------------" << std::endl;        
 
         
     for (int m=0; m<nTestNodes; m++, lr++)
@@ -343,7 +345,7 @@ void MatrixVectorAssemblyKernel::writeLSMs(
         double Amn = localValues[lr*nUnkNodes + n];
         os << setw(12) << setprecision(5) << Amn;
       }
-      os << endl;
+      os << std::endl;
     }
   }
   os.flags(oldFlags);      

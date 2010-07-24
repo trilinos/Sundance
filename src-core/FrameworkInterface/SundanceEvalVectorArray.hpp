@@ -62,7 +62,7 @@ public:
   void steal(const RCP<EvalVectorArray>& other);
 
   /** */
-  ostream& print(ostream& os, const SparsitySuperset* derivs) const ;
+  ostream& print(std::ostream& os, const SparsitySuperset* derivs) const ;
 };
 }
 

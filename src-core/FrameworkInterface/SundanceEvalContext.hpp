@@ -44,8 +44,6 @@ namespace Sundance
 using namespace Teuchos;
 using namespace Sundance;
 using Sundance::Set;
-using std::string;
-using std::max_element;
 
 /** 
  * Different contexts might require the same expression to be
@@ -75,7 +73,7 @@ public:
     const Set<int>& needsDiffOrder,
     int contextID)
     : setupVerbosity_(0), 
-      maxDiffOrder_(*max_element(needsDiffOrder.begin(), needsDiffOrder.end())),
+      maxDiffOrder_(*std::max_element(needsDiffOrder.begin(), needsDiffOrder.end())),
       data_(rcp(new OrderedTriple<Set<int>, int, RegionQuadCombo>(needsDiffOrder, contextID, rqc)))
     {}
 
@@ -91,16 +89,16 @@ public:
   bool operator<(const EvalContext& other) const 
     {return *data_ < *other.data_;}
           
-  /** Write to a string */
-  string toString() const
+  /** Write to a std::string */
+  std::string toString() const
     {return "EvalContext[diffOrder=" 
         + Teuchos::toString(data_->a())
         + ", id=" 
         + Teuchos::toString(data_->b())
         + ", " + data_->c().toString() + "]";}
           
-  /** Write a short description to a string */
-  string brief() const
+  /** Write a short description to a std::string */
+  std::string brief() const
     {return "EvalContext[diffOrder=" 
         + Teuchos::toString(data_->a())
         + ", id=" 
@@ -129,7 +127,7 @@ private:
 namespace std
 {
 /** \relates Sundance::EvalContext */
-inline ostream& operator<<(ostream& os, 
+inline ostream& operator<<(std::ostream& os, 
   const Sundance::EvalContext& c)
 {
   os << c.toString();
@@ -139,10 +137,8 @@ inline ostream& operator<<(ostream& os,
 
 namespace Teuchos
 {
-using std::string;
-
 /** \relates Sundance::EvalContext */
-inline string toString(const Sundance::EvalContext& h)
+inline std::string toString(const Sundance::EvalContext& h)
 {return h.toString();}
 
 }

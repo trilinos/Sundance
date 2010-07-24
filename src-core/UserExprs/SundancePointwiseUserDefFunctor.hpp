@@ -46,8 +46,8 @@ namespace Sundance
   using namespace Sundance;
   using namespace Teuchos;
 
-  using std::string;
-  using std::ostream;
+  
+  
 
     /**
      * PointwiseUserDefFunctor0 is an implementation of UserDefFunctor for which
@@ -58,7 +58,7 @@ namespace Sundance
     {
     public:
       /** ctor */
-      PointwiseUserDefFunctor0(const string& name, int domainDim, int rangeDim) ;
+      PointwiseUserDefFunctor0(const std::string& name, int domainDim, int rangeDim) ;
 
       /** */
       virtual ~PointwiseUserDefFunctor0(){;}
@@ -87,7 +87,7 @@ namespace Sundance
     {
     public:
       /** ctor */
-      PointwiseUserDefFunctor1(const string& name, int domainDim, int rangeDim) ;
+      PointwiseUserDefFunctor1(const std::string& name, int domainDim, int rangeDim) ;
 
       /** */
       virtual ~PointwiseUserDefFunctor1(){;}
@@ -119,7 +119,7 @@ namespace Sundance
     {
     public:
       /** ctor */
-      PointwiseUserDefFunctor2(const string& name, int domainDim, int rangeDim) ;
+      PointwiseUserDefFunctor2(const std::string& name, int domainDim, int rangeDim) ;
 
       /** */
       virtual ~PointwiseUserDefFunctor2(){;}

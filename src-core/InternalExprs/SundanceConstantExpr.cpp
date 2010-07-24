@@ -85,13 +85,7 @@ bool ConstantExpr::lessThan(const ScalarExpr* other) const
 }
 
 
-ostream& ConstantExpr::toText(ostream& os, bool /* paren */) const 
-{
-	os << value();
-	return os;
-}
-
-ostream& ConstantExpr::toLatex(ostream& os, bool /* paren */) const 
+std::ostream& ConstantExpr::toText(std::ostream& os, bool /* paren */) const 
 {
 	os << value();
 	return os;

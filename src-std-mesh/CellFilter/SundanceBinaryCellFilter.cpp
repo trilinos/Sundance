@@ -44,7 +44,7 @@ BinaryCellFilter::BinaryCellFilter(const CellFilter& left,
                                    const CellFilterOpType& op)
   : CellFilterBase(), op_(op), left_(left), right_(right)
 {
-  string str;
+  std::string str;
   switch(op)
   {
     case Union:

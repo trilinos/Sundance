@@ -42,7 +42,7 @@ using namespace Teuchos;
 
 
 
-TestFunctionStub::TestFunctionStub(const string& name, 
+TestFunctionStub::TestFunctionStub(const std::string& name, 
   int tensorOrder,
   int dim, 
   const RCP<const TestFuncDataStub>& data)
@@ -58,7 +58,7 @@ TestFunctionStub::TestFunctionStub(const string& name,
   {
     for (int d=0; d<dim; d++)
     {
-      string suffix="[" + Teuchos::toString(d) + "]";
+      std::string suffix="[" + Teuchos::toString(d) + "]";
       FunctionIdentifier fid = myFid.createComponent(d);
       append(new TestFuncElement(data, name, suffix, fid));
     }
@@ -70,7 +70,7 @@ TestFunctionStub::TestFunctionStub(const string& name,
   }
 }
 
-TestFunctionStub::TestFunctionStub(const string& name, 
+TestFunctionStub::TestFunctionStub(const std::string& name, 
   const SpectralBasis& sbasis, int tensorOrder, int dim,
   const RCP<const TestFuncDataStub>& data)
   :  SymbolicFunc(makeFuncID(tensorOrder), 
@@ -88,7 +88,7 @@ TestFunctionStub::TestFunctionStub(const string& name,
     Array<Expr> coeffs(sbasis.nterms());
     for (int n=0; n<sbasis.nterms(); n++)
     {
-      string suffix="";
+      std::string suffix="";
       if (sbasis.nterms()>1) suffix = "[" + Teuchos::toString(n) + "]";
       coeffs[n] = new TestFuncElement(data, name, suffix, cFid[n]);
     }
@@ -98,7 +98,7 @@ TestFunctionStub::TestFunctionStub(const string& name,
   {
     for (int d=0; d<dim; d++)
     {
-      string suffix="[" + Teuchos::toString(d) + "]";
+      std::string suffix="[" + Teuchos::toString(d) + "]";
       Array<Expr> coeffs(sbasis.nterms());
       for (int n=0; n<sbasis.nterms(); n++)
       {

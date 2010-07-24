@@ -138,6 +138,7 @@ int Bernstein::nReferenceDOFsWithoutFacets(
         << cellType << " not implemented in Bernstein basis");
       return -1; // -Wall
   }
+  return -1; // -Wall
 }
 
 void Bernstein::getReferenceDOFs(

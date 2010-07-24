@@ -39,7 +39,7 @@ using namespace Sundance;
 using namespace Teuchos;
 
 
-CoordExpr::CoordExpr(int dir, const string& name)
+CoordExpr::CoordExpr(int dir, const std::string& name)
   : EvaluatableExpr(),
     dir_(dir),
     name_(coordName(dir, name))
@@ -60,7 +60,7 @@ XMLObject CoordExpr::toXML() const
   return rtn;
 }
 
-string CoordExpr::coordName(int dir, const string& name)
+string CoordExpr::coordName(int dir, const std::string& name)
 {
   if (name.length() > 0) return name;
   switch(dir)

@@ -135,11 +135,11 @@ public:
     {return LinearSolveDriver::dumpBadMatrix();}
 
   /** Filename for dump of bad matrix */
-  static string& badMatrixFilename() 
+  static std::string& badMatrixFilename() 
     {return LinearSolveDriver::badMatrixFilename();}
 
   /** Filename for dump of bad vector */
-  static string& badVectorFilename() 
+  static std::string& badVectorFilename() 
     {return LinearSolveDriver::badVectorFilename();}
 
     

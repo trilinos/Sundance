@@ -41,7 +41,7 @@ using namespace Teuchos;
 
 
 
-UnknownParameter::UnknownParameter(const string& name)
+UnknownParameter::UnknownParameter(const std::string& name)
 	: SymbolicFunc(makeFuncID(0), rcp(new UnknownFuncDataStub()))
 {
   append(new UnknownParameterElement(name, "", fid()));

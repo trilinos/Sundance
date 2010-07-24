@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
       
       double errA = (y1-y2).normInf();
 
-      Out::root() << "error in A*x = " << errA << endl;
+      Out::root() << "error in A*x = " << errA << std::endl;
 
 
       /* Now test z = A^T * y */
@@ -131,25 +131,25 @@ int main(int argc, char *argv[])
       
 
       double errAt = (z1-z2).normInf();
-      Out::root() << "error in At*y = " << errA << endl;
+      Out::root() << "error in At*y = " << errA << std::endl;
 
       double tol = 1.0e-13;
       bool pass = errA + errAt < tol;
       pass = globalAnd(pass);
       if (pass)
         {
-          Out::root() << "multivector op test PASSED" << endl;
+          Out::root() << "multivector op test PASSED" << std::endl;
         }
       else
         {
           stat = -1;
-          Out::root() << "multivector op test FAILED" << endl;
+          Out::root() << "multivector op test FAILED" << std::endl;
         }
     }
   catch(std::exception& e)
     {
       stat = -1;
-      cerr << "Caught exception: " << e.what() << endl;
+      std::cerr << "Caught exception: " << e.what() << std::endl;
     }
   return stat;
 }

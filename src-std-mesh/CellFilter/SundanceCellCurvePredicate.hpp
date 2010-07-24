@@ -66,7 +66,7 @@ public:
     virtual bool lessThan(const CellPredicateBase* other) const ;
 
     /** */
-    virtual string description() const {
+    virtual std::string description() const {
     	switch (filterMode_){
     	case (Outside_Curve):
     		return "CellCurvePredicate: Outside_Curve";

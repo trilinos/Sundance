@@ -14,7 +14,6 @@ namespace Sundance
 namespace Rivara
 {
 using Sundance::Map;
-using std::stack;
 
 
 class RivaraMesh 
@@ -45,10 +44,10 @@ public:
 
   int numNodes() const {return nodes_.length();}
 
-  stack<Element*>& refinementSet()
+  std::stack<Element*>& refinementSet()
     {return refinementSet_;}
 
-  stack<double>& refinementAreas()
+  std::stack<double>& refinementAreas()
     {return refinementAreas_;}
 
   void refine();
@@ -86,9 +85,9 @@ private:
 
   Map<FaceNodes, int> faceToLIDMap_;
 
-  stack<Element*> refinementSet_;
+  std::stack<Element*> refinementSet_;
 
-  stack<double> refinementAreas_;
+  std::stack<double> refinementAreas_;
 };
 }
 }

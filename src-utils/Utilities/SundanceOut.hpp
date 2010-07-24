@@ -157,9 +157,9 @@ void writeTable(std::ostream& os, const Tabs& tab,
 #define SUNDANCE_BANNER1(level, tab, msg) \
   SUNDANCE_MSG1(level, tab \
     << "===================================================================");\
-  SUNDANCE_MSG1(level, tab << endl << tab \
+  SUNDANCE_MSG1(level, tab << std::endl << tab \
     << "  " << msg); \
-  SUNDANCE_MSG1(level, tab << endl << tab\
+  SUNDANCE_MSG1(level, tab << std::endl << tab\
     << "===================================================================");
 
 
@@ -175,9 +175,9 @@ void writeTable(std::ostream& os, const Tabs& tab,
 #define SUNDANCE_BANNER3(level, tab, msg) \
   SUNDANCE_MSG3(level, tab \
     << "-------------------------------------------------------------------");\
-  SUNDANCE_MSG3(level, tab << endl << tab \
+  SUNDANCE_MSG3(level, tab << std::endl << tab \
     << msg); \
-  SUNDANCE_MSG3(level, tab << endl << tab\
+  SUNDANCE_MSG3(level, tab << std::endl << tab\
     << "-------------------------------------------------------------------");
 
 #endif

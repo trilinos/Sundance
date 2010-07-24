@@ -154,7 +154,7 @@ Expr LinearSolveDriver::formSolutionExpr(
 
     for (int i=0; i<col.size(); i++)
     {
-      string name = names[m][i];
+      std::string name = names[m][i];
       if (col.size() > 1) name += "[" + Teuchos::toString(i) + "]";
       col[i] = new DiscreteFunction(*(solutionSpace[i]),
         solnVector[m].getBlock(i), name);

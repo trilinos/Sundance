@@ -160,7 +160,7 @@ Expr FunctionalEvaluator::evalGradient(double& value) const
   Array<Expr> rtn(assembler_->rowSpace().size());
   for (int i=0; i<rtn.size(); i++)
   {
-    string name = "gradient";
+    std::string name = "gradient";
     if (rtn.size() > 1) name += "[" + Teuchos::toString(i) + "]";
     rtn[i] = new DiscreteFunction(*(assembler_->rowSpace()[i]),
       g.getBlock(i), name);
@@ -205,7 +205,7 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
   int n = x.space().numLocalElements();
   int lowestIndex = x.space().lowestLocallyOwnedIndex();
 
-  os << tabs << "doing fd check:  h=" << h << endl;
+  os << tabs << "doing fd check:  h=" << h << std::endl;
   Array<double> df_dx(n);
 
   int localIndex = 0;
@@ -236,13 +236,13 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
       os << "g=" << setw(5) << globalIndex << ", l=" << setw(5) << localIndex << " f0="
          << setw(12) << f0 
          << " fPlus=" << setw(12) << fPlus << " fMinus=" << setw(12) << fMinus << " df_dx="
-         << setw(12) << df_dx[localIndex] << endl;
+         << setw(12) << df_dx[localIndex] << std::endl;
       if (showAll)
       {
         os << "i " << globalIndex << " x_i=" << tmp 
            << " f(x)=" << f0 
            << " f(x+h)=" << fPlus 
-           << " f(x-h)=" << fMinus << endl;
+           << " f(x-h)=" << fMinus << std::endl;
       }
       x.setElement(globalIndex, tmp);
       localIndex++;
@@ -267,16 +267,16 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
       os << "i " << i;
       os << " FD=" << df_dx[k] 
          << " grad=" << gf[i]
-         << " r=" << r << endl;
+         << " r=" << r << std::endl;
     }
     if (localMaxErr < r) localMaxErr = r;
   }
-  os << "local max error = " << localMaxErr << endl;
+  os << "local max error = " << localMaxErr << std::endl;
   
   double maxErr = localMaxErr;
   df->mesh().comm().allReduce((void*) &localMaxErr, (void*) &maxErr, 1, 
     MPIComm::DOUBLE, MPIComm::MAX);
-  os << tabs << "fd check: max error = " << maxErr << endl;
+  os << tabs << "fd check: max error = " << maxErr << std::endl;
 
   return maxErr;
 }

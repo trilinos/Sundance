@@ -39,7 +39,7 @@ namespace Sundance
 {
 using namespace Sundance;
 
-using std::string;
+
   
 
 class ScalarExpr;

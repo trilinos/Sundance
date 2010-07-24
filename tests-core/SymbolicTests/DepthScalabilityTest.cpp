@@ -141,7 +141,7 @@ int main(int argc, char** argv)
           tester.evaluate(df, df2);
           stopwatch.stop();
           double t1 = stopwatch.wallTime();
-          //         cerr << n << "   "  << tester.numNodes() << "    " << t1-t0 << endl;
+          //         std::cerr << n << "   "  << tester.numNodes() << "    " << t1-t0 << std::endl;
 
         }
 
@@ -191,13 +191,13 @@ int main(int argc, char** argv)
 //          EvaluationTester udTester(userDefExpr);
 //          stopwatch.stop();
 //          double t2 = stopwatch.wallTime();
-          cerr << n << "   "  
-               << tester.numNodes() << "    " << t1-t0 << endl;
+          std::cerr << n << "   "  
+               << tester.numNodes() << "    " << t1-t0 << std::endl;
 
         }
       TimeMonitor::summarize();
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
 			Out::println(e.what());
 		}

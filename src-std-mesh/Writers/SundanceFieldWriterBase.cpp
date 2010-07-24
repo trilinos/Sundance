@@ -40,7 +40,7 @@ using namespace Sundance;
 using namespace Teuchos;
 
 
-FieldWriterBase::FieldWriterBase(const string& filename) 
+FieldWriterBase::FieldWriterBase(const std::string& filename) 
   : filename_(filename),
     mesh_(),
     nProc_(0), 
@@ -94,11 +94,11 @@ void FieldWriterBase::addMesh(const Mesh& mesh)
                      "added mesh has meshID=" << mesh.id());
 }
 
-void FieldWriterBase::addField(const string& name, 
+void FieldWriterBase::addField(const std::string& name, 
                                const RCP<FieldBase>& expr) 
 {
 
-  string fieldName = name;
+  std::string fieldName = name;
 
   if (expr->numElems() > 1)
     {
@@ -132,7 +132,7 @@ void FieldWriterBase::addField(const string& name,
     }
 }
 
-void FieldWriterBase::addCommentLine(const string& line) 
+void FieldWriterBase::addCommentLine(const std::string& line) 
 {
   comments_.append(line);
 }

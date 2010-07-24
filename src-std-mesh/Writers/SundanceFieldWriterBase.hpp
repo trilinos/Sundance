@@ -48,7 +48,7 @@ using namespace Teuchos;
     {
     public:
       /** */
-      FieldWriterBase(const string& filename);
+      FieldWriterBase(const std::string& filename);
 
       /** virtual dtor */
       virtual ~FieldWriterBase(){;}
@@ -57,10 +57,10 @@ using namespace Teuchos;
       void addMesh(const Mesh& mesh);
 
       /** add a comment */
-      virtual void addCommentLine(const string& line) ;
+      virtual void addCommentLine(const std::string& line) ;
 
-      /** add a field, tagging it with the given string as a name */
-      virtual void addField(const string& name, 
+      /** add a field, tagging it with the given std::string as a name */
+      virtual void addField(const std::string& name, 
                             const RCP<FieldBase>& field) ;
 
       /** */
@@ -84,7 +84,7 @@ using namespace Teuchos;
       int myRank() const ;
 
       /** */
-      const string& filename() const {return filename_;}
+      const std::string& filename() const {return filename_;}
 
       /** */
       const Mesh& mesh() const {return mesh_;}
@@ -122,10 +122,10 @@ using namespace Teuchos;
       const Array<string>& cellVectorNames() const {return cellVectorNames_;}
       Array<string>& cellVectorNames() {return cellVectorNames_;}
 
-      virtual void writeCommentLine(const string& line) const {;}
+      virtual void writeCommentLine(const std::string& line) const {;}
 
     private:
-      string filename_;
+      std::string filename_;
 
       Mesh mesh_;
 

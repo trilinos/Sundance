@@ -45,7 +45,7 @@ class LabeledSubsetCellFilter : public CellFilterBase
 public:
   /** */
   LabeledSubsetCellFilter(const CellFilter& superset,
-    const string& label);
+    const std::string& label);
 
   /** */
   virtual ~LabeledSubsetCellFilter(){;}
@@ -54,7 +54,7 @@ public:
   virtual XMLObject toXML() const ;
 
   /** */
-  virtual string typeName() const {return "LabeledSubsetCellFilter";}
+  virtual std::string typeName() const {return "LabeledSubsetCellFilter";}
 
   /** */
   virtual bool lessThan(const CellFilterStub* other) const ;
@@ -63,20 +63,20 @@ public:
   virtual RCP<CellFilterBase> getRcp() {return rcp(this);}
 
   /** */
-  virtual string description() const 
+  virtual std::string description() const 
     {return "LabeledSubset(label=" + label_ + ", super=" + superset_.description()+")";}
     
 
 
   /** */
-  string label() const {return label_;}
+  std::string label() const {return label_;}
 
 protected:
   /** */
   virtual CellSet internalGetCells(const Mesh& mesh) const ;
 
   /** */
-  string label_;
+  std::string label_;
 
   /** */
   CellFilter superset_;

@@ -62,7 +62,7 @@ enum CellType {
   ,PrismCell      ///< 3D prism cell
 };
 
-/** \brief Return a string representation of the cell type.
+/** \brief Return a std::string representation of the cell type.
  *
  * \ingroup Sundance_CellType_grp
  */

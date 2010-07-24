@@ -53,15 +53,15 @@ class DiscreteFunction : public DiscreteFunctionStub,
 {
 public:
   /** */
-  DiscreteFunction(const DiscreteSpace& space, const string& name="");
+  DiscreteFunction(const DiscreteSpace& space, const std::string& name="");
 
   /** */
   DiscreteFunction(const DiscreteSpace& space, const Vector<double>& vec, 
-    const string& name="");
+    const std::string& name="");
 
   /** */
   DiscreteFunction(const DiscreteSpace& space, const double& constantValue,
-    const string& name="");
+    const std::string& name="");
   /** */
   DiscreteFunction(const DiscreteSpace& space, const Array<string>& names);
 

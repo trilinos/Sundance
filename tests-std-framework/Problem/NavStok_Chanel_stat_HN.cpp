@@ -54,8 +54,8 @@ int main(int argc, char** argv)
       
       Mesh mesh = mesher.getMesh();
 
-      cout << "Nr Points  "<<mesh.numCells(0) << endl;
-      cout << "My Rank is :" << myrank << endl;
+      cout << "Nr Points  "<<mesh.numCells(0) << std::endl;
+      cout << "My Rank is :" << myrank << std::endl;
 
       // Create cell filters
       CellFilter interior = new MaximalCellFilter();
@@ -165,11 +165,11 @@ int main(int argc, char** argv)
       FunctionalEvaluator errInt1(mesh, errExpr1);
       double errorSq = errInt1.evaluate();
       double err_i = std::sqrt(errorSq);
-      Out::os() << " error ux =" << err_i << endl;
+      Out::os() << " error ux =" << err_i << std::endl;
       Sundance::passFailTest( err_i , tol);
       
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
       Sundance::handleException(e);
 		}

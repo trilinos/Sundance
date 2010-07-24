@@ -58,7 +58,7 @@ public:
   virtual XMLObject toXML() const ;
 
   /** Describable interface */
-  virtual string description() const 
+  virtual std::string description() const 
     {return "GaussianQuadrature[order=" + Teuchos::toString(order()) 
         +  "]";}
 

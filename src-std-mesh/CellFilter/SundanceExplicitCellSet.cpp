@@ -59,7 +59,7 @@ CellIterator ExplicitCellSet::end() const
   return CellIterator(&cells_, CellIterator::End);
 }
 
-void ExplicitCellSet::print(ostream& os) const 
+void ExplicitCellSet::print(std::ostream& os) const 
 {
   os << "ExplicitCellSet[cells=" << cells_ << "]";
 }

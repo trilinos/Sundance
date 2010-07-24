@@ -127,7 +127,7 @@ namespace Thyra
 
     /** */
     Array<double> paramArray(const ParameterList& params,
-                             const string& paramName) const ;
+                             const std::string& paramName) const ;
 
     /** */
     void setContinuationParameters(const Expr& contParams) {contParams_ = contParams;}

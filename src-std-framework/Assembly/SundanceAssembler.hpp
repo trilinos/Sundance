@@ -173,7 +173,7 @@ public:
     {return eqn_;}
 
   /** */
-  int maxWatchFlagSetting(const string& param) const ;
+  int maxWatchFlagSetting(const std::string& param) const ;
 
   /** */
   static Time& assemblyTimer() 

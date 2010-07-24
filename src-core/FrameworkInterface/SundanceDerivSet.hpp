@@ -62,7 +62,7 @@ namespace Teuchos
 {
 using namespace Sundance;
 using namespace Sundance;
-inline string toString(const Sundance::DerivSet& d)
+inline std::string toString(const Sundance::DerivSet& d)
 {
   return d.toString();
 }

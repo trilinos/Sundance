@@ -79,7 +79,7 @@ public:
 
 
   /** */
-  virtual void print(ostream& os) const ;
+  virtual void print(std::ostream& os) const ;
 
 private:
 

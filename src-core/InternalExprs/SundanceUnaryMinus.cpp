@@ -67,17 +67,12 @@ Set<MultiSet<int> > UnaryMinus::internalFindQ_W(int order, const EvalContext& co
   return rtn;
 }
 
-ostream& UnaryMinus::toText(ostream& os, bool paren) const 
+std::ostream& UnaryMinus::toText(std::ostream& os, bool paren) const 
 {
   if (paren) os << "(";
   os << "-" << arg().toString();
   if (paren) os << ")";
   return os;
-}
-
-ostream& UnaryMinus::toLatex(ostream& os, bool paren) const 
-{
-  return toText(os, paren);
 }
 
 XMLObject UnaryMinus::toXML() const

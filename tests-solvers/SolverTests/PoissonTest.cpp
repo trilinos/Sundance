@@ -69,45 +69,45 @@ bool runit(const VectorType<double>& vecType,
 
   LinearOperator<double> A = builder.getOp();
 
-  Out::root() << "matrix is " << endl;
-  Out::os() << A << endl;
+  Out::root() << "matrix is " << std::endl;
+  Out::os() << A << std::endl;
 
   Vector<double> x = A.domain().createMember();
 
   Thyra::randomize(-ST::one(),+ST::one(),x.ptr().ptr());
 
-  Out::root() << "input is " << endl;
-  Out::os() << x << endl;
+  Out::root() << "input is " << std::endl;
+  Out::os() << x << std::endl;
   Vector<double> y = A*x;
 
-  Out::root() << "rhs is " << endl;
-  Out::os() << y << endl;
+  Out::root() << "rhs is " << std::endl;
+  Out::os() << y << std::endl;
 
   Vector<double> ans = A.range().createMember();
   
-  Out::root() << "slot for solution is " << endl;
-  Out::os() << ans << endl;
+  Out::root() << "slot for solution is " << std::endl;
+  Out::os() << ans << std::endl;
 
   LinearOperator<double> AInv = inverse(A, solver);
 
   ans = AInv * y;
 
-  Out::root() << "answer is " << endl;
-  Out::os() << ans << endl;
+  Out::root() << "answer is " << std::endl;
+  Out::os() << ans << std::endl;
       
   double err = (x-ans).norm2();
-  Out::root() << "error norm = " << err << endl;
+  Out::root() << "error norm = " << err << std::endl;
 
   double tol = 1.0e-10;
     
   if (err <= tol)
   {
-    Out::root() << "Poisson solve test PASSED" << endl;
+    Out::root() << "Poisson solve test PASSED" << std::endl;
     return true;
   }
   else
   {
-    Out::root() << "Poisson solve test FAILED" << endl;
+    Out::root() << "Poisson solve test FAILED" << std::endl;
     return false;
   }
 }
@@ -135,27 +135,27 @@ int main(int argc, char *argv[])
     LinearSolver<double> aztec_ifpack = LinearSolverBuilder::createSolver("aztec-ifpack.xml");
 
     bool allOK = true;
-    Out::root() << "Running Belos/ML" << endl;
+    Out::root() << "Running Belos/ML" << std::endl;
     allOK = runit(epetra, belos_ml) && allOK;
 
-    Out::root() << "Running Belos/Ifpack" << endl;
+    Out::root() << "Running Belos/Ifpack" << std::endl;
     allOK = runit(epetra, belos_ifpack) && allOK;
 
-    Out::root() << "Running Aztec/ML" << endl;
+    Out::root() << "Running Aztec/ML" << std::endl;
     allOK = runit(epetra, aztec_ml) && allOK;
 
-    Out::root() << "Running Aztec/Ifpack" << endl;
+    Out::root() << "Running Aztec/Ifpack" << std::endl;
     allOK = runit(epetra, aztec_ifpack) && allOK;
 
     if (nProc == 1)
     {
-      Out::root() << "Running Amesos (serial)" << endl;
+      Out::root() << "Running Amesos (serial)" << std::endl;
       allOK = runit(epetra, amesos) && allOK;
     }
 
     if (rank==0)
     {
-      Out::root() << "Running dense LU (serial)" << endl;
+      Out::root() << "Running dense LU (serial)" << std::endl;
       allOK = runit(serial, denseLU) && allOK;
     }
 
@@ -163,17 +163,17 @@ int main(int argc, char *argv[])
 
     if (allOK) 
     {
-      Out::root() << "all Poisson solve tests PASSED!" << endl;
+      Out::root() << "all Poisson solve tests PASSED!" << std::endl;
     }
     else
     {
       status = -1;
-      Out::root() << "some Poisson solve tests FAILED!" << endl;
+      Out::root() << "some Poisson solve tests FAILED!" << std::endl;
     }
   }
   catch(std::exception& e)
   {
-    cout << "Caught exception: " << e.what() << endl;
+    cout << "Caught exception: " << e.what() << std::endl;
     return -1;
   }
   return status;

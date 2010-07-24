@@ -24,7 +24,6 @@
 
 using Sundance::List;
 using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -76,14 +75,14 @@ int main(int argc, char** argv)
       p = p->addPoly(r.get(), 1);
 
           
-      cerr << "p = " << p->toXML() << endl;
-      p->toText(cerr, false) << endl;
+      Out::os() << "p = " << p->toXML() << std::endl;
+      p->toText(Out::os(), false) << std::endl;
 
       TimeMonitor::summarize();      
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
-      cerr << e.what() << endl;
+      Out::os() << e.what() << std::endl;
 		}
 
   

@@ -35,8 +35,6 @@
 
 
 using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -45,18 +43,18 @@ void VerboseFieldWriter::write() const
   int nProc = mesh().comm().getNProc();
   int myRank = mesh().comm().getRank();
 
-  RCP<ostream> osp;
+  RCP<std::ostream> osp;
   if (filename().length()==0)
     {
       osp = rcp(&std::cout, false);
     }
   else 
     {
-      string f = filename() + ".txt";
+      std::string f = filename() + ".txt";
       if (nProc > 1) f = f + "." + Teuchos::toString(myRank);
       osp = rcp(new std::ofstream(f.c_str()));
     }
-  ostream& os = *osp;
+  std::ostream& os = *osp;
 
   if (myRank==0) os << "VerboseFieldWriter output" << std::endl;
   for (int p=0; p<nProc; p++)

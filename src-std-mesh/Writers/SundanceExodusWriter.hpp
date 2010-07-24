@@ -45,7 +45,7 @@ namespace Sundance
   {
   public:
     /** */
-    ExodusWriter(const string& filename) 
+    ExodusWriter(const std::string& filename) 
       : FieldWriterBase(filename) {;}
     
     /** virtual dtor */
@@ -58,7 +58,7 @@ namespace Sundance
     virtual RCP<FieldWriterBase> getRcp() {return rcp(this);}
 
     /** */
-    void writeParallelInfo(const string& filename) const ;
+    void writeParallelInfo(const std::string& filename) const ;
 
 
   private:    

@@ -166,16 +166,16 @@ int main(int argc, char** argv)
         Out::root() << "nx=" << setw(10) << N[i]
                     << " " << setw(20) << setprecision(5) << h[i] 
                     << " " << setw(20) << setprecision(5) << err[i] 
-                    << endl;
+                    << std::endl;
       }
       double p;
       fitExp(h, err, &p);
-      Out::root() << "exponent: " << p << endl;
+      Out::root() << "exponent: " << p << std::endl;
 
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
-      cerr << e.what() << endl;
+      std::cerr << e.what() << std::endl;
 		}
   Sundance::finalize(); return Sundance::testStatus(); 
 }

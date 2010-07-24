@@ -134,7 +134,7 @@ int main(int argc, char** argv)
         sqr(u0[2]-E0*exp(-t)), new GaussianQuadrature(6));
 
       double errorSq = evaluateIntegral(mesh, errExpr);
-      Out::os() << "initial error = " << sqrt(errorSq) << endl;
+      Out::os() << "initial error = " << sqrt(errorSq) << std::endl;
 
       /* loop over timesteps */
       for (int i=1; i<=nSteps; i++)
@@ -150,7 +150,7 @@ int main(int argc, char** argv)
 
         double errorSq = evaluateIntegral(mesh, errExpr);
 
-        Out::os() << "step=" << i << " error=" << sqrt(errorSq) << endl;
+        Out::os() << "step=" << i << " error=" << sqrt(errorSq) << std::endl;
 
         FieldWriter writer = new VTKWriter("eddy2D-" + Teuchos::toString(i));
         writer.addMesh(mesh);
@@ -163,7 +163,7 @@ int main(int argc, char** argv)
       double tol = 1.0e-4;
       Sundance::passFailTest(sqrt(errorSq), tol);
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
       Sundance::handleException(e);
 		}

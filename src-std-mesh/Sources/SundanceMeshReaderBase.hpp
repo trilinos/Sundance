@@ -64,10 +64,10 @@ protected:
   /** access to the filename */
   const std::string& filename() const {return filename_;}
 
-  /** convert a string to its integer value */
+  /** convert a std::string to its integer value */
   int atoi(const std::string& x) const ;
 
-  /** convert a string to its double value */
+  /** convert a std::string to its double value */
   double atof(const std::string& x) const ;
 
   /** Determine whether a line is empty */
@@ -78,8 +78,8 @@ protected:
    * @param description a description of the file, e.g., "node file",
    * to be included in any error messages generated.  
    **/
-  RCP<std::ifstream> openFile(const string& fname, 
-    const string& description) const ;
+  RCP<std::ifstream> openFile(const std::string& fname, 
+    const std::string& description) const ;
 
   /** 
    * Read the next non-empty, non-comment line from a stream
@@ -89,7 +89,7 @@ protected:
    * @param comment a character indicating that everything after it
    * is a comment
    */
-  bool getNextLine(std::istream& is, string& line,
+  bool getNextLine(std::istream& is, std::string& line,
     Array<string>& tokens,
     char comment) const ;
 private:

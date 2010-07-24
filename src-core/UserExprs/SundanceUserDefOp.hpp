@@ -50,8 +50,8 @@ namespace Sundance
   using namespace Sundance;
   using namespace Teuchos;
 
-  using std::string;
-  using std::ostream;
+  
+  
 
     /**
      * UserDefOp provides a hook for inserting a user-defined nonlinear

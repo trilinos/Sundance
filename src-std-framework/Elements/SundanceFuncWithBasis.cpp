@@ -57,7 +57,7 @@ std::string describeFunction(const Expr& f)
 
     const DiscreteFuncElement* d = dynamic_cast<const DiscreteFuncElement*>(f[0].ptr().get());
 
-    string type;
+    std::string type;
     if (t != 0) 
     {
       type = "TFElem";
@@ -76,13 +76,13 @@ std::string describeFunction(const Expr& f)
         << f[0]);
     }
 
-    string rtn = type + "[name=" + fe->name() + ", fid=" + fe->fid().toString() + "]";
+    std::string rtn = type + "[name=" + fe->name() + ", fid=" + fe->fid().toString() + "]";
     return rtn;
       
   }
   else
   {
-    string rtn = "{";
+    std::string rtn = "{";
     for (int i=0; i<f.size(); i++)
     {
       if (i != 0) rtn += ", ";

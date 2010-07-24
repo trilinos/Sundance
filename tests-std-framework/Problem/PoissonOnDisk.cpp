@@ -92,7 +92,7 @@ int main(int argc, char** argv)
       ParameterXMLFileReader reader("bicgstab.xml");
 #endif
       ParameterList solverParams = reader.getParameters();
-      cerr << "params = " << solverParams << endl;
+      std::cerr << "params = " << solverParams << std::endl;
 
 
       LinearSolver<double> solver 
@@ -119,7 +119,7 @@ int main(int argc, char** argv)
                               new GaussianQuadrature(4));
 
       double errorSq = evaluateIntegral(mesh, errExpr);
-      cerr << "soln error norm = " << sqrt(errorSq) << endl << endl;
+      std::cerr << "soln error norm = " << sqrt(errorSq) << std::endl << std::endl;
 
 
       /* Check error in automatically-computed cell normals */
@@ -132,15 +132,15 @@ int main(int argc, char** argv)
       Expr nExact = List(x, y)/sqrt(x*x + y*y);
       Expr nErrExpr = Integral(bdry, pow(n-nExact, 2.0), new GaussianQuadrature(1));
       double nErrorSq = evaluateIntegral(mesh, nErrExpr);
-      cerr << "normalVector error norm = " << sqrt(nErrorSq) << endl << endl;
+      std::cerr << "normalVector error norm = " << sqrt(nErrorSq) << std::endl << std::endl;
 
       double tol = 1.0e-4;
       Sundance::passFailTest(sqrt(errorSq + nErrorSq), tol);
 
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
-      cerr << e.what() << endl;
+      std::cerr << e.what() << std::endl;
 		}
   Sundance::finalize(); return Sundance::testStatus(); 
 }

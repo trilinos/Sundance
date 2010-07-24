@@ -222,19 +222,19 @@ int main(int argc, char** argv)
     {
       pass = pass && testVecFunction();
     }
-  catch(exception& e)
+  catch(std::exception& e)
     {
       pass = false;
-      Out::os() << "unexpected exception: " << e.what() << endl;
+      Out::os() << "unexpected exception: " << e.what() << std::endl;
     }
   if (pass) 
   {
-    cerr << "test PASSED" << endl;
+    std::cerr << "test PASSED" << std::endl;
     return 0;
   }
   else 
   {
-    cerr << "test FAILED" << endl;
+    std::cerr << "test FAILED" << std::endl;
     return -1;
   }
 }

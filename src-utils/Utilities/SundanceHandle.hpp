@@ -66,7 +66,6 @@ handle() : Sundance::Handle<contents >() {;} \
 namespace Sundance
 {
 using namespace Teuchos;
-using std::endl;
 
 /** This traits class is used to extract the non-const version of
  * a template argument. The generic case returns the template argument. */
@@ -121,7 +120,7 @@ public:
 
 
   /** 
-   * Return a short descriptive string using the Describable interface.
+   * Return a short descriptive std::string using the Describable interface.
    * If the contents of the handle cannot be 
    * downcasted or crosscasted to a Describable*, an exception
    * will be thrown. 
@@ -181,7 +180,7 @@ public:
       {
         Out::os() << "WARNING: cannot set verbosity of object=";
         this->print(Out::os());
-        Out::os() << endl;
+        Out::os() << std::endl;
       }
     }
 

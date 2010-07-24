@@ -39,8 +39,6 @@
 
 
 
-using namespace std;
-using namespace Sundance;
 
 namespace Sundance
 {
@@ -66,8 +64,8 @@ namespace Sundance
     /** Return the basis element stored in the basis array index */
     virtual int getElement(int i) const = 0 ;
 
-    /** Write a description to a string */
-    virtual string toString() const = 0 ;
+    /** Write a description to a std::string */
+    virtual std::string toString() const = 0 ;
 
     /** expectation operator */
     virtual double expectation(int i, int j, int k) = 0 ; 

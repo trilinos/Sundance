@@ -96,7 +96,7 @@ class BamgMeshReader : public MeshReaderBase
 {
 public:
   /** */
-  BamgMeshReader(const string& filename, 
+  BamgMeshReader(const std::string& filename, 
     const MeshType& meshType, const bool bbAttr,
     const MPIComm& comm = MPIComm::world());
 
@@ -110,12 +110,12 @@ public:
   /** Create a mesh */
   virtual Mesh fillMesh() const ;
 
-  /** Print a short descriptive string */
-  virtual string description() const 
+  /** Print a short descriptive std::string */
+  virtual std::string description() const 
     {return "BamgMeshReader[file=" + filename() + "]";}
 
   /** Method for reading a .bb file */
-  //Array<double> getVelocityField(const string& bbFile) const ;
+  //Array<double> getVelocityField(const std::string& bbFile) const ;
       
 
   /** Return a ref count pointer to self */
@@ -141,22 +141,22 @@ private:
     Array<int>& ptOwner) const ;
 
   /** add method for reading a .bb file */
-  //Array<double> getVelocityField(const string& bbFile) const ;
+  //Array<double> getVelocityField(const std::string& bbFile) const ;
 
   /** */
-  string nodeFilename_;
+  std::string nodeFilename_;
 
   /** */
-  string elemFilename_;
+  std::string elemFilename_;
 
   /** */
-  string parFilename_;
+  std::string parFilename_;
 
   /** add a mesh filename */
-  string meshFilename_;
+  std::string meshFilename_;
 
   /** add a bb filename */
-  string bbFilename_;
+  std::string bbFilename_;
     
   /** number of bb Attributes */
   int bbAttr_;

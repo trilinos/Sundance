@@ -39,7 +39,7 @@ namespace Sundance
 {
 using namespace Sundance;
 using namespace Teuchos;
-using std::string;
+
 
 /** 
  * SumOfBCs represents a sum of essential
@@ -60,10 +60,7 @@ public:
 
   /** Write a simple text description suitable 
    * for output to a terminal */
-  virtual ostream& toText(ostream& os, bool paren) const ;
-
-  /** Write in a form suitable for LaTeX formatting */
-  virtual ostream& toLatex(ostream& os, bool paren) const ;
+  virtual std::ostream& toText(std::ostream& os, bool paren) const ;
 
   /** Write in XML */
   virtual XMLObject toXML() const ;

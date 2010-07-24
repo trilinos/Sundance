@@ -63,13 +63,13 @@ namespace Sundance
   %extend Expr
   {
     using namespace std;
-    string __str__() 
+    std::string __str__() 
     {
-      string rtn = self->toString(); 
+      std::string rtn = self->toString(); 
       return rtn;
     }
 
-    string fullForm() const
+    std::string fullForm() const
     {
       return self->toXML().toString();
     }

@@ -64,7 +64,7 @@ void FieldWriter::setUndefinedValue(const double& x)
   ptr()->setUndefinedValue(x);
 }
 
-void FieldWriter::addField(const string& name, 
+void FieldWriter::addField(const std::string& name, 
                            const Handle<FieldBase>& field)
 {
   TimeMonitor timer(vizoutTimer());

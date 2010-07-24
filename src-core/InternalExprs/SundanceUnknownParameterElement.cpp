@@ -43,8 +43,8 @@ using namespace Sundance;
 using namespace Teuchos;
 
 UnknownParameterElement
-::UnknownParameterElement(const string& name,
-  const string& suffix,
+::UnknownParameterElement(const std::string& name,
+  const std::string& suffix,
   const FunctionIdentifier& fid)
 	: UnknownFuncElement(rcp(new UnknownFuncDataStub()), name, 
   suffix, fid),

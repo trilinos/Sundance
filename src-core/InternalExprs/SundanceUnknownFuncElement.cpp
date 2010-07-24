@@ -40,8 +40,8 @@ using namespace Teuchos;
 
 UnknownFuncElement
 ::UnknownFuncElement(const RCP<const UnknownFuncDataStub>& data,
-  const string& name,
-  const string& suffix,
+  const std::string& name,
+  const std::string& suffix,
   const FunctionIdentifier& fid)
 	: SymbolicFuncElement(name, suffix, fid,
     rcp_dynamic_cast<const CommonFuncDataStub>(data))

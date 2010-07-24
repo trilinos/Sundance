@@ -384,17 +384,17 @@ public:
     }
 
   /** */
-  void dump(const string& filename) const ;
+  void dump(const std::string& filename) const ;
 
   /** Test the consistency of the mesh numbering scheme 
    * across processors. This is meant as a check on Sundance's internal
    * logic rather than as a check on the validity of a user's mesh. */
-  bool checkConsistency(const string& filename) const ;
+  bool checkConsistency(const std::string& filename) const ;
 
   /** Test the consistency of the mesh numbering scheme 
    * across processors. This is meant as a check on Sundance's internal
    * logic rather than as a check on the validity of a user's mesh. */
-  bool checkConsistency(ostream& os) const ;
+  bool checkConsistency(std::ostream& os) const ;
 
   /** \name Functions for Mesh with hanging nodes */
     //@{
@@ -453,21 +453,21 @@ private:
 
 
   /** */
-  bool checkVertexConsistency(ostream& os) const ;
+  bool checkVertexConsistency(std::ostream& os) const ;
   /** */
-  bool checkCellConsistency(ostream& os, int dim) const ;
+  bool checkCellConsistency(std::ostream& os, int dim) const ;
 
   /** */
-  bool checkRemoteEntity(ostream& os, int p, int dim, int gid, 
+  bool checkRemoteEntity(std::ostream& os, int p, int dim, int gid, 
     int owner, bool mustExist, int& lid) const ;
 
   /** */
-  bool testIdentity(ostream& os, int a, int b, const string& msg) const ;
+  bool testIdentity(std::ostream& os, int a, int b, const std::string& msg) const ;
 
   /** */
-  bool testIdentity(ostream& os, 
+  bool testIdentity(std::ostream& os, 
     const Array<int>& a,
-    const Array<int>& b, const string& msg) const ;
+    const Array<int>& b, const std::string& msg) const ;
 };
 }
 

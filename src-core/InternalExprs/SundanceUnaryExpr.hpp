@@ -39,7 +39,7 @@ namespace Sundance
 {
 using namespace Sundance;
 using namespace Teuchos;
-using std::string;
+
 
 /** 
  * UnaryExpr is a base class for operators that map a single

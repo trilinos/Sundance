@@ -43,10 +43,6 @@
 
 
 using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -116,7 +112,7 @@ RCP<const MapStructure> DiscreteFunctionData
 
   if (Evaluator::classVerbosity() > 3)
   {
-    cerr << tab << "getting DF local values" << endl;
+    Out::os() << tab << "getting DF local values" << std::endl;
   }
   updateGhosts();
 

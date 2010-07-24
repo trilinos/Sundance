@@ -40,7 +40,7 @@ namespace Sundance
 {
   using namespace Sundance;
   using namespace Teuchos;
-  using std::string;
+  
 
       /** */
       class UnaryMinus : public UnaryExpr,
@@ -55,10 +55,7 @@ namespace Sundance
 
 
           /** */
-          virtual ostream& toText(ostream& os, bool paren) const ;
-
-          /** */
-          virtual ostream& toLatex(ostream& os, bool paren) const ;
+          virtual std::ostream& toText(std::ostream& os, bool paren) const ;
 
           /** */
           virtual XMLObject toXML() const ;

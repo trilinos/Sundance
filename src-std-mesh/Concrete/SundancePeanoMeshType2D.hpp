@@ -67,7 +67,7 @@ namespace Sundance
     {return rcp(new PeanoMesh2D(dim, comm, order_));}
 
     /** */
-    string description() const {return "PeanoMeshType2D";}
+    std::string description() const {return "PeanoMeshType2D";}
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
     /** Return a ref count pointer to self */

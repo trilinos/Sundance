@@ -325,7 +325,7 @@ void EquationSet::init(
     int v1 = integralSum->eqnSetSetupVerb();
     int v2 = 0;
     if (hasBCs) v2 = bcSum->eqnSetSetupVerb();
-    verb = max(v1, v2);
+    verb = std::max(v1, v2);
   }
   SUNDANCE_BANNER1(verb, tab0, "EquationSet setup");
 
@@ -385,7 +385,7 @@ void EquationSet::init(
       symbVerb = rqc.watch().param("symbolic preprocessing");
       rqcVerb=rqc.watch().param("equation set setup");
     }
-    SUNDANCE_MSG1(max(verb,rqcVerb), tab15 << "processing RQC = " << rqc);
+    SUNDANCE_MSG1(std::max(verb,rqcVerb), tab15 << "processing RQC = " << rqc);
 
 
     rqcSet.put(rqc);
@@ -1039,7 +1039,7 @@ bool EquationSet::hasActiveWatchFlag() const
 }
 
 
-int EquationSet::maxWatchFlagSetting(const string& param) const 
+int EquationSet::maxWatchFlagSetting(const std::string& param) const 
 {
   int rtn = 0;
   if (!hasActiveWatchFlag()) return 0;

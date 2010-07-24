@@ -36,15 +36,8 @@
 #include "SundanceExceptions.hpp"
 #include "Teuchos_Array.hpp"
 
-
-
-using namespace Sundance;
-using namespace Sundance;
-
-using namespace Sundance;
 using namespace Teuchos;
-
-
+using namespace Sundance;
 
 SpectralExpr::SpectralExpr(const SpectralBasis& sbasis, const Array<Expr>& coeffs)
   : ScalarExpr(), 
@@ -138,7 +131,7 @@ bool SpectralExpr::hasHungryDiffOp() const
 }
 
 
-ostream& SpectralExpr::toText(ostream& os, bool paren) const
+std::ostream& SpectralExpr::toText(std::ostream& os, bool paren) const
 {
   os << "SpectralExpr{";
   for (int i=0; i<coeffs_.size(); i++)
@@ -150,17 +143,6 @@ ostream& SpectralExpr::toText(ostream& os, bool paren) const
   return os;
 }
 
-ostream& SpectralExpr::toLatex(ostream& os, bool paren) const
-{
-  os << "\\{";
-  for (int i=0; i<coeffs_.size(); i++)
-    {
-      coeffs_[i].ptr()->toLatex(os, paren);
-      if (i < coeffs_.size()-1) os << ", ";
-    }
-  os << "\\}";
-  return os;
-}
 
 XMLObject SpectralExpr::toXML() const 
 {

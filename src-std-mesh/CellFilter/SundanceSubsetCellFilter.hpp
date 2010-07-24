@@ -64,7 +64,7 @@ public:
   virtual bool lessThan(const CellFilterStub* other) const ;
 
   /** */
-  virtual string description() const 
+  virtual std::string description() const 
     {return "Subset(predicate=" + predicate_.description() 
         + ", super=" + superset_.description()+")";}
 

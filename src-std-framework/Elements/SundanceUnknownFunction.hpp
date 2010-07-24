@@ -54,12 +54,12 @@ class UnknownFunction : public UnknownFunctionStub,
 {
 public:
   /** */
-  UnknownFunction(const BasisFamily& basis, const string& name="");
+  UnknownFunction(const BasisFamily& basis, const std::string& name="");
 
   /** */
   UnknownFunction(const BasisFamily& basis, 
     const SpectralBasis& spBasis,
-    const string& name="");
+    const std::string& name="");
 
 
   /** virtual destructor */

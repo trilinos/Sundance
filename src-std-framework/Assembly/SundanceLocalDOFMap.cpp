@@ -129,28 +129,28 @@ std::ostream& LocalDOFMap::print(std::ostream& os) const
   }
   if (noneAreUsed)
   {
-    os << endl << tab0 << "[empty local DOF map]";
+    os << std::endl << tab0 << "[empty local DOF map]";
   }
   else
   {
-    os << endl << tab0 << "LocalDOFMap[" << endl;
+    os << std::endl << tab0 << "LocalDOFMap[" << std::endl;
     Tabs tab;
     os << tab << "num cells=" << cellLID_->size() << ", active cellDim="
-       << activeCellDim_ << ", maxCellDim=" << maxCellDim_ << endl;
-    os << tab << "num blocks=" << numBlocks() << endl << endl;
+       << activeCellDim_ << ", maxCellDim=" << maxCellDim_ << std::endl;
+    os << tab << "num blocks=" << numBlocks() << std::endl << std::endl;
 
     for (int b=0; b<numBlocks(); b++)
     {
       Tabs tab1;
       os << tab1 << "block " << b << " of " << numBlocks()
-         << *mapStruct(b) << endl;
+         << *mapStruct(b) << std::endl;
       const Array<Array<int> >& dofs = localDOFs(b);
       int nChunks = mapStruct(b)->numBasisChunks();
       
       for (int c=0; c<cellLID_->size(); c++)
       {
         Tabs tab2;
-        os << tab2 << "cell LID=" << (*cellLID_)[c] << endl;
+        os << tab2 << "cell LID=" << (*cellLID_)[c] << std::endl;
         for (int chunk=0; chunk<nChunks; chunk++)
         {
           Tabs tab3;
@@ -167,13 +167,13 @@ std::ostream& LocalDOFMap::print(std::ostream& os) const
               os << setw(6) << dof;
               if (n < nNodes-1) os << ", ";
             }
-            os << endl;
+            os << std::endl;
           }
         }
       }
       
     }
-    os << tab0 << "] ### End LocalDOFMap" << endl;
+    os << tab0 << "] ### End LocalDOFMap" << std::endl;
   }
   return os;
 }

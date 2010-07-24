@@ -308,7 +308,7 @@ int main(int argc, char *argv[])
       int rank = MPIComm::world().getRank();
       int nProc = MPIComm::world().getNProc();
 #ifndef HAVE_SUNDIALS
-      cout << "sundials not present... test INACTIVE" << endl;
+      cout << "sundials not present... test INACTIVE" << std::endl;
 #else
 
       IDAHeat model(n, new EpetraVectorType());
@@ -401,18 +401,18 @@ int main(int argc, char *argv[])
       double tol = 1.0e-5;
       if (maxErr > tol)
         {
-          cerr << "IDA heat eqn test FAILED" << endl;
+          std::cerr << "IDA heat eqn test FAILED" << std::endl;
         }
       else
         {
-          cerr << "IDA heat eqn test PASSED" << endl;
+          std::cerr << "IDA heat eqn test PASSED" << std::endl;
         }
 
 #endif 
     }
   catch(std::exception& e)
     {
-      cout << "Caught exception: " << e.what() << endl;
+      cout << "Caught exception: " << e.what() << std::endl;
     }
 }
 

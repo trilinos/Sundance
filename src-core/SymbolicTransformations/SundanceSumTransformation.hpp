@@ -39,8 +39,8 @@ namespace Sundance
 using namespace Sundance;
 using namespace Teuchos;
 
-using std::string;
-using std::ostream;
+
+
 
 /** 
  * SumTransformation is a base class for any transformation

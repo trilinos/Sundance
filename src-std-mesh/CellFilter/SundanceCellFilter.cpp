@@ -54,7 +54,7 @@ bool CellFilter::isNull() const
   return ptr().get() == 0 || isNullCellFilter();
 }
 
-void CellFilter::setName(const string& name)
+void CellFilter::setName(const std::string& name)
 {
   nonConstCfbPtr()->setName(name);
 }

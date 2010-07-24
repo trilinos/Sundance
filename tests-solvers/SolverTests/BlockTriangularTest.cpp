@@ -127,26 +127,26 @@ int main(int argc, char *argv[])
       
       SolverState<double> state = blockSolver.solve(bigA, bigRHS, bigSoln);
       
-      cerr << state << endl;
+      std::cerr << state << std::endl;
 
       double err = (bigSoln - bigX).norm2();
-      cerr << "error norm = " << err << endl;
+      std::cerr << "error norm = " << err << std::endl;
 
       double tol = 1.0e-10;
       if (err > tol)
         {
-          cerr << "Poisson solve test FAILED" << endl;
+          std::cerr << "Poisson solve test FAILED" << std::endl;
           return 1;
         }
       else
         {
-          cerr << "Poisson solve test PASSED" << endl;
+          std::cerr << "Poisson solve test PASSED" << std::endl;
           return 0;
         }
     }
   catch(std::exception& e)
     {
-      cerr << "Caught exception: " << e.what() << endl;
+      std::cerr << "Caught exception: " << e.what() << std::endl;
       return -1;
     }
   return 0;

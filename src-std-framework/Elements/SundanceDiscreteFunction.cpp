@@ -62,7 +62,7 @@ static Time& dfCtorTimer()
 }
 
 DiscreteFunction::DiscreteFunction(const DiscreteSpace& space, 
-                                   const string& name)
+                                   const std::string& name)
   : DiscreteFunctionStub(tuple(name), space.dimStructure(),
                          getRCP(new DiscreteFunctionData(space))), 
     FuncWithBasis(space.basis()),
@@ -85,7 +85,7 @@ DiscreteFunction::DiscreteFunction(const DiscreteSpace& space,
 
 DiscreteFunction::DiscreteFunction(const DiscreteSpace& space, 
                                    const double& constantValue,
-                                   const string& name)
+                                   const std::string& name)
   : DiscreteFunctionStub(tuple(name), space.dimStructure(),
                          getRCP(new DiscreteFunctionData(space, constantValue))), 
     FuncWithBasis(space.basis()),
@@ -115,7 +115,7 @@ DiscreteFunction::DiscreteFunction(const DiscreteSpace& space,
 
 DiscreteFunction::DiscreteFunction(const DiscreteSpace& space, 
                                    const Vector<double>& vec,
-                                   const string& name)
+                                   const std::string& name)
   : DiscreteFunctionStub(tuple(name), space.dimStructure(),
                          getRCP(new DiscreteFunctionData(space, vec))), 
     FuncWithBasis(space.basis()),

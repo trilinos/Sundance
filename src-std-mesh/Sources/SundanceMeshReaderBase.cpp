@@ -43,7 +43,7 @@ bool MeshReaderBase::isEmptyLine(const std::string& x) const
   return x.length()==0 || StrUtils::isWhite(x);
 }
 
-bool MeshReaderBase::getNextLine(std::istream& is, string& line,
+bool MeshReaderBase::getNextLine(std::istream& is, std::string& line,
                                          Array<string>& tokens,
                                          char comment) const 
 {
@@ -61,10 +61,10 @@ bool MeshReaderBase::getNextLine(std::istream& is, string& line,
   return rtn;
 }
 
-RCP<std::ifstream> MeshReaderBase::openFile(const string& fname, 
-                                               const string& description) const
+RCP<std::ifstream> MeshReaderBase::openFile(const std::string& fname, 
+                                               const std::string& description) const
 {
-  string f = searchForFile(fname);
+  std::string f = searchForFile(fname);
   RCP<std::ifstream> rtn = rcp(new std::ifstream(f.c_str()));
 
   SUNDANCE_OUT(this->verb() > 2,

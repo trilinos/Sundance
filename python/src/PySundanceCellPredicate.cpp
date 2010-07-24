@@ -102,7 +102,7 @@ string PySundanceCellPredicate::description() const
   Py_ssize_t len = 0;
   PyString_AsStringAndSize(result, &str, &len);
 
-  return string(str);
+  return std::string(str);
 }
 
 

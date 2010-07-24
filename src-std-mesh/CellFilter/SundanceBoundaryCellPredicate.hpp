@@ -65,7 +65,7 @@ public:
   virtual bool lessThan(const CellPredicateBase* other) const ;
 
   /** */
-  virtual string description() const {return "Boundary";}
+  virtual std::string description() const {return "Boundary";}
 
   /* */
   GET_RCP(CellPredicateBase);

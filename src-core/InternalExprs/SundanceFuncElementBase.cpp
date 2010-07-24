@@ -39,21 +39,15 @@ using namespace Sundance;
 using namespace Sundance;
 using namespace Teuchos;
 
-FuncElementBase::FuncElementBase(const string& rootName,
-  const string& suffix, const FunctionIdentifier& fid)
+FuncElementBase::FuncElementBase(const std::string& rootName,
+  const std::string& suffix, const FunctionIdentifier& fid)
 	: ScalarExpr(), FunctionWithID(fid), 
     name_(rootName + suffix), rootName_(rootName),
     suffix_(suffix)
 {}
 
 
-ostream& FuncElementBase::toText(ostream& os, bool /* paren */) const 
-{
-	os << name_;
-	return os;
-}
-
-ostream& FuncElementBase::toLatex(ostream& os, bool /* paren */) const 
+std::ostream& FuncElementBase::toText(std::ostream& os, bool /* paren */) const 
 {
 	os << name_;
 	return os;

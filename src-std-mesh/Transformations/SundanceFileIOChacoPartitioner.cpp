@@ -10,9 +10,9 @@ using namespace Sundance;
 using std::ofstream;
 using std::ifstream;
 using std::endl;
-using std::string;
 
-FileIOChacoPartitioner::FileIOChacoPartitioner(const string& filename)
+
+FileIOChacoPartitioner::FileIOChacoPartitioner(const std::string& filename)
   : filename_(filename)
 {}
 
@@ -23,10 +23,10 @@ void FileIOChacoPartitioner::writeGraph(const Mesh& mesh) const
 
   getNeighbors(mesh, neighbors, nEdges);
 
-  string gf = filename_ + ".graph";
+  std::string gf = filename_ + ".graph";
   ofstream os(gf.c_str());
 
-  os << neighbors.size() << " " << nEdges << endl;
+  os << neighbors.size() << " " << nEdges << std::endl;
 
   for (int i=0; i<neighbors.size(); i++)
   {
@@ -59,11 +59,11 @@ void FileIOChacoPartitioner::runChaco(int np) const
     "COARSE_NLEVEL_KL=1\n"
     "COARSEN_RATIO_MIN=0.7\n"
     "CUT_TO_HOP_COST=1.0\n"
-    "RANDOM_SEED=12345\n" << endl;
+    "RANDOM_SEED=12345\n" << std::endl;
 
   ofstream chIn("chacoInput");
   chIn << filename_ + ".graph\n" << filename_ + ".assign\n1\n100\n"
-       << np << "\n1\nn" << endl;
+       << np << "\n1\nn" << std::endl;
 
   int status = system("chaco < chacoInput");
   TEST_FOR_EXCEPTION(status < 0, RuntimeError, "error detected in system call to run chaco");
@@ -74,7 +74,7 @@ bool FileIOChacoPartitioner::isEmptyLine(const std::string& x) const
   return x.length()==0 || StrUtils::isWhite(x);
 }
 
-bool FileIOChacoPartitioner::getNextLine(std::istream& is, string& line,
+bool FileIOChacoPartitioner::getNextLine(std::istream& is, std::string& line,
                                          Array<string>& tokens,
                                          char comment) const 
 {
@@ -95,10 +95,10 @@ void FileIOChacoPartitioner::getAssignments(const Mesh& mesh, int np,
   writeGraph(mesh);
   runChaco(np);
 
-  string af = filename_ + ".assign";
+  std::string af = filename_ + ".assign";
   ifstream is(af.c_str());
 
-  string line;
+  std::string line;
   Array<string> tokens;
     
   while (getNextLine(is, line, tokens, '#'))

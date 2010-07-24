@@ -41,7 +41,7 @@ PyObject * PySundanceCallback::setFunction( PyObject * pyMethod)
     if (!PyCallable_Check(p_func)) {
       PyErr_SetString(PyExc_TypeError,
 		      "Function parameter must be callable");
-      cout << "PyObject passed to function is not callable" << endl ;
+      cout << "PyObject passed to function is not callable" << std::endl ;
       return NULL;
     }
     Py_XINCREF(p_func);          /* Add a reference to new callback */

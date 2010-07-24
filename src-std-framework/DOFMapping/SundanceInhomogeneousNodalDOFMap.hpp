@@ -82,7 +82,7 @@ public:
   const Array<CellFilter>& funcDomains() const {return funcDomains_;}
 
   /** */
-  virtual void print(ostream& os) const ;
+  virtual void print(std::ostream& os) const ;
 
 
 protected:

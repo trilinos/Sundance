@@ -255,7 +255,7 @@ void CellJacobianBatch::getInvJ(int cell, int quad, Array<double>& invJ) const
     }
 }
 
-void CellJacobianBatch::print(ostream& os) const
+void CellJacobianBatch::print(std::ostream& os) const
 {
   if (!hasInverses_) computeInverses();
 

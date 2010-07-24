@@ -66,7 +66,7 @@ SymbolicFuncElementEvaluator
   SUNDANCE_VERB_LOW(tabs << "initializing symbolic func evaluator for " 
                     << expr->toString());
 
-  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << endl << *(this->sparsity)());
+  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << std::endl << *(this->sparsity)());
 
   const ZeroExpr* z 
     = dynamic_cast<const ZeroExpr*>(expr->evalPt());
@@ -188,7 +188,7 @@ void SymbolicFuncElementEvaluator
     tabs << "SymbolicFuncElementEvaluator::eval: expr=" 
     << expr()->toString());
   SUNDANCE_MSG2(mgr.verb(), tabs << "sparsity = " 
-    << endl << *(this->sparsity)());
+    << std::endl << *(this->sparsity)());
 
   constantResults.resize(onePtrs_.size() + paramValuePtrs_.size());
   vectorResults.resize(spatialDerivPtrs_.size());
@@ -223,7 +223,7 @@ void SymbolicFuncElementEvaluator
     }
   if (verb() > 2)
     {
-      Out::os() << tabs << "results " << endl;
+      Out::os() << tabs << "results " << std::endl;
       this->sparsity()->print(Out::os(), vectorResults,
                             constantResults);
     }

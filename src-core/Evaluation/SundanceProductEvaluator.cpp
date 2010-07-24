@@ -205,7 +205,7 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
       
           if (hasVectorWorkspace && verb() > 2)
             {
-              string wSide = "right";
+              std::string wSide = "right";
               MultipleDeriv wsDeriv;
               if (workspaceIsLeft) 
                 {

@@ -34,14 +34,10 @@
 #include "SundanceOut.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
 
-using namespace Sundance;
-using namespace Sundance;
-
-using namespace Sundance;
 using namespace Teuchos;
 
 
-CellDiameterExpr::CellDiameterExpr(const string& name)
+CellDiameterExpr::CellDiameterExpr(const std::string& name)
   : EvaluatableExpr(), name_(name)
 {}
 
@@ -76,17 +72,11 @@ CellDiameterExpr::internalFindW(int order, const EvalContext& context) const
 
 
 
-ostream& CellDiameterExpr::toText(ostream& os, bool paren) const
+std::ostream& CellDiameterExpr::toText(std::ostream& os, bool paren) const
 {
   os << name();
   return os;
 }
 
-
-ostream& CellDiameterExpr::toLatex(ostream& os, bool paren) const
-{
-  os << name();
-  return os;
-}
 
 

@@ -50,7 +50,7 @@ int main(int argc, char** argv)
   try
   {
    
-    string meshFile="plate3D-0";
+    std::string meshFile="plate3D-0";
     int order = 2;
     Sundance::setOption("meshFile", meshFile, "mesh file");
     Sundance::setOption("order", order, "order");
@@ -136,16 +136,16 @@ int main(int argc, char** argv)
     double err2 = fabs(evaluateIntegral(mesh, e2));
     double err3 = fabs(evaluateIntegral(mesh, e3));
 
-    Out::os() << "error in Green's formula = " << err0 << endl;
-    Out::os() << "error in du/dx = " << err1 << endl;
-    Out::os() << "error in du/dy = " << err2 << endl;
-    Out::os() << "error in du/dz = " << err3 << endl;
+    Out::os() << "error in Green's formula = " << err0 << std::endl;
+    Out::os() << "error in du/dx = " << err1 << std::endl;
+    Out::os() << "error in du/dy = " << err2 << std::endl;
+    Out::os() << "error in du/dz = " << err3 << std::endl;
 
     
     Sundance::passFailTest(err0 + err1 + err2 + err3, 1.0e-10);
 
   }
-	catch(exception& e) 
+	catch(std::exception& e) 
   {
     Sundance::handleException(e);
   }

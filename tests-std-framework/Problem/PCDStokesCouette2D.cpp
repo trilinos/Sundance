@@ -103,7 +103,7 @@ int main( int argc , char **argv )
     double errorNorm = L2Norm(mesh, interior, soln[0]-uExact, quad);
 
   
-    Out::root() << "error norm = " << errorNorm << endl;
+    Out::root() << "error norm = " << errorNorm << std::endl;
 
     
 
@@ -132,7 +132,7 @@ int main( int argc , char **argv )
     Sundance::passFailTest(errorNorm, 0.001);
   }
   catch (exception &e) {
-    Out::os() << e.what() << endl;
+    Out::os() << e.what() << std::endl;
   }
 
   Sundance::finalize();

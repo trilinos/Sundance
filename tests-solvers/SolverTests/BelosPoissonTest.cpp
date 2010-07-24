@@ -98,11 +98,11 @@ int main(int argc, char *argv[])
     if (myRank==0) x.setElement(0, 0);
     if (myRank==nProcs-1) x.setElement(nProcs * nLocalRows - 1, 0.0);
 #endif
-    cout << "input is " << endl;
+    cout << "input is " << std::endl;
     x.print(cout);
     Vector<double> b = A*x;
 
-    cout << "rhs is " << endl;
+    cout << "rhs is " << std::endl;
     b.print(cout);
 
 
@@ -112,26 +112,26 @@ int main(int argc, char *argv[])
     LinearOperator<double> AInv = inverse(A, solver);
     Vector<double> ans = AInv * b;
 
-    cout << "answer is " << endl;
+    cout << "answer is " << std::endl;
     ans.print(cout);
       
     double err = (x-ans).norm2()/((double) nProcs * nLocalRows);
-    cout << "error norm = " << err << endl;
+    cout << "error norm = " << err << std::endl;
 
     if (err <= 1.0e-8)
     {
-      cout << "Belos poisson solve test PASSED" << endl;
+      cout << "Belos poisson solve test PASSED" << std::endl;
       return 0;
     }
     else
     {
-      cout << "Belos poisson solve test FAILED" << endl;
+      cout << "Belos poisson solve test FAILED" << std::endl;
       return 1;
     }
   }
   catch(std::exception& e)
   {
-    cout << "Caught exception: " << e.what() << endl;
+    cout << "Caught exception: " << e.what() << std::endl;
     return -1;
   }
 }

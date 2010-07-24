@@ -52,7 +52,7 @@ bool runTest(int nProc, int rank, const VectorType<double>& vecType)
   int n = 4;
   int seed = 12345;
   for (int i=0; i<rank; i++) seed = (seed * 371761) % 5476181;
-  cout << "seed = " << seed << endl;
+  cout << "seed = " << seed << std::endl;
   srand48(seed);
    
   int dimension = nProc*n;
@@ -97,19 +97,19 @@ int main(int argc, char *argv[])
       
     if (!allPass) 
     {
-	Out::root() << "detected a test that FAILED" << endl;
+	Out::root() << "detected a test that FAILED" << std::endl;
 	stat = -1;
     }
     else
     {
-	Out::root() << "all tests PASSED" << endl;
+	Out::root() << "all tests PASSED" << std::endl;
     }
 
 
   }
   catch(std::exception& e)
   {
-    cerr << "Caught exception: " << e.what() << endl;
+    std::cerr << "Caught exception: " << e.what() << std::endl;
     stat = -1;
   }
   return stat;

@@ -79,8 +79,8 @@ namespace Sundance
   };
 
 
-  using std::string;
-  using std::ostream;
+  
+  
 
   SUNDANCE_UNARY_FUNCTOR(reciprocal, StdReciprocal, "reciprocal function", 
                          NonzeroDomain(), 1.0/x[i], -f[i]*f[i], -2.0*df[i]/x[i])

@@ -41,7 +41,7 @@ using namespace Sundance;
 using namespace Teuchos;
 
 
-UserDefFunctor::UserDefFunctor(const string& name, 
+UserDefFunctor::UserDefFunctor(const std::string& name, 
                                int domainDim, 
                                int rangeDim)
   :  name_(name), 

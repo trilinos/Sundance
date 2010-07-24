@@ -46,9 +46,6 @@
 namespace Sundance
 {
 using namespace Teuchos;
-using namespace Sundance;
-using std::string;
-using Sundance::Map;
 
 /** */
 typedef OrderedTriple<OrderedHandle<CellFilterStub>,
@@ -84,7 +81,7 @@ public:
     {return id_==other.id_;}
 
   /** */
-  string toString() const ;
+  std::string toString() const ;
 
   /** */
   bool operator<(const RegionQuadCombo& other) const
@@ -139,7 +136,7 @@ private:
 namespace std
 {
 /** \relates Sundance::RegionQuadCombo*/
-inline ostream& operator<<(ostream& os, 
+inline ostream& operator<<(std::ostream& os, 
   const Sundance::RegionQuadCombo& c)
 {
   os << c.toString();
@@ -149,10 +146,8 @@ inline ostream& operator<<(ostream& os,
 
 namespace Teuchos
 {
-using std::string;
-
 /** \relates Sundance::RegionQuadCombo */
-inline string toString(const Sundance::RegionQuadCombo& h)
+inline std::string toString(const Sundance::RegionQuadCombo& h)
 {return h.toString();}
 
 }

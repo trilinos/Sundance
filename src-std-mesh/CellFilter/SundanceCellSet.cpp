@@ -101,7 +101,7 @@ CellSet CellSet::setDifference(const CellSet& other) const
 }
 
 
-void CellSet::checkCompatibility(const string& op, const CellSet& other) const 
+void CellSet::checkCompatibility(const std::string& op, const CellSet& other) const 
 {
   TEST_FOR_EXCEPTION(meshID() != other.meshID(), RuntimeError,
                      "CellSet::checkCompatibility(): "

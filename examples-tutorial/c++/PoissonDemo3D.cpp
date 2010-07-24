@@ -88,8 +88,8 @@ int main(int argc, char** argv)
      * parser. Code to set these options and their defaults
      * is normally the only work to be done before the call to \verb+init()+.
      */
-    string meshFile="plateWithHole3D-1";
-    string solverFile = "aztec-ml.xml";
+    std::string meshFile="plateWithHole3D-1";
+    std::string solverFile = "aztec-ml.xml";
     Sundance::setOption("meshFile", meshFile, "mesh file");
     Sundance::setOption("solver", solverFile, 
       "name of XML file for solver");
@@ -358,7 +358,7 @@ int main(int argc, char** argv)
     Expr fluxExpr 
       = Integral(east + west, (n*grad)*soln, quad2); 
     double flux = evaluateIntegral(mesh, fluxExpr);
-    Out::os() << "numerical flux = " << flux << endl;
+    Out::os() << "numerical flux = " << flux << std::endl;
 
     /* 
      * Let's compute a few other quantities, such as the centroid of
@@ -371,7 +371,7 @@ int main(int argc, char** argv)
     double yCM = evaluateIntegral(mesh, yCMExpr);
     double zCM = evaluateIntegral(mesh, zCMExpr);
     Out::os() << "centroid = (" << xCM << ", " << yCM 
-              << ", " << zCM << ")" << endl;
+              << ", " << zCM << ")" << std::endl;
 
     /*
      * Next, compute the first Fourier sine 
@@ -382,7 +382,7 @@ int main(int argc, char** argv)
     Expr sinPhi = y/r;
     Expr fourierSin1Expr = Integral(hole, sinPhi*soln, quad2);
     double fourierSin1 = evaluateIntegral(mesh, fourierSin1Expr);
-    Out::os() << "fourier sin m=1 = " << fourierSin1 << endl;
+    Out::os() << "fourier sin m=1 = " << fourierSin1 << std::endl;
 
     /*
      * Check that the flux is acceptably close to zero. This
@@ -400,7 +400,7 @@ int main(int argc, char** argv)
      */
 
   }
-	catch(exception& e) 
+	catch(std::exception& e) 
   {
     Sundance::handleException(e);
   }

@@ -59,16 +59,12 @@ bool NonlinearUnaryOp::lessThan(const ScalarExpr* other) const
   
 
 
-ostream& NonlinearUnaryOp::toText(ostream& os, bool paren) const 
+std::ostream& NonlinearUnaryOp::toText(std::ostream& os, bool paren) const 
 {
   os << op_->name() << "(" << arg().toString() << ")";
   return os;
 }
 
-ostream& NonlinearUnaryOp::toLatex(ostream& os, bool paren) const 
-{
-  return toText(os, paren);
-}
 
 XMLObject NonlinearUnaryOp::toXML() const
 {

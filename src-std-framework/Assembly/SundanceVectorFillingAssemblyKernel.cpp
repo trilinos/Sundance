@@ -194,21 +194,21 @@ void VectorFillingAssemblyKernel::insertLocalVectorBatch(
           {
             if (!dofMap->isLocalDOF(rowIndex)) 
             {
-              os << " --- skipping (is non-local) ---" << endl;
+              os << " --- skipping (is non-local) ---" << std::endl;
             }
             else if (!isBCRqc && isBCIndex[localRowIndex])
             {
-              os << " --- skipping (is BC row) ---" << endl;
+              os << " --- skipping (is BC row) ---" << std::endl;
             }
             else
             {
-              os << " --- skipping (is non-BC row) ---" << endl;
+              os << " --- skipping (is non-BC row) ---" << std::endl;
             }
           }
         }
         else
         {
-          if (verb() >= 2) os << setw(15) << localValues[r] << endl;
+          if (verb() >= 2) os << setw(15) << localValues[r] << std::endl;
           vecBlock->addToElement(rowIndex, localValues[r]);
         }
       }

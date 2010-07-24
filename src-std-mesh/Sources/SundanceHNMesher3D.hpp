@@ -117,8 +117,8 @@ class HNMesher3D : public MeshSourceBase
     /** */
     virtual ~HNMesher3D() {;}
 
-    /** Print a short descriptive string */
-    virtual string description() const
+    /** Print a short descriptive std::string */
+    virtual std::string description() const
     {return "HNMesher3D[pos x =" + Teuchos::toString(_position_x)
        + ", pos y=" + Teuchos::toString(_position_y)
        + ", pos z=" + Teuchos::toString(_position_z)

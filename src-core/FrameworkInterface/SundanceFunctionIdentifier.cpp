@@ -122,7 +122,7 @@ FunctionIdentifier makeFuncID(int tensorOrder)
 namespace std
 {
 
-ostream& operator<<(ostream& os, 
+ostream& operator<<(std::ostream& os, 
   const Sundance::FunctionIdentifier& fid)
 {
   os << "FuncID(dofID=" << fid.dofID() << ", component type=" << fid.algSpec() << ")";

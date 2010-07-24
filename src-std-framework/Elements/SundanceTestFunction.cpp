@@ -40,7 +40,7 @@ using namespace Sundance;
 using namespace Teuchos;
 
 
-TestFunction::TestFunction(const BasisFamily& basis, const string& name)
+TestFunction::TestFunction(const BasisFamily& basis, const std::string& name)
   : TestFunctionStub(name, vectorDimStructure(basis)[0].first,
     vectorDimStructure(basis)[0].second,
     rcp(new TestFunctionData(tuple(basis)))), 
@@ -51,7 +51,7 @@ TestFunction::TestFunction(const BasisFamily& basis, const string& name)
 
 TestFunction::TestFunction(const BasisFamily& basis, 
                                  const SpectralBasis& spBasis,
-                                 const string& name)
+                                 const std::string& name)
   : TestFunctionStub(name, spBasis, vectorDimStructure(basis)[0].first,
     vectorDimStructure(basis)[0].second,
     rcp(new TestFunctionData(replicate(basis, spBasis.nterms())))), 

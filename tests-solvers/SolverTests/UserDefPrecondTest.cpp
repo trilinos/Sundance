@@ -106,11 +106,11 @@ int main(int argc, char *argv[])
     if (myRank==nProcs-1) x.setElement(nProcs * nLocalRows - 1, 0.0);
 #endif
 
-    cout << "x=" << endl;
+    cout << "x=" << std::endl;
     x.print(cout);
       
     Vector<double> y = A*x;
-    cout << "y=" << endl;
+    cout << "y=" << std::endl;
     y.print(cout);
 
     Vector<double> ans = A.range().createMember();
@@ -134,29 +134,29 @@ int main(int argc, char *argv[])
       
 
       
-    //      cout << state << endl;
+    //      cout << state << std::endl;
 
-    cout << "answer is " << endl;
+    cout << "answer is " << std::endl;
     ans.print(cout);
       
     double err = (x-ans).norm2();
-    cout << "error norm = " << err << endl;
+    cout << "error norm = " << err << std::endl;
 
     double tol = 1.0e-10;
     if (err > tol)
     {
-      cout << "User-defined preconditioner test FAILED" << endl;
+      cout << "User-defined preconditioner test FAILED" << std::endl;
       return 1;
     }
     else
     {
-      cout << "User-defined preconditioner test PASSED" << endl;
+      cout << "User-defined preconditioner test PASSED" << std::endl;
       return 0;
     }
   }
   catch(std::exception& e)
   {
-    cout << "Caught exception: " << e.what() << endl;
+    cout << "Caught exception: " << e.what() << std::endl;
     return -1;
   }
 }

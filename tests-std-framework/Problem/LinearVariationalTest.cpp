@@ -81,7 +81,7 @@ int main(int argc, char** argv)
       /* set initial values for u0, alpha0, and lambda0 */
       Expr u0 = new DiscreteFunction(discSpace, 0.0, "u0");
 
-      cerr << "doing projection " << endl;
+      std::cerr << "doing projection " << std::endl;
       L2Projector projector(discSpace, x*(1.0-x));
       Expr alpha0 = projector.project();
 
@@ -123,13 +123,13 @@ int main(int argc, char** argv)
       ParameterXMLFileReader reader("bicgstab.xml");
 #endif
       ParameterList solverParams = reader.getParameters();
-      cerr << "params = " << solverParams << endl;
+      std::cerr << "params = " << solverParams << std::endl;
 
 
       LinearSolver<double> solver 
         = LinearSolverBuilder::createSolver(solverParams);
 
-      cerr << "solving state equation" << endl;
+      std::cerr << "solving state equation" << std::endl;
 
       Expr uSoln = stateProb.solve(solver);
 
@@ -150,14 +150,14 @@ int main(int argc, char** argv)
                               new GaussianQuadrature(8));
 
       double uErrorSq = evaluateIntegral(mesh, uErrExpr);
-      cerr << "state error norm = " << sqrt(uErrorSq) << endl << endl;
+      std::cerr << "state error norm = " << sqrt(uErrorSq) << std::endl << std::endl;
 
       /* derive and solve the adjoint equation */
       
       LinearProblem adjointProb = L.linearVariationalProb(u, u0,
                                                           lambda,
                                                           alpha, alpha0);
-      cerr << "solving adjoint equation" << endl;
+      std::cerr << "solving adjoint equation" << std::endl;
 
       Expr lambdaSoln = adjointProb.solve(solver);
 
@@ -175,7 +175,7 @@ int main(int argc, char** argv)
                               new GaussianQuadrature(12));
 
       double lambdaErrorSq = evaluateIntegral(mesh, lambdaErrExpr);
-      cerr << "adjoint error norm = " << sqrt(lambdaErrorSq) << endl << endl;
+      std::cerr << "adjoint error norm = " << sqrt(lambdaErrorSq) << std::endl << std::endl;
 
       /* Write the field in Matlab format */
       FieldWriter w = new MatlabWriter("LinearVarTest.dat");
@@ -190,9 +190,9 @@ int main(int argc, char** argv)
       
       Sundance::passFailTest(sqrt(lambdaErrorSq + uErrorSq), tol);
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
-      cerr << e.what() << endl;
+      std::cerr << e.what() << std::endl;
 		}
   Sundance::finalize(); return Sundance::testStatus(); 
 }

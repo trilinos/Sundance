@@ -123,7 +123,7 @@ public:
   virtual ~RefIntegral(){;}
       
   /** */
-  void print(ostream& os) const ;
+  void print(std::ostream& os) const ;
 
   /** */
   void transform(const CellJacobianBatch& JTrans,

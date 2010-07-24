@@ -262,10 +262,7 @@ public:
   Expr flattenSpectral() const ;
 
   /** */
-  string toLatex() const ;
-
-  /** */
-  string toString() const ;
+  std::string toString() const ;
 
   /** */
   XMLObject toXML() const ;
@@ -404,7 +401,7 @@ private:
 };
 
 /** \relates Expr */
-inline ostream& operator<<(ostream& os, const Expr& e)
+inline std::ostream& operator<<(std::ostream& os, const Expr& e)
 {
   if (e.ptr().get()==0) {os << "Expr()"; return os;}
   return e.ptr()->toText(os, false);

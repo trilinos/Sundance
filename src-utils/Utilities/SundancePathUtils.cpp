@@ -36,14 +36,14 @@
 #endif
 
 using Teuchos::Array;
-using std::string;
+
 using std::ifstream;
 
 namespace Sundance
 {
-string searchForFile(const string& name)
+string searchForFile(const std::string& name)
 {
-  string pathSep = "/";
+  std::string pathSep = "/";
   Array<string> path = parsePathStr();
 
   if (name.length() && name[0]=='/') return name; // Use absolute path!
@@ -62,7 +62,7 @@ string getPathStr()
 {
   char* pathEnvStr = getenv("SUNDANCE_PATH");
   char* pyPathEnvStr = getenv("PYTHONPATH");
-  string path;
+  std::string path;
   
   if (pathEnvStr == NULL) 
   {
@@ -74,14 +74,14 @@ string getPathStr()
   }
   if (pyPathEnvStr!=NULL)
   {
-    path = string(pyPathEnvStr) + ":" + path; 
+    path = std::string(pyPathEnvStr) + ":" + path; 
   }
   return path;
 }
 
 Array<string> parsePathStr() 
 {
-  string pathStr = getPathStr();
+  std::string pathStr = getPathStr();
   
   Array<string> rtn;
 

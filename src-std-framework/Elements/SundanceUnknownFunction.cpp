@@ -40,7 +40,7 @@ using namespace Sundance;
 using namespace Teuchos;
 
 
-UnknownFunction::UnknownFunction(const BasisFamily& basis, const string& name)
+UnknownFunction::UnknownFunction(const BasisFamily& basis, const std::string& name)
   : UnknownFunctionStub(name, vectorDimStructure(basis)[0].first,
     vectorDimStructure(basis)[0].second,
                         rcp(new UnknownFunctionData(tuple(basis)))), 
@@ -53,7 +53,7 @@ UnknownFunction::UnknownFunction(const BasisFamily& basis, const string& name)
 
 UnknownFunction::UnknownFunction(const BasisFamily& basis, 
                                  const SpectralBasis& spBasis,
-                                 const string& name)
+                                 const std::string& name)
   : UnknownFunctionStub(name, spBasis, vectorDimStructure(basis)[0].first,
     vectorDimStructure(basis)[0].second,
                         rcp(new UnknownFunctionData(replicate(basis, spBasis.nterms())))), 

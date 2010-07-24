@@ -123,9 +123,9 @@ public:
   //@}
           
   /** */
-  void print(ostream& os) const ;
+  void print(std::ostream& os) const ;
   /** */
-  void print(ostream& os, 
+  void print(std::ostream& os, 
     const Array<RCP<EvalVector> >& vecResults,
     const Array<double>& constantResults) const ;
 

@@ -307,12 +307,12 @@ int main(int argc, char** argv)
           double ratio1 = tFuncMean/tRawMean;
           double ratio2 = tBlockMean/tRawMean;
 
-          cerr << n << "\t  " << ratio1 << "\t  " << rms1 << "\t  "
-	       << ratio2 << "\t  " << rms2 << endl;
+          std::cerr << n << "\t  " << ratio1 << "\t  " << rms1 << "\t  "
+	       << ratio2 << "\t  " << rms2 << std::endl;
         }
       TimeMonitor::summarize();
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
 			Out::println(e.what());
 		}

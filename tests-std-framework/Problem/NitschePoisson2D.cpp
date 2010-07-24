@@ -58,7 +58,7 @@ Expr poissonEquationNitsche( bool splitBC,
   Expr uvTerm;
   if (splitBC)
   {
-    Out::os() << "BC expressions split over domains" << endl;
+    Out::os() << "BC expressions split over domains" << std::endl;
     uvTerm = Integral( left , alpha*u * v , quad )
       + Integral( right , alpha*u * v , quad )
       + Integral( top , alpha*u * v , quad )
@@ -66,7 +66,7 @@ Expr poissonEquationNitsche( bool splitBC,
   }
   else
   {
-    Out::os() << "BC expressions not split over domains" << endl;
+    Out::os() << "BC expressions not split over domains" << std::endl;
     uvTerm = Integral( allBdry , alpha*u * v , quad );
   }
   
@@ -94,7 +94,7 @@ int main( int argc , char **argv )
   try {
     int nx = 128;
     double C = 4.0;
-    string solverFile = "aztec-ml.xml";
+    std::string solverFile = "aztec-ml.xml";
     Sundance::setOption("nx", nx, "number of elements in x");
     Sundance::setOption("C", C, "Nitsche penalty");
     Sundance::setOption("solver", solverFile, "name of XML file for solver");
@@ -165,7 +165,7 @@ int main( int argc , char **argv )
     FunctionalEvaluator errInt(mesh, errExpr);
 
     double errorSq = errInt.evaluate();
-    cout << "error norm = " << sqrt(errorSq) << endl << endl;
+    cout << "error norm = " << sqrt(errorSq) << std::endl << std::endl;
     
 
     Sundance::passFailTest(sqrt(errorSq), 1.0e-4);

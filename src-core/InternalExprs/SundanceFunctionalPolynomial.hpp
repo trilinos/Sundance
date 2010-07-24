@@ -40,8 +40,8 @@ namespace Sundance
 using namespace Sundance;
 using namespace Teuchos;
 
-using std::string;
-using std::ostream;
+
+
 
 /**
  * Specialized class for representing polynomials in symbolic
@@ -97,11 +97,8 @@ public:
 
   /** Write a simple text description suitable 
    * for output to a terminal */
-  virtual ostream& toText(ostream& os, bool paren) const ;
+  virtual std::ostream& toText(std::ostream& os, bool paren) const ;
       
-  /** Write in a form suitable for LaTeX formatting */
-  virtual ostream& toLatex(ostream& os, bool paren) const ;
-
   /** Write in XML */
   virtual XMLObject toXML() const ;
 
@@ -133,11 +130,11 @@ private:
   MultipleDeriv successorTerm(const MultipleDeriv& md) const ;
 
   /** */
-  void stepRecurrence(int level, const Map<MultipleDeriv, string>& sPrev,
-    Map<MultipleDeriv, string>& sCurr) const ;
+  void stepRecurrence(int level, const Map<MultipleDeriv, std::string>& sPrev,
+    Map<MultipleDeriv, std::string>& sCurr) const ;
 
   /** */
-  string evalString() const ;
+  std::string evalString() const ;
 };
 }
 

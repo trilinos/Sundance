@@ -35,9 +35,6 @@
 #include "SundanceOut.hpp"
 
 using namespace Sundance;
-using namespace Sundance;
-
-using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -93,7 +90,7 @@ void UserDefOpElement::getArgDerivIndices(const Array<int>& orders,
   }
 }
 
-ostream& UserDefOpElement::toText(ostream& os, bool paren) const 
+std::ostream& UserDefOpElement::toText(std::ostream& os, bool paren) const 
 {
   os << functorElement()->name() << "(";
   for (int i=0; i<numChildren(); i++)
@@ -103,11 +100,6 @@ ostream& UserDefOpElement::toText(ostream& os, bool paren) const
   }
   os << ")";
   return os;
-}
-
-ostream& UserDefOpElement::toLatex(ostream& os, bool paren) const 
-{
-  return toText(os, paren);
 }
 
 XMLObject UserDefOpElement::toXML() const

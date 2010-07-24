@@ -93,8 +93,8 @@ int main(int argc, char** argv)
       double H2x0 = absH2*sin(alpha2);
       double H2y0 = absH2*cos(alpha2);
 
-      Out::os() << "exact soln (zone 1): {" << H1x0 << ", " << H1y0 << "}" << endl;
-      Out::os() << "exact soln (zone 2): {" << H2x0 << ", " << H2y0 << "}" << endl;
+      Out::os() << "exact soln (zone 1): {" << H1x0 << ", " << H1y0 << "}" << std::endl;
+      Out::os() << "exact soln (zone 2): {" << H2x0 << ", " << H2y0 << "}" << std::endl;
 
       
       Expr sqResid = 
@@ -146,8 +146,8 @@ int main(int argc, char** argv)
       w.write();
 
 
-      Out::os() << "exact soln (zone 1): {" << H1x0 << ", " << H1y0 << "}" << endl;
-      Out::os() << "exact soln (zone 2): {" << H2x0 << ", " << H2y0 << "}" << endl;
+      Out::os() << "exact soln (zone 1): {" << H1x0 << ", " << H1y0 << "}" << std::endl;
+      Out::os() << "exact soln (zone 2): {" << H2x0 << ", " << H2y0 << "}" << std::endl;
 
       Expr errExpr_x_1 = Integral(bottom, pow(H1x0 - soln[0],2), quad2);
       Expr errExpr_x_2 = Integral(top, pow(H2x0 - soln[2],2), quad2);
@@ -161,19 +161,19 @@ int main(int argc, char** argv)
       double errY2 = evaluateIntegral(mesh, errExpr_y_2);
 
 
-      Out::os() << "zone 1, x error = " << sqrt(errX1) << endl;
-      Out::os() << "zone 2, x error = " << sqrt(errX2) << endl;
-      Out::os() << "zone 1, y error = " << sqrt(errY1) << endl;
-      Out::os() << "zone 2, y error = " << sqrt(errY2) << endl;
+      Out::os() << "zone 1, x error = " << sqrt(errX1) << std::endl;
+      Out::os() << "zone 2, x error = " << sqrt(errX2) << std::endl;
+      Out::os() << "zone 1, y error = " << sqrt(errY1) << std::endl;
+      Out::os() << "zone 2, y error = " << sqrt(errY2) << std::endl;
 
       double errorSq = errX1 + errX2 + errY1 + errY2;
       double tol = 1.0e-6;
       Sundance::passFailTest(::sqrt(errorSq), tol);
 
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
-      cerr << e.what() << endl;
+      std::cerr << e.what() << std::endl;
 		}
   Sundance::finalize();
   return Sundance::testStatus(); 

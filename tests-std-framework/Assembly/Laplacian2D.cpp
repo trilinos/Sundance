@@ -114,7 +114,7 @@ int main(int argc, char** argv)
           
       for (int p=1; p<=pMax; p++)
         {
-          cerr << endl << "---------- p = " << p << " --------------" << endl;
+          std::cerr << std::endl << "---------- p = " << p << " --------------" << std::endl;
           Tabs tab;
           BasisFamily P = new Lagrange(p);
       
@@ -142,69 +142,69 @@ int main(int argc, char** argv)
           int nq = qxx.nQuad();
           Array<double> varCoeff(nq, 1.0);
 
-          cerr << "============================= Doing reference integration =========== " << endl;
+          std::cerr << "============================= Doing reference integration =========== " << std::endl;
 
           ref.transformTwoForm(JBatch, constCoeff, cellLIDs, A);
-          cerr << "============================= Doing quad integration xx =========== " << endl;
+          std::cerr << "============================= Doing quad integration xx =========== " << std::endl;
           qxx.transformTwoForm(JBatch, &(varCoeff[0]), cellLIDs , Bxx);
-          cerr << "============================= Doing quad integration yy =========== " << endl;
+          std::cerr << "============================= Doing quad integration yy =========== " << std::endl;
           qyy.transformTwoForm(JBatch, &(varCoeff[0]), cellLIDs , Byy);
 
-          cerr << "============================= Done integration =========== " << endl;
-          cerr << tab << "transformed reference element" << endl;
-          cerr << tab << "{";
+          std::cerr << "============================= Done integration =========== " << std::endl;
+          std::cerr << tab << "transformed reference element" << std::endl;
+          std::cerr << tab << "{";
           for (int r=0; r<ref.nNodesTest(); r++)
             {
-              if (r!=0) cerr << ", ";
-              cerr << "{";
+              if (r!=0) std::cerr << ", ";
+              std::cerr << "{";
               for (int c=0; c<ref.nNodesUnk(); c++)
                 {
-                  if (c!=0) cerr << ", ";
-                  cerr << (*A)[r + ref.nNodesTest()*c];
+                  if (c!=0) std::cerr << ", ";
+                  std::cerr << (*A)[r + ref.nNodesTest()*c];
                 }
-              cerr << "}";
+              std::cerr << "}";
             }
-          cerr << "}" << endl;
+          std::cerr << "}" << std::endl;
 
-          cerr << tab << "transformed Q_xx" << endl;
-          cerr << tab << "{";
+          std::cerr << tab << "transformed Q_xx" << std::endl;
+          std::cerr << tab << "{";
           for (int r=0; r<qxx.nNodesTest(); r++)
             {
-              if (r!=0) cerr << ", ";
-              cerr << "{";
+              if (r!=0) std::cerr << ", ";
+              std::cerr << "{";
               for (int c=0; c<qxx.nNodesUnk(); c++)
                 {
-                  if (c!=0) cerr << ", ";
+                  if (c!=0) std::cerr << ", ";
                   int i = r + qxx.nNodesTest()*c;
                   double lapl = (*Bxx)[i];
-                  cerr << lapl;
+                  std::cerr << lapl;
                 }
-              cerr << "}";
+              std::cerr << "}";
             }
-          cerr << "}" << endl;
+          std::cerr << "}" << std::endl;
 
-          cerr << tab << "transformed Q_yy" << endl;
-          cerr << tab << "{";
+          std::cerr << tab << "transformed Q_yy" << std::endl;
+          std::cerr << tab << "{";
           for (int r=0; r<qxx.nNodesTest(); r++)
             {
-              if (r!=0) cerr << ", ";
-              cerr << "{";
+              if (r!=0) std::cerr << ", ";
+              std::cerr << "{";
               for (int c=0; c<qxx.nNodesUnk(); c++)
                 {
-                  if (c!=0) cerr << ", ";
+                  if (c!=0) std::cerr << ", ";
                   int i = r + qxx.nNodesTest()*c;
                   double lapl = (*Byy)[i];
-                  cerr << lapl;
+                  std::cerr << lapl;
                 }
-              cerr << "}";
+              std::cerr << "}";
             }
-          cerr << "}" << endl;
+          std::cerr << "}" << std::endl;
         }
 
       TimeMonitor::summarize();
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
-      cerr << e.what() << endl;
+      std::cerr << e.what() << std::endl;
 		}
 }

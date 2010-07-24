@@ -46,8 +46,8 @@ using namespace Teuchos;
 
 
 
-SymbolicFuncElement::SymbolicFuncElement(const string& name,
-  const string& suffix,
+SymbolicFuncElement::SymbolicFuncElement(const std::string& name,
+  const std::string& suffix,
   const FunctionIdentifier& fid,
   const RCP<const CommonFuncDataStub>& data)
 	: EvaluatableExpr(), FuncElementBase(name, suffix, fid),

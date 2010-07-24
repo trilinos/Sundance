@@ -8,6 +8,8 @@
 using namespace Sundance;
 using namespace Sundance;
 using namespace Teuchos;
+using std::cout;
+using std::exception;
 
 using Sundance::List;
 
@@ -35,23 +37,23 @@ bool validateFuncTypeChecking()
 
   bool passFail = true;
   /* */
-  Out::os() << "Testing detection of mixed-up function types" << endl;
+  Out::os() << "Testing detection of mixed-up function types" << std::endl;
   TEST_THROW(
     SymbPreprocessor::processInputFuncs<UnknownFuncElement>(mixup, makeZeros(v)), passFail);
   
   /* */
-  Out::os() << "Testing detection of duplicated functions" << endl;
+  Out::os() << "Testing detection of duplicated functions" << std::endl;
   TEST_THROW(
     SymbPreprocessor::processInputFuncs<SymbolicFuncElement>(dup, makeZeros(v)), passFail);
   
   /* */
-  Out::os() << "Testing detection of invalid evaluation points" << endl;
+  Out::os() << "Testing detection of invalid evaluation points" << std::endl;
   TEST_THROW(
     SymbPreprocessor::processInputFuncs<SymbolicFuncElement>(v, u), passFail);
   
 
   /* */
-  Out::os() << "Testing processing of good input" << endl;
+  Out::os() << "Testing processing of good input" << std::endl;
   TEST_NOTHROW(
     SymbPreprocessor::processInputFuncs<SymbolicFuncElement>(v, makeZeros(v)), passFail);
   
@@ -68,7 +70,7 @@ int main(int argc, char** argv)
 
       pass = pass && validateFuncTypeChecking();
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
       pass = false;
 			Out::println(e.what());
@@ -76,12 +78,12 @@ int main(int argc, char** argv)
 
   if (pass)
   {
-    Out::os() << "test PASSED" << endl;
+    Out::os() << "test PASSED" << std::endl;
     return 0;
   }
   else 
   {
-    Out::os() << "test FAILED" << endl;
+    Out::os() << "test FAILED" << std::endl;
     return -1;
   }
 

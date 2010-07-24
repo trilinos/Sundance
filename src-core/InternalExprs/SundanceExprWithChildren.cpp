@@ -186,16 +186,16 @@ void ExprWithChildren::setupEval(const EvalContext& context) const
   }
 }
 
-void ExprWithChildren::showSparsity(ostream& os, 
+void ExprWithChildren::showSparsity(std::ostream& os, 
   const EvalContext& context) const
 {
   Tabs tab0;
-  os << tab0 << "Node: " << toString() << endl;
+  os << tab0 << "Node: " << toString() << std::endl;
   sparsitySuperset(context)->print(os);
   for (int i=0; i<children_.size(); i++)
   {
     Tabs tab1;
-    os << tab1 << "Child " << i << endl;
+    os << tab1 << "Child " << i << std::endl;
     evaluatableChild(i)->showSparsity(os, context);
   }
 }
@@ -943,20 +943,20 @@ RCP<Array<Set<MultipleDeriv> > > ExprWithChildren
 
 
 
-void ExprWithChildren::displayNonzeros(ostream& os, const EvalContext& context) const 
+void ExprWithChildren::displayNonzeros(std::ostream& os, const EvalContext& context) const 
 {
   Tabs tabs0;
-  os << tabs0 << "Nonzeros of " << toString() << endl;
-  os << tabs0 << "Diving into children " << endl;
+  os << tabs0 << "Nonzeros of " << toString() << std::endl;
+  os << tabs0 << "Diving into children " << std::endl;
 
   for (int i=0; i<numChildren(); i++)
   {
     Tabs tab1;
-    os << tab1 << "Child " << i << endl;
+    os << tab1 << "Child " << i << std::endl;
     evaluatableChild(i)->displayNonzeros(os, context);
   }
 
-  os << tabs0 << "Printing nonzeros for parent " << toString() << endl;
+  os << tabs0 << "Printing nonzeros for parent " << toString() << std::endl;
   const Set<MultipleDeriv>& W = findW(context);
   const Set<MultipleDeriv>& R = findR(context);
   const Set<MultipleDeriv>& C = findC(context);
@@ -965,10 +965,10 @@ void ExprWithChildren::displayNonzeros(ostream& os, const EvalContext& context) 
   for (Set<MultipleDeriv>::const_iterator i=W.begin(); i != W.end(); i++)
   {
     Tabs tab1;
-    string state = "Variable";
+    std::string state = "Variable";
     if (C.contains(*i)) state = "Constant";
     if (!R.contains(*i)) state = "Not Required";
-    os << tab1 << std::setw(25) << std::left << i->toString() << ": " << state << endl;
+    os << tab1 << std::setw(25) << std::left << i->toString() << ": " << state << std::endl;
   }
 }
 
@@ -1059,7 +1059,7 @@ chainRuleDerivsOfArgs(int nArgs,
     Array<std::pair<int, Array<MultipleDeriv> > > terms;
     for (int j=0; j<nArgs; j++)
     {
-      pair<int, Array<MultipleDeriv> > factors;
+      std::pair<int, Array<MultipleDeriv> > factors;
       factors.first = j;
       for (int k=0; k<b[j]; k++)
       {

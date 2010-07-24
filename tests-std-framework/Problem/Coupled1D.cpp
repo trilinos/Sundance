@@ -109,7 +109,7 @@ int main(int argc, char** argv)
 #endif
 
       ParameterList solverParams = reader.getParameters();
-      cerr << "params = " << solverParams << endl;
+      std::cerr << "params = " << solverParams << std::endl;
 
 
       LinearSolver<double> solver 
@@ -140,16 +140,16 @@ int main(int argc, char** argv)
       FunctionalEvaluator uErrInt(mesh, uErrExpr);
 
       double uErrorSq = uErrInt.evaluate();
-      cerr << "u error norm = " << sqrt(uErrorSq) << endl << endl;
+      std::cerr << "u error norm = " << sqrt(uErrorSq) << std::endl << std::endl;
 
       double vErrorSq = vErrInt.evaluate();
-      cerr << "v error norm = " << sqrt(vErrorSq) << endl << endl;
+      std::cerr << "v error norm = " << sqrt(vErrorSq) << std::endl << std::endl;
 
       double tol = 1.0e-8;
       Sundance::passFailTest(sqrt(uErrorSq+vErrorSq), tol);
 
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
       Sundance::handleException(e);
 		}

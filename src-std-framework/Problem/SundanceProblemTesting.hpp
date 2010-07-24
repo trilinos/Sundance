@@ -199,7 +199,7 @@ public:
   virtual bool run(const std::string& solverFile, double tol) const ;
 
   /** */
-  virtual string name() const = 0 ;
+  virtual std::string name() const = 0 ;
 
   /** */
   virtual Expr exactSoln() const = 0 ;

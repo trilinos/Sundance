@@ -62,7 +62,7 @@ void EvalVectorArray::steal(const RCP<EvalVectorArray>& other)
     }
 }
 
-ostream& EvalVectorArray::print(ostream& os, 
+ostream& EvalVectorArray::print(std::ostream& os, 
                                 const SparsitySuperset* derivs) const
 {
   Tabs tab;
@@ -86,7 +86,7 @@ ostream& EvalVectorArray::print(ostream& os,
       os.setf(ios_base::left, ios_base::adjustfield);
       os << derivs->deriv(i).toString() << "\t\t";
       (*this)[i]->print(os);
-      os << endl;
+      os << std::endl;
     }
   return os;
 }

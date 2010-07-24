@@ -61,7 +61,7 @@ public:
       
 private:
       
-  string stringRep_;
+  std::string stringRep_;
 };
 }
 

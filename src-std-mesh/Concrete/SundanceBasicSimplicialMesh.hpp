@@ -357,13 +357,13 @@ private:
   void resolveEdgeOwnership(int cellDim);
 
   /** */
-  string cellStr(int dim, const int* verts) const ;
+  std::string cellStr(int dim, const int* verts) const ;
 
   /** */
-  string cellToStr(int dim, int cellLID) const ;
+  std::string cellToStr(int dim, int cellLID) const ;
 
   /** */
-  string printCells(int dim) const ;
+  std::string printCells(int dim) const ;
 
   /** */
   void synchronizeNeighborLists();

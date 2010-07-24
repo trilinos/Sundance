@@ -7,7 +7,7 @@ using namespace Teuchos;
 using namespace Sundance;
 
 
-BamgMeshReader::BamgMeshReader(const string& fname,
+BamgMeshReader::BamgMeshReader(const std::string& fname,
                                const MeshType& meshType, bool bbAttr,
                                const MPIComm& comm)
   : MeshReaderBase(fname, meshType, comm),
@@ -116,7 +116,7 @@ void BamgMeshReader::readParallelInfo(Array<int>& ptGID,
 {
   int nPoints;
   int nElems;
-  string line;
+  std::string line;
   Array<string> tokens;
   try
     {
@@ -242,7 +242,7 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
                               Array<int>& ptOwner) const 
 {
   Mesh mesh;
-  string line;
+  std::string line;
   Array<string> tokens;
   int nPoints=0;
 
@@ -262,7 +262,7 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
     "entries on the header line in "
     "the .node file. Found line \n[" << line
     << "]\n in file " << nodeFilename_);
-    string headerLine = line;
+    std::string headerLine = line;
     SUNDANCE_OUT(this->verb() > 2,
     "read point header " << line);
   
@@ -814,7 +814,7 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
 //ignore this -- we read velocities from bb file within readMesh method
 /*
 
-Array<Array<double> > BamgMeshReader::getVelocityField(const string& bbFilename) const
+Array<Array<double> > BamgMeshReader::getVelocityField(const std::string& bbFilename) const
 // read .bb file for 2-D velocity field & return a ListExpr for the field //
 {
 RCP<std::ifstream> bbStream = openFile(bbFilename_, "velocity info");

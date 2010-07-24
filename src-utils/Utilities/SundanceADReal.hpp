@@ -179,9 +179,9 @@ SUNDANCE_AD_FUNCTOR(exp, StdExp)
 
 namespace std
 {
-inline ostream& operator<<(ostream& os, const Sundance::ADReal& x)
+inline ostream& operator<<(std::ostream& os, const Sundance::ADReal& x)
 {
-  cerr << "AD[" << x.value() << ", grad="<< x.gradient() << "]";
+  std::cerr << "AD[" << x.value() << ", grad="<< x.gradient() << "]";
   return os;
 }
 }

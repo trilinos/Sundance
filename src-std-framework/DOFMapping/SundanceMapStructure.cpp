@@ -128,13 +128,13 @@ int MapStructure::indexForFuncID(int funcID) const
 std::ostream& MapStructure::print(std::ostream& os) const
 {
   Tabs tab;
-  os << tab << "Map structure: nChunks=" << numBasisChunks() << endl;
+  os << tab << "Map structure: nChunks=" << numBasisChunks() << std::endl;
   for (int c=0; c<numBasisChunks(); c++) 
   {
     Tabs tab1;
-    os << tab1 << "chunk " << c << " funcIDs=" << funcs(c) << endl;
+    os << tab1 << "chunk " << c << " funcIDs=" << funcs(c) << std::endl;
   }
-  os << tab << "## end map structure" << endl;
+  os << tab << "## end map structure" << std::endl;
   return os;
 }
 

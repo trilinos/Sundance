@@ -20,7 +20,7 @@ Expr readNodalFields(const MeshSource& mesher, const Mesh& mesh,
  * u1_2 u2_2 ... uN_2    # data at node 2
  * 
 */
-Expr readSerialGridField(const string& gridFile, 
+Expr readSerialGridField(const std::string& gridFile, 
   double ax, double bx,
   double ay, double by,
   const VectorType<double>& vecType,

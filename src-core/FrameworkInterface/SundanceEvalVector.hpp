@@ -41,7 +41,6 @@
 
 namespace Sundance
 {
-using namespace Sundance;
 using namespace Teuchos;
 class TempStack;
 /**
@@ -60,7 +59,7 @@ private:
 
   /** */
   EvalVector(TempStack* s, const RCP<Array<double> >& data,
-    const string& str);
+    const std::string& str);
 
 
 public:
@@ -289,7 +288,7 @@ public:
   int length() const {return data_->size();}
       
   /** */
-  void print(ostream& os) const ;
+  void print(std::ostream& os) const ;
 
   /** */
   const double * start() const {return &((*data_)[0]);}
@@ -297,9 +296,9 @@ public:
   /** */
   double * start() {return &((*data_)[0]);}
 
-  const string& str() const {return str_;}
+  const std::string& str() const {return str_;}
 
-  void setString(const string& str) {str_ = str;}
+  void setString(const std::string& str) {str_ = str;}
 
   inline static bool& shadowOps() {static bool rtn = false; return rtn;}
 
@@ -318,7 +317,7 @@ private:
 
   RCP<Array<double> > data_;
 
-  string str_;
+  std::string str_;
 
 };
 
@@ -328,7 +327,7 @@ private:
 
 namespace std
 {
-inline ostream& operator<<(ostream& os, 
+inline ostream& operator<<(std::ostream& os, 
   const Sundance::EvalVector& vec)
 {
   vec.print(os);

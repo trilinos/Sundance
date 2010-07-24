@@ -81,15 +81,15 @@ int main(int argc, char *argv[])
       LinearOperator<double> C = CBuilder.getOp();
       LinearOperator<double> D = DBuilder.getOp();
 
-      Out::root() << "A = " << endl;
-      Out::os() << A << endl;
-      Out::root() << "B = " << endl;
-      Out::os() << B << endl;
+      Out::root() << "A = " << std::endl;
+      Out::os() << A << std::endl;
+      Out::root() << "B = " << std::endl;
+      Out::os() << B << std::endl;
 
-      Out::root() << "C = " << endl;
-      Out::os() << C << endl;
-      Out::root() << "D = " << endl;
-      Out::os() << D << endl;
+      Out::root() << "C = " << std::endl;
+      Out::os() << C << std::endl;
+      Out::root() << "D = " << std::endl;
+      Out::os() << D << std::endl;
       
       CompoundTester<double> tester(A, B, 
         TestSpecifier<double>(true, 1.0e-13, 1.0e-10),
@@ -99,9 +99,9 @@ int main(int argc, char *argv[])
 
       bool allPass =  tester.runAllTests();
 
-      Out::root() << endl << endl 
+      Out::root() << std::endl << std::endl 
                   << "testing multiplication of square matrices " 
-                  << endl << endl;
+                  << std::endl << std::endl;
 
       MatrixMatrixTester<double> mmTester(A, B, 
         TestSpecifier<double>(true, 1.0e-13, 1.0e-10),
@@ -112,9 +112,9 @@ int main(int argc, char *argv[])
 
       allPass = mmTester.runAllTests() && allPass;
 
-      Out::root() << endl << endl 
+      Out::root() << std::endl << std::endl 
                   << "testing multiplication of rectangular matrices " 
-                  << endl << endl;
+                  << std::endl << std::endl;
 
       MatrixMatrixTester<double> rectMMTester(C, D, 
         TestSpecifier<double>(true, 1.0e-13, 1.0e-10),
@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
   catch(std::exception& e)
     {
       stat = 0;
-      cerr << "Caught exception: " << e.what() << endl;
+      std::cerr << "Caught exception: " << e.what() << std::endl;
     }
   return stat;
 }

@@ -59,7 +59,7 @@ public:
 	virtual XMLObject toXML() const;
 
 	/** Describable interface */
-	virtual string description() const
+	virtual std::string description() const
 	{
 		return "FeketeQuadrature[order=" + Teuchos::toString(order()) + "]";
 	}

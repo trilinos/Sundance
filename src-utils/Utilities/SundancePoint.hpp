@@ -39,11 +39,6 @@
 
 namespace Sundance
 {
-  using namespace Sundance;
-  using std::string;
-
-  using std::ostream;
-
   /**
    * Point represents a spatial point.
    */
@@ -88,7 +83,7 @@ namespace Sundance
 
       inline double distance(const Point& x) const ;
 
-      inline string toString() const ;
+      inline std::string toString() const ;
 
       static bool unitTest() ;
 
@@ -102,7 +97,7 @@ namespace Sundance
 
 namespace std
 {
-  ostream& operator<<(ostream& os, const Sundance::Point& p);
+  ostream& operator<<(std::ostream& os, const Sundance::Point& p);
 
 }
 
@@ -279,9 +274,9 @@ namespace Sundance
                   a[0]*b[1] - a[1]*b[0]);
   }
 
-  inline string Point::toString() const
+  inline std::string Point::toString() const
     {
-      string rtn = "{";
+      std::string rtn = "{";
       for (int i=0; i<dim(); i++)
         {
           rtn += Teuchos::toString(x_[i]);
@@ -301,7 +296,7 @@ namespace Sundance
 
 namespace Teuchos
 {
-  inline string toString(const Sundance::Point& x)
+  inline std::string toString(const Sundance::Point& x)
     {
       return x.toString();
     }
@@ -309,7 +304,7 @@ namespace Teuchos
 
 namespace std
 {
-  ostream& operator<<(ostream& os, const Sundance::Point& p);
+  ostream& operator<<(std::ostream& os, const Sundance::Point& p);
 }
 
 

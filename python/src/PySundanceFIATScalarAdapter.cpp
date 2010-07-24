@@ -48,9 +48,9 @@ FIATScalarAdapter::FIATScalarAdapter( PyObject *pyfamilyclass ,
   bases_.resize( 3 );
   for (int i=0;i<3;i++) {
     PyObject *arglist = Py_BuildValue( "(ii)" , i+1 , order_ );
-    if (!arglist) cout << "barf" << endl;
+    if (!arglist) cout << "barf" << std::endl;
     bases_[i] = PyObject_CallObject( pyfamilyclass , arglist  );
-    if (!bases_[i]) cout << "puke" << endl;
+    if (!bases_[i]) cout << "puke" << std::endl;
     to_decref.push( arglist );
   }
 
@@ -71,7 +71,7 @@ FIATScalarAdapter::FIATScalarAdapter( PyObject *pyfamilyclass ,
       int num_facets = PyObject_Length( nodes_per_dim );
       dof_[cd-1][i].resize( num_facets );
       for (int j=0;j<num_facets;j++) {
-        //cout << "facet number " << j << endl;
+        //cout << "facet number " << j << std::endl;
         PyObject *pyj = PyInt_FromLong( (long) j );
         to_decref.push( pyj );
         PyObject *nodes_per_facet =
@@ -156,7 +156,7 @@ void FIATScalarAdapter::getReferenceDOFs(const CellType& maximalCellType,
   const CellType& cellType,
   Array<Array<Array<int> > >& dofs) const
 {
-//		cout << "getting local dof" << endl;
+//		cout << "getting local dof" << std::endl;
   if (PointCell == cellType) {
     dofs.resize(1);
     dofs[0] = tuple<Array<int> >(tuple(0));
@@ -175,7 +175,7 @@ void FIATScalarAdapter::getReferenceDOFs(const CellType& maximalCellType,
       }
     }
   }
-//  		cout << "done getting local dof" << endl;
+//  		cout << "done getting local dof" << std::endl;
   return;
 }
 
@@ -186,9 +186,9 @@ int FIATScalarAdapter::nReferenceDOFs(
   const CellType& cellType
   ) const 
 {
-//		cout << "getting nnodes" << endl;
+//		cout << "getting nnodes" << std::endl;
   if (PointCell == cellType) {
-//			cout << "done getting nodes" << endl;
+//			cout << "done getting nodes" << std::endl;
     return 1;
   }
   else {
@@ -199,7 +199,7 @@ int FIATScalarAdapter::nReferenceDOFs(
       nn += numFacets( cellType , i ) * dofs_cur[i][0].size();
     }
 
-//			cout << "done getting nnodes" << endl;
+//			cout << "done getting nnodes" << std::endl;
 
     return nn;
   }
@@ -224,11 +224,11 @@ void FIATScalarAdapter::refEval(
     result[0] = tuple<Array<double> >(tuple(1.0));
   }
   else {
-// 			cout << "refevaling" << endl;
-// 			cout << "spatial dim: " << spatialDim << endl;
-// 			cout << "cell dim: " << dimension( cellType ) << endl;
-// 			cout << "pts sizes: " << pts.size() << " " << pts[0].dim() << endl;
-// 			cout << nNodes( dimension(cellType) , cellType ) << " nodes" << endl;
+// 			cout << "refevaling" << std::endl;
+// 			cout << "spatial dim: " << spatialDim << std::endl;
+// 			cout << "cell dim: " << dimension( cellType ) << std::endl;
+// 			cout << "pts sizes: " << pts.size() << " " << pts[0].dim() << std::endl;
+// 			cout << nNodes( dimension(cellType) , cellType ) << " nodes" << std::endl;
     stack<PyObject *> to_decref;
     int cellDim = dimension( cellType );
  
@@ -238,11 +238,11 @@ void FIATScalarAdapter::refEval(
       result[0][i].resize(nn);
     }
  
-// 			cout << "result sizes" << endl;
+// 			cout << "result sizes" << std::endl;
 //  			for (i=0;i<result.size();i++) {
-//  				cout << result[0][i].size() << endl;
+//  				cout << result[0][i].size() << std::endl;
 //  			}
-// 			cout << "making points" << endl;
+// 			cout << "making points" << std::endl;
     // This is the list of points converted into a Python list
     PyObject *py_list_of_points = PyList_New(pts.size());
     TEST_FOR_EXCEPTION( !py_list_of_points , RuntimeError, 
@@ -274,15 +274,15 @@ void FIATScalarAdapter::refEval(
         // PyTuple_SetItem steals a reference to py_coord;
         // not added to the decref stack
       }
-//				cout << "putting into list" << endl;
+//				cout << "putting into list" << std::endl;
       int msg = PyList_SetItem( py_list_of_points , i , py_pt_cur );
       // reference to py_pt_cur stolen
       TEST_FOR_EXCEPTION( msg==-1 , RuntimeError ,
         "Unable to set tuple item" );
-//				cout << "done putting into list" << endl;
+//				cout << "done putting into list" << std::endl;
     }
 
-//			cout << "done making points" << endl;
+//			cout << "done making points" << std::endl;
 
     // Extract the function space from the basis
     PyObject *py_basis = bases_[spatialDim-1];
@@ -344,22 +344,22 @@ void FIATScalarAdapter::refEval(
     int cur = 0;
     int **sd_to_fiat_spd = sd_to_fiat[spatialDim];
     for (d=0;d<=(unsigned)cellDim;d++) {
-//				cout << "copying points for dimension " << d << endl;
+//				cout << "copying points for dimension " << d << std::endl;
       int *sd_to_fiat_spd_d = sd_to_fiat_spd[d];
       for (int e=0;e<numFacets(cellType,d);e++) {
-//					cout << "\tcopying points for facet " << e << endl;
+//					cout << "\tcopying points for facet " << e << std::endl;
         int fiat_e = sd_to_fiat_spd_d[e];
-//					cout << "fiat_e: " << fiat_e << endl;
+//					cout << "fiat_e: " << fiat_e << std::endl;
         for (int n=0;n<dofs[d][e].size();n++) {
-//						cout << "\t\tcopying points for local bf " << n << endl;
-//						cout << "\t\tcur " << cur << endl;
+//						cout << "\t\tcopying points for local bf " << n << std::endl;
+//						cout << "\t\tcur " << cur << std::endl;
           for (unsigned p=0;p<pts.size();p++) {
-//							cout << "\t\t\tcopying value for point " << p << endl;
-//							cout << "ij tuple" << endl;
+//							cout << "\t\t\tcopying value for point " << p << std::endl;
+//							cout << "ij tuple" << std::endl;
             PyObject *py_ij_tuple = 
               Py_BuildValue( "(ii)" , dofs[d][fiat_e][n] , p );
             to_decref.push( py_ij_tuple );
-//							cout << "lookup" << endl;
+//							cout << "lookup" << std::endl;
             PyObject *py_tab_cur_ij = 
               PyObject_GetItem( py_tabulation , py_ij_tuple );
             to_decref.push( py_tab_cur_ij );
@@ -370,7 +370,7 @@ void FIATScalarAdapter::refEval(
       }
     }
 
-//			cout << "done refevaling" << endl;
+//			cout << "done refevaling" << std::endl;
 
 
     while (!to_decref.empty()) {

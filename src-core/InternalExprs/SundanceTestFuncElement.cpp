@@ -39,8 +39,8 @@ using namespace Teuchos;
 
 TestFuncElement
 ::TestFuncElement(const RCP<const TestFuncDataStub>& data,
-  const string& name,
-  const string& suffix,
+  const std::string& name,
+  const std::string& suffix,
   const FunctionIdentifier& fid)
 	: SymbolicFuncElement(name, suffix, fid,
     rcp_dynamic_cast<const CommonFuncDataStub>(data))

@@ -50,12 +50,12 @@ void VTKWriter::write() const
   if (nProc() > 1 && myRank()==0) lowLevelWrite(filename(), true);
 }
 
-void VTKWriter::lowLevelWrite(const string& filename, bool isPHeader) const 
+void VTKWriter::lowLevelWrite(const std::string& filename, bool isPHeader) const 
 {
-  string PHeader = "";
+  std::string PHeader = "";
   if (isPHeader) PHeader="P";
 
-  string f = filename;
+  std::string f = filename;
   
   if (isPHeader) f = f + ".pvtu";
   else if (nProc() > 1) 
@@ -93,9 +93,9 @@ void VTKWriter::lowLevelWrite(const string& filename, bool isPHeader) const
       for (int p=0; p<nProc(); p++)
         {
           XMLObject pc("Piece");
-          string pfile = filename + Teuchos::toString(p) + ".vtu";
+          std::string pfile = filename + Teuchos::toString(p) + ".vtu";
           size_t pos = pfile.find_last_of("/");
-          if (pos != string::npos)
+          if (pos != std::string::npos)
           {
             pfile = pfile.substr(pos+1);
           }
@@ -123,9 +123,9 @@ void VTKWriter::lowLevelWrite(const string& filename, bool isPHeader) const
 	os << head.footer() << std::endl;
 }
 
-void VTKWriter::writePoints(ostream& os, bool isPHeader) const 
+void VTKWriter::writePoints(std::ostream& os, bool isPHeader) const 
 {
-  string PHeader = "";
+  std::string PHeader = "";
   if (isPHeader) PHeader="P";
   XMLObject pts(PHeader + "Points");
 
@@ -166,7 +166,7 @@ void VTKWriter::writePoints(ostream& os, bool isPHeader) const
 }
 
 
-void VTKWriter::writeCells(ostream& os) const 
+void VTKWriter::writeCells(std::ostream& os) const 
 {
   XMLObject cells("Cells");
   os << cells.header() << std::endl;
@@ -277,9 +277,9 @@ void VTKWriter::writeCells(ostream& os) const
   os << cells.footer() << std::endl;
 }
 
-void VTKWriter::writePointData(ostream& os, bool isPHeader) const 
+void VTKWriter::writePointData(std::ostream& os, bool isPHeader) const 
 {
-  string PHeader = "";
+  std::string PHeader = "";
   if (isPHeader) PHeader="P";
 
   XMLObject xml(PHeader + "PointData");
@@ -302,9 +302,9 @@ void VTKWriter::writePointData(ostream& os, bool isPHeader) const
   os << xml.footer() << std::endl;
 }
 
-void VTKWriter::writeCellData(ostream& os, bool isPHeader) const 
+void VTKWriter::writeCellData(std::ostream& os, bool isPHeader) const 
 {
-  string PHeader = "";
+  std::string PHeader = "";
   if (isPHeader) PHeader="P";
 
   XMLObject xml(PHeader + "CellData");
@@ -329,10 +329,10 @@ void VTKWriter::writeCellData(ostream& os, bool isPHeader) const
 }
 
 
-void VTKWriter::writeDataArray(ostream& os, const string& name, 
+void VTKWriter::writeDataArray(std::ostream& os, const std::string& name, 
                                const RCP<FieldBase>& expr, bool isPHeader, bool isPointData) const 
 {
-  string PHeader = "";
+  std::string PHeader = "";
   if (isPHeader) PHeader="P";
 
   XMLObject xml(PHeader + "DataArray");

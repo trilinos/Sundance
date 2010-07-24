@@ -156,7 +156,7 @@ try
         double tol = 1.0e-2;
         Sundance::passFailTest(sqrt(VerticalDispErr)+sqrt(HorisontalDispErr), tol);
 }
-catch(exception& e)
+catch(std::exception& e)
 {
       Sundance::handleException(e);
 }

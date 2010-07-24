@@ -57,16 +57,16 @@ IncrementallyCreatableMesh* Mesh::creatableMesh()
 }
 
 
-void Mesh::dump(const string& filename) const
+void Mesh::dump(const std::string& filename) const
 {
   FieldWriter w = new VerboseFieldWriter(filename);
   w.addMesh(*this);
   w.write();
 }
 
-bool Mesh::checkConsistency(const string& filename) const 
+bool Mesh::checkConsistency(const std::string& filename) const 
 {
-  string f = filename;
+  std::string f = filename;
 
   if (comm().getNProc() > 1)
     {
@@ -76,7 +76,7 @@ bool Mesh::checkConsistency(const string& filename) const
   return checkConsistency(os);
 }
 
-bool Mesh::checkConsistency(ostream& os) const 
+bool Mesh::checkConsistency(std::ostream& os) const 
 {
   /* eliminate the trivial serial case */
   if (comm().getNProc()==1) 
@@ -100,7 +100,7 @@ bool Mesh::checkConsistency(ostream& os) const
 }
 
 
-bool Mesh::checkCellConsistency(ostream& os, int dim) const
+bool Mesh::checkCellConsistency(std::ostream& os, int dim) const
 {
   TEST_FOR_EXCEPTION(dim==0, RuntimeError,
                      "Mesh::checkCellConsistency called for d=0. "
@@ -284,7 +284,7 @@ bool Mesh::checkCellConsistency(ostream& os, int dim) const
   return elemsAreOK;
 } 
 
-bool Mesh::testIdentity(ostream& os, int a, int b, const string& msg) const
+bool Mesh::testIdentity(std::ostream& os, int a, int b, const std::string& msg) const
 {
   Tabs tab;
   if (a != b)
@@ -295,9 +295,9 @@ bool Mesh::testIdentity(ostream& os, int a, int b, const string& msg) const
   return true;
 }
 
-bool Mesh::testIdentity(ostream& os, 
+bool Mesh::testIdentity(std::ostream& os, 
                         const Array<int>& a,
-                        const Array<int>& b, const string& msg) const
+                        const Array<int>& b, const std::string& msg) const
 {
   Tabs tab;
   bool ok = true;
@@ -312,7 +312,7 @@ bool Mesh::testIdentity(ostream& os,
   return ok;
 }
 
-bool Mesh::checkRemoteEntity(ostream& os, int p, int dim, int gid, int owner,
+bool Mesh::checkRemoteEntity(std::ostream& os, int p, int dim, int gid, int owner,
                              bool mustExist, int& lid) const
 {
   Tabs tab;
@@ -357,12 +357,12 @@ bool Mesh::checkRemoteEntity(ostream& os, int p, int dim, int gid, int owner,
 
 
 
-bool Mesh::checkVertexConsistency(ostream& os) const 
+bool Mesh::checkVertexConsistency(std::ostream& os) const 
 {
   int dim = spatialDim();
   int myRank = comm().getRank();
   int nProcs = comm().getNProc();
-  string pHdr = "p=" + Teuchos::toString(myRank);
+  std::string pHdr = "p=" + Teuchos::toString(myRank);
 
   Out::println(pHdr + " testing consistency of vertices");
 

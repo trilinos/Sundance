@@ -130,10 +130,10 @@ int main(int argc, char** argv)
         new GaussianQuadrature(8));
 
       double errorSq0 = evaluateIntegral(mesh, errExpr);
-      cerr << "soln error norm = " << sqrt(errorSq0) << endl << endl;
+      std::cerr << "soln error norm = " << sqrt(errorSq0) << std::endl << std::endl;
 
       double errorSqA = evaluateIntegral(mesh, errExprA);
-      cerr << "sens A error norm = " << sqrt(errorSqA) << endl << endl;
+      std::cerr << "sens A error norm = " << sqrt(errorSqA) << std::endl << std::endl;
 
       double error = sqrt(errorSq0 + errorSqA);
       
@@ -141,9 +141,9 @@ int main(int argc, char** argv)
       Sundance::passFailTest(error, tol);
 
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
-      cerr << e.what() << endl;
+      std::cerr << e.what() << std::endl;
 		}
   Sundance::finalize(); return Sundance::testStatus(); 
 }

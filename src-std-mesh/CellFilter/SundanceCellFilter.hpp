@@ -222,10 +222,10 @@ public:
   XMLObject toXML() const ;
 
   /** */
-  string toString() const ;
+  std::string toString() const ;
 
   /** */
-  void setName(const string& name) ;
+  void setName(const std::string& name) ;
 
   /** */
   const CellFilterBase* cfbPtr() const ;

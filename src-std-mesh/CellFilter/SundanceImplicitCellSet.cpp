@@ -52,7 +52,7 @@ CellIterator ImplicitCellSet::end() const
   return CellIterator(mesh(), dimension(), CellIterator::End);
 }
 
-void ImplicitCellSet::print(ostream& os) const 
+void ImplicitCellSet::print(std::ostream& os) const 
 {
   os << "ImplicitCellSet[dim=" << dimension() << ", type=" << cellType() << "]";
 }

@@ -132,22 +132,22 @@ int main(int argc, char** argv)
 
       
       double uErrorSq = evaluateIntegral(mesh, uErrExpr);
-      cerr << "u error norm = " << sqrt(uErrorSq) << endl << endl;
+      std::cerr << "u error norm = " << sqrt(uErrorSq) << std::endl << std::endl;
 
       double alphaErrorSq = evaluateIntegral(mesh, alphaErrExpr);
-      cerr << "alpha error norm = " << sqrt(alphaErrorSq) << endl << endl;
+      std::cerr << "alpha error norm = " << sqrt(alphaErrorSq) << std::endl << std::endl;
 
       double lambdaErrorSq = evaluateIntegral(mesh, lambdaErrExpr);
-      cerr << "lambda error norm = " << sqrt(lambdaErrorSq) << endl << endl;
+      std::cerr << "lambda error norm = " << sqrt(lambdaErrorSq) << std::endl << std::endl;
 
       double err = sqrt(uErrorSq + lambdaErrorSq + alphaErrorSq);
 
       double tol = 0.01;
       Sundance::passFailTest(err, tol);
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
-      cerr << e.what() << endl;
+      std::cerr << e.what() << std::endl;
 		}
   Sundance::finalize();
   return Sundance::testStatus(); 

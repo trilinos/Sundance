@@ -71,9 +71,9 @@ public:
   bool operator==(const VertexView& other) const ;
 
   /**
-   * Write to a string
+   * Write to a std::string
    */
-  string toString() const ;
+  std::string toString() const ;
 
 
 private:
@@ -110,7 +110,7 @@ inline int hashCode(const Sundance::VertexView& v)
 {return v.hashCode();}
 
 /** \relates VertexView */
-inline string toString(const Sundance::VertexView& v) 
+inline std::string toString(const Sundance::VertexView& v) 
 {return v.toString();}
 }
 

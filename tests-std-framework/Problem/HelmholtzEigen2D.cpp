@@ -32,7 +32,7 @@ int main( int argc , char **argv )
     TEST_FOR_EXCEPT(npy < 1);
     TEST_FOR_EXCEPT(npx * npy != np);
 
-    Out::root() << "npx=" << npx << ", npy=" << npy << endl;
+    Out::root() << "npx=" << npx << ", npy=" << npy << std::endl;
 
     VectorType<double> vecType = new EpetraVectorType();
 
@@ -84,7 +84,7 @@ int main( int argc , char **argv )
     {
       Expr ev = soln.eigenfunction(i);
       const std::complex<double>& ew = soln.eigenvalue(i);
-      Out::root() << "ew=(" << ew  << ")" << endl;
+      Out::root() << "ew=(" << ew  << ")" << std::endl;
       w.addField("u[" + Teuchos::toString(i) + "]", 
         new ExprFieldWrapper(ev));
     }

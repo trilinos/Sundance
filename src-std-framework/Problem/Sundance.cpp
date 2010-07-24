@@ -76,7 +76,7 @@ bool passFailTest(double error, double tol)
 {return SundanceGlobal::passFailTest(error, tol);}
 
 
-bool passFailTest(const string& statusMsg,
+bool passFailTest(const std::string& statusMsg,
   bool status, double error, double tol)
 {return SundanceGlobal::passFailTest(statusMsg, status, error, tol);}
 
@@ -96,31 +96,31 @@ int finalize() {return SundanceGlobal::finalize();}
 
 
 
-void setOption(const string& optionName,
+void setOption(const std::string& optionName,
   int& value,
-  const string& helpMsg)
+  const std::string& helpMsg)
 {
   SundanceGlobal::setOption(optionName, value, helpMsg);
 }
 
-void setOption(const string& optionName,
+void setOption(const std::string& optionName,
   double& value,
-  const string& helpMsg)
+  const std::string& helpMsg)
 {
   SundanceGlobal::setOption(optionName, value, helpMsg);
 }
 
-void setOption(const string& optionName,
-  string& value,
-  const string& helpMsg)
+void setOption(const std::string& optionName,
+  std::string& value,
+  const std::string& helpMsg)
 {
   SundanceGlobal::setOption(optionName, value, helpMsg);
 }
 
-void setOption(const string& optionTrueName,
-  const string& optionFalseName,
+void setOption(const std::string& optionTrueName,
+  const std::string& optionFalseName,
   bool& value,
-  const string& helpMsg)
+  const std::string& helpMsg)
 {
   SundanceGlobal::setOption(optionTrueName,
     optionFalseName,
@@ -151,7 +151,7 @@ int SundanceGlobal::init(int* argc, char*** argv)
     Tabs tab;
 
     /* read standard command line flags */
-    string configFilename = "";
+    std::string configFilename = "";
 
     bool defaultFpCheck = false;
     bool debugWait = false;
@@ -198,12 +198,12 @@ int SundanceGlobal::init(int* argc, char*** argv)
       {
         cout << "Simulation built using Sundance version " 
              << VersionString::number() 
-             << " (" << VersionString::date() << ")" << endl;
+             << " (" << VersionString::date() << ")" << std::endl;
      
         cout << "Sundance is copyright (C) 2005 Sandia National Laboratories and is"
-             << endl;
-        cout << "licensed under the GNU Lesser General Public License, version 2.1" << endl;
-        cout << tab << endl;
+             << std::endl;
+        cout << "licensed under the GNU Lesser General Public License, version 2.1" << std::endl;
+        cout << tab << std::endl;
         exit(0);
       }
     }
@@ -211,15 +211,15 @@ int SundanceGlobal::init(int* argc, char*** argv)
     {
       cout << "Simulation built using Sundance version " 
            << VersionString::number() 
-           << " (" << VersionString::date() << ")" << endl;
+           << " (" << VersionString::date() << ")" << std::endl;
       
       cout << "Sundance is copyright" 
-           << endl << " (C) 2005-2008 Sandia National Laboratories " 
-           << endl
+           << std::endl << " (C) 2005-2008 Sandia National Laboratories " 
+           << std::endl
            << " (C) 2007-2008 Texas Tech University"
-           << endl;
-      cout << "and is licensed under the GNU Lesser General Public License, version 2.1" << endl;
-      cout << tab << endl;
+           << std::endl;
+      cout << "and is licensed under the GNU Lesser General Public License, version 2.1" << std::endl;
+      cout << tab << std::endl;
     }
 
     if (!showTimings) skipTimingOutput() = true;
@@ -229,10 +229,10 @@ int SundanceGlobal::init(int* argc, char*** argv)
     {
       int wait=1;
       int pid = getpid();
-      string myCommandName=((char**)(*argv))[0];
-      string debugCmd = "ddd --gdb -x ~/.gdbinit " + myCommandName 
+      std::string myCommandName=((char**)(*argv))[0];
+      std::string debugCmd = "ddd --gdb -x ~/.gdbinit " + myCommandName 
         + " " + Teuchos::toString(pid) + " &";
-      cout << "launching " << debugCmd << endl;
+      cout << "launching " << debugCmd << std::endl;
       system(debugCmd.c_str());
       while (wait) {;}
     }
@@ -267,9 +267,9 @@ bool& SundanceGlobal::showStartupMessage()
 
 void SundanceGlobal::handleException(std::exception& e)
 {
-  cout << "Sundance detected exception: " << endl;
-  cout << e.what() << endl;
-  cout << "test FAILED" << endl;
+  cout << "Sundance detected exception: " << std::endl;
+  cout << e.what() << std::endl;
+  cout << "test FAILED" << std::endl;
   testStatus() = -1;
 }
 
@@ -283,12 +283,12 @@ int SundanceGlobal::finalize()
     Tabs tab;
     if (false && MPIComm::world().getRank()==0)
     {
-      cout << tab << "eval vector flops: " << EvalVector::totalFlops() << endl;
-      cout << tab << "quadrature flops: " << QuadratureIntegral::totalFlops() << endl;
+      cout << tab << "eval vector flops: " << EvalVector::totalFlops() << std::endl;
+      cout << tab << "quadrature flops: " << QuadratureIntegral::totalFlops() << std::endl;
       cout << tab << "ref integration flops: " 
-           << RefIntegral::totalFlops() << endl;
-      cout << tab << "cell jacobian batch flops: " << CellJacobianBatch::totalFlops() << endl;
-      cout << tab << "quadrature eval mediator: " << QuadratureEvalMediator::totalFlops() << endl;
+           << RefIntegral::totalFlops() << std::endl;
+      cout << tab << "cell jacobian batch flops: " << CellJacobianBatch::totalFlops() << std::endl;
+      cout << tab << "quadrature eval mediator: " << QuadratureEvalMediator::totalFlops() << std::endl;
     }
     /* we may need to skip timing summaries because of a Trilinos 6.0.x bug */
     if (!skipTimingOutput()) TimeMonitor::summarize();
@@ -321,19 +321,19 @@ bool SundanceGlobal:: passFailTest(double error, double tol)
   bool pass;
   if (MPIComm::world().getRank()==0)
   {
-    cout << "error norm = " << error << endl;
-    cout << "tolerance = " << tol << endl;
+    cout << "error norm = " << error << std::endl;
+    cout << "tolerance = " << tol << std::endl;
   }
   pass = checkTest(error, tol);
   if (MPIComm::world().getRank()==0)
   {
     if (pass)
     {
-      cout << "test PASSED" << endl;
+      cout << "test PASSED" << std::endl;
     }
     else
     {
-      cout << "test FAILED" << endl;
+      cout << "test FAILED" << std::endl;
     }
   }
   testStatus() = pass!=true;
@@ -341,7 +341,7 @@ bool SundanceGlobal:: passFailTest(double error, double tol)
 }
 
 
-bool SundanceGlobal:: passFailTest(const string& statusMsg,
+bool SundanceGlobal:: passFailTest(const std::string& statusMsg,
   bool status, double error, double tol)
 {
   bool pass;
@@ -349,21 +349,21 @@ bool SundanceGlobal:: passFailTest(const string& statusMsg,
   {
 
     cout << statusMsg << ": ";
-    if (status) cout << "true" << endl;
-    else cout << "false" << endl;
-    cout << "error norm = " << error << endl;
-    cout << "tolerance = " << tol << endl;
+    if (status) cout << "true" << std::endl;
+    else cout << "false" << std::endl;
+    cout << "error norm = " << error << std::endl;
+    cout << "tolerance = " << tol << std::endl;
   }
   pass = checkTest(error, tol);
   if (MPIComm::world().getRank()==0)
   {
     if (status && pass)
     {
-      cout << "test PASSED" << endl;
+      cout << "test PASSED" << std::endl;
     }
     else
     {
-      cout << "test FAILED" << endl;
+      cout << "test FAILED" << std::endl;
     }
   }
   testStatus() = pass!=true;
@@ -376,11 +376,11 @@ bool SundanceGlobal:: passFailTest(bool pass)
   {
     if (pass)
     {
-      cout << "test PASSED" << endl;
+      cout << "test PASSED" << std::endl;
     }
     else
     {
-      cout << "test FAILED" << endl;
+      cout << "test FAILED" << std::endl;
     }
   }
   testStatus() = pass!=true;
@@ -388,31 +388,31 @@ bool SundanceGlobal:: passFailTest(bool pass)
 }
 
 
-void SundanceGlobal::setOption(const string& optionName,
+void SundanceGlobal::setOption(const std::string& optionName,
   int& value,
-  const string& helpMsg)
+  const std::string& helpMsg)
 {
   clp().setOption(optionName.c_str(), &value, helpMsg.c_str());
 }
 
-void SundanceGlobal::setOption(const string& optionName,
+void SundanceGlobal::setOption(const std::string& optionName,
   double& value,
-  const string& helpMsg)
+  const std::string& helpMsg)
 {
   clp().setOption(optionName.c_str(), &value, helpMsg.c_str());
 }
 
-void SundanceGlobal::setOption(const string& optionName,
-  string& value,
-  const string& helpMsg)
+void SundanceGlobal::setOption(const std::string& optionName,
+  std::string& value,
+  const std::string& helpMsg)
 {
   clp().setOption(optionName.c_str(), &value, helpMsg.c_str());
 }
 
-void SundanceGlobal::setOption(const string& optionTrueName,
-  const string& optionFalseName,
+void SundanceGlobal::setOption(const std::string& optionTrueName,
+  const std::string& optionFalseName,
   bool& value,
-  const string& helpMsg)
+  const std::string& helpMsg)
 {
   clp().setOption(optionTrueName.c_str(),
     optionFalseName.c_str(),

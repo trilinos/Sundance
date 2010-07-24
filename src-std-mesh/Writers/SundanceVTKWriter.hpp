@@ -44,7 +44,7 @@ namespace Sundance
   {
   public:
     /** */
-    VTKWriter(const string& filename="") 
+    VTKWriter(const std::string& filename="") 
       : FieldWriterBase(filename) {;}
     
     /** virtual dtor */
@@ -60,22 +60,22 @@ namespace Sundance
 
   private:
     /** */
-    void lowLevelWrite(const string& filename, bool isPHeader) const ;
+    void lowLevelWrite(const std::string& filename, bool isPHeader) const ;
 
     /** */
-    void writePoints(ostream& os, bool isPHeader) const ;
+    void writePoints(std::ostream& os, bool isPHeader) const ;
 
     /** */
-    void writeCells(ostream& os) const ;
+    void writeCells(std::ostream& os) const ;
 
     /** */
-    void writePointData(ostream& os, bool isPHeader) const ;
+    void writePointData(std::ostream& os, bool isPHeader) const ;
 
     /** */
-    void writeCellData(ostream& os, bool isPHeader) const ;
+    void writeCellData(std::ostream& os, bool isPHeader) const ;
 
     /** */
-    void writeDataArray(ostream& os, const string& name,
+    void writeDataArray(std::ostream& os, const std::string& name,
                         const RCP<FieldBase>& expr, bool isPHeader, bool isPointData) const ;
 #endif /* DOXYGEN_DEVELOPER_ONLY */
   };

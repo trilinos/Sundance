@@ -42,11 +42,10 @@
 
 
 
-using namespace std;
-using namespace Sundance;
-
 namespace Sundance
 {
+using Teuchos::RCP;
+using Teuchos::Array;
   /** Multidimensional Hermite spectral basis.
    * See, e.g., Ghanem and Spanos.
    *
@@ -86,8 +85,8 @@ namespace Sundance
     /** expectation operator */
     double expectation(int i, int j, int k); 
 
-    /** Write to a string */
-    string toString() const ;
+    /** Write to a std::string */
+    std::string toString() const ;
 
     /* */
     GET_RCP(SpectralBasisBase);

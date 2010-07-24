@@ -82,9 +82,9 @@ int main(int argc, char *argv[])
       APtr->setRow(3, tuple(10.0, 11.0,  12.0));
       APtr->setRow(4, tuple(13.0, 14.0,  15.0));
 
-      Out::os() << "A = " << endl;
+      Out::os() << "A = " << std::endl;
       A.setVerbosity(10);
-      Out::os() << A << endl;
+      Out::os() << A << std::endl;
 
       LinearOperator<double> U;
       LinearOperator<double> Vt;
@@ -92,23 +92,23 @@ int main(int argc, char *argv[])
 
       denseSVD(A, U, sigma, Vt);
 
-      Out::os() << "U = " << endl;
+      Out::os() << "U = " << std::endl;
       U.setVerbosity(10);
-      Out::os() << U << endl;
+      Out::os() << U << std::endl;
 
-      Out::os() << "sigma = " << endl;
-      Out::os() << sigma << endl; 
+      Out::os() << "sigma = " << std::endl;
+      Out::os() << sigma << std::endl; 
 
-      Out::os() << "Vt = " << endl;
+      Out::os() << "Vt = " << std::endl;
       Vt.setVerbosity(10);
-      Out::os() << Vt << endl;
+      Out::os() << Vt << std::endl;
 
       int nSamples = 10;
       bool allOK = true;
       double tol = 1.0e-13;
       for (int i=0; i<nSamples; i++)
       {
-        Out::os() << "Sample #" << i << " of " << nSamples << endl;
+        Out::os() << "Sample #" << i << " of " << nSamples << std::endl;
         Vector<double> x = domain.createMember();
         randomize(x);
         
@@ -120,25 +120,25 @@ int main(int argc, char *argv[])
         
         Vector<double> z = (U * Sigma * Vt)*x - A*x;
         double ez = z.norm2();
-        Out::os() << "|| (U Sigma Vt - A)*x || = " << ez << endl;
+        Out::os() << "|| (U Sigma Vt - A)*x || = " << ez << std::endl;
         
         Vector<double> y = (U.transpose() * U)*x - x;
         double ey = y.norm2();
-        Out::os() << "|| (U^T U - I)*x || = " << ey << endl;
+        Out::os() << "|| (U^T U - I)*x || = " << ey << std::endl;
         
         Vector<double> w = (Vt * Vt.transpose())*x - x;
         double ew = w.norm2();
-        Out::os() << "|| (V^T*V - I)*x || = " << ew << endl;
+        Out::os() << "|| (V^T*V - I)*x || = " << ew << std::endl;
         if (ew > tol || ez > tol || ey > tol) allOK = false;
       }
 
       if (allOK)
       {
-        Out::os() << "SVD test PASSED" << endl;
+        Out::os() << "SVD test PASSED" << std::endl;
       }
       else
       {
-        Out::os() << "SVD test FAILED" << endl;
+        Out::os() << "SVD test FAILED" << std::endl;
         stat = -1;
       }
 
@@ -147,7 +147,7 @@ int main(int argc, char *argv[])
   catch(std::exception& e)
     {
       stat = -1;
-      Out::os() << "Caught exception: " << e.what() << endl;
+      Out::os() << "Caught exception: " << e.what() << std::endl;
     }
   return stat;
 }

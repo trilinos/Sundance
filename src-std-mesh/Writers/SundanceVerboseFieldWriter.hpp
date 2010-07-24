@@ -45,7 +45,7 @@ namespace Sundance
   {
   public:
     /** */
-    VerboseFieldWriter(const string& filename="") 
+    VerboseFieldWriter(const std::string& filename="") 
       : FieldWriterBase(filename) {;}
     
     /** virtual dtor */

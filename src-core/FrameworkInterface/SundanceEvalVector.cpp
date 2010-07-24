@@ -53,7 +53,7 @@ EvalVector::EvalVector(TempStack* s)
 
 
 EvalVector::EvalVector(TempStack* s, const RCP<Array<double> >& data,
-                       const string& str)
+                       const std::string& str)
   : s_(s),
     data_(s->popVectorData()),
     str_(str)
@@ -780,7 +780,7 @@ void EvalVector::applyUnaryOperator(const UnaryFunctor* func,
     }
 }
 
-void EvalVector::print(ostream& os) const 
+void EvalVector::print(std::ostream& os) const 
 {
   TEST_FOR_EXCEPTION(shadowOps() && str_.size()==0, RuntimeError, "empty eval vector result string!");
   os << str_;

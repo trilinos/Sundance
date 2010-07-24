@@ -37,7 +37,7 @@ using namespace Sundance;
 using namespace Sundance;
 using namespace Teuchos;
 
-Parameter::Parameter(const double& value, const string& name)
+Parameter::Parameter(const double& value, const std::string& name)
 	: DiscreteFuncElement(rcp(new ParameterData(value)), 
     name, "", makeFuncID(0), 0),
     SpatiallyConstantExpr()

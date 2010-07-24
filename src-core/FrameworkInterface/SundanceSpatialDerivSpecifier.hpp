@@ -82,7 +82,7 @@ public:
   /** Return the order of differentiation */
   int derivOrder() const ;
 
-  /** Write me to a string */
+  /** Write me to a std::string */
   std::string toString() const ;
 
   /** Comparison operator for use in sorted containers */
@@ -105,9 +105,9 @@ private:
 namespace std
 {
 /** \relates SpatialDerivSpecifier */
-ostream& operator<<(ostream& os, const Sundance::SpatialDerivSpecifier& sds);
+ostream& operator<<(std::ostream& os, const Sundance::SpatialDerivSpecifier& sds);
 /** \relates SpatialDerivSpecifier */
-ostream& operator<<(ostream& os, const Sundance::SpatialDerivType& sdt);
+ostream& operator<<(std::ostream& os, const Sundance::SpatialDerivType& sdt);
 }
 
 

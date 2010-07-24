@@ -37,9 +37,7 @@
 
 namespace Sundance
 {
-using namespace Sundance;
 using namespace Teuchos;
-using std::string;
 
 /** 
  * BinaryExpr is a base class for binary expressions, e.g., sums
@@ -56,10 +54,7 @@ public:
   virtual ~BinaryExpr() {;}
 
   /** */
-  virtual ostream& toText(ostream& os, bool paren) const ;
-
-  /** */
-  virtual ostream& toLatex(ostream& os, bool paren) const ;
+  virtual std::ostream& toText(std::ostream& os, bool paren) const ;
 
   /** */
   virtual XMLObject toXML() const ;
@@ -99,9 +94,9 @@ protected:
   /** */
   virtual bool parenthesizeOperands() const = 0 ;
   /** */
-  virtual const string& xmlTag() const = 0 ;
+  virtual const std::string& xmlTag() const = 0 ;
   /** */
-  virtual const string& opChar() const = 0 ;
+  virtual const std::string& opChar() const = 0 ;
 
 
 

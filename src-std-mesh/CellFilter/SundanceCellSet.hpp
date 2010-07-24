@@ -104,7 +104,7 @@ public:
   bool operator<(const CellSet& other) const ;
 
 private:
-  void checkCompatibility(const string& op, const CellSet& other) const ;
+  void checkCompatibility(const std::string& op, const CellSet& other) const ;
 };
 
 
@@ -112,7 +112,7 @@ private:
 
 namespace std
 {
-inline ostream& operator<<(ostream& os, 
+inline ostream& operator<<(std::ostream& os, 
   const Sundance::CellSet& c)
 {
   c.print(os);

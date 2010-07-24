@@ -51,7 +51,7 @@ class DiscreteFuncElement;
  * through an AbstractEvalMediator and managing temporary variables
  * through a TempStack.
  *
- * If no mediator is set, string evaluations will be done 
+ * If no mediator is set, std::string evaluations will be done 
  */
 class EvalManager : public Noncopyable
 {

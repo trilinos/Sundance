@@ -43,8 +43,8 @@ using namespace Teuchos;
 
 DiscreteFuncElement
 ::DiscreteFuncElement(const RCP<DiscreteFuncDataStub>& data,
-  const string& name,
-  const string& suffix,
+  const std::string& name,
+  const std::string& suffix,
   const FunctionIdentifier& fid, int myIndex)
 	: EvaluatableExpr(), 
     FuncElementBase(name, suffix, fid),

@@ -2,11 +2,9 @@
 #include "SundanceUnknownFunctionStub.hpp"
 #include "SundanceCombinatorialUtils.hpp"
 
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
-
+using std::cout;
+using std::exception;
 using Sundance::List;
 
 
@@ -39,12 +37,12 @@ int main(int argc, char** argv)
             {
               q.put(makeMultiSet(distinctQ[p]));
             }
-          if (l > 1) cout << " + " << endl;
+          if (l > 1) cout << " + " << std::endl;
           for (Set<MultiSet<int> >::const_iterator 
                  i=q.begin(); i!=q.end(); i++)
             {
               const MultiSet<int>& lambda = *i;
-              if (lambda != *(q.begin())) cout << " + " << endl;
+              if (lambda != *(q.begin())) cout << " + " << std::endl;
               cout << "f_" << lambda << " * [";
               for (int s=1; s<=md.order(); s++)
                 {
@@ -59,11 +57,11 @@ int main(int argc, char** argv)
                       write(md, K, L);
                     }
                 }
-              cout << "]" << endl;
+              cout << "]" << std::endl;
             }
         }
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
 			Out::println(e.what());
 		}

@@ -14,7 +14,7 @@ using namespace Teuchos;
 using namespace Sundance;
 using namespace std;
 
-ExodusMeshReader::ExodusMeshReader(const string& fname,
+ExodusMeshReader::ExodusMeshReader(const std::string& fname,
   const MeshType& meshType,
   const MPIComm& comm)
   : MeshReaderBase(fname, meshType, comm), 
@@ -23,7 +23,7 @@ ExodusMeshReader::ExodusMeshReader(const string& fname,
 {
   if (nProc() > 1)
     {
-      string suffix =  "-" + Teuchos::toString(nProc()) 
+      std::string suffix =  "-" + Teuchos::toString(nProc()) 
         + "-" + Teuchos::toString(myRank());
       exoFilename_ = exoFilename_ + suffix;
       parFilename_ = parFilename_ + suffix;
@@ -68,7 +68,7 @@ Mesh ExodusMeshReader::fillMesh() const
 
   if (verb() > 2) ex_opts(EX_DEBUG | EX_VERBOSE);
 
-  string resolvedName = searchForFile(exoFilename_);
+  std::string resolvedName = searchForFile(exoFilename_);
   int exoID = ex_open(resolvedName.c_str(), EX_READ, 
     &CPU_word_size, &IO_word_size, &version);
 
@@ -330,7 +330,7 @@ void ExodusMeshReader::readParallelInfo(Array<int>& ptGID,
 {
   int nPoints;
   int nElems;
-  string line;
+  std::string line;
   Array<string> tokens;
   try
   {

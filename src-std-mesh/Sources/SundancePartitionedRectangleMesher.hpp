@@ -77,8 +77,8 @@ public:
   /** */
   virtual ~PartitionedRectangleMesher() {;}
 
-  /** Print a short descriptive string */
-  virtual string description() const 
+  /** Print a short descriptive std::string */
+  virtual std::string description() const 
     {return "PartitionedRectangleMesher[ax=" + Teuchos::toString(ax_)
         + ", bx=" + Teuchos::toString(bx_)
         + ", nx=" + Teuchos::toString(nx_) +

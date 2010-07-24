@@ -217,7 +217,7 @@ EvaluationTester::EvaluationTester(const Expr& e, int maxDiffOrder)
       FunctionalOnly);
   }
 
-  Out::os() << tabs << "sparsity pattern: " << endl;
+  Out::os() << tabs << "sparsity pattern: " << std::endl;
   sparsity_ = ev_->sparsitySuperset(context_);
   sparsity_->print(Out::os());
 
@@ -233,7 +233,7 @@ double EvaluationTester::evaluate() const
   Array<RCP<EvalVector> > vectorResults;
 
   
-  SUNDANCE_VERB_MEDIUM(tabs << endl << tabs << "evaluating...");
+  SUNDANCE_VERB_MEDIUM(tabs << std::endl << tabs << "evaluating...");
 
   tem_->setEvalPoint(ADField::evalPoint());
 
@@ -361,7 +361,7 @@ double EvaluationTester::evaluate(Array<double>& firstDerivs) const
   Array<RCP<EvalVector> > vectorResults;
 
   
-  SUNDANCE_VERB_MEDIUM(tabs << endl << tabs << "evaluating...");
+  SUNDANCE_VERB_MEDIUM(tabs << std::endl << tabs << "evaluating...");
 
   tem_->setEvalPoint(ADField::evalPoint());
   ev_->evaluator(context_)->resetNumCalls();
@@ -480,7 +480,7 @@ double EvaluationTester::evaluate(Array<double>& firstDerivs,
   Array<RCP<EvalVector> > vectorResults;
 
   
-  SUNDANCE_VERB_MEDIUM(tabs << endl << tabs << "evaluating...");
+  SUNDANCE_VERB_MEDIUM(tabs << std::endl << tabs << "evaluating...");
 
   tem_->setEvalPoint(ADField::evalPoint());
   ev_->evaluator(context_)->resetNumCalls();
@@ -632,19 +632,19 @@ double EvaluationTester
     fdFirst[i] = (fPlus - fMinus)/2.0/step;
     tem_->setFieldCoeff(i, A0);
     double error1 = fabs(fdFirst[i] - afdFirst[i])/(step + fabs(afdFirst[i]));
-    Out::os() << tab2 << endl;
+    Out::os() << tab2 << std::endl;
     SUNDANCE_VERB_MEDIUM(tab2 << "f(A_i+h)=" << fPlus << "      f(A_i-h)=" << fMinus);
 
     Out::os() << tab2 << "field " << tem_->fieldName(i) << " exact first deriv=" << afdFirst[i]
               << "    fd=" << fdFirst[i] << "    |exact - fd|=" 
-              << error1 << endl;
+              << error1 << std::endl;
     if (error1 > tol) 
     {
       isOK = false;
       Out::os() << tab2 << "first deriv wrt field "
-                << i << " calculation FAILED" << endl;
+                << i << " calculation FAILED" << std::endl;
     }
-    Out::os() << tab2 << endl;
+    Out::os() << tab2 << std::endl;
 
     if (maxDiffOrder_ < 2) continue;
     /* second deriv wrt this field by finite differences 
@@ -653,16 +653,16 @@ double EvaluationTester
     double error2 = fabs(fdSecond[i][i] - afdSecond[i][i])/(step + fabs(afdSecond[i][i]));
     Out::os() << tab2 << "field " << tem_->fieldName(i) << " exact second deriv=" << afdSecond[i][i]
               << "    fd=" << fdSecond[i][i] << "    |exact - fd|=" 
-              << error2 << endl;
+              << error2 << std::endl;
     if (error2 > tol2) 
     {
       isOK = false;
       Out::os() << tab2 << "second deriv calculation wrt field "
-                << tem_->fieldName(i) << " FAILED" << endl;
+                << tem_->fieldName(i) << " FAILED" << std::endl;
       Tabs tab3;
-      Out::os() << tab3 << "f'(A_i+h) = " << firstPlus[i] << endl;
-      Out::os() << tab3 << "f'(A_i-h) = " << firstMinus[i] << endl;
-      Out::os() << tab3 << "step=" << step << endl;
+      Out::os() << tab3 << "f'(A_i+h) = " << firstPlus[i] << std::endl;
+      Out::os() << tab3 << "f'(A_i-h) = " << firstMinus[i] << std::endl;
+      Out::os() << tab3 << "step=" << step << std::endl;
     }
       
     /* mixed partials by finite differences on the AFD first derivs*/
@@ -692,16 +692,16 @@ double EvaluationTester
       Out::os() << tab2 << "(" << tem_->fieldName(i) << ", " << tem_->fieldName(j) 
                 << ") exact mixed deriv=" << afdSecond[i][j]
                 << "    fd=" << fdSecond[i][j] << "    |exact - fd|=" 
-                << error2 << endl;
+                << error2 << std::endl;
       if (error2 > tol2) 
       {
         isOK = false;
         Out::os() << tab2 << "mixed partial deriv calculation wrt fields "
-                  << i << ", " << j << " FAILED" << endl;
+                  << i << ", " << j << " FAILED" << std::endl;
         Tabs tab3;
-        Out::os() << tab3 << "f'(A_i+h) = " << firstPlus[j] << endl;
-        Out::os() << tab3 << "f'(A_i-h) = " << firstMinus[j] << endl;
-        Out::os() << tab3 << "step=" << step << endl;
+        Out::os() << tab3 << "f'(A_i+h) = " << firstPlus[j] << std::endl;
+        Out::os() << tab3 << "f'(A_i-h) = " << firstMinus[j] << std::endl;
+        Out::os() << tab3 << "step=" << step << std::endl;
       }
       tem_->setFieldCoeff(i, A0);
       //   tem_->setFieldCoeff(j, B0);

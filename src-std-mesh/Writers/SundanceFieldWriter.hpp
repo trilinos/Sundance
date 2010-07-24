@@ -65,8 +65,8 @@ namespace Sundance
     /** add a mesh to the list of things to be written */
     void addMesh(const Mesh& mesh) const ;
 
-    /** add a field, tagging it with the given string as a name */
-    void addField(const string& name, 
+    /** add a field, tagging it with the given std::string as a name */
+    void addField(const std::string& name, 
                   const Handle<FieldBase>& field) ;
 
     /** set the numerical value to be written at cells on which

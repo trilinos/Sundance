@@ -32,7 +32,7 @@
 
 using Teuchos::Array;
 using Teuchos::ParameterList;
-using std::string;
+
 using std::ifstream;
 
 namespace Sundance

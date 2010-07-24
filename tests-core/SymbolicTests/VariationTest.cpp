@@ -24,11 +24,12 @@
 #include "SundanceSymbPreprocessor.hpp"
 #include "SundanceStringEvalMediator.hpp"
 
-using namespace Sundance;
 using Sundance::List;
 using namespace Sundance;
 using namespace Teuchos;
-
+using std::endl;
+using std::cerr;
+using std::exception;
 
 
 
@@ -131,7 +132,7 @@ void doGradient(const Expr& e,
     FunctionalAndGradient);
 
   Tabs tab;
-  //  cerr << tab << *ev->sparsitySuperset(region) << endl;
+  //  std::cerr << tab << *ev->sparsitySuperset(region) << std::endl;
   //  ev->showSparsity(cerr, region);
 
   // RCP<EvalVectorArray> results;
@@ -177,7 +178,7 @@ void doFunctional(const Expr& e,
     FunctionalOnly);
 
   Tabs tab;
-  //  cerr << tab << *ev->sparsitySuperset(region) << endl;
+  //  std::cerr << tab << *ev->sparsitySuperset(region) << std::endl;
   //  ev->showSparsity(cerr, region);
 
   // RCP<EvalVectorArray> results;
@@ -208,11 +209,11 @@ void testVariations(const Expr& e,
   const Expr& fixedParamEvalPts,  
   const EvalContext& region)
 {
-  cerr << endl 
-       << "------------------------------------------------------------- " << endl;
-  cerr  << "-------- testing " << e.toString() << " -------- " << endl;
-  cerr << endl 
-       << "------------------------------------------------------------- " << endl;
+  std::cerr << std::endl 
+       << "------------------------------------------------------------- " << std::endl;
+  std::cerr  << "-------- testing " << e.toString() << " -------- " << std::endl;
+  std::cerr << std::endl 
+       << "------------------------------------------------------------- " << std::endl;
 
   try
   {
@@ -225,12 +226,12 @@ void testVariations(const Expr& e,
       fixedParamEvalPts,
       region);
   }
-  catch(exception& ex)
+  catch(std::exception& ex)
   {
-    cerr << "EXCEPTION DETECTED!" << endl;
-    cerr << ex.what() << endl;
-    // cerr << "repeating with increased verbosity..." << endl;
-    //       cerr << "-------- testing " << e.toString() << " -------- " << endl;
+    std::cerr << "EXCEPTION DETECTED!" << std::endl;
+    std::cerr << ex.what() << std::endl;
+    // std::cerr << "repeating with increased verbosity..." << std::endl;
+    //       std::cerr << "-------- testing " << e.toString() << " -------- " << std::endl;
     //       Evaluator::verbosity() = 2;
     //       EvalVector::verbosity() = 2;
     //       EvaluatableExpr::verbosity() = 2;
@@ -249,11 +250,11 @@ void testGradient(const Expr& e,
   const Expr& fixedEvalPt,  
   const EvalContext& region)
 {
-  cerr << endl 
-       << "------------------------------------------------------------- " << endl;
-  cerr  << "-------- testing " << e.toString() << " -------- " << endl;
-  cerr << endl 
-       << "------------------------------------------------------------- " << endl;
+  std::cerr << std::endl 
+       << "------------------------------------------------------------- " << std::endl;
+  std::cerr  << "-------- testing " << e.toString() << " -------- " << std::endl;
+  std::cerr << std::endl 
+       << "------------------------------------------------------------- " << std::endl;
 
   try
   {
@@ -264,12 +265,12 @@ void testGradient(const Expr& e,
       fixedEvalPt, 
       region);
   }
-  catch(exception& ex)
+  catch(std::exception& ex)
   {
-    cerr << "EXCEPTION DETECTED!" << endl;
-    cerr << ex.what() << endl;
-    // cerr << "repeating with increased verbosity..." << endl;
-    //       cerr << "-------- testing " << e.toString() << " -------- " << endl;
+    std::cerr << "EXCEPTION DETECTED!" << std::endl;
+    std::cerr << ex.what() << std::endl;
+    // std::cerr << "repeating with increased verbosity..." << std::endl;
+    //       std::cerr << "-------- testing " << e.toString() << " -------- " << std::endl;
     //       Evaluator::verbosity() = 2;
     //       EvalVector::verbosity() = 2;
     //       EvaluatableExpr::verbosity() = 2;
@@ -287,11 +288,11 @@ void testFunctional(const Expr& e,
   const Expr& fixedEvalPt,  
   const EvalContext& region)
 {
-  cerr << endl 
-       << "------------------------------------------------------------- " << endl;
-  cerr  << "-------- testing " << e.toString() << " -------- " << endl;
-  cerr << endl 
-       << "------------------------------------------------------------- " << endl;
+  std::cerr << std::endl 
+       << "------------------------------------------------------------- " << std::endl;
+  std::cerr  << "-------- testing " << e.toString() << " -------- " << std::endl;
+  std::cerr << std::endl 
+       << "------------------------------------------------------------- " << std::endl;
 
   try
   {
@@ -299,12 +300,12 @@ void testFunctional(const Expr& e,
       fixedParams,
       fixedParamEvalPts,fixed, fixedEvalPt, region);
   }
-  catch(exception& ex)
+  catch(std::exception& ex)
   {
-    cerr << "EXCEPTION DETECTED!" << endl;
-    cerr << ex.what() << endl;
-    // cerr << "repeating with increased verbosity..." << endl;
-    //       cerr << "-------- testing " << e.toString() << " -------- " << endl;
+    std::cerr << "EXCEPTION DETECTED!" << std::endl;
+    std::cerr << ex.what() << std::endl;
+    // std::cerr << "repeating with increased verbosity..." << std::endl;
+    //       std::cerr << "-------- testing " << e.toString() << " -------- " << std::endl;
     //       Evaluator::verbosity() = 2;
     //       EvalVector::verbosity() = 2;
     //       EvaluatableExpr::verbosity() = 2;
@@ -371,7 +372,7 @@ int main(int argc, char** argv)
       + lambda_u*alpha);
 
 
-    cerr << endl << "============== u STATE EQUATIONS =================" << endl;
+    std::cerr << std::endl << "============== u STATE EQUATIONS =================" << std::endl;
 
     for (int i=0; i<tests.length(); i++)
     {
@@ -392,7 +393,7 @@ int main(int argc, char** argv)
         context);
     }
 
-    cerr << endl << "=============== u ADJOINT EQUATIONS =================" << endl;
+    std::cerr << std::endl << "=============== u ADJOINT EQUATIONS =================" << std::endl;
     for (int i=0; i<tests.length(); i++)
     {
       RegionQuadCombo rqc(rcp(new CellFilterStub()), 
@@ -413,7 +414,7 @@ int main(int argc, char** argv)
     }
 
 
-    cerr << endl << "================ REDUCED GRADIENT ====================" << endl;
+    std::cerr << std::endl << "================ REDUCED GRADIENT ====================" << std::endl;
     for (int i=0; i<tests.length(); i++)
     {
       RegionQuadCombo rqc(rcp(new CellFilterStub()), 
@@ -429,7 +430,7 @@ int main(int argc, char** argv)
         context);
     }
 
-    cerr << endl << "=================== FUNCTIONAL ====================" << endl;
+    std::cerr << std::endl << "=================== FUNCTIONAL ====================" << std::endl;
     for (int i=0; i<tests.length(); i++)
     {
       RegionQuadCombo rqc(rcp(new CellFilterStub()), 
@@ -444,7 +445,7 @@ int main(int argc, char** argv)
     }
     TimeMonitor::summarize();
   }
-	catch(exception& e)
+	catch(std::exception& e)
   {
     Out::println(e.what());
   }

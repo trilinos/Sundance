@@ -29,6 +29,7 @@
 /* @HEADER@ */
 
 #include "Sundance.hpp"
+#include "SundanceFunctionalDerivative.hpp"
 #include "SundancePeriodicLineMesher.hpp"
 #include "SundancePeriodicMeshType1D.hpp"
 
@@ -53,7 +54,7 @@ int main(int argc, char** argv)
       VectorType<double> vecType = new EpetraVectorType();
 
       /* Create a periodic mesh */
-      int nx = 1000;
+      int nx = 100;
       const double pi = 4.0*atan(1.0);
       MeshType meshType = new PeriodicMeshType1D();
       MeshSource mesher = new PeriodicLineMesher(0.0, 2.0*pi, nx, meshType);
@@ -65,8 +66,14 @@ int main(int argc, char** argv)
       
       /* Create unknown and test functions, discretized using first-order
        * Lagrange interpolants */
-      Expr u = new UnknownFunction(new Lagrange(1), "u");
-      Expr v = new TestFunction(new Lagrange(1), "v");
+      
+      BasisFamily basis = new Lagrange(2);
+      Expr u1 = new UnknownFunction(basis, "u1");
+      Expr u2 = new UnknownFunction(basis, "u2");
+      Expr v1 = new TestFunction(basis, "v1");
+      Expr v2 = new TestFunction(basis, "v2");
+      Expr u = List(u1, u2);
+      Expr v = List(v1, v2);
 
       /* Create differential operator and coordinate function */
       Expr dx = new Derivative(0);
@@ -77,30 +84,39 @@ int main(int argc, char** argv)
 
       
       /* Define the weak form */
-      Expr s = sin(2.0*x+1.0);
-      Expr c = cos(2.0*x+1.0);
+      Expr f = cos(x) + 12.0*cos(2.0*x) - 52.0*sin(x) + sin(3.0*x) - 44.0;
+      Expr F = List(u[1], -u[1] + 4.0*pow(u[0], 3.0) + f);
       Expr eqn = Integral(interior, 
-        (dx*v)*(dx*u) - 2.0*v*(dx*u) - v*u*u + v*(s*s - 4.0*s + 4.0*c),
-                          quad);
+        v1*(dx*u[0] - F[0]) + v2*(dx*u[1] - F[1]), 
+        quad);
       Expr bc ; // no explicit BC needed
 
-      /* We can now set up the linear problem! */
-
-      DiscreteSpace discSpace(mesh, new Lagrange(1), vecType);
-      Expr u0 = new DiscreteFunction(discSpace, 1.0);
+      DiscreteSpace discSpace(mesh, List(basis,basis), vecType);
+      Expr u0 = new DiscreteFunction(discSpace, 0.1);
 
       NonlinearProblem prob(mesh, eqn, bc, v, u, u0, vecType);
 
 
-      ParameterXMLFileReader reader("nox.xml");
+      ParameterXMLFileReader reader("nox-amesos.xml");
       ParameterList solverParams = reader.getParameters();
 
       NOXSolver solver(solverParams);
       prob.solve(solver);
 
-      Expr uExact = s;
+      Expr J = FunctionalDerivative(F, u);
+      Out::os() << "J = " << J << std::endl;
 
-      Expr uErr = uExact - u0;
+      /* Write the field in ASCII format */
+      FieldWriter w = new MatlabWriter("Floquet");
+      w.addMesh(mesh);
+      w.addField("u1", new ExprFieldWrapper(u0[0]));
+      w.addField("u2", new ExprFieldWrapper(u0[1]));
+      w.write();
+
+
+      Expr uExact = 2.0+sin(x);
+
+      Expr uErr = uExact - u0[0];
       
       Expr uErrExpr = Integral(interior, 
                               uErr*uErr,

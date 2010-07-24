@@ -67,7 +67,7 @@ public:
   virtual bool lessThan(const Deriv& other) const ;
 
   /** */
-  virtual string toString() const ;
+  virtual std::string toString() const ;
 
   /* handleable boilerplate */
   GET_RCP(DerivBase);

@@ -42,9 +42,7 @@
 
 namespace Sundance
 {
-using namespace Sundance;
 using namespace Teuchos;
-using std::string;
 
 class FunctionSupportResolver;
 class CommonFuncDataStub;
@@ -411,7 +409,7 @@ public:
 
   /** Finds the maximum setting of the named watch type (e.g., "fill") across
    * all terms in the equation */
-  int maxWatchFlagSetting(const string& param) const ;
+  int maxWatchFlagSetting(const std::string& param) const ;
 
   /** */
   const RCP<FunctionSupportResolver>& fsr() const {return fsr_;}

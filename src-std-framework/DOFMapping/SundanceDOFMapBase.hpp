@@ -308,7 +308,7 @@ public:
    *
    * ToDo: Replace this with override of Teuchos::Describable::describe().
    */
-  virtual void print(ostream& os) const = 0 ;
+  virtual void print(std::ostream& os) const = 0 ;
 
   /** \brief Returns <tt>true</tt> if the map is homogeneous.
    *

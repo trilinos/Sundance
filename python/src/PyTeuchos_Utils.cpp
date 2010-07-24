@@ -37,7 +37,7 @@ Teuchos::ParameterList dict2ParameterList(PyObject* obj)
 
       // Get the parameter name
       if (!PyString_Check(s)) {
-        PyErr_SetString(PyExc_ValueError, "Dictionary keys must be strings");
+        PyErr_SetString(PyExc_ValueError, "Dictionary keys must be std::strings");
         return List;
       }
       std::string ParameterName = PyString_AsString(s);
@@ -72,7 +72,7 @@ Teuchos::ParameterList dict2ParameterList(PyObject* obj)
         {
           if (!PyString_Check(PyTuple_GetItem(t, 0)) ||
               !PyString_Check(PyTuple_GetItem(t, 1))) {
-            PyErr_SetString(PyExc_ValueError, "tuples must contain strings");
+            PyErr_SetString(PyExc_ValueError, "tuples must contain std::strings");
             return List;
           }
           std::string ParameterType = PyString_AsString(PyTuple_GetItem(t, 0));

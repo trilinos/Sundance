@@ -51,19 +51,13 @@ ExplicitFunctionalDerivativeElement
   Tabs tabs;
 }
 
-ostream& ExplicitFunctionalDerivativeElement
-::toText(ostream& os, bool /* paren */) const 
+std::ostream& ExplicitFunctionalDerivativeElement
+::toText(std::ostream& os, bool /* paren */) const 
 {
 	os << "FD[" << arg().toString() << ", " << fd_ << "]";
 	return os;
 }
 
-ostream& ExplicitFunctionalDerivativeElement
-::toLatex(ostream& os, bool /* paren */) const 
-{
-	os << "FD[" << arg().toString() << ", " << fd_ << "]";
-	return os;
-}
 
 XMLObject ExplicitFunctionalDerivativeElement
 ::toXML() const 

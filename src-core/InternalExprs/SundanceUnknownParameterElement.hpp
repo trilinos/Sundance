@@ -44,8 +44,8 @@ using namespace Sundance;
 
 using namespace Teuchos;
 
-using std::string;
-using std::ostream;
+
+
 
 /** 
  * UnknownParameterElement represents an element of an unknown 
@@ -56,8 +56,8 @@ class UnknownParameterElement : public UnknownFuncElement,
 {
 public:
   /** */
-  UnknownParameterElement(const string& name,
-    const string& suffix,
+  UnknownParameterElement(const std::string& name,
+    const std::string& suffix,
     const FunctionIdentifier& fid);
 
 

@@ -67,14 +67,14 @@ Mesh RefinementTransformation::apply(const Mesh& inputMesh) const
       Element* e = rivMesh->element(rivLID).get();
       double vol = e->volume();
       double newVol = vol * std::pow(reqErr_/(err+1.0e-12), 0.5*dim);
-///      Out::os() << "c=" << c << " refine by " << newVol/vol << endl;
+///      Out::os() << "c=" << c << " refine by " << newVol/vol << std::endl;
       if (newVol >= vol) continue;
       rivMesh->refinementSet().push(e);
       rivMesh->refinementAreas().push(newVol);
       numRefined_ ++;
     }
   }
-  Out::os() << "refining n=" << numRefined_ << " cells" << endl;
+  Out::os() << "refining n=" << numRefined_ << " cells" << std::endl;
   rivMesh->refine();
 
 

@@ -76,25 +76,25 @@ int main(int argc, char *argv[])
 
     if (np > 1)
     {
-      cout << "parallel partioned poisson test INACTIVE" << endl;
+      cout << "parallel partioned poisson test INACTIVE" << std::endl;
     }
     else
     {
 
 #define INACTIVE
 #ifdef INACTIVE
-      cout << "test INACTIVE" << endl;
+      cout << "test INACTIVE" << std::endl;
 #else
       int debugWait = 0;
       if (debugWait)
       {
         int wait=1;
         int pid = getpid();
-        cerr << "PID=" << pid << endl;
-        string myCommandName=argv[0];
-        string debugCmd = "ddd --gdb -x ~/.gdbinit " + myCommandName 
+        std::cerr << "PID=" << pid << std::endl;
+        std::string myCommandName=argv[0];
+        std::string debugCmd = "ddd --gdb -x ~/.gdbinit " + myCommandName 
           + " " + Teuchos::toString(pid) + " &";
-        cerr << "launching " << debugCmd << endl;
+        std::cerr << "launching " << debugCmd << std::endl;
         system(debugCmd.c_str());
         while (wait) {;}
       }
@@ -240,12 +240,12 @@ int main(int argc, char *argv[])
       }
 
 #ifdef LOUD
-      cout << "A = " << A << endl;
+      cout << "A = " << A << std::endl;
       for (int br=0; br<A.numBlockRows(); br++)
       {
         for (int bc=0; bc<A.numBlockCols(); bc++)
         {
-          cout << "A[" << br << ", " << bc << "]=" << endl << A.getBlock(br,bc) << endl;
+          cout << "A[" << br << ", " << bc << "]=" << std::endl << A.getBlock(br,bc) << std::endl;
         }
       }
 #endif
@@ -278,8 +278,8 @@ int main(int argc, char *argv[])
       ans.setBlock(0, a0);
       ans.setBlock(1, a1);
 
-      cout << "x=" << x << endl;
-      cout << "ans=" << ans << endl;
+      cout << "x=" << x << std::endl;
+      cout << "ans=" << ans << std::endl;
 
       VectorSpace<double> monoSpace 
         = type.createEvenlyPartitionedSpace(MPIComm::world(), nLocalRows);
@@ -288,25 +288,25 @@ int main(int argc, char *argv[])
       Vector<double> monoVec = monoSpace.createMember();
       converter.convert(x, monoVec);
       
-      cout << "monoVec=" << monoVec << endl;
+      cout << "monoVec=" << monoVec << std::endl;
 
       double err = (x-ans).normInf();
       double err0 = (x.getBlock(0)-ans.getBlock(0)).normInf();
       double err1 = (x.getBlock(1)-ans.getBlock(1)).normInf();
 
-      cout << "error = " << err << endl;
-      cout << "error0 = " << err0 << endl;
-      cout << "error1 = " << err1 << endl;
+      cout << "error = " << err << std::endl;
+      cout << "error0 = " << err0 << std::endl;
+      cout << "error1 = " << err1 << std::endl;
       double tol = 1.0e-10;
 
       
       if (err > tol)
       {
-        cout << "Poisson solve test FAILED" << endl;
+        cout << "Poisson solve test FAILED" << std::endl;
       }
       else
       {
-        cout << "Poisson solve test PASSED" << endl;
+        cout << "Poisson solve test PASSED" << std::endl;
       }
 #endif
     }
@@ -314,7 +314,7 @@ int main(int argc, char *argv[])
   }
   catch(std::exception& e)
   {
-    cout << "Caught exception: " << e.what() << endl;
+    cout << "Caught exception: " << e.what() << std::endl;
   }
 }
 

@@ -35,7 +35,6 @@
 
 namespace Sundance
 {
-using namespace Sundance;
 
 /**
  * ConstantExpr contains an immutable constant, to be distinguished
@@ -49,10 +48,7 @@ public:
   virtual ~ConstantExpr() {;}
 
   /** */
-  virtual ostream& toText(ostream& os, bool paren) const ;
-
-  /** */
-  virtual ostream& toLatex(ostream& os, bool paren) const ;
+  virtual std::ostream& toText(std::ostream& os, bool paren) const ;
 
   /** */
   virtual XMLObject toXML() const ;

@@ -95,7 +95,7 @@ int main(int argc, char** argv)
         = LinearSolverBuilder::createSolver(solverParams);
 
 
-      Out::os() << "solving problem " << endl;
+      Out::os() << "solving problem " << std::endl;
       Expr soln = prob.solve(solver);
 
       Expr uExact = -1.0/25.0 * (4.0*cos(2.0*x) + 3.0*sin(2.0*x));
@@ -109,12 +109,12 @@ int main(int argc, char** argv)
       FunctionalEvaluator uErrInt(mesh, uErrExpr);
 
       double uErrorSq = uErrInt.evaluate();
-      cerr << "u error norm = " << sqrt(uErrorSq) << endl << endl;
+      std::cerr << "u error norm = " << sqrt(uErrorSq) << std::endl << std::endl;
 
 
       /* make sure the unfolded solution is also correct */
 
-      Out::os() << "unfolding " << endl;
+      Out::os() << "unfolding " << std::endl;
       Expr unfoldedSoln = unfoldPeriodicDiscreteFunction(soln);
       
 
@@ -128,13 +128,13 @@ int main(int argc, char** argv)
       FunctionalEvaluator ufErrInt(unfoldedMesh, ufErrExpr);
 
       double ufErrorSq = ufErrInt.evaluate();
-      cerr << "unfolded error norm = " << sqrt(ufErrorSq) << endl << endl;
+      std::cerr << "unfolded error norm = " << sqrt(ufErrorSq) << std::endl << std::endl;
 
       double tol = 1.0e-3;
       Sundance::passFailTest(sqrt(uErrorSq + ufErrorSq), tol);
 
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
       Sundance::handleException(e);
 		}

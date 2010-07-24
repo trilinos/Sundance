@@ -61,7 +61,7 @@ namespace SundanceTesting
     const ADField& field() const {return field_;}
 
     /** */
-    Expr createDiscreteFunction(const string& name) const ;
+    Expr createDiscreteFunction(const std::string& name) const ;
 
     /** */
     bool coeffIsZero() const {return field_.coeff()==0.0;}

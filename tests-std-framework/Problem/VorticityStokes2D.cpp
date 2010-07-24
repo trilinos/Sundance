@@ -120,7 +120,7 @@ int main(int argc, char** argv)
         = LinearSolverBuilder::createSolver(solverParams);
 
 
-      cerr << "starting solve..." << endl;
+      std::cerr << "starting solve..." << std::endl;
 
       Expr soln = prob.solve(solver);
 
@@ -136,14 +136,14 @@ int main(int argc, char** argv)
        * of the velocity around the boundary. */
       Expr totalVorticityExpr = Integral(interior, soln[1], quad2);
       double totalVorticity = evaluateIntegral(mesh, totalVorticityExpr);
-      cerr << "total vorticity = " << totalVorticity << endl;
+      std::cerr << "total vorticity = " << totalVorticity << std::endl;
 
       double tol = 1.0e-4;
       Sundance::passFailTest(fabs(totalVorticity-1.0), tol);
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
-      cerr << e.what() << endl;
+      std::cerr << e.what() << std::endl;
 		}
   Sundance::finalize(); return Sundance::testStatus(); 
 }

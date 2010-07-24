@@ -114,15 +114,15 @@ int main(int argc, char** argv)
     for (int p=1; p<=pMax; p++)
     {
       Tabs tab1;
-      cerr << tab1 << "Polynomial order p=" << p << endl;
+      std::cerr << tab1 << "Polynomial order p=" << p << std::endl;
       for (int spatialDim=0; spatialDim<=maxDim; spatialDim++)
       {
         Tabs tab2;
-        cerr << tab2 << "spatial dimension =" << spatialDim << endl;
+        std::cerr << tab2 << "spatial dimension =" << spatialDim << std::endl;
         for (int cellDim=0; cellDim<=spatialDim; cellDim++)
         {   
           Tabs tab3;
-          cerr << tab3 << "cell dimension =" << cellDim << endl;
+          std::cerr << tab3 << "cell dimension =" << cellDim << std::endl;
           CellType cellType;
           if (cellDim==0) cellType=PointCell;
           if (cellDim==1) cellType=LineCell;
@@ -140,41 +140,41 @@ int main(int argc, char** argv)
           {
             if (cellDim==0 && d>0) continue;
             Tabs tab4;
-            cerr << tab4 << "differentiation order = " << d << endl;
+            std::cerr << tab4 << "differentiation order = " << d << std::endl;
                       
             for (int dir=0; dir<iPow(cellDim, d); dir++)
             {
               Tabs tab5;
-              cerr << tab5 << "direction = " << dir << endl;
+              std::cerr << tab5 << "direction = " << dir << std::endl;
               MultiIndex mi;
               mi[dir]=d;
               Array<Array<Array<double> > > values1;
               Array<Array<Array<double> > > values2;
-              cerr << tab5 << "computing basis1...";
+              std::cerr << tab5 << "computing basis1...";
               b1.ptr()->refEval(cellType, qPts, mi, values1);
-              cerr << "done" << endl;
-              cerr << tab5 << "computing basis2...";
+              std::cerr << "done" << std::endl;
+              std::cerr << tab5 << "computing basis2...";
               b2.ptr()->refEval(cellType, qPts, mi, values2);
-              cerr << "done" << endl;
+              std::cerr << "done" << std::endl;
               int nNodes1 = b1.ptr()->nReferenceDOFsWithFacets(cellType, cellType);
               int nNodes2 = b2.ptr()->nReferenceDOFsWithFacets(cellType, cellType);
-              cerr << tab5 << "num nodes: basis1=" << nNodes1
-                   << " basis2=" << nNodes2 << endl;
+              std::cerr << tab5 << "num nodes: basis1=" << nNodes1
+                   << " basis2=" << nNodes2 << std::endl;
               if (nNodes1 != nNodes2) 
               {
-                cerr << "******** ERROR: node counts should be equal" << endl;
+                std::cerr << "******** ERROR: node counts should be equal" << std::endl;
                 numErrors++;
                 continue;
               }
               if (values1.size() != values2.size())
               {
-                cerr << "******** ERROR: value array outer sizes should be equal" << endl;
+                std::cerr << "******** ERROR: value array outer sizes should be equal" << std::endl;
                 numErrors++;
                 continue;
               }
               if (values1[0].size() != qPts.size())
               {
-                cerr << "******** ERROR: value array outer size should be equal to number of quad points" << endl;
+                std::cerr << "******** ERROR: value array outer size should be equal to number of quad points" << std::endl;
                 numErrors++;
                 continue;
               }
@@ -182,22 +182,22 @@ int main(int argc, char** argv)
               {
                 if (values1[0][q].length() != nNodes1)
                 {
-                  cerr << "******** ERROR: value array inner size should be equal to number of nodes" << endl;
+                  std::cerr << "******** ERROR: value array inner size should be equal to number of nodes" << std::endl;
                   numErrors++;
                   continue;
                 }
                 Tabs tab6;
-                cerr << tab6 << "quad point q=" << q << " pt=" << qPts[q]
-                     << endl;
+                std::cerr << tab6 << "quad point q=" << q << " pt=" << qPts[q]
+                     << std::endl;
                 for (int n=0; n<nNodes1; n++)
                 {
                   Tabs tab7;
-                  cerr << tab7 << "node n=" << n << " phi1=" 
+                  std::cerr << tab7 << "node n=" << n << " phi1=" 
                        << values1[0][q][n] 
                        << " phi2=" << values2[0][q][n] 
                        << " |phi1-phi2|=" << fabs(values1[0][q][n]-values2[0][q][n]) 
-                       << endl;
-                  if (fabs(values1[0][q][n]-values2[0][q][n]) > tol) { cout << "ERROR" << endl; numErrors++; }
+                       << std::endl;
+                  if (fabs(values1[0][q][n]-values2[0][q][n]) > tol) { cout << "ERROR" << std::endl; numErrors++; }
                 }
               }
             }
@@ -206,23 +206,23 @@ int main(int argc, char** argv)
       }
     }
 
-    cerr << endl << endl << "Summary: detected " << numErrors << " errors " << endl;
+    std::cerr << std::endl << std::endl << "Summary: detected " << numErrors << " errors " << std::endl;
       
     if (numErrors == 0)
     {
-      cerr << "BasisCheck PASSED" << endl;
+      std::cerr << "BasisCheck PASSED" << std::endl;
     }
     else
     {
-      cerr << "BasisCheck FAILED" << endl;
+      std::cerr << "BasisCheck FAILED" << std::endl;
       stat = -1;
     }
     TimeMonitor::summarize();
   }
-	catch(exception& e)
+	catch(std::exception& e)
   {
-    cerr << e.what() << endl;
-    cerr << "BasisCheck FAILED" << endl;
+    std::cerr << e.what() << std::endl;
+    std::cerr << "BasisCheck FAILED" << std::endl;
     stat = -1;
   }
 

@@ -53,7 +53,7 @@ SubsetCellFilter::SubsetCellFilter(const CellFilter& superset,
 
 SubsetCellFilter::~SubsetCellFilter()
 {
-//  Out::os() << "~SubsetCellFilter()" << endl;
+//  Out::os() << "~SubsetCellFilter()" << std::endl;
 }
 
 XMLObject SubsetCellFilter::toXML() const 

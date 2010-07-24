@@ -52,12 +52,12 @@ class TestFunction : public TestFunctionStub,
 {
 public:
   /** */
-  TestFunction(const BasisFamily& basis, const string& name="");
+  TestFunction(const BasisFamily& basis, const std::string& name="");
 
   /** */
   TestFunction(const BasisFamily& basis, 
     const SpectralBasis& spBasis,
-    const string& name="");
+    const std::string& name="");
     
 
   /** virtual destructor */

@@ -131,13 +131,13 @@ int main(int argc, char** argv)
         writer.addMesh(mesh);
         writer.addField("u", new ExprFieldWrapper(u0[0]));
         writer.write();
-        Out::os() << "t=" << tVal << " error norm = " << sqrt(errorSq) << endl;
+        Out::os() << "t=" << tVal << " error norm = " << sqrt(errorSq) << std::endl;
       }
       double errorSq = evaluateIntegral(mesh, errExpr);
       double tol = 1.0e-4;
       Sundance::passFailTest(sqrt(errorSq), tol);
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
       Sundance::handleException(e);
 		}

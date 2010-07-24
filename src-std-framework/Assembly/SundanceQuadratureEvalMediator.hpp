@@ -87,7 +87,7 @@ public:
     bool isInternalBdry) ;
 
   /** */
-  virtual void print(ostream& os) const ;
+  virtual void print(std::ostream& os) const ;
 
   /** */
   Array<Array<double> >* getRefBasisVals(const BasisFamily& basis, 

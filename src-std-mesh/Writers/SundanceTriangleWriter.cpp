@@ -42,7 +42,7 @@ using namespace Teuchos;
 
 void TriangleWriter::write() const 
 {
-  string f = filename();
+  std::string f = filename();
   if (nProc() > 1) f = f + Teuchos::toString(myRank());
 
   /* write header information on root proc only */
@@ -59,9 +59,9 @@ void TriangleWriter::write() const
   if (nProc() > 1) writeParallelInfo(f);
 }
 
-void TriangleWriter::writeHeader(const string& filename) const 
+void TriangleWriter::writeHeader(const std::string& filename) const 
 {
-  string hdrfile = filename + ".hdr";
+  std::string hdrfile = filename + ".hdr";
   std::ofstream os(hdrfile.c_str());
 
   os << nProc() << std::endl;
@@ -88,14 +88,14 @@ void TriangleWriter::writeHeader(const string& filename) const
 }
 
 
-void TriangleWriter::writePoints(const string& filename) const 
+void TriangleWriter::writePoints(const std::string& filename) const 
 {
   int nPts = mesh().numCells(0);
   int dim = mesh().spatialDim();
   int nAttr = pointScalarFields().length();
   int nBdryMarkers = 0;
 
-  string nodefile = filename + ".node";
+  std::string nodefile = filename + ".node";
   std::ofstream os(nodefile.c_str());
 
   os << nPts << " " << dim << " " << nAttr << " " << nBdryMarkers << std::endl;
@@ -129,9 +129,9 @@ void TriangleWriter::writePoints(const string& filename) const
     }
 }
 
-void TriangleWriter::writeFaces(const string& filename) const 
+void TriangleWriter::writeFaces(const std::string& filename) const 
 {
-  string facefile = filename + ".face";
+  std::string facefile = filename + ".face";
   std::ofstream os(facefile.c_str());
 
   int dim = 2;
@@ -158,9 +158,9 @@ void TriangleWriter::writeFaces(const string& filename) const
     }
 }
 
-void TriangleWriter::writeEdges(const string& filename) const 
+void TriangleWriter::writeEdges(const std::string& filename) const 
 {
-  string edgefile = filename + ".edge";
+  std::string edgefile = filename + ".edge";
   std::ofstream os(edgefile.c_str());
 
   int dim = 1;
@@ -186,9 +186,9 @@ void TriangleWriter::writeEdges(const string& filename) const
     }
 }
 
-void TriangleWriter::writeCells(const string& filename) const 
+void TriangleWriter::writeCells(const std::string& filename) const 
 {
-  string elefile = filename + ".ele";
+  std::string elefile = filename + ".ele";
   std::ofstream os(elefile.c_str());
 
   int dim = mesh().spatialDim();
@@ -223,9 +223,9 @@ void TriangleWriter::writeCells(const string& filename) const
 }
 
 
-void TriangleWriter::writeParallelInfo(const string& filename) const 
+void TriangleWriter::writeParallelInfo(const std::string& filename) const 
 {
-  string parfile = filename + ".par";
+  std::string parfile = filename + ".par";
   std::ofstream os(parfile.c_str());
 
   int dim = mesh().spatialDim();

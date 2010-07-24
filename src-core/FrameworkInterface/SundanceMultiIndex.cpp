@@ -151,7 +151,7 @@ int MultiIndex::firstOrderDirection() const
 
 string MultiIndex::coordForm() const
 {
-  string rtn;
+  std::string rtn;
   
   for (int i=0; i<m_[0]; i++)
 		{

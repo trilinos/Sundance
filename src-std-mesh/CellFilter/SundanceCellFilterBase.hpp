@@ -94,14 +94,14 @@ public:
   const Set<CellFilter>& knownDisjoints() const ;
 
   /** */
-  virtual string toString() const {return name_;}
+  virtual std::string toString() const {return name_;}
 
   /** Print to a stream */
-  virtual string description() const 
+  virtual std::string description() const 
     {return toString();}
 
   /** */
-  void setName(const string& name) {name_ = name;}
+  void setName(const std::string& name) {name_ = name;}
 
 protected:
 
@@ -113,7 +113,7 @@ private:
   mutable Sundance::Map<int, CellSet> cellSetCache_;
 
   /** */
-  string name_;
+  std::string name_;
 
 };
 }

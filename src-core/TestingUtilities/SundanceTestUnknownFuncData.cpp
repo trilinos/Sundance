@@ -44,7 +44,7 @@ using namespace SundanceTesting;
 using namespace Teuchos;
 using namespace std;
 
-Expr TestUnknownFuncData::createDiscreteFunction(const string& name) const 
+Expr TestUnknownFuncData::createDiscreteFunction(const std::string& name) const 
 {
   return new TestDiscreteFunction(field_, name + "0");
 }

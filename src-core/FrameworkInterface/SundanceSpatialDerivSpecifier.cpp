@@ -147,7 +147,7 @@ SpatialDerivSpecifier SpatialDerivSpecifier::derivWrtMultiIndex(const MultiIndex
 namespace std
 {
 /** \relates SpatialDerivSpecifier */
-ostream& operator<<(ostream& os, const Sundance::SpatialDerivSpecifier& sds)
+ostream& operator<<(std::ostream& os, const Sundance::SpatialDerivSpecifier& sds)
 {
   os << sds.type();
   if (sds.isPartial()) os << "(d=" << sds.mi() << ")";
@@ -157,7 +157,7 @@ ostream& operator<<(ostream& os, const Sundance::SpatialDerivSpecifier& sds)
 
 
 /** \relates SpatialDerivSpecifier */
-ostream& operator<<(ostream& os, const Sundance::SpatialDerivType& sdt)
+ostream& operator<<(std::ostream& os, const Sundance::SpatialDerivType& sdt)
 {
   static Array<string> names = tuple<string>("Identity", "Partial", "Normal", "Divergence");
   os << names[sdt];

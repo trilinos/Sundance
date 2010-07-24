@@ -84,11 +84,11 @@ public:
   virtual bool lessThan(const CellPredicateBase* other) const = 0 ;
 
   /** */
-  virtual string description() const = 0 ;
+  virtual std::string description() const = 0 ;
 
 
   /** */
-  virtual string typeName() const {return typeid(*this).name();}
+  virtual std::string typeName() const {return typeid(*this).name();}
 protected:
 
   /** */

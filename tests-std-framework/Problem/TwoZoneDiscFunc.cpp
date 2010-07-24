@@ -97,16 +97,16 @@ int main(int argc, char** argv)
       double errorSq1 = evaluateIntegral(mesh, errExpr1);
       double errorSq2 = evaluateIntegral(mesh, errExpr2);
       double errorSq3 = evaluateIntegral(mesh, errExpr3);
-      Out::os() << "maximal domain error = " << ::sqrt(errorSq1) << endl;
-      Out::os() << "interface error(x) = " << ::sqrt(errorSq2) << endl;
-      Out::os() << "interface error(y) = " << ::sqrt(errorSq3) << endl;
+      Out::os() << "maximal domain error = " << ::sqrt(errorSq1) << std::endl;
+      Out::os() << "interface error(x) = " << ::sqrt(errorSq2) << std::endl;
+      Out::os() << "interface error(y) = " << ::sqrt(errorSq3) << std::endl;
       double tol = 1.0e-6;
       Sundance::passFailTest(::sqrt(errorSq1 + errorSq2 + errorSq3), tol);
 
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
-      cerr << e.what() << endl;
+      std::cerr << e.what() << std::endl;
 		}
   Sundance::finalize();
   return Sundance::testStatus(); 

@@ -98,7 +98,7 @@ int main(int argc, char** argv)
 #endif
       ParameterList noxParams = reader.getParameters();
 
-      cerr << "solver params = " << noxParams << endl;
+      std::cerr << "solver params = " << noxParams << std::endl;
 
       NOXSolver solver(noxParams);
 
@@ -109,9 +109,9 @@ int main(int argc, char** argv)
         {
           double e = r*finalEcc/((double) numEcc);
           ecc.setParameterValue(e);
-          cerr << "--------------------------------------------------------- " << endl;
-          cerr << " solving at eccentricity = " << ecc << endl;
-          cerr << "--------------------------------------------------------- " << endl;
+          std::cerr << "--------------------------------------------------------- " << std::endl;
+          std::cerr << " solving at eccentricity = " << ecc << std::endl;
+          std::cerr << "--------------------------------------------------------- " << std::endl;
           // Solve the nonlinear system
           NOX::StatusTest::StatusType status = nlp.solve(solver);
           TEST_FOR_EXCEPTION(status != NOX::StatusTest::Converged,
@@ -128,13 +128,13 @@ int main(int argc, char** argv)
               nUsed++;
               if (fabs(coeff) < 1.0e-8) break;
             }
-          cerr << "used " << nUsed << " terms in Kapteyn series" << endl;
+          std::cerr << "used " << nUsed << " terms in Kapteyn series" << std::endl;
           Expr exactSolnDisc = L2Projector(discSpace, exactSoln).project();
           Expr errExpr = Integral(interior, 
                                   pow(u0-exactSoln, 2),
                                   new GaussianQuadrature(8));
           double errorSq = evaluateIntegral(mesh, errExpr);
-          cerr << "error norm = " << sqrt(errorSq) << endl << endl;
+          std::cerr << "error norm = " << sqrt(errorSq) << std::endl << std::endl;
           if (sqrt(errorSq) > maxErr) maxErr = sqrt(errorSq);
 
           /* Write the field in matlab format */
@@ -148,9 +148,9 @@ int main(int argc, char** argv)
       double tol = 1.0e-4;
       Sundance::passFailTest(maxErr, tol);
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
-      cerr << e.what() << endl;
+      std::cerr << e.what() << std::endl;
 		}
   Sundance::finalize(); return Sundance::testStatus(); 
 }

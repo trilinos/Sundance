@@ -79,8 +79,8 @@ int main(int argc, char** argv)
     /*
      * Initialization code
      */
-    string meshFile="plateWithHole2D-1";
-    string solverFile = "nox-aztec.xml";
+    std::string meshFile="plateWithHole2D-1";
+    std::string solverFile = "nox-aztec.xml";
     Sundance::setOption("meshFile", meshFile, "mesh file");
     Sundance::setOption("solver", solverFile, 
       "name of XML file for solver");
@@ -214,11 +214,11 @@ int main(int argc, char** argv)
     Expr fluxExpr 
       = Integral(east + west, (n*grad)*u0, quad2); 
     double flux = evaluateIntegral(mesh, fluxExpr);
-    Out::os() << "numerical flux = " << flux << endl;
+    Out::os() << "numerical flux = " << flux << std::endl;
     Expr sourceExpr 
       = Integral(interior, exp(u0), quad4); 
     double src = evaluateIntegral(mesh, sourceExpr);
-    Out::os() << "numerical integrated source = " << src << endl;
+    Out::os() << "numerical integrated source = " << src << std::endl;
 
 
     /*
@@ -237,7 +237,7 @@ int main(int argc, char** argv)
      */
 
   }
-	catch(exception& e) 
+	catch(std::exception& e) 
   {
     Sundance::handleException(e);
   }

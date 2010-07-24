@@ -61,7 +61,7 @@ namespace Sundance
     virtual XMLObject toXML() const ;
 
     /** Describable interface */
-    virtual string description() const 
+    virtual std::string description() const 
     {return "FIATQuadrature[order=" + Teuchos::toString(order()) 
          +  "]";}
 

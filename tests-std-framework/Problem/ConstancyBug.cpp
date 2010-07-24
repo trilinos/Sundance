@@ -69,7 +69,7 @@ int main(int argc, char** argv)
       Expr bc;
 
       /* We can now set up the linear problem! */
-      cerr << "setting up linear problem" << endl;
+      std::cerr << "setting up linear problem" << std::endl;
       LinearProblem prob(mesh, eqn, bc, v, u, vecType); 
 
 
@@ -79,13 +79,13 @@ int main(int argc, char** argv)
       ParameterXMLFileReader reader("bicgstab.xml");
 #endif
       ParameterList solverParams = reader.getParameters();
-      cerr << "params = " << solverParams << endl;
+      std::cerr << "params = " << solverParams << std::endl;
 
 
       LinearSolver<double> solver 
         = LinearSolverBuilder::createSolver(solverParams);
 
-      cerr << "solving problem" << endl;
+      std::cerr << "solving problem" << std::endl;
       Expr soln = prob.solve(solver);
 
       Expr exactSoln = 1.0;
@@ -94,16 +94,16 @@ int main(int argc, char** argv)
                               pow(soln-exactSoln, 2),
                               new GaussianQuadrature(4));
 
-      cerr << "setting up norm" << endl;
+      std::cerr << "setting up norm" << std::endl;
       double errorSq = evaluateIntegral(mesh, errExpr);
-      cerr << "error norm = " << sqrt(errorSq) << endl << endl;
+      std::cerr << "error norm = " << sqrt(errorSq) << std::endl << std::endl;
 
       double tol = 1.0e-12;
       Sundance::passFailTest(sqrt(errorSq), tol);
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
-      cerr << e.what() << endl;
+      std::cerr << e.what() << std::endl;
 		}
   Sundance::finalize(); return Sundance::testStatus(); 
 }

@@ -65,16 +65,10 @@ void DiffOp::registerSpatialDerivs(const EvalContext& context,
 }
 
 
-ostream& DiffOp::toText(ostream& os, bool /* paren */) const 
+std::ostream& DiffOp::toText(std::ostream& os, bool /* paren */) const 
 {
-  string miStr = CoordExpr::coordName(mi_.firstOrderDirection(), "");
+  std::string miStr = CoordExpr::coordName(mi_.firstOrderDirection(), "");
 	os << "D[" << arg().toString() << ", " << miStr << "]";
-	return os;
-}
-
-ostream& DiffOp::toLatex(ostream& os, bool /* paren */) const 
-{
-	os << "D^{" << mi_.toString() << "}" << arg().toLatex();
 	return os;
 }
 

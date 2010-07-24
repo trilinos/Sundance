@@ -123,8 +123,8 @@ int main(int argc, char** argv)
 
     Array<double> exact = ssModel->exactSoln();
     Array<double> soln = ssModel->parameters();
-    cout << "exact solution: " << exact << endl;
-    cout << "numerical solution: " << soln << endl;
+    cout << "exact solution: " << exact << std::endl;
+    cout << "numerical solution: " << soln << std::endl;
     double error = 0.0;
     for (int i=0; i<exact.size(); i++) error += pow(exact[i]-soln[i], 2.0);
     error = sqrt(error);

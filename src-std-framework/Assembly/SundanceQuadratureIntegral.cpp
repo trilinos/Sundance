@@ -584,12 +584,12 @@ void QuadratureIntegral::transformOneForm(const CellJacobianBatch& JTrans,
       if (integrationVerb() >= 4)
       {
 	    Tabs tab2;
-        Out::os() << tab2 << "integration results on cell:" << endl;
-        Out::os() << tab2 << setw(10) << "n" << setw(12) << "I_n" << endl;
+        Out::os() << tab2 << "integration results on cell:" << std::endl;
+        Out::os() << tab2 << setw(10) << "n" << setw(12) << "I_n" << std::endl;
         for (int n=0; n<nNodes(); n++) 
         {
           Out::os() << tab2 << setw(10) << n 
-                    << setw(12) << setprecision(6) << aPtr[offset+n] << endl;
+                    << setw(12) << setprecision(6) << aPtr[offset+n] << std::endl;
         }
       }
       

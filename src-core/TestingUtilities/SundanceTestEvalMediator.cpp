@@ -189,7 +189,7 @@ void TestEvalMediator
 
 
 
-  string funcName = expr->name();
+  std::string funcName = expr->name();
   
   TEST_FOR_EXCEPTION(!funcIdToFieldNumberMap_.containsKey(expr->fid().dofID()),
                      InternalError, "funcID " << expr->fid().dofID()
@@ -207,7 +207,7 @@ void TestEvalMediator
       else
         {
           int dir = mi[i].firstOrderDirection();
-          string deriv = "D[" + funcName + ", " + coordNames[dir] + "]";
+          std::string deriv = "D[" + funcName + ", " + coordNames[dir] + "]";
           vec[i]->setString(deriv);
         }
 
@@ -218,12 +218,12 @@ void TestEvalMediator
 
   if (verb() > 0)
     {
-      Out::os() << tabs << "results:" << endl;
+      Out::os() << tabs << "results:" << std::endl;
       for (int i=0; i<mi.size(); i++)
         {
           Tabs tab1;
           Out::os() << tab1 << "mi=" << mi[i].toString() 
-               << *vec[i] << endl;
+               << *vec[i] << std::endl;
         }
     }
 }

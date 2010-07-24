@@ -76,11 +76,11 @@ int main(int argc, char** argv)
     /* */
     Expr p = new UnknownFunction(new Lagrange(1));
 
-    Out::os() << "v = " << describeFunction(v) << endl;
-    Out::os() << "u = " << describeFunction(u) << endl;
+    Out::os() << "v = " << describeFunction(v) << std::endl;
+    Out::os() << "u = " << describeFunction(u) << std::endl;
 
-    Out::os() << "q = " << describeFunction(q) << endl;
-    Out::os() << "p = " << describeFunction(p) << endl;
+    Out::os() << "q = " << describeFunction(q) << std::endl;
+    Out::os() << "p = " << describeFunction(p) << std::endl;
 
 
 
@@ -104,11 +104,11 @@ int main(int argc, char** argv)
 
     
   }
-	catch(exception& e)
+	catch(std::exception& e)
   {
     stat = -1;
-    cerr << "RT dof test FAILED" << endl;
-    cerr << e.what() << endl;
+    std::cerr << "RT dof test FAILED" << std::endl;
+    std::cerr << e.what() << std::endl;
   }
 
   return stat;

@@ -59,7 +59,7 @@ DiscreteFuncElementEvaluator
   SUNDANCE_VERB_MEDIUM(tabs << "initializing discrete func evaluator for " 
                     << expr->toString());
 
-  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << endl << *(this->sparsity()));
+  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << std::endl << *(this->sparsity()));
 
   static Array<string> coordNames;
   if (coordNames.size() != 3)
@@ -69,7 +69,7 @@ DiscreteFuncElementEvaluator
       coordNames[1] = "y";
       coordNames[2] = "z";
     }
-  string funcName = expr->name();
+  std::string funcName = expr->name();
 
   for (int i=0; i<this->sparsity()->numDerivs(); i++)
     {
@@ -106,7 +106,7 @@ DiscreteFuncElementEvaluator
       else
         {
           int dir = mi_[i].firstOrderDirection();
-          string deriv = "D[" + funcName + ", " + coordNames[dir] + "]";
+          std::string deriv = "D[" + funcName + ", " + coordNames[dir] + "]";
           stringReps_.append(deriv);
         }
     }
@@ -120,8 +120,8 @@ bool DiscreteFuncElementEvaluator::hasMultiIndex(const MultiIndex& mi) const
   bool rtn = miToIndexMap_.containsKey(mi);
   SUNDANCE_VERB_MEDIUM(tabs << "checking for mi=" << mi << " for " 
                        << expr()->toString()
-                       << endl << tabs 
-                       << " sparsity " << endl << *(this->sparsity()));
+                       << std::endl << tabs 
+                       << " sparsity " << std::endl << *(this->sparsity()));
   
   return rtn;
 }
@@ -157,7 +157,7 @@ void DiscreteFuncElementEvaluator
   
   if (mgr.verb() > 2)
     {
-      Out::os() << tabs << "results " << endl;
+      Out::os() << tabs << "results " << std::endl;
       this->sparsity()->print(Out::os(), vectorResults,
                             constantResults);
     }

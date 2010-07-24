@@ -8,6 +8,8 @@ using namespace Sundance;
 using namespace Teuchos;
 using namespace Sundance;
 
+using std::max;
+using std::min;
 using std::endl;
 using std::cout;
 using std::cerr;

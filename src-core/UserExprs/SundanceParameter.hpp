@@ -44,8 +44,8 @@ namespace Sundance
   using namespace Sundance;
   using namespace Teuchos;
 
-  using std::string;
-  using std::ostream;
+  
+  
 
   /** 
    * A Parameter is an expression subtype used to represent
@@ -63,7 +63,7 @@ namespace Sundance
   {
   public:
     /** */
-    Parameter(const double& value, const string& name="");
+    Parameter(const double& value, const std::string& name="");
 
     /** virtual destructor */
     virtual ~Parameter() {;}
@@ -106,7 +106,7 @@ namespace Sundance
     //@}
 
     /** Write self in text form */
-    virtual ostream& toText(ostream& os, bool paren) const 
+    virtual std::ostream& toText(std::ostream& os, bool paren) const 
     {os << "Parameter[" << name() << " = " << value() << "]"; return os;}
 
     /** */

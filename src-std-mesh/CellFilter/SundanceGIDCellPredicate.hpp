@@ -64,7 +64,7 @@ public:
   virtual bool lessThan(const CellPredicateBase* other) const ;
 
   /** */
-  virtual string description() const 
+  virtual std::string description() const 
     {return "GIDCellPredicate(" + gids_.toString() + ")";}
 
   /* */

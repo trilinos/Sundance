@@ -75,8 +75,8 @@ class PeanoMesher2D : public MeshSourceBase
     /** */
     virtual ~PeanoMesher2D() {;}
 
-    /** Print a short descriptive string */
-    virtual string description() const
+    /** Print a short descriptive std::string */
+    virtual std::string description() const
     {return "SundancePeanoMesher[pos x =" + Teuchos::toString(_position_x)
        + ", pos y=" + Teuchos::toString(_position_y)
        + ", offset x=" + Teuchos::toString(_offset_x) +

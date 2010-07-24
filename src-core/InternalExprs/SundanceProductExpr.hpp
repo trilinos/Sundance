@@ -41,8 +41,8 @@ namespace Sundance
 using namespace Sundance;
 using namespace Teuchos;
 
-using std::string;
-using std::ostream;
+
+
 
 
 /** 
@@ -128,9 +128,9 @@ protected:
   /** */
   virtual bool parenthesizeOperands() const {return true;}
   /** */
-  virtual const string& xmlTag() const ;
+  virtual const std::string& xmlTag() const ;
   /** */
-  virtual const string& opChar() const ;
+  virtual const std::string& opChar() const ;
 
 private:
 

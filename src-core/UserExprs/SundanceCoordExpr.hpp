@@ -51,7 +51,7 @@ namespace Sundance
     {
     public:
       /** */
-      CoordExpr(int dir, const string& name="");
+      CoordExpr(int dir, const std::string& name="");
 
       /** */
       virtual ~CoordExpr() {;}
@@ -63,18 +63,13 @@ namespace Sundance
       int dir() const {return dir_;}
 
       /** */
-      const string& name() const {return name_;}
+      const std::string& name() const {return name_;}
 
       /** Write a simple text description suitable 
        * for output to a terminal */
-      virtual ostream& toText(ostream& os, bool paren) const 
+      virtual std::ostream& toText(std::ostream& os, bool paren) const 
         {os<<name(); return os;}
       
-      /** Write in a form suitable for LaTeX formatting */
-      virtual ostream& toLatex(ostream& os, bool paren) const 
-        {os<<name(); return os;}
-
-    
       /** */
       virtual Set<MultipleDeriv> 
       internalFindW(int order, const EvalContext& context) const ;
@@ -93,11 +88,11 @@ namespace Sundance
       /** Ordering operator for use in transforming exprs to standard form */
       virtual bool lessThan(const ScalarExpr* other) const ;
 
-      static string coordName(int dir, const string& name);
+      static std::string coordName(int dir, const std::string& name);
 
     private:
       int dir_;
-      string name_;
+      std::string name_;
     };
 }
 

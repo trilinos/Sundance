@@ -46,8 +46,8 @@ namespace Sundance
 using namespace Sundance;
 using namespace Teuchos;
 
-using std::string;
-using std::ostream;
+
+
 
 
 /** */
@@ -62,10 +62,7 @@ public:
 
   /** Write a simple text description suitable 
    * for output to a terminal */
-  virtual ostream& toText(ostream& os, bool paren) const = 0 ;
-
-  /** Write in a form suitable for LaTeX formatting */
-  virtual ostream& toLatex(ostream& os, bool paren) const = 0 ;
+  virtual std::ostream& toText(std::ostream& os, bool paren) const = 0 ;
 
   /** Append to the set of func IDs present in this expression.
    * Base class does nothing */
@@ -81,13 +78,13 @@ public:
   virtual bool hasUnkFunctions() const {return false;}
 
   /** */
-  string toString() const ;
+  std::string toString() const ;
 
   /** Write in XML */
   virtual XMLObject toXML() const = 0 ;
 
   /** Return a descriptive name for the expression subtype */
-  virtual string typeName() const ;
+  virtual std::string typeName() const ;
 
 protected:
 };

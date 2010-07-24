@@ -51,7 +51,7 @@ SpatiallyHomogeneousDOFMapBase
 }
 
 
-void SpatiallyHomogeneousDOFMapBase::print(ostream& os) const
+void SpatiallyHomogeneousDOFMapBase::print(std::ostream& os) const
 {
   int myRank = mesh().comm().getRank();
 

@@ -28,10 +28,10 @@ namespace Sundance
   %extend QuadratureFamily
   {
     using namespace std;
-    string __str__() 
+    std::string __str__() 
     {
-      string rtn; 
-      stringstream os;
+      std::string rtn; 
+      std::stringstream os;
       self->print(os);
       rtn = os.str();
       return rtn;

@@ -42,11 +42,11 @@ StochBlockJacobiSolver::solve(const Array<LinearOperator<double> >& KBlock,
     uCur[i].zero();
   }
 
-  if (verbosity_) Out::root() << "starting Jacobi loop" << endl;
+  if (verbosity_) Out::root() << "starting Jacobi loop" << std::endl;
   bool converged = false;
   for (int iter=0; iter<maxIters_; iter++)
   {
-    if (verbosity_) Out::root() << "Jacobi iter=" << iter << endl;
+    if (verbosity_) Out::root() << "Jacobi iter=" << iter << std::endl;
     bool haveNonConvergedBlock = false;
     double maxErr = -1.0;
     int numNonzeroBlocks = 0;
@@ -85,7 +85,7 @@ StochBlockJacobiSolver::solve(const Array<LinearOperator<double> >& KBlock,
         nVecAdds++;
       }
       b = b * (1.0/pcBasis_.expectation(i,i,0));
-      if (verbosity_) Out::root() << "num vec adds = " << nVecAdds << endl;
+      if (verbosity_) Out::root() << "num vec adds = " << nVecAdds << std::endl;
       diagonalSolver_.solve(KBlock[0], b, uCur[i]);
       double err = (uCur[i]-uPrev[i]).norm2();
       if (err > convTol_) haveNonConvergedBlock=true;
@@ -98,17 +98,17 @@ StochBlockJacobiSolver::solve(const Array<LinearOperator<double> >& KBlock,
     /* done all block rows -- check convergence */
     if (!haveNonConvergedBlock)
     {
-      if (verbosity_) Out::root() << "=======> max err=" << maxErr << endl;
-      if (verbosity_) Out::root() << "=======> converged! woo-hoo!" << endl;
+      if (verbosity_) Out::root() << "=======> max err=" << maxErr << std::endl;
+      if (verbosity_) Out::root() << "=======> converged! woo-hoo!" << std::endl;
       if (verbosity_) Out::root() << "estimated storage cost: " 
                   << setprecision(3) << 100*((double) L)/((double) numNonzeroBlocks) 
-                  << " percent of monolithic storage" << endl;
+                  << " percent of monolithic storage" << std::endl;
       converged = true;
       break;
     }
     else
     {
-      if (verbosity_) Out::root() << "maxErr=" << maxErr << ", trying again" << endl;
+      if (verbosity_) Out::root() << "maxErr=" << maxErr << ", trying again" << std::endl;
     }
   }
 

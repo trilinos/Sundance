@@ -40,8 +40,8 @@ namespace Sundance
 {
 using namespace Teuchos;
 
-using std::string;
-using std::ostream;
+
+
 
 /**
  * A CellJacobianBatch is a collection of Jacobian matrices 
@@ -153,7 +153,7 @@ public:
 
           
   /** */
-  void print(ostream& os) const ;
+  void print(std::ostream& os) const ;
 
   static double& totalFlops() {static double rtn = 0; return rtn;}
 

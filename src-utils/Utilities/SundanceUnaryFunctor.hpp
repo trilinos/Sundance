@@ -43,8 +43,8 @@ namespace Sundance
 {
   using namespace Teuchos;
 
-  using std::string;
-  using std::ostream;
+  
+  
 
   /**
    * 
@@ -53,7 +53,7 @@ namespace Sundance
   {
   public:
     /** ctor */
-    UnaryFunctor(const string& name, 
+    UnaryFunctor(const std::string& name, 
                  const RCP<FunctorDomain>& domain 
                  = rcp(new UnboundedDomain())) 
       : name_(name), h_(fdStep()), domain_(domain) {;}
@@ -62,7 +62,7 @@ namespace Sundance
     virtual ~UnaryFunctor(){;}
 
     /** */
-    const string& name() const {return name_;}
+    const std::string& name() const {return name_;}
 
     /** */
     virtual void eval0(const double* const x, 
@@ -128,7 +128,7 @@ namespace Sundance
     const RCP<FunctorDomain>& domain() const 
     {return domain_;}
   private:
-    string name_;
+    std::string name_;
 
     double h_;
 

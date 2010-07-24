@@ -96,7 +96,7 @@ int main(int argc, char** argv)
 
       for (int p=0; p<np; p++)
       {
-        string filename = "wheel";
+        std::string filename = "wheel";
         FieldWriter w = new ExodusWriter(filename);
         w.impersonateParallelProc(np, p);
         w.addMesh(submesh[p]);

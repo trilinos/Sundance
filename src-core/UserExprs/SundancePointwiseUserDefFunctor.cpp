@@ -39,7 +39,7 @@ using namespace Sundance;
 using namespace Teuchos;
 
 
-PointwiseUserDefFunctor0::PointwiseUserDefFunctor0(const string& name, 
+PointwiseUserDefFunctor0::PointwiseUserDefFunctor0(const std::string& name, 
                                                    int domainDim, 
                                                    int rangeDim)
   :  UserDefFunctor(name, domainDim, rangeDim)
@@ -70,7 +70,7 @@ void PointwiseUserDefFunctor0::evaluationCallback(int nPoints, int maxDiffOrder,
     }
 }
 
-PointwiseUserDefFunctor1::PointwiseUserDefFunctor1(const string& name, 
+PointwiseUserDefFunctor1::PointwiseUserDefFunctor1(const std::string& name, 
                                                    int domainDim, 
                                                    int rangeDim)
   : PointwiseUserDefFunctor0(name, domainDim, rangeDim)
@@ -119,7 +119,7 @@ void PointwiseUserDefFunctor1::eval0(const double* in, double* out) const
 
 
 
-PointwiseUserDefFunctor2::PointwiseUserDefFunctor2(const string& name, 
+PointwiseUserDefFunctor2::PointwiseUserDefFunctor2(const std::string& name, 
                                                    int domainDim, 
                                                    int rangeDim)
   : PointwiseUserDefFunctor1(name, domainDim, rangeDim)

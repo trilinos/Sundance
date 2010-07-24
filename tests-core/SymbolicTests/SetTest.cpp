@@ -89,13 +89,13 @@ int main(int argc, char** argv)
               dum, dum, dum, dum,
               alpha, alpha0,
               context);
-            Out::os() << "derivs=" << ds << endl;
+            Out::os() << "derivs=" << ds << std::endl;
           }
         }
 
       TimeMonitor::summarize();
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
 			Out::println(e.what());
 		}

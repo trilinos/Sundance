@@ -184,18 +184,18 @@ int main(int argc, char *argv[])
     double tol = 1.0e-13;
     if (std::max(errAdj, errFwd) < tol)
     {
-      cerr << "LTI test PASSED" << endl;
+      std::cerr << "LTI test PASSED" << std::endl;
     }
     else
     {
       stat = -1;
-      cerr << "LTI test FAILED" << endl;
+      std::cerr << "LTI test FAILED" << std::endl;
     }
   }
   catch(std::exception& e)
   {
     stat = -1;
-    cerr << "Caught exception: " << e.what() << endl;
+    std::cerr << "Caught exception: " << e.what() << std::endl;
   }
   return stat;
 }

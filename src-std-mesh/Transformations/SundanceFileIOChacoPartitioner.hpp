@@ -74,7 +74,7 @@ class FileIOChacoPartitioner : public SerialPartitionerBase
    * @param comment a character indicating that everything after it
    * is a comment
    */
-  bool getNextLine(std::istream& is, string& line,
+  bool getNextLine(std::istream& is, std::string& line,
     Array<string>& tokens,
     char comment) const ;
 

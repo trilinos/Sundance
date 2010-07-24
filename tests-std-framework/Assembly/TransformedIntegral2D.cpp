@@ -137,9 +137,9 @@ int main(int argc, char** argv)
 
     int nErrors = 0;
 
-    cerr << endl << endl 
+    std::cerr << std::endl << std::endl 
          << "---------------- One-forms --------------------" 
-         << endl << endl;
+         << std::endl << std::endl;
     for (int p=0; p<=pMax; p++)
     {
       BasisFamily P = new Lagrange(p);
@@ -164,62 +164,62 @@ int main(int argc, char** argv)
           A->resize(JBatch.numCells() * ref.nNodes());
           for (int ai=0; ai<A->size(); ai++) (*A)[ai]=0.0;
           ref.transformOneForm(JBatch, JBatch, dummy, cellLIDs , coeff, A);
-          cerr << tab << "transformed reference element" << endl;
-          if (dp>0) cerr << tab << "test diff direction=" << t << endl;
+          std::cerr << tab << "transformed reference element" << std::endl;
+          if (dp>0) std::cerr << tab << "test diff direction=" << t << std::endl;
           for (int cell=0; cell<nCells; cell++)
           {
-            cerr << tab << "{";
+            std::cerr << tab << "{";
             for (int r=0; r<ref.nNodesTest(); r++)
             {
-              if (r!=0) cerr << ", ";
-              cerr << Utils::chop((*A)[cell*ref.nNodesTest()+r]);
+              if (r!=0) std::cerr << ", ";
+              std::cerr << Utils::chop((*A)[cell*ref.nNodesTest()+r]);
             }
-            cerr << "}" << endl;
+            std::cerr << "}" << std::endl;
           }
           QuadratureIntegral quad(dim, cellType, dim, cellType, P, alpha, dp, q4, isInternalBdry, curve, mesh, verb);
           Array<double> quadCoeff(2*quad.nQuad(), 1.0);
           B->resize(JBatch.numCells() * quad.nNodes());
           for (int ai=0; ai<B->size(); ai++) (*B)[ai]=0.0;
           quad.transformOneForm(JBatch, JBatch, dummy, cellLIDs , &(quadCoeff[0]), B);
-          cerr << tab << "transformed quad element" << endl;
-          if (dp>0) cerr << tab << "test diff direction =" << t << endl;
+          std::cerr << tab << "transformed quad element" << std::endl;
+          if (dp>0) std::cerr << tab << "test diff direction =" << t << std::endl;
           for (int cell=0; cell<nCells; cell++)
           {
-            cerr << tab << "{";
+            std::cerr << tab << "{";
             for (int r=0; r<quad.nNodesTest(); r++)
             {
-              if (r!=0) cerr << ", ";
-              cerr << Utils::chop((*B)[cell*ref.nNodesTest()+r]);
+              if (r!=0) std::cerr << ", ";
+              std::cerr << Utils::chop((*B)[cell*ref.nNodesTest()+r]);
             }
-            cerr << "}" << endl;
+            std::cerr << "}" << std::endl;
           }
 
-          cerr << tab << "MISFIT quad-ref" << endl;
-          cerr << tab << "test diff order =" << dp << endl;
-          if (dp>0) cerr << tab << "test diff direction =" << t << endl;
+          std::cerr << tab << "MISFIT quad-ref" << std::endl;
+          std::cerr << tab << "test diff order =" << dp << std::endl;
+          if (dp>0) std::cerr << tab << "test diff direction =" << t << std::endl;
           bool OK = true;
           for (int cell=0; cell<nCells; cell++)
           {
-            cerr << tab << "{";
+            std::cerr << tab << "{";
             for (int r=0; r<quad.nNodesTest(); r++)
             {
-              if (r!=0) cerr << ", ";
+              if (r!=0) std::cerr << ", ";
               int i = cell*ref.nNodesTest()+r;
               double err = fabs(Utils::chop((*B)[i] - (*A)[i]));
               if (err > 1.0e-14) 
               {
                 OK = false;
               }
-              cerr << err;
+              std::cerr << err;
             }
-            cerr << "}" << endl;
+            std::cerr << "}" << std::endl;
           }
                   
           if (!OK) 
           {
             nErrors ++;
-            cerr << "ERROR DETECTED!!! p=" << p
-                 << "  t=" << t  << endl;
+            std::cerr << "ERROR DETECTED!!! p=" << p
+                 << "  t=" << t  << std::endl;
           }
         }
       }
@@ -229,9 +229,9 @@ int main(int argc, char** argv)
 
 
 
-    cerr << endl << endl 
+    std::cerr << std::endl << std::endl 
          << "---------------- Two-forms --------------------" 
-         << endl << endl;
+         << std::endl << std::endl;
 
     for (int p=0; p<=pMax; p++)
     {
@@ -270,27 +270,27 @@ int main(int argc, char** argv)
                 A->resize(JBatch.numCells() * ref.nNodes());
                 for (int ai=0; ai<A->size(); ai++) (*A)[ai]=0.0;
                 ref.transformTwoForm(JBatch, JBatch, dummy, cellLIDs , coeff, A);
-                cerr << tab << "transformed ref element" << endl;
-                cerr << tab << "test diff order = " << dp << endl;
-                if (dp>0) cerr << tab << "t=dx(" << t << ")" << endl;
-                cerr << tab << "unk diff order = " << dq << endl;
-                if (dq>0) cerr << tab << "u=dx(" << u << ")" << endl;
+                std::cerr << tab << "transformed ref element" << std::endl;
+                std::cerr << tab << "test diff order = " << dp << std::endl;
+                if (dp>0) std::cerr << tab << "t=dx(" << t << ")" << std::endl;
+                std::cerr << tab << "unk diff order = " << dq << std::endl;
+                if (dq>0) std::cerr << tab << "u=dx(" << u << ")" << std::endl;
 
                 for (int cell=0; cell<nCells; cell++)
                 {
-                  cerr << tab << "cell=" << cell << " {";
+                  std::cerr << tab << "cell=" << cell << " {";
                   for (int r=0; r<ref.nNodesTest(); r++)
                   {
-                    if (r!=0) cerr << ", ";
-                    cerr << "{";
+                    if (r!=0) std::cerr << ", ";
+                    std::cerr << "{";
                     for (int c=0; c<ref.nNodesUnk(); c++)
                     {
-                      if (c!=0) cerr << ", ";
-                      cerr << Utils::chop((*A)[r + ref.nNodesTest()*(c + cell*ref.nNodesUnk())]);
+                      if (c!=0) std::cerr << ", ";
+                      std::cerr << Utils::chop((*A)[r + ref.nNodesTest()*(c + cell*ref.nNodesUnk())]);
                     }
-                    cerr << "}";
+                    std::cerr << "}";
                   }
-                  cerr << "}" << endl;
+                  std::cerr << "}" << std::endl;
                 }
 
 
@@ -301,66 +301,66 @@ int main(int argc, char** argv)
                 for (int ai=0; ai<B->size(); ai++) (*B)[ai]=0.0;
                 quad.transformTwoForm(JBatch, JBatch, dummy, cellLIDs , &(quadCoeff[0]), B);
 
-                cerr << tab << "transformed quad element" << endl;
-                cerr << tab << "test diff order = " << dp << endl;
-                if (dp>0) cerr << tab << "t=dx(" << t << ")" << endl;
-                cerr << tab << "unk diff order = " << dq << endl;
-                if (dq>0) cerr << tab << "u=dx(" << u << ")" << endl;
+                std::cerr << tab << "transformed quad element" << std::endl;
+                std::cerr << tab << "test diff order = " << dp << std::endl;
+                if (dp>0) std::cerr << tab << "t=dx(" << t << ")" << std::endl;
+                std::cerr << tab << "unk diff order = " << dq << std::endl;
+                if (dq>0) std::cerr << tab << "u=dx(" << u << ")" << std::endl;
 
                 for (int cell=0; cell<nCells; cell++)
                 {
-                  cerr << tab << "cell=" << cell << " {";
+                  std::cerr << tab << "cell=" << cell << " {";
                   for (int r=0; r<ref.nNodesTest(); r++)
                   {
-                    if (r!=0) cerr << ", ";
-                    cerr << "{";
+                    if (r!=0) std::cerr << ", ";
+                    std::cerr << "{";
                     for (int c=0; c<ref.nNodesUnk(); c++)
                     {
-                      if (c!=0) cerr << ", ";
-                      cerr << Utils::chop((*B)[r + ref.nNodesTest()*(c + cell*ref.nNodesUnk())]);
+                      if (c!=0) std::cerr << ", ";
+                      std::cerr << Utils::chop((*B)[r + ref.nNodesTest()*(c + cell*ref.nNodesUnk())]);
                     }
-                    cerr << "}";
+                    std::cerr << "}";
                   }
-                  cerr << "}" << endl;   
+                  std::cerr << "}" << std::endl;   
                 }
 
                 bool OK = true;
-                cerr << tab << "MISMATCH quad - ref" << endl;
-                cerr << tab << "test diff order = " << dp << endl;
-                if (dp>0) cerr << tab << "t=dx(" << t << ")" << endl;
-                cerr << tab << "unk diff order = " << dq << endl;
-                if (dq>0) cerr << tab << "u=dx(" << u << ")" << endl;
+                std::cerr << tab << "MISMATCH quad - ref" << std::endl;
+                std::cerr << tab << "test diff order = " << dp << std::endl;
+                if (dp>0) std::cerr << tab << "t=dx(" << t << ")" << std::endl;
+                std::cerr << tab << "unk diff order = " << dq << std::endl;
+                if (dq>0) std::cerr << tab << "u=dx(" << u << ")" << std::endl;
 
                 for (int cell=0; cell<nCells; cell++)
                 {
-                  cerr << tab << "cell #" << cell << " {";
+                  std::cerr << tab << "cell #" << cell << " {";
                               
                   for (int r=0; r<ref.nNodesTest(); r++)
                   {
-                    if (r!=0) cerr << ", ";
-                    cerr << "{";
+                    if (r!=0) std::cerr << ", ";
+                    std::cerr << "{";
                     for (int c=0; c<ref.nNodesUnk(); c++)
                     {
-                      if (c!=0) cerr << ", ";
+                      if (c!=0) std::cerr << ", ";
                       int i = r + ref.nNodesTest()*(c + cell*ref.nNodesUnk());
                       double err = fabs(Utils::chop((*B)[i] - (*A)[i]));
                       if (err > 1.0e-14) OK = false;
-                      cerr << err;
+                      std::cerr << err;
                     }
-                    cerr << "}";
+                    std::cerr << "}";
                   }
-                  cerr << "}" << endl;
+                  std::cerr << "}" << std::endl;
                 }
                 if (!OK) 
                 {
                   nErrors ++;
-                  cerr << "ERROR DETECTED!!! p=" << p
+                  std::cerr << "ERROR DETECTED!!! p=" << p
                        << " dp=" << dp << "  t=" << t  
                        << " q=" << q << "  dq=" << dq
-                       << "  u=" << u << endl;
+                       << "  u=" << u << std::endl;
                 }
 
-                cerr << endl << endl << endl << endl;
+                std::cerr << std::endl << std::endl << std::endl << std::endl;
               }
             }
           }
@@ -368,27 +368,27 @@ int main(int argc, char** argv)
       }
     }
 
-    cerr << "total quadrature flops: " << QuadratureIntegral::totalFlops() 
-         << endl;
-    cerr << "total ref integration flops: " << RefIntegral::totalFlops() 
-         << endl;
+    std::cerr << "total quadrature flops: " << QuadratureIntegral::totalFlops() 
+         << std::endl;
+    std::cerr << "total ref integration flops: " << RefIntegral::totalFlops() 
+         << std::endl;
 
     if (nErrors == 0)
     {
-      cerr << "Transformed integral test PASSED" << endl;
+      std::cerr << "Transformed integral test PASSED" << std::endl;
     }
     else
     {
       stat = -1;
-      cerr << "Transformed integral test FAILED" << endl;
+      std::cerr << "Transformed integral test FAILED" << std::endl;
     }
     TimeMonitor::summarize();
   }
-	catch(exception& e)
+	catch(std::exception& e)
   {
     stat = -1;
-    cerr << "Transformed integral test FAILED" << endl;
-    cerr << e.what() << endl;
+    std::cerr << "Transformed integral test FAILED" << std::endl;
+    std::cerr << e.what() << std::endl;
   }
 
   return stat;

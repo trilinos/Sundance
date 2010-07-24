@@ -8,6 +8,9 @@
 #include "Teuchos_GlobalMPISession.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
+using std::cout;
+using std::exception;
+using std::setw;
 using namespace Sundance;
 using namespace Teuchos;
 using namespace Stokhos;
@@ -52,7 +55,7 @@ int main(int argc, char** argv)
             cout << " ***** FAILED!" ;
             fail = true;
           }
-          cout << endl;
+          cout << std::endl;
         }
       }
     }
@@ -61,15 +64,15 @@ int main(int argc, char** argv)
     TimeMonitor::summarize();
     if (fail) 
     {
-      cout << "PCE test FAILED" << endl;
+      cout << "PCE test FAILED" << std::endl;
       return -1;
     }
     else
     {
-      cout << "PCE test PASSED" << endl;
+      cout << "PCE test PASSED" << std::endl;
     }
   }
-	catch(exception& e)
+	catch(std::exception& e)
   {
     Out::println(e.what());
     return -1;

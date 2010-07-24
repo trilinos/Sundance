@@ -113,7 +113,7 @@ int main(int argc, char** argv)
       ParameterXMLFileReader reader("aztec.xml");
 #endif
       ParameterList solverParams = reader.getParameters();
-      cerr << "params = " << solverParams << endl;
+      std::cerr << "params = " << solverParams << std::endl;
       LinearSolver<double> solver 
         = LinearSolverBuilder::createSolver(solverParams);
 
@@ -132,12 +132,12 @@ int main(int argc, char** argv)
       FunctionalEvaluator errInt(mesh, errExpr);
 
       double errorSq = errInt.evaluate();
-      cerr << "error norm = " << sqrt(errorSq) << endl << endl;
+      std::cerr << "error norm = " << sqrt(errorSq) << std::endl << std::endl;
 
       Sundance::passFailTest(sqrt(errorSq), 1.0e-11);
         }
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
       Sundance::handleException(e);
 		}

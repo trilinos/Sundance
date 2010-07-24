@@ -58,8 +58,8 @@ public:
   /** Create a mesh */
   virtual Mesh fillMesh() const ;
 
-  /** Print a short descriptive string */
-  virtual string description() const 
+  /** Print a short descriptive std::string */
+  virtual std::string description() const 
     {return "OneTriangleMesher";}
       
 
@@ -93,8 +93,8 @@ public:
   /** Create a mesh */
   virtual Mesh fillMesh() const ;
 
-  /** Print a short descriptive string */
-  virtual string description() const 
+  /** Print a short descriptive std::string */
+  virtual std::string description() const 
     {return "OneTetMesher";}
       
 

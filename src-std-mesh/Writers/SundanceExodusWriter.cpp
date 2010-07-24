@@ -48,8 +48,8 @@ using namespace std;
 
 void ExodusWriter::write() const 
 {
-  string exoFile = filename();
-  string parFile = filename();
+  std::string exoFile = filename();
+  std::string parFile = filename();
   if (nProc() > 1) 
   {
     exoFile = exoFile + "-" + Teuchos::toString(nProc()) + "-" + Teuchos::toString(myRank());
@@ -485,7 +485,7 @@ std::string ExodusWriter::elemType(const CellType& type) const
 
 
 
-void ExodusWriter::writeParallelInfo(const string& parfile) const 
+void ExodusWriter::writeParallelInfo(const std::string& parfile) const 
 {
   std::ofstream os(parfile.c_str());
 

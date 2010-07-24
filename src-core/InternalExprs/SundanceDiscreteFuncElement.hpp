@@ -44,8 +44,8 @@ using namespace Sundance;
 
 using namespace Teuchos;
 
-using std::string;
-using std::ostream;
+
+
 
 /** 
  * DiscreteFuncElement represents a scalar-valued element
@@ -63,8 +63,8 @@ class DiscreteFuncElement : public virtual EvaluatableExpr,
 public:
   /** */
   DiscreteFuncElement(const RCP<DiscreteFuncDataStub>& data,
-    const string& name,
-    const string& suffix,
+    const std::string& name,
+    const std::string& suffix,
     const FunctionIdentifier& fid,
     int myIndexIntoVector);
 

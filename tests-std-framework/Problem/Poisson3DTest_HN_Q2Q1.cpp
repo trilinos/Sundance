@@ -150,7 +150,7 @@ int main(int argc, char** argv)
       FunctionalEvaluator errInt1(mesh, errExpr1);
       double errorSq = errInt1.evaluate();
       double err_i = std::sqrt(errorSq);
-      Out::os() << " error Q2 =" << err_i << endl;
+      Out::os() << " error Q2 =" << err_i << std::endl;
       Sundance::passFailTest( err_i , tol);
       
       // test Q1 space (this is more inaccurate)
@@ -159,13 +159,13 @@ int main(int argc, char** argv)
       FunctionalEvaluator errInt(mesh, errExpr);
       errorSq = errInt.evaluate();
       err_i = std::sqrt(errorSq);
-      Out::os() << " error Q1 =" << err_i << endl;
+      Out::os() << " error Q1 =" << err_i << std::endl;
       Sundance::passFailTest( err_i , tol);
    
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
-      cerr << e.what() << endl;
+      std::cerr << e.what() << std::endl;
 		}
   Sundance::finalize(); return Sundance::testStatus(); 
 }

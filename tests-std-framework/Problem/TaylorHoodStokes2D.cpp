@@ -147,12 +147,12 @@ int main(int argc, char** argv)
       FunctionalEvaluator errInt(mesh, errExpr);
 
       double errorSq = errInt.evaluate();
-      cerr << "velocity error norm = " << sqrt(errorSq) << endl << endl;
+      std::cerr << "velocity error norm = " << sqrt(errorSq) << std::endl << std::endl;
 
       Sundance::passFailTest(sqrt(errorSq), 1.0e-3);
 
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
       Sundance::handleException(e);
 		}

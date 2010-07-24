@@ -42,8 +42,8 @@ namespace Sundance
 using namespace Sundance;
 using namespace Teuchos;
 
-using std::string;
-using std::ostream;
+
+
 
 /**
  * Specialization of DiffOp to the case where the argument is a 

@@ -79,9 +79,9 @@ int main(int argc, char** argv)
       Expr alpha = new SpectralExpr(sbasis, tuple(a0, a1, a2));
 
       /* Create a discrete space, and discretize the function 1.0 on it */
-      cout << "forming discrete space" << endl;
+      cout << "forming discrete space" << std::endl;
       DiscreteSpace discSpace(mesh, new Lagrange(1), sbasis, vecType);
-      cout << "forming discrete func" << endl;
+      cout << "forming discrete func" << std::endl;
       Expr u0 = new DiscreteFunction(discSpace, 0.5, "u0");
 
       /* We need a quadrature rule for doing the integrations */
@@ -90,7 +90,7 @@ int main(int argc, char** argv)
       /* Now we set up the weak form of our equation. */
       Expr eqn = Integral(interior, v*(u*u-alpha), quad);
 
-      cout << "equation = " << eqn << endl;
+      cout << "equation = " << eqn << std::endl;
 
       /* There are no boundary conditions for this problem, so the
        * BC expression is empty */
@@ -109,7 +109,7 @@ int main(int argc, char** argv)
 #endif
       ParameterList noxParams = reader.getParameters();
 
-      cerr << "solver params = " << noxParams << endl;
+      std::cerr << "solver params = " << noxParams << std::endl;
 
       NOXSolver solver(noxParams);
 
@@ -122,16 +122,16 @@ int main(int argc, char** argv)
       int k=0;
       for (SequentialIterator<double> i=vec.space().begin(); i!=vec.space().end(); i++, k++)
         {
-          cout << "u[" << k << "] = " << vec[i] << endl;
+          cout << "u[" << k << "] = " << vec[i] << std::endl;
         }
 
       double tol = 1.0e-12;
       double errorSq = 0.0;
       Sundance::passFailTest(errorSq, tol);
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
-      cerr << e.what() << endl;
+      std::cerr << e.what() << std::endl;
 		}
   Sundance::finalize(); return Sundance::testStatus(); 
 }

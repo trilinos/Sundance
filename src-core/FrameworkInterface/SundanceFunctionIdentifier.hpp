@@ -120,7 +120,7 @@ FunctionIdentifier makeFuncID(int tensorOrder);
 namespace std
 {
 /** \relates FunctionIdentifier */
-ostream& operator<<(ostream& os, const Sundance::FunctionIdentifier& fid);
+ostream& operator<<(std::ostream& os, const Sundance::FunctionIdentifier& fid);
 }
 
 #endif

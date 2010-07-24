@@ -58,42 +58,42 @@ int main(int argc, char** argv)
       Array<int> tetFailures;
       Array<int> FeketeTriFailures;
 
-      cerr << "------------- testing triangle rules -------------------"  << endl;
+      std::cerr << "------------- testing triangle rules -------------------"  << std::endl;
       for (int i=0; i<validTriOrders.size(); i++)
 				{
           int p = validTriOrders[i];
 					bool pass = TriangleQuadrature::test(p);
-					if (pass) cerr << "order " << p << " PASSED" << endl;
+					if (pass) std::cerr << "order " << p << " PASSED" << std::endl;
 					else 
             {
-              cerr << "order " << p << " FAILED" << endl;
+              std::cerr << "order " << p << " FAILED" << std::endl;
               triFailures.append(p);
             }
 				}
-      cerr << "------------- testing tet rules -------------------"  << endl;
+      std::cerr << "------------- testing tet rules -------------------"  << std::endl;
           
       for (int i=0; i<validTetOrders.size(); i++)
 				{
           int p = validTetOrders[i];
 					bool pass = TetQuadrature::test(p);
-					if (pass) cerr << "order " << p << " PASSED" << endl;
+					if (pass) std::cerr << "order " << p << " PASSED" << std::endl;
 					else 
             {
-              cerr << "order " << p << " FAILED" << endl;
+              std::cerr << "order " << p << " FAILED" << std::endl;
               tetFailures.append(p);
             }
 				}
 
-      cerr << "--------- testing Fekete triangle rules ----------------" << endl;
+      std::cerr << "--------- testing Fekete triangle rules ----------------" << std::endl;
       for (int i = 0; i < validFeketeTriOrders.size(); i++)
 		{
 			int p = validFeketeTriOrders[i];
 			bool pass = FeketeTriangleQuadrature::test(p);
 			if (pass)
-				cerr << "order " << p << " PASSED" << endl;
+				cerr << "order " << p << " PASSED" << std::endl;
 			else
 			{
-				cerr << "order " << p << " FAILED" << endl;
+				cerr << "order " << p << " FAILED" << std::endl;
 				FeketeTriFailures.append(p);
 			}
 		}
@@ -101,43 +101,43 @@ int main(int argc, char** argv)
 
       if (tetFailures.size()>0) 
         {
-          cout << "failures detected for tets: orders " << tetFailures << endl;
-          cout << "tet tests FAILED" << endl;
+          cout << "failures detected for tets: orders " << tetFailures << std::endl;
+          cout << "tet tests FAILED" << std::endl;
           stat = -1;
         }
       else
         {
-          cout << "tet tests PASSED" << endl;
+          cout << "tet tests PASSED" << std::endl;
         }
 
       if (triFailures.size()>0) 
         {
-          cout << "failures detected for tris: orders " << triFailures << endl;
-          cout << "tri tests FAILED" << endl;
+          cout << "failures detected for tris: orders " << triFailures << std::endl;
+          cout << "tri tests FAILED" << std::endl;
           stat = -1;
         }
       else
         {
-          cout << "tri tests PASSED" << endl;
+          cout << "tri tests PASSED" << std::endl;
         }
 
 		if (FeketeTriFailures.size() > 0)
 		{
 			cout << "failures detected for Fekete tris: orders "
-					<< FeketeTriFailures << endl;
-			cout << "Fekete tri tests FAILED" << endl;
+					<< FeketeTriFailures << std::endl;
+			cout << "Fekete tri tests FAILED" << std::endl;
 			stat = -1;
 		}
 		else
 		{
-			cout << "Fekete tri tests PASSED" << endl;
+			cout << "Fekete tri tests PASSED" << std::endl;
 		}
 
 		}
-	catch(exception& e)
+	catch(std::exception& e)
 		{
-      cerr << "Detected exception: " << e.what() << endl;
-      cerr << "Quadrature test FAILED" << endl;
+      std::cerr << "Detected exception: " << e.what() << std::endl;
+      std::cerr << "Quadrature test FAILED" << std::endl;
       stat = -1;
 		}
 

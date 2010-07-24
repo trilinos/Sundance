@@ -36,10 +36,10 @@ namespace Sundance
   %extend BasisFamily
   {
     using namespace std;
-    string __str__() 
+    std::string __str__() 
     {
-      string rtn; 
-      stringstream os;
+      std::string rtn; 
+      std::stringstream os;
       self->print(os);
       rtn = os.str();
       return rtn;
@@ -60,10 +60,10 @@ namespace Sundance
   %extend BasisArray
   {
     using namespace std;
-    string __str__() 
+    std::string __str__() 
     {
-      string rtn; 
-      stringstream os;
+      std::string rtn; 
+      std::stringstream os;
       os << *self;
       rtn = os.str();
       return rtn;

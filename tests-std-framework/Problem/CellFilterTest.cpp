@@ -90,10 +90,10 @@ int main(int argc, void** argv)
       LinearProblem prob(mesh, eqn, bc, List(v1, v2), List(u1, u2), vecType);
 
 
-      cout << "-------- ROW MAP --------------------------" << endl;
+      cout << "-------- ROW MAP --------------------------" << std::endl;
       prob.rowMap(0)->print(cout);
 
-      cout << "-------- COL MAP --------------------------" << endl;
+      cout << "-------- COL MAP --------------------------" << std::endl;
       prob.colMap(0)->print(cout);
 
 #ifdef HAVE_CONFIG_H
@@ -102,23 +102,23 @@ int main(int argc, void** argv)
       ParameterXMLFileReader reader("aztec.xml");
 #endif
       ParameterList solverParams = reader.getParameters();
-      cout << "params = " << solverParams << endl;
+      cout << "params = " << solverParams << std::endl;
 
 
       LinearSolver<double> solver 
         = LinearSolverBuilder::createSolver(solverParams);
 
-      cout << "matrix = " << endl << prob.getOperator() << endl;
-      cout << "RHS = " << endl << prob.getRHS() << endl;
+      cout << "matrix = " << std::endl << prob.getOperator() << std::endl;
+      cout << "RHS = " << std::endl << prob.getRHS() << std::endl;
 
       Expr soln = prob.solve(solver);
 
       Vector<double> vec = DiscreteFunction::discFunc(soln)->getVector();
 
-      cout << "solution = " << vec << endl;
+      cout << "solution = " << vec << std::endl;
       
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
       Sundance::handleException(e);
 		}

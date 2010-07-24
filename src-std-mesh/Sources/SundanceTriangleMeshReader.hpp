@@ -90,7 +90,7 @@ namespace Sundance
   {
   public:
     /** */
-    TriangleMeshReader(const string& filename, 
+    TriangleMeshReader(const std::string& filename, 
                        const MeshType& meshType,
                        const MPIComm& comm = MPIComm::world());
 
@@ -104,8 +104,8 @@ namespace Sundance
     /** Create a mesh */
     virtual Mesh fillMesh() const ;
 
-    /** Print a short descriptive string */
-    virtual string description() const 
+    /** Print a short descriptive std::string */
+    virtual std::string description() const 
     {return "TriangleMeshReader[file=" + filename() + "]";}
       
 
@@ -131,16 +131,16 @@ namespace Sundance
     
 
     /** */
-    string nodeFilename_;
+    std::string nodeFilename_;
 
     /** */
-    string elemFilename_;
+    std::string elemFilename_;
 
     /** */
-    string parFilename_;
+    std::string parFilename_;
 
     /** */
-    string sideFilename_;
+    std::string sideFilename_;
 
     /** */
     mutable int offset_;

@@ -74,8 +74,8 @@ public:
   /** Write into a set, i.e., collapsing repeated entries */
   Set<Key> toSet() const ;
 
-  /** Write to a string */
-  string toString() const ;
+  /** Write to a std::string */
+  std::string toString() const ;
 
   /** */
   bool operator==(const MultiSet<int>& other) const 
@@ -242,7 +242,7 @@ namespace std
  * Write to a stream
  */
 template<class Key> inline
-ostream& operator<<(ostream& os, const Sundance::MultiSet<Key>& m)
+ostream& operator<<(std::ostream& os, const Sundance::MultiSet<Key>& m)
 {return m.toStream(os);}
 }
 

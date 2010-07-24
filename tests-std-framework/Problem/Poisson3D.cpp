@@ -175,7 +175,7 @@ int main(int argc, char** argv)
       ParameterXMLFileReader reader("aztec-ml.xml");
 #endif
       ParameterList solverParams = reader.getParameters();
-      cerr << "params = " << solverParams << endl;
+      std::cerr << "params = " << solverParams << std::endl;
 
 
       LinearSolver<double> solver 
@@ -193,7 +193,7 @@ int main(int argc, char** argv)
       Expr errorDisc = proj2.project();
 //      Expr errorSqDisc = proj3.project();
 
-      cerr << "writing fields" << endl;
+      std::cerr << "writing fields" << std::endl;
       /* Write the field in VTK format */
       FieldWriter w = new VTKWriter("Poisson3d");
       w.addMesh(mesh);
@@ -203,21 +203,21 @@ int main(int argc, char** argv)
 //      w.addField("errorSq", new ExprFieldWrapper(errorSqDisc));
       w.write();
 
-      cerr << "computing error" << endl;
+      std::cerr << "computing error" << std::endl;
 
       Expr errExpr = Integral(interior, 
                               pow(soln-exactSoln, 2.0),
                               new GaussianQuadrature(4));
 
       double errorSq = evaluateIntegral(mesh, errExpr);
-      cerr << "error norm = " << sqrt(errorSq) << endl << endl;
+      std::cerr << "error norm = " << sqrt(errorSq) << std::endl << std::endl;
 #else
       double errorSq = 1.0;
 #endif
       double tol = 1.0e-10;
       Sundance::passFailTest(sqrt(errorSq), tol);
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
       Sundance::handleException(e);
 		}

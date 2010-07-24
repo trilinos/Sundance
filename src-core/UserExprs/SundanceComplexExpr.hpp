@@ -42,8 +42,8 @@ namespace Sundance
   using namespace Teuchos;
 
 
-  using std::string;
-  using std::ostream;
+  
+  
 
 
   /** 
@@ -68,12 +68,8 @@ namespace Sundance
     virtual const Expr& imag() const {return imag_;}
 
     /** Write self in text form */
-    virtual ostream& toText(ostream& os, bool paren) const 
+    virtual std::ostream& toText(std::ostream& os, bool paren) const 
     {os << "Complex[re=" << real() << " im= " << imag() << "]"; return os;}
-
-    /** Write self in text form */
-    virtual ostream& toLatex(ostream& os, bool paren) const 
-    {os << real() << "+i" << imag(); return os;}
 
     /** */
     virtual RCP<ExprBase> getRcp() {return rcp(this);}

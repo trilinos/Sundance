@@ -70,16 +70,10 @@
 
 
 
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
 using namespace TSFExtended;
-
+using std::max;
+using std::min;
 
 
 static Time& assemblerCtorTimer() 
@@ -362,7 +356,7 @@ void Assembler::init(const Mesh& mesh, const RCP<EquationSet>& eqn)
 
 
   /* --- We now loop over non-BC RQCs, doing initialization tasks for each */
-  SUNDANCE_MSG1(verb, tab0 << endl 
+  SUNDANCE_MSG1(verb, tab0 << std::endl 
     << tab0 << "=== setting up non-BC region-quadrature combinations");
 
   for (int r=0; r<eqn->regionQuadCombos().size(); r++)
@@ -394,12 +388,12 @@ void Assembler::init(const Mesh& mesh, const RCP<EquationSet>& eqn)
     /* Find the expression for this RQC */
     const Expr& expr = eqn->expr(rqc);
 
-    SUNDANCE_MSG2(rqcVerb, tab1 << endl << tab1 << "------------------------------------------------");
+    SUNDANCE_MSG2(rqcVerb, tab1 << std::endl << tab1 << "------------------------------------------------");
     SUNDANCE_MSG2(rqcVerb, tab1 << "initializing assembly for"
-      << endl << tab12 << "r=" << r << " rqc=" 
-      << rqc << endl << tab12 << endl << tab12 << "------------------------------"
-      << endl << tab12 << "expr = " << expr
-      << endl << tab12 << "------------------------------"
+      << std::endl << tab12 << "r=" << r << " rqc=" 
+      << rqc << std::endl << tab12 << std::endl << tab12 << "------------------------------"
+      << std::endl << tab12 << "expr = " << expr
+      << std::endl << tab12 << "------------------------------"
       );
 
     
@@ -425,7 +419,7 @@ void Assembler::init(const Mesh& mesh, const RCP<EquationSet>& eqn)
     {
       Tabs tab2;
       const ComputationType& compType = *i;
-      SUNDANCE_MSG2(rqcVerb, tab12 << endl << tab12
+      SUNDANCE_MSG2(rqcVerb, tab12 << std::endl << tab12
         << "** computation type " << compType);
       /* Some RQCs may be unused in a given calculation. For example, an RQC
        * may be needed for vector calculation but not matrix-vector 
@@ -523,7 +517,7 @@ void Assembler::init(const Mesh& mesh, const RCP<EquationSet>& eqn)
 
 
   /* --- We now loop over BC RQCs, doing initialization tasks for each */
-  SUNDANCE_MSG1(verb, tab0 << endl 
+  SUNDANCE_MSG1(verb, tab0 << std::endl 
     << tab0 << "=== setting up BC region-quadrature combinations");
   
   for (int r=0; r<eqn->bcRegionQuadCombos().size(); r++)
@@ -553,11 +547,11 @@ void Assembler::init(const Mesh& mesh, const RCP<EquationSet>& eqn)
     /* Find the expression for this RQC */    
     const Expr& expr = eqn->bcExpr(rqc);
 
-    SUNDANCE_MSG2(rqcVerb, tab1 << endl << tab1 
+    SUNDANCE_MSG2(rqcVerb, tab1 << std::endl << tab1 
       << "------------------------------------------------");
     SUNDANCE_MSG1(rqcVerb, tab1 << "initializing assembly for BC r=" << r
       << " rqc=" 
-      << rqc << endl << tab1 
+      << rqc << std::endl << tab1 
       << "expr = " << expr);
       
     /* Find the cell type needed for this RQC */    
@@ -580,7 +574,7 @@ void Assembler::init(const Mesh& mesh, const RCP<EquationSet>& eqn)
     {
       Tabs tab2;
       const ComputationType& compType = *i;
-      SUNDANCE_MSG2(rqcVerb, tab1 << endl << tab1 
+      SUNDANCE_MSG2(rqcVerb, tab1 << std::endl << tab1 
         << "** computation type " << compType);
       
       /* Some RQCs may be unused in a given calculation. For example, an RQC
@@ -642,7 +636,7 @@ void Assembler::init(const Mesh& mesh, const RCP<EquationSet>& eqn)
       if (rqcUsed)
       {
         SUNDANCE_MSG2(rqcVerb, tab1 << "creating evaluation mediator for BC rqc=" 
-          << rqc << endl << tab1 << "expr = " << expr);
+          << rqc << std::endl << tab1 << "expr = " << expr);
         mediators_.append(rcp(new QuadratureEvalMediator(mesh, cellDim, 
               quad)));
       }
@@ -969,7 +963,7 @@ void Assembler::displayEvaluationResults(
   Tabs tab;
   FancyOStream& os = Out::os();
 
-  os << tab << "evaluation results: " << endl;
+  os << tab << "evaluation results: " << std::endl;
 
   const RCP<SparsitySuperset>& sparsity 
     = evalExpr->sparsitySuperset(context);
@@ -1089,9 +1083,9 @@ void Assembler::assemblyLoop(const ComputationType& compType,
       dfEvalVerb = rqc_[r].watch().param("discrete function evaluation");
       fillVerb = rqc_[r].watch().param("fill");
 
-      SUNDANCE_MSG1(rqcVerb, tab0 << endl 
+      SUNDANCE_MSG1(rqcVerb, tab0 << std::endl 
         << tab0 << "-------------"
-        << endl << tab0 << " doing watched subregion r=" << r << " of " 
+        << std::endl << tab0 << " doing watched subregion r=" << r << " of " 
         << rqc_.size() << ", rqc=" 
         << rqc_[r]);    
       if (skipRqc[r]) 
@@ -1325,7 +1319,7 @@ void Assembler::assemblyLoop(const ComputationType& compType,
       for (int g=0; g<groups[r].size(); g++)
       {
         Tabs tab2;
-        SUNDANCE_MSG2(rqcVerb, tab2 << endl << tab2 
+        SUNDANCE_MSG2(rqcVerb, tab2 << std::endl << tab2 
           << "--- evaluating integral group g=" << g << " of " 
           << groups[r].size() );
 
@@ -2210,7 +2204,7 @@ int& Assembler::workSetSize()
   return rtn;
 }
 
-int Assembler::maxWatchFlagSetting(const string& name) const 
+int Assembler::maxWatchFlagSetting(const std::string& name) const 
 {
   return eqnSet()->maxWatchFlagSetting(name);
 }

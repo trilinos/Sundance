@@ -37,13 +37,13 @@ namespace Sundance
 
     double expectation(int i, int j, int k) const ;
 
-    string toString() const ;
+    std::string toString() const ;
   };
 
   %extend SpectralBasis
   {
     using namespace std;
-    string __str__() 
+    std::string __str__() 
     {
       return self->toString();
     }

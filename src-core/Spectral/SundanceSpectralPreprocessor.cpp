@@ -38,8 +38,13 @@
 #include "SundanceFuncElementBase.hpp"
 #include "SundanceNonlinearUnaryOp.hpp"
 #include "SundanceSpectralExpr.hpp"
+#include "Teuchos_TimeMonitor.hpp"
+#include "Teuchos_Time.hpp"
 
 
+using namespace std;
+using namespace Sundance;
+using namespace Teuchos;
 
 static Time& spectralExpansionTimer() 
 {
@@ -48,11 +53,6 @@ static Time& spectralExpansionTimer()
   return *rtn;
 }
 
-
-using namespace std;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Teuchos;
 
 Expr SpectralPreprocessor::projectSpectral(const Expr& e)
 {

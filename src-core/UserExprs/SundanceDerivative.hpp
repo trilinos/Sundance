@@ -41,8 +41,8 @@ namespace Sundance
 using namespace Sundance;
 using namespace Teuchos;
 
-using std::string;
-using std::ostream;
+
+
 
 /** 
  * Derivative is an expression subtype representing 
@@ -66,10 +66,7 @@ public:
   virtual bool isHungryDiffOp() const {return true;}
 
   /** */
-  virtual ostream& toText(ostream& os, bool paren) const ;
-
-  /** */
-  virtual ostream& toLatex(ostream& os, bool paren) const ;
+  virtual std::ostream& toText(std::ostream& os, bool paren) const ;
 
   /** */
   const MultiIndex& multiIndex() const {return m_;}

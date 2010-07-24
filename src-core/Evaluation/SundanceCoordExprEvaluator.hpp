@@ -65,7 +65,7 @@ private:
 
   bool doDeriv_;
 
-  string stringRep_;
+  std::string stringRep_;
 };
 }
 

@@ -175,7 +175,7 @@ public:
   /** Equality test operator */
   bool operator==(const Deriv& other) const ;
 
-  /** Write to a string
+  /** Write to a std::string
    * \param verbose If true, write all details for the object. If false, 
    * write a simple description giving only the function name and the
    * specification of a derivative.
@@ -295,7 +295,7 @@ Deriv divergenceDeriv(const SymbolicFunc* symbFunc);
 namespace std
 {
 /** \relates Deriv */
-inline ostream& operator<<(ostream& os,  const Sundance::Deriv& d)
+inline ostream& operator<<(std::ostream& os,  const Sundance::Deriv& d)
 {
   os << d.toString(); return os;
 }

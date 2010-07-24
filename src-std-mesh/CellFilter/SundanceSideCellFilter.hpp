@@ -61,10 +61,10 @@ public:
   virtual XMLObject toXML() const ;
 
   /** Return the type name */
-  virtual string typeName() const {return "SideCellFilter";}
+  virtual std::string typeName() const {return "SideCellFilter";}
 
   /** Describable interface */
-  virtual string description() const {return "SideCellFilter";}
+  virtual std::string description() const {return "SideCellFilter";}
 
   /** Compare to another object */
   virtual bool lessThan(const CellFilterStub* other) const ;

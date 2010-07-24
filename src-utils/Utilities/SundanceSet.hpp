@@ -180,7 +180,7 @@ public:
   std::ostream& toStream(std::ostream& os) const ;
 
   /** */
-  string toString() const ;
+  std::string toString() const ;
 
 private:
   std::set<Key, Compare> set_;
@@ -418,7 +418,7 @@ namespace std
 {
 /** \relates Sundance::Set */
 template<class Key, class Compare> inline
-ostream& operator<<(ostream& os, const Sundance::Set<Key, Compare>& m)
+ostream& operator<<(std::ostream& os, const Sundance::Set<Key, Compare>& m)
 {return m.toStream(os);}
 }
 

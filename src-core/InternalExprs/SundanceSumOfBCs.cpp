@@ -43,30 +43,24 @@ SumOfBCs::SumOfBCs(const RCP<CellFilterStub>& region,
   : SumOfIntegrals(region, expr, quad, curve, watch)
 {;}
 
-ostream& SumOfBCs::toText(ostream& os, bool paren) const
+std::ostream& SumOfBCs::toText(std::ostream& os, bool paren) const
 {
-  os << "Sum of BCs[" << endl;
+  os << "Sum of BCs[" << std::endl;
   for (Sundance::Map<RegionQuadCombo, Expr>::const_iterator 
          i=rqcToExprMap().begin(); i!=rqcToExprMap().end(); i++)
   {
     const RegionQuadCombo& rqc = i->first;
     Expr e = i->second;
-    os << "Integral[" << endl;
-    os << "rqc=" << rqc.toString() << endl;
-    os << "expr=" << e.toString() << endl;
-    os << "]" << endl;
+    os << "Integral[" << std::endl;
+    os << "rqc=" << rqc.toString() << std::endl;
+    os << "expr=" << e.toString() << std::endl;
+    os << "]" << std::endl;
   }
-  os << "]" << endl;
+  os << "]" << std::endl;
 
   return os;
 }
 
-ostream& SumOfBCs::toLatex(ostream& os, bool paren) const
-{
-  TEST_FOR_EXCEPTION(true, InternalError, 
-                     "SumOfBCs::toLatex is undefined");
-  return os;
-}
 
 XMLObject SumOfBCs::toXML() const 
 {

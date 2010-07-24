@@ -67,7 +67,7 @@ namespace Sundance
     {return rcp(new HNMesh2D(dim, comm, order_));}
 
     /** */
-    string description() const {return "HNMeshType2D";}
+    std::string description() const {return "HNMeshType2D";}
 
     /** Return a ref count pointer to self */
     virtual RCP<MeshTypeBase> getRcp() {return rcp(this);}

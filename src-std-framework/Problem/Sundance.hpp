@@ -207,25 +207,25 @@ class SundanceGlobal
 public:
 
   /** */
-  static void setOption(const string& optionName,
+  static void setOption(const std::string& optionName,
     int& value,
-    const string& helpMsg);
+    const std::string& helpMsg);
 
   /** */
-  static void setOption(const string& optionName,
-    string& value,
-    const string& helpMsg);
+  static void setOption(const std::string& optionName,
+    std::string& value,
+    const std::string& helpMsg);
 
   /** */
-  static void setOption(const string& optionName,
+  static void setOption(const std::string& optionName,
     double& value,
-    const string& helpMsg);
+    const std::string& helpMsg);
 
   /** */
-  static void setOption(const string& optionTrueName,
-    const string& optionFalseName,
+  static void setOption(const std::string& optionTrueName,
+    const std::string& optionFalseName,
     bool& value,
-    const string& helpMsg);
+    const std::string& helpMsg);
 
 
   /** 
@@ -260,7 +260,7 @@ public:
   static bool passFailTest(double error, double tol);
 
   /** */
-  static bool passFailTest(const string& statusMsg,
+  static bool passFailTest(const std::string& statusMsg,
     bool status, double error, double tol);
 
 
@@ -303,7 +303,7 @@ bool passFailTest(bool pass);
 bool passFailTest(double error, double tol);
 
 /** \relates SundanceGlobal */
-bool passFailTest(const string& statusMsg,
+bool passFailTest(const std::string& statusMsg,
   bool status, double error, double tol);
 
 /** \relates SundanceGlobal */
@@ -320,25 +320,25 @@ int finalize();
 
 
 /** */
-void setOption(const string& optionName,
+void setOption(const std::string& optionName,
   int& value,
-  const string& helpMsg);
+  const std::string& helpMsg);
 
 /** */
-void setOption(const string& optionName,
-  string& value,
-  const string& helpMsg);
+void setOption(const std::string& optionName,
+  std::string& value,
+  const std::string& helpMsg);
 
 /** */
-void setOption(const string& optionName,
+void setOption(const std::string& optionName,
   double& value,
-  const string& helpMsg);
+  const std::string& helpMsg);
 
 /** */
-void setOption(const string& optionTrueName,
-  const string& optionFalseName,
+void setOption(const std::string& optionTrueName,
+  const std::string& optionFalseName,
   bool& value,
-  const string& helpMsg);
+  const std::string& helpMsg);
 
 }
 

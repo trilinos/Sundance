@@ -16,7 +16,7 @@ int main(int argc, char** argv)
   {
     int nx = 1;
     int ny = 1;
-    string solverFile = "amesos.xml";
+    std::string solverFile = "amesos.xml";
 
     Sundance::init(&argc, &argv);
     int np = MPIComm::world().getNProc();
@@ -122,7 +122,7 @@ int main(int argc, char** argv)
       FunctionalEvaluator errInt(mesh, errExpr);
       double errorSq = errInt.evaluate();
       double err_i = std::sqrt(errorSq);
-      Out::os() << "i=" << i << " error=" << err_i << endl;
+      Out::os() << "i=" << i << " error=" << err_i << std::endl;
       totalErrSq += errorSq;
     }
 
@@ -130,7 +130,7 @@ int main(int argc, char** argv)
     Sundance::passFailTest(sqrt(totalErrSq), tol);
 
   }
-	catch(exception& e)
+	catch(std::exception& e)
   {
     Sundance::handleException(e);
   }

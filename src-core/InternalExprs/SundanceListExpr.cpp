@@ -103,7 +103,7 @@ int ListExpr::totalSize() const
   return rtn;
 }
 
-ostream& ListExpr::toText(ostream& os, bool paren) const
+std::ostream& ListExpr::toText(std::ostream& os, bool paren) const
 {
   os << "{";
   for (int i=0; i<elements_.size(); i++)
@@ -115,17 +115,6 @@ ostream& ListExpr::toText(ostream& os, bool paren) const
   return os;
 }
 
-ostream& ListExpr::toLatex(ostream& os, bool paren) const
-{
-  os << "\\{";
-  for (int i=0; i<elements_.size(); i++)
-    {
-      elements_[i].ptr()->toLatex(os, paren);
-      if (i < elements_.size()-1) os << ", ";
-    }
-  os << "\\}";
-  return os;
-}
 
 XMLObject ListExpr::toXML() const 
 {

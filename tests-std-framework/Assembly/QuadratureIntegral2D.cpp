@@ -129,36 +129,36 @@ int main(int argc, char** argv)
 
     Array<int> dummy;
 
-    cerr << "------ Evaluating bases at vertices ----------" << endl
-         << endl;
+    std::cerr << "------ Evaluating bases at vertices ----------" << std::endl
+         << std::endl;
 
-    cerr << "Evaluating phi(vert) with FIAT-Lagrange" << endl;
+    std::cerr << "Evaluating phi(vert) with FIAT-Lagrange" << std::endl;
     fiatLagrange.ptr()->refEval(cellType, verts, d0, result);
-    cerr << "results = " << result << endl << endl;
+    std::cerr << "results = " << result << std::endl << std::endl;
 
-    cerr << "Evaluating phi(vert) with Lagrange" << endl;
+    std::cerr << "Evaluating phi(vert) with Lagrange" << std::endl;
     lagrange.ptr()->refEval(cellType, verts, d0, result);
-    cerr << "results = " << result << endl << endl;
+    std::cerr << "results = " << result << std::endl << std::endl;
 
-    cerr << endl ;
+    std::cerr << std::endl ;
 
-    cerr << "Evaluating Dx*phi(vert) with FIAT-Lagrange" << endl;
+    std::cerr << "Evaluating Dx*phi(vert) with FIAT-Lagrange" << std::endl;
     fiatLagrange.ptr()->refEval(cellType, verts, dx, result);
-    cerr << "results = " << result << endl << endl;
+    std::cerr << "results = " << result << std::endl << std::endl;
 
-    cerr << "Evaluating Dx*phi(vert) with Lagrange" << endl;
+    std::cerr << "Evaluating Dx*phi(vert) with Lagrange" << std::endl;
     lagrange.ptr()->refEval(cellType, verts, dx, result);
-    cerr << "results = " << result << endl << endl;
+    std::cerr << "results = " << result << std::endl << std::endl;
 
-    cerr << endl ;
+    std::cerr << std::endl ;
       
-    cerr << "Evaluating Dy*phi(vert) with FIAT-Lagrange" << endl;
+    std::cerr << "Evaluating Dy*phi(vert) with FIAT-Lagrange" << std::endl;
     fiatLagrange.ptr()->refEval(cellType, verts, dy, result);
-    cerr << "results = " << result << endl << endl;
+    std::cerr << "results = " << result << std::endl << std::endl;
 
-    cerr << "Evaluating Dy*phi(vert) with Lagrange" << endl;
+    std::cerr << "Evaluating Dy*phi(vert) with Lagrange" << std::endl;
     lagrange.ptr()->refEval(cellType, verts, dy, result);
-    cerr << "results = " << result << endl << endl;
+    std::cerr << "results = " << result << std::endl << std::endl;
 
       
 
@@ -183,9 +183,9 @@ int main(int argc, char** argv)
     }
     const double* const f = &(coeff[0]);
 
-    cerr << endl << endl 
+    std::cerr << std::endl << std::endl 
          << "---------------- One-forms --------------------" 
-         << endl << endl;
+         << std::endl << std::endl;
     for (int p=1; p<=pMax; p++)
     {
       BasisFamily P = new Lagrange(p);
@@ -193,7 +193,7 @@ int main(int argc, char** argv)
       {
         if (dp > p) continue;
         Tabs tab0;
-        cerr << tab0 << "test function deriv order = " << dp << endl;
+        std::cerr << tab0 << "test function deriv order = " << dp << std::endl;
         int numTestDir = 1;
         if (dp==1) numTestDir = dim;
         for (int t=0; t<numTestDir; t++)
@@ -203,22 +203,22 @@ int main(int argc, char** argv)
           QuadratureIntegral ref(dim, cellType, dim, cellType, P, alpha, dp, quad, isInternalBdry);
           A->resize(ref.nNodesTest());
           ref.transformOneForm(JBatch, JBatch, dummy, f, A);
-          cerr << tab << "test deriv direction =" << t << endl;
-          cerr << tab << "transformed local vector: " << endl;
-          cerr << tab << "{";
+          std::cerr << tab << "test deriv direction =" << t << std::endl;
+          std::cerr << tab << "transformed local vector: " << std::endl;
+          std::cerr << tab << "{";
           for (int r=0; r<ref.nNodesTest(); r++)
           {
-            if (r!=0) cerr << ", ";
-            cerr << (*A)[r];
+            if (r!=0) std::cerr << ", ";
+            std::cerr << (*A)[r];
           }
-          cerr << "}" << endl << endl;
+          std::cerr << "}" << std::endl << std::endl;
         }
       }
     }
 
-    cerr << endl << endl 
+    std::cerr << std::endl << std::endl 
          << "---------------- Two-forms --------------------" 
-         << endl << endl;
+         << std::endl << std::endl;
     for (int p=1; p<=pMax; p++)
     {
       BasisFamily P = new Lagrange(p);
@@ -229,13 +229,13 @@ int main(int argc, char** argv)
         {
           if (dp > p) continue;
           Tabs tab0;
-          cerr << tab0 << "test function deriv order = " << dp << endl;
+          std::cerr << tab0 << "test function deriv order = " << dp << std::endl;
           for (int dq=0; dq<=1; dq++)
           {
             if (dq > q) continue;
             Tabs tab1;
-            cerr << tab1 
-                 << "unk function deriv order = " << dq << endl;
+            std::cerr << tab1 
+                 << "unk function deriv order = " << dq << std::endl;
             int numTestDir = 1;
             if (dp==1) numTestDir = dim;
             for (int t=0; t<numTestDir; t++)
@@ -252,23 +252,23 @@ int main(int argc, char** argv)
                 A->resize(ref.nNodesTest()*ref.nNodesUnk());
                 ref.transformTwoForm(JBatch, JBatch, dummy, f, A);
 
-                cerr << tab << "test deriv direction =" << 
-                  t << ", unk deriv direction =" << u << endl;
-                cerr << tab << "transformed local stiffness matrix" << endl;
-                cerr << tab << "{";
+                std::cerr << tab << "test deriv direction =" << 
+                  t << ", unk deriv direction =" << u << std::endl;
+                std::cerr << tab << "transformed local stiffness matrix" << std::endl;
+                std::cerr << tab << "{";
 
                 for (int r=0; r<ref.nNodesTest(); r++)
                 {
-                  if (r!=0) cerr << ", ";
-                  cerr << "{";
+                  if (r!=0) std::cerr << ", ";
+                  std::cerr << "{";
                   for (int c=0; c<ref.nNodesUnk(); c++)
                   {
-                    if (c!=0) cerr << ", ";
-                    cerr << chop((*A)[r + ref.nNodesTest()*c]);
+                    if (c!=0) std::cerr << ", ";
+                    std::cerr << chop((*A)[r + ref.nNodesTest()*c]);
                   }
-                  cerr << "}";
+                  std::cerr << "}";
                 }
-                cerr << "}" << endl << endl;
+                std::cerr << "}" << std::endl << std::endl;
               }
             }
           }
@@ -278,8 +278,8 @@ int main(int argc, char** argv)
     TimeMonitor::summarize();
 
   }
-	catch(exception& e)
+	catch(std::exception& e)
   {
-    cerr << e.what() << endl;
+    std::cerr << e.what() << std::endl;
   }
 }

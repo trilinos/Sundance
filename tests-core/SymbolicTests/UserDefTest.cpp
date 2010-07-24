@@ -233,61 +233,61 @@ int main(int argc, char** argv)
       Array<double> df5(2);
       Array<double> df6(2);
 
-      cout << "============== Function #2: R3 --> R1 =======================" << endl;
-      cout << "evaluating symb expr, eval1()" << endl;
+      cout << "============== Function #2: R3 --> R1 =======================" << std::endl;
+      cout << "evaluating symb expr, eval1()" << std::endl;
       EvaluationTester fTester2(p*sin(q) + 2.0*p*x, 1);
       double f2 = fTester2.evaluate(df2);
-      cout << "value (symb)    = " << f2 << endl;
-      cout << "deriv (symb)    = " << df2 << endl;
+      cout << "value (symb)    = " << f2 << std::endl;
+      cout << "deriv (symb)    = " << df2 << std::endl;
 
       //verbosity<Evaluator>() = 5;
-      cout << "evaluating user def expr, eval1()" << endl;
+      cout << "evaluating user def expr, eval1()" << std::endl;
 
       EvaluationTester fTester1(f, 1);
       double f1 = fTester1.evaluate(df1);
 
-      cout << "value (functor) = " << f1 << endl;
-      cout << "deriv (functor) = " << df1 << endl;
+      cout << "value (functor) = " << f1 << std::endl;
+      cout << "deriv (functor) = " << df1 << std::endl;
 
-      cout << "evaluating symb expr, eval0()" << endl;
+      cout << "evaluating symb expr, eval0()" << std::endl;
       EvaluationTester fTester3(p*sin(q) + 2.0*p*x, 0);
       double f3 = fTester3.evaluate();
-      cout << "value (symb)    = " << f3 << endl;
+      cout << "value (symb)    = " << f3 << std::endl;
 
-      cout << "value (AD)      = " << adF.value() << endl;
+      cout << "value (AD)      = " << adF.value() << std::endl;
 
 
-      cout << "evaluating user def expr, eval0()" << endl;
+      cout << "evaluating user def expr, eval0()" << std::endl;
       EvaluationTester fTester4(f, 0);
       double f4 = fTester4.evaluate();
-      cout << "value (functor)    = " << f4 << endl;
+      cout << "value (functor)    = " << f4 << std::endl;
 
-      cout << "============== Function #2: R3 --> R2 =======================" << endl;
-      cout << "evaluating symb expr, eval1()" << endl;
+      cout << "============== Function #2: R3 --> R2 =======================" << std::endl;
+      cout << "evaluating symb expr, eval1()" << std::endl;
       EvaluationTester fTester5(x*(p*sin(q) + 2.0*p*x)+y*(p*q*x), 1);
       double f5 = fTester5.evaluate(df5);
-      cout << "value (symb)    = " << f5 << endl;
-      cout << "deriv (symb)    = " << df5 << endl;
+      cout << "value (symb)    = " << f5 << std::endl;
+      cout << "deriv (symb)    = " << df5 << std::endl;
 
       //verbosity<Evaluator>() = 5;
-      cout << "evaluating user def expr, eval1()" << endl;
+      cout << "evaluating user def expr, eval1()" << std::endl;
 
       EvaluationTester fTester6(F2*List(x,y), 1);
       double f6 = fTester6.evaluate(df6);
 
-      cout << "value (functor) = " << f6 << endl;
-      cout << "deriv (functor) = " << df6 << endl;
+      cout << "value (functor) = " << f6 << std::endl;
+      cout << "deriv (functor) = " << df6 << std::endl;
 
-      cout << "evaluating symb expr, eval0()" << endl;
+      cout << "evaluating symb expr, eval0()" << std::endl;
       EvaluationTester fTester7((p*sin(q) + 2.0*p*x)*x + y*(p*q*x), 0);
       double f7 = fTester7.evaluate();
-      cout << "value (symb)    = " << f7 << endl;
+      cout << "value (symb)    = " << f7 << std::endl;
 
 
-      cout << "evaluating user def expr, eval0()" << endl;
+      cout << "evaluating user def expr, eval0()" << std::endl;
       EvaluationTester fTester8(F2*List(x,y), 0);
       double f8 = fTester8.evaluate();
-      cout << "value (functor)    = " << f8 << endl;
+      cout << "value (functor)    = " << f8 << std::endl;
 
 
 
@@ -309,20 +309,20 @@ int main(int argc, char** argv)
 
       if (isOK)
         {
-          cerr << "all tests PASSED!" << endl;
+          std::cerr << "all tests PASSED!" << std::endl;
         }
       else
         {
           stat = -1;
-          cerr << "overall test FAILED!" << endl;
+          std::cerr << "overall test FAILED!" << std::endl;
         }
       TimeMonitor::summarize();
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
       stat = -1;
-      cerr << "overall test FAILED!" << endl;
-      cerr << "detected exception: " << e.what() << endl;
+      std::cerr << "overall test FAILED!" << std::endl;
+      std::cerr << "detected exception: " << e.what() << std::endl;
 		}
 
   return stat;

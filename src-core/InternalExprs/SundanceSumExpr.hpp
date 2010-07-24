@@ -38,7 +38,7 @@ namespace Sundance
 {
 using namespace Sundance;
 using namespace Teuchos;
-using std::string;
+
 
 
 /**
@@ -94,9 +94,9 @@ protected:
   /** */
   virtual bool parenthesizeOperands() const {return false;}
   /** */
-  virtual const string& xmlTag() const ;
+  virtual const std::string& xmlTag() const ;
   /** */
-  virtual const string& opChar() const ;
+  virtual const std::string& opChar() const ;
 
 private:
   Map<Expr, int> sumTree_;

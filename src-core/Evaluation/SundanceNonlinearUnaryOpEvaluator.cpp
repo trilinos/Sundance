@@ -160,7 +160,7 @@ void NonlinearUnaryOpEvaluator
       varArgDerivs[0] = mgr.stack().popVector();
       int nx = varArgDerivs[0]->length();
 
-      const string& argStr = (*(vArgResults[0]))[argValueIndex_]->str();
+      const std::string& argStr = (*(vArgResults[0]))[argValueIndex_]->str();
       if (EvalVector::shadowOps())
         {
           varArgDerivs[0]->setString(op_->name() + "(" + argStr + ")");

@@ -47,11 +47,10 @@
 
 
 
-using namespace std;
-using namespace Sundance;
-
 namespace Sundance
 {
+using Teuchos::RCP;
+
 /** 
  * 
  */
@@ -83,8 +82,8 @@ public:
   /** expectation operator */
   double expectation(int i, int j, int k);
   
-  /** Write to a string */
-  string toString() const {return basis_->getName();}
+  /** Write to a std::string */
+  std::string toString() const {return basis_->getName();}
   
   /* */
   GET_RCP(SpectralBasisBase);

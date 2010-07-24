@@ -73,7 +73,7 @@ public:
   /** \name Printable interface */
   //@{
   /** Print to a stream */
-  virtual void print(ostream& os) const ;
+  virtual void print(std::ostream& os) const ;
   //@}
 
   /* Handleable interface */

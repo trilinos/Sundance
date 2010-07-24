@@ -65,26 +65,26 @@ bool checkErrorNorms(
   Expr df = numSoln - exactSoln;
 
   double L2Err = L2Norm(mesh, filter, df, quad);
-  Out::root() << tab << "L2 norm check:" << endl
+  Out::root() << tab << "L2 norm check:" << std::endl
               << tab1 << setw(16) << setprecision(6) << L2Err 
               << " tol=" << setw(12) << L2Tol ;
-  if (fabs(L2Err) > L2Tol) Out::root() << "   <==== FAIL!" << endl;
-  else Out::root() << endl;
+  if (fabs(L2Err) > L2Tol) Out::root() << "   <==== FAIL!" << std::endl;
+  else Out::root() << std::endl;
 
   double H1SemiErr = H1Seminorm(mesh, filter, df, quad);
-  Out::root() << tab << "H1 seminorm check:" << endl
+  Out::root() << tab << "H1 seminorm check:" << std::endl
               << tab1 << setw(16) << setprecision(6) << H1SemiErr 
               << " tol=" << setw(12) << H1SemiTol ;
-  if (fabs(H1SemiErr) > H1SemiTol) Out::root() << "   <==== FAIL!" << endl;
-  else Out::root() << endl;
+  if (fabs(H1SemiErr) > H1SemiTol) Out::root() << "   <==== FAIL!" << std::endl;
+  else Out::root() << std::endl;
 
 
   double H1Err = H1Norm(mesh, filter, df, quad);
-  Out::root() << tab << "H1 norm check:" << endl
+  Out::root() << tab << "H1 norm check:" << std::endl
               << tab1 << setw(16) << setprecision(6) << H1Err 
               << " tol=" << setw(12) << H1Tol;
-  if (fabs(H1Err) > H1Tol) Out::root() << "   <==== FAIL!" << endl;
-  else Out::root() << endl;
+  if (fabs(H1Err) > H1Tol) Out::root() << "   <==== FAIL!" << std::endl;
+  else Out::root() << std::endl;
 
   return (fabs(L2Err) <= L2Tol) 
     && (fabs(H1SemiErr) <= H1SemiTol) 
@@ -193,7 +193,7 @@ Array<LPTestSpec> LPTestBase::specs() const
 std::ostream& operator<<(std::ostream& os, const LPTestSpec& spec)
 {
   os << "LPTestSpec(tol=" << spec.tol() << ", solver=" << spec.solverFile()
-     << endl;
+     << std::endl;
   return os;
 }
 
@@ -214,19 +214,19 @@ bool LPTestSuite::run() const
     {
       if (specs[j].nProcIsAllowed(np))
       {
-        Out::root() << endl;
-        Out::root() << endl;
-        Out::root() << endl;
+        Out::root() << std::endl;
+        Out::root() << std::endl;
+        Out::root() << std::endl;
         Out::root() << tab 
                     << "-------------------------------------" 
           "-------------------------------------" 
-                    << endl;
+                    << std::endl;
         Out::root() << tab << "running test " << tests_[i]->name()
-                    << " with spec " << specs[j] << endl;
+                    << " with spec " << specs[j] << std::endl;
         Out::root() << tab 
                     << "-------------------------------------" 
           "-------------------------------------" 
-                    << endl;
+                    << std::endl;
 
         std::string solverFile = specs[j].solverFile();
         double tol = specs[j].tol();
@@ -236,11 +236,11 @@ bool LPTestSuite::run() const
       else
       {
         Out::root() << tab << "skipping test " << tests_[i]->name()
-                    << " with spec=" << specs[j] << endl;
+                    << " with spec=" << specs[j] << std::endl;
       }
     }
-    Out::root() << endl;
-    Out::root() << endl;
+    Out::root() << std::endl;
+    Out::root() << std::endl;
   }
   return allOK;
 }
@@ -295,7 +295,7 @@ bool ForwardProblemTestBase::runTestSequence(const std::string& solverFile,
   const double& pTol) const
 {
   Tabs tab(0);
-  Out::root() << tab << "Running test sequence " << name() << endl;
+  Out::root() << tab << "Running test sequence " << name() << std::endl;
 
   LinearSolver<double> solver 
     = LinearSolverBuilder::createSolver(solverFile);
@@ -308,7 +308,7 @@ bool ForwardProblemTestBase::runTestSequence(const std::string& solverFile,
   for (int i=0; i<numMeshes(); i++)
   {
     Tabs tab1;
-    Out::root() << tab1 << "running on mesh #" << i << endl;
+    Out::root() << tab1 << "running on mesh #" << i << std::endl;
     Expr soln;
     bool solveOK = solve(getMesh(i), solver, soln);
     if (!solveOK) return false;
@@ -321,31 +321,31 @@ bool ForwardProblemTestBase::runTestSequence(const std::string& solverFile,
   }
 
   bool allPass = true;
-  Out::root() << tab << "Error results: " << endl;
+  Out::root() << tab << "Error results: " << std::endl;
   for (int f=0; f < pExpected().size(); f++)
   {
     Tabs tab1;
-    Out::root() << tab1 << "Variable #" << f << endl; 
-    Out::root() << endl << tab1 << "Error norm versus h" << endl;
+    Out::root() << tab1 << "Variable #" << f << std::endl; 
+    Out::root() << std::endl << tab1 << "Error norm versus h" << std::endl;
     Array<double> err;
     for (int i=0; i<numMeshes(); i++)
     {
       Tabs tab2;
       Out::root() << tab2 << setw(20) << setprecision(5) << hList[i] 
                   << " " << setw(20) << setprecision(5) << errList[i][f] 
-                  << endl;
+                  << std::endl;
       err.append(errList[i][f]); 
     }
     
     double p = fitPower(hList, err);
-    Out::root() << tab << "Measured exponent: " << p << endl;
-    Out::root() << tab << "Expected exponent: " << pExpected()[f] << endl;
+    Out::root() << tab << "Measured exponent: " << p << std::endl;
+    Out::root() << tab << "Expected exponent: " << pExpected()[f] << std::endl;
     double pErr = fabs(p - pExpected()[f]) ;
     Out::root() << tab << "Difference: " << setw(12) << pErr
                 << " Tolerance: " << setw(12) << pTol;
     bool pass = pErr <= pTol;
     if (!pass) Out::root() << "  <==== FAIL!";
-    Out::root() << endl;
+    Out::root() << std::endl;
     allPass = allPass && pass;
   }
 
@@ -375,7 +375,7 @@ bool ForwardProblemTestBase::runSingleTest(const std::string& solverFile,
   {
     Out::root() << tab << setw(20) << setprecision(5) << err[i] 
                 << " " << setw(20) << setprecision(5) << tol 
-              << endl;
+              << std::endl;
   }
   return err[0] <= tol;
 }
@@ -391,9 +391,9 @@ bool LPTestBase::solve(const Mesh& mesh,
   bool converged = (state.finalState() == SolveConverged) ;
   if (!converged)
   {
-    Out::root() << tab << "solve failed to converge!" << endl;
+    Out::root() << tab << "solve failed to converge!" << std::endl;
     Tabs tab1;
-    Out::root() << tab1 << "state = " << state << endl;
+    Out::root() << tab1 << "state = " << state << std::endl;
   }
   return converged;
 }

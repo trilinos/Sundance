@@ -42,12 +42,12 @@ int main(int argc, void** argv)
 	  for(int k=0; k< basis.nterms(); k++)
 	    {
 	      e = basis.expectation(basis.getElement(i), basis.getElement(j), basis.getElement(k));
-	      cout << i << " " << j  << " " << k << " " << e << endl;
+	      cout << i << " " << j  << " " << k << " " << e << std::endl;
 	    }
 
     }
   
-  catch(exception& e)
+  catch(std::exception& e)
     {
       Sundance::handleException(e);
     }

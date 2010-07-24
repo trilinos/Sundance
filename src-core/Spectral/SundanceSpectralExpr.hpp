@@ -39,82 +39,77 @@
 
 namespace Sundance
 {
-
-  using namespace Sundance;
-  using namespace Teuchos;
+using namespace Teuchos;
   
-  using std::string;
-  using std::ostream;
+  
+  
 
-  /**
-   * Spectral Expression 
-   */
+/**
+ * Spectral Expression 
+ */
 
 class SpectralExpr : public FuncSetAccumulator, public ScalarExpr
-  {
-  private:
-    Array<Expr> coeffs_;
-    SpectralBasis sbasis_;
+{
+private:
+  Array<Expr> coeffs_;
+  SpectralBasis sbasis_;
 
-  public:
-    /** Constructor*/
-    SpectralExpr (const SpectralBasis& sbasis, const Array<Expr>& coeffs);
-    /** Constructor*/
-    SpectralExpr (const SpectralBasis& sbasis, const Expr& coeffs);
+public:
+  /** Constructor*/
+  SpectralExpr (const SpectralBasis& sbasis, const Array<Expr>& coeffs);
+  /** Constructor*/
+  SpectralExpr (const SpectralBasis& sbasis, const Expr& coeffs);
     
-    /** virtual destructor */
-    virtual ~SpectralExpr() {;}
+  /** virtual destructor */
+  virtual ~SpectralExpr() {;}
 
 
 
-    /** Return the Spectral Basis */
-    SpectralBasis getSpectralBasis() const;
+  /** Return the Spectral Basis */
+  SpectralBasis getSpectralBasis() const;
 
 
-    /** Return the coefficient of the nth basis term */
-    Expr getCoeff(int n) const;
-
-    /** */
-    Expr spectralDotProduct(const SpectralExpr* other) const ;
-
-    /** */
-    virtual XMLObject toXML() const ;
-
-    /** Write self in text form */
-    virtual ostream& toText(ostream& os, bool paren) const;
- 
-    /** Write self in text form */
-    virtual ostream& toLatex(ostream& os, bool paren) const; 
-    
-    /** */
-    void accumulateFuncSet(Set<int>& funcDofIDs, 
-      const Set<int>& activeSet) const ;
-
-    /** */
-    bool hasTestFunctions() const ;
-
-    /** */
-    bool hasUnkFunctions() const ;
-
-    /** */
-    bool hasHungryDiffOp() const ;
-
-    /** Ordering operator for use in transforming exprs 
-     * to standard form */
-    bool lessThan(const ScalarExpr* other) const ;
-
-
-    /** */
-    virtual RCP<ExprBase> getRcp() {return rcp(this);}
-    
-
-  };
-
-  /** \relates Expr */
-  Expr getSpectralCoeff(int i, const Expr& e);
+  /** Return the coefficient of the nth basis term */
+  Expr getCoeff(int n) const;
 
   /** */
-  SpectralBasis getSpectralBasis(const Expr& e) ;
+  Expr spectralDotProduct(const SpectralExpr* other) const ;
+
+  /** */
+  virtual XMLObject toXML() const ;
+
+  /** Write self in text form */
+  virtual std::ostream& toText(std::ostream& os, bool paren) const;
+ 
+  /** */
+  void accumulateFuncSet(Set<int>& funcDofIDs, 
+    const Set<int>& activeSet) const ;
+
+  /** */
+  bool hasTestFunctions() const ;
+
+  /** */
+  bool hasUnkFunctions() const ;
+
+  /** */
+  bool hasHungryDiffOp() const ;
+
+  /** Ordering operator for use in transforming exprs 
+   * to standard form */
+  bool lessThan(const ScalarExpr* other) const ;
+
+
+  /** */
+  virtual RCP<ExprBase> getRcp() {return rcp(this);}
+    
+
+};
+
+/** \relates Expr */
+Expr getSpectralCoeff(int i, const Expr& e);
+
+/** */
+SpectralBasis getSpectralBasis(const Expr& e) ;
 
 }
 

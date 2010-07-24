@@ -39,11 +39,7 @@
 
 namespace Sundance
 {
-using namespace Sundance;
-using std::runtime_error;
 using namespace Teuchos;
-using std::string;
-using std::ostream;
 
 /**
  * An integer vector representing a multivariate derivative.
@@ -79,7 +75,7 @@ public:
   MultiIndex operator-() const ;
 
   /** */
-  string toString() const ;
+  std::string toString() const ;
 
   /** */
   XMLObject toXML() const ;
@@ -97,7 +93,7 @@ public:
   bool isValid() const ;
 
   /** */
-  string coordForm() const ;
+  std::string coordForm() const ;
 private:
   Array<int> m_;
 };
@@ -105,10 +101,9 @@ private:
 
 namespace Teuchos
 {
-using std::string;
 
 /** \relates Sundance::MultiIndex */
-inline string toString(const Sundance::MultiIndex& h)
+inline std::string toString(const Sundance::MultiIndex& h)
 {return h.toString();}
 
 }
@@ -116,7 +111,7 @@ inline string toString(const Sundance::MultiIndex& h)
 namespace std
 {
 /** \relates Sundance::MultiIndex */
-inline ostream& operator<<(ostream& os, 
+inline ostream& operator<<(std::ostream& os, 
   const Sundance::MultiIndex& h)
 {
   os << h.toString();

@@ -344,17 +344,12 @@ RCP<FunctionalPolynomial> FunctionalPolynomial::toPoly(const RCP<ScalarExpr>& ex
 }
 
 
-ostream& FunctionalPolynomial::toText(ostream& os, bool paren) const
+std::ostream& FunctionalPolynomial::toText(std::ostream& os, bool paren) const
 {
   os << evalString();
   return os;
 }
 
-ostream& FunctionalPolynomial::toLatex(ostream& os, bool paren) const
-{
-  os << toXML();
-  return os;
-}
 
 XMLObject FunctionalPolynomial::toXML() const
 {
@@ -431,61 +426,61 @@ MultipleDeriv FunctionalPolynomial::successorTerm(const MultipleDeriv& md) const
 }
 
 void FunctionalPolynomial
-::stepRecurrence(int level, const Map<MultipleDeriv, string>& sPrev,
-                 Map<MultipleDeriv, string>& sCurr) const 
+::stepRecurrence(int level, const Map<MultipleDeriv, std::string>& sPrev,
+                 Map<MultipleDeriv, std::string>& sCurr) const 
 {
   Set<MultipleDeriv> allKeys;
   Set<MultipleDeriv> inducedKeys;
   Set<MultipleDeriv> prevKeys;
-  for (Map<MultipleDeriv, string>::const_iterator 
+  for (Map<MultipleDeriv, std::string>::const_iterator 
          i = sPrev.begin(); i != sPrev.end(); i++)
     {
       inducedKeys.put(successorTerm(i->first));
     }
-  for (Map<MultipleDeriv, string>::const_iterator 
+  for (Map<MultipleDeriv, std::string>::const_iterator 
          i = sPrev.begin(); i != sPrev.end(); i++)
     {
       prevKeys.put(i->first);
     }
 
-  Out::os() << "keys from prev level are " << prevKeys << endl;
-  Out::os() << "induced keys are " << inducedKeys << endl;
-  Out::os() << "natural keys are " << keys_[level] << endl;
+  Out::os() << "keys from prev level are " << prevKeys << std::endl;
+  Out::os() << "induced keys are " << inducedKeys << std::endl;
+  Out::os() << "natural keys are " << keys_[level] << std::endl;
 
   allKeys.merge(inducedKeys);
   allKeys.merge(keys_[level]);
 
-  Out::os() << "keys active at this level are " << allKeys << endl;
+  Out::os() << "keys active at this level are " << allKeys << std::endl;
 
   for (Set<MultipleDeriv>::const_iterator 
          i = allKeys.begin(); i != allKeys.end(); i++)
     {
       const MultipleDeriv& key = *i;
-      Out::os() << "working on key " << key << endl;
-      string str;
+      Out::os() << "working on key " << key << std::endl;
+      std::string str;
       if (coeffs_[level].containsKey(key))
         {
           str = coeffs_[level].get(key)->toString();
         }
 
       Set<Deriv> funcs = findFuncsForSummation(prevKeys, key);
-      Out::os() << "funcs to sum are " << funcs << endl;
+      Out::os() << "funcs to sum are " << funcs << std::endl;
       for (Set<Deriv>::const_iterator 
              j = funcs.begin(); j != funcs.end(); j++)
         {
           MultipleDeriv prevKey = key;
-          Out::os() << "prev key = " << prevKey << endl;
-          Out::os() << "func = " << *j << endl;
+          Out::os() << "prev key = " << prevKey << std::endl;
+          Out::os() << "func = " << *j << std::endl;
           // if (key.size() > 0 && key.upper_bound(*j) == key.end()) 
           //  {
-          //    Out::os() << "skipping" << endl;
+          //    Out::os() << "skipping" << std::endl;
           //    continue;
           // }
           prevKey.put(*j);
           TEST_FOR_EXCEPTION(!sPrev.containsKey(prevKey), InternalError,
                              "inconsisent key lookup");
-          const string& prevStr = sPrev.get(prevKey);
-          string funcStr = (*j).toString();
+          const std::string& prevStr = sPrev.get(prevKey);
+          std::string funcStr = (*j).toString();
           if (str.length() > 0) str += " + ";
           str += funcStr + "*(" + prevStr + ")";
         }
@@ -497,22 +492,22 @@ string FunctionalPolynomial::evalString() const
 {
   int maxLevel = coeffs_.size()-1;
 
-  Map<MultipleDeriv, string> sPrev;
-  Map<MultipleDeriv, string> sCurr;
+  Map<MultipleDeriv, std::string> sPrev;
+  Map<MultipleDeriv, std::string> sCurr;
 
   for (int level=maxLevel; level>=0; level--)
     {
       Out::os() << "********* Recurrence level = " << level << " ***************"
-           << endl;      
-      sCurr = Map<MultipleDeriv, string>();
+           << std::endl;      
+      sCurr = Map<MultipleDeriv, std::string>();
       stepRecurrence(level, sPrev, sCurr);
       sPrev = sCurr;
 
-      for (Map<MultipleDeriv, string>::const_iterator 
+      for (Map<MultipleDeriv, std::string>::const_iterator 
              j = sCurr.begin(); j != sCurr.end(); j++)
         {
-          Out::os() << "key=" << j->first << endl;
-          Out::os() << "value=" << j->second << endl;
+          Out::os() << "key=" << j->first << std::endl;
+          Out::os() << "value=" << j->second << std::endl;
         }
     }
 

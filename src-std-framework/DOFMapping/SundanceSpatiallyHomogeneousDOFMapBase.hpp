@@ -66,7 +66,7 @@ public:
   bool isHomogeneous() const {return true;}
 
   /** */
-  void print(ostream& os) const ;
+  void print(std::ostream& os) const ;
 
   /** */
   const Array<CellFilter>& funcDomains() const {return funcDomains_;}

@@ -115,7 +115,7 @@ int main(int argc, char** argv)
       ParameterXMLFileReader reader("bicgstab.xml");
 #endif
       ParameterList solverParams = reader.getParameters();
-      cerr << "params = " << solverParams << endl;
+      std::cerr << "params = " << solverParams << std::endl;
       LinearSolver<double> solver 
         = LinearSolverBuilder::createSolver(solverParams);
 
@@ -170,15 +170,15 @@ int main(int argc, char** argv)
       FunctionalEvaluator rInt(mesh, rErrExpr);
 
       double uErrorSq = uInt.evaluate();
-      cerr << "potential error norm = " << sqrt(uErrorSq) << endl << endl;
+      std::cerr << "potential error norm = " << sqrt(uErrorSq) << std::endl << std::endl;
 
       double rErrorSq = rInt.evaluate();
-      cerr << "concentration error norm = " << sqrt(rErrorSq) << endl << endl;
+      std::cerr << "concentration error norm = " << sqrt(rErrorSq) << std::endl << std::endl;
 
       Sundance::passFailTest(uErrorSq + rErrorSq, 1.0e-11);
 
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
       Sundance::handleException(e);
 		}

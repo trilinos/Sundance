@@ -76,14 +76,14 @@ int main(int argc, char** argv)
 
       
       /* create a sampler */
-      cout << "making grid" << endl;
+      cout << "making grid" << std::endl;
       AToCPointLocator locator(mesh, interior, createVector(tuple(200, 200)));
       
       AToCDensitySampler sampler(locator, vecType);
 
       CToAInterpolator forceInterpolator(locator, F);
 
-      cout << "making points" << endl;
+      cout << "making points" << std::endl;
       /* create a bunch of particles */
       int nCells = mesh.numCells(2);
       int nPts = 15000;
@@ -113,10 +113,10 @@ int main(int argc, char** argv)
           pos[2*i+1] = X[1];
         }
 
-      cout << "sampling..." << endl;
+      cout << "sampling..." << std::endl;
       Expr density = sampler.sample(createVector(pos), 1.0);
 
-      cout << "computing forces..." << endl;
+      cout << "computing forces..." << std::endl;
       forceInterpolator.interpolate(pos, f);
 
       double maxForceErr = 0.0;
@@ -129,9 +129,9 @@ int main(int argc, char** argv)
           double df = ::fabs(fx - f[2*i]) + ::fabs(fy - f[2*i+1]);
           maxForceErr = max(maxForceErr, df);
         }
-      cout << "max force error = " << maxForceErr << endl;
+      cout << "max force error = " << maxForceErr << std::endl;
 
-      cout << "writing..." << endl;
+      cout << "writing..." << std::endl;
 
        /* Write the field in VTK format */
       FieldWriter w = new VTKWriter("Density2d");
@@ -144,7 +144,7 @@ int main(int argc, char** argv)
       double tol = 1.0e-6;
       Sundance::passFailTest(::sqrt(errorSq), tol);
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
       Sundance::handleException(e);
 		}

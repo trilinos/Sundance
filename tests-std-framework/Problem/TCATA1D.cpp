@@ -128,8 +128,8 @@ int main(int argc, char** argv)
      
  
 /* Create a TSF NonlinearOperator object */
-      cerr << "about to make nonlinear object" << endl;
-      cerr.flush();
+      std::cerr << "about to make nonlinear object" << std::endl;
+      std::cerr.flush();
 
       NonlinearOperator<double> F 
         = new NonlinearProblem(mesh, MassEqn+MomEqn, leftbc+rightbc, Sundance::List(u,v),Sundance::List(p,q) , u0, vecType);

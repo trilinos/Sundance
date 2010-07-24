@@ -42,5 +42,5 @@ CellPredicateBase::CellPredicateBase()
 
 CellPredicateBase::~CellPredicateBase()
 {
-//  Out::os() << "~CellPredicateBase()" << endl;
+//  Out::os() << "~CellPredicateBase()" << std::endl;
 }

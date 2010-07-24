@@ -183,11 +183,11 @@ void EvaluatableExpr::setupEval(const EvalContext& context) const
   }
 }
 
-void EvaluatableExpr::showSparsity(ostream& os, 
+void EvaluatableExpr::showSparsity(std::ostream& os, 
   const EvalContext& context) const
 {
   Tabs tab0;
-  os << tab0 << "Node: " << toString() << endl;
+  os << tab0 << "Node: " << toString() << std::endl;
   sparsitySuperset(context)->print(os);
 }
 
@@ -198,7 +198,7 @@ int EvaluatableExpr::maxOrder(const Set<MultiIndex>& m) const
   int rtn = 0;
   for (Set<MultiIndex>::const_iterator i=m.begin(); i != m.end(); i++)
   {
-    rtn = max(i->order(), rtn);
+    rtn = std::max(i->order(), rtn);
   }
   return rtn;
 }
@@ -486,10 +486,10 @@ EvaluatableExpr::findDerivSubset(const DerivSubsetSpecifier& dss,
   return allOrdersMap_[dss].get(context);
 }
 
-void EvaluatableExpr::displayNonzeros(ostream& os, const EvalContext& context) const 
+void EvaluatableExpr::displayNonzeros(std::ostream& os, const EvalContext& context) const 
 {
   Tabs tabs0;
-  os << tabs0 << "Nonzeros of " << toString() << endl;
+  os << tabs0 << "Nonzeros of " << toString() << std::endl;
 
   const Set<MultipleDeriv>& W = findW(context);
   const Set<MultipleDeriv>& R = findR(context);
@@ -501,10 +501,10 @@ void EvaluatableExpr::displayNonzeros(ostream& os, const EvalContext& context) c
   for (Set<MultipleDeriv>::const_iterator i=W.begin(); i != W.end(); i++)
   {
     Tabs tab1;
-    string state = "Variable";
+    std::string state = "Variable";
     if (C.contains(*i)) state = "Constant";
     if (!R.contains(*i)) state = "Not Required";
-    os << tab1 << std::setw(25) << std::left << i->toString() << ": " << state << endl;
+    os << tab1 << std::setw(25) << std::left << i->toString() << ": " << state << std::endl;
   }
 }
 

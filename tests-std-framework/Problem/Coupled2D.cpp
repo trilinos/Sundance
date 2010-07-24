@@ -163,10 +163,10 @@ int main(int argc, char** argv)
       FunctionalEvaluator uErrInt(mesh, uErrExpr);
 
       double uErrorSq = uErrInt.evaluate();
-      cerr << "u error norm = " << sqrt(uErrorSq) << endl << endl;
+      std::cerr << "u error norm = " << sqrt(uErrorSq) << std::endl << std::endl;
 
       double vErrorSq = vErrInt.evaluate();
-      cerr << "v error norm = " << sqrt(vErrorSq) << endl << endl;
+      std::cerr << "v error norm = " << sqrt(vErrorSq) << std::endl << std::endl;
 
       
       /* Write the field in VTK format */
@@ -181,7 +181,7 @@ int main(int argc, char** argv)
       double tol = 1.0e-5;
       Sundance::passFailTest(sqrt(uErrorSq+vErrorSq), tol);
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
       Sundance::handleException(e);
 		}

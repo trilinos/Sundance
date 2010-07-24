@@ -61,10 +61,10 @@ int main(int argc, char** argv)
     int nDim = 1;
     int order = 6;
 #ifdef HAVE_SUNDANCE_STOKHOS
-    Out::root() << "using Stokhos hermite basis" << endl;
+    Out::root() << "using Stokhos hermite basis" << std::endl;
     SpectralBasis pcBasis = new Stokhos::HermiteBasis<int,double>(order);
 #else
-    Out::root() << "using George's hermite basis" << endl;
+    Out::root() << "using George's hermite basis" << std::endl;
     SpectralBasis pcBasis = new HermiteSpectralBasis(nDim, order);
 #endif
     
@@ -107,8 +107,8 @@ int main(int argc, char** argv)
 
     int L = nDim+2;
     int P = pcBasis.nterms();
-    Out::os() << "L = " << L << endl;
-    Out::os() << "P = " << P << endl;
+    Out::os() << "L = " << L << std::endl;
+    Out::os() << "P = " << P << std::endl;
     
     /* Create the unknown and test functions. Do NOT use the spectral
      * basis here */
@@ -182,9 +182,9 @@ int main(int argc, char** argv)
       double errSq = evaluateIntegral(mesh, errExpr);
       double scale = evaluateIntegral(mesh, scaleExpr);
       if (scale > 0.0) 
-        Out::os() << "mode i=" << i << " error=" << sqrt(errSq/scale) << endl;
+        Out::os() << "mode i=" << i << " error=" << sqrt(errSq/scale) << std::endl;
       else
-        Out::os() << "mode i=" << i << " error=" << sqrt(errSq) << endl;
+        Out::os() << "mode i=" << i << " error=" << sqrt(errSq) << std::endl;
     }
     
     double tol = 1.0e-12;
@@ -192,7 +192,7 @@ int main(int argc, char** argv)
     Sundance::passFailTest(sqrt(totalErr2), tol);
     
   }
-	catch(exception& e)
+	catch(std::exception& e)
   {
     Sundance::handleException(e);
   }

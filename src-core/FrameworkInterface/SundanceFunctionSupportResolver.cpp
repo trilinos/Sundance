@@ -120,7 +120,7 @@ FunctionSupportResolver::FunctionSupportResolver(
     int v1 = integralSum_->eqnSetSetupVerb();
     int v2 = 0;
     if (hasBCs) v2 = bcSum_->eqnSetSetupVerb();
-    verb = max(verb, max(v1, v2));
+    verb = std::max(verb, max(v1, v2));
   }
   SUNDANCE_BANNER1(verb, tab0, "FunctionSupportResolver setup");
 

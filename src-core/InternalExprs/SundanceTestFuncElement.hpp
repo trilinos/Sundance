@@ -41,8 +41,8 @@ namespace Sundance
 using namespace Sundance;
 using namespace Teuchos;
 
-using std::string;
-using std::ostream;
+
+
 
 /** 
  * TestFuncElement represents a scalar-valued element of a (possibly)
@@ -53,8 +53,8 @@ class TestFuncElement : public SymbolicFuncElement
 public:
   /** */
   TestFuncElement(const RCP<const TestFuncDataStub>& commonData,
-    const string& name,
-    const string& suffix, const FunctionIdentifier& fid);
+    const std::string& name,
+    const std::string& suffix, const FunctionIdentifier& fid);
 
   /** virtual destructor */
   virtual ~TestFuncElement() {;}

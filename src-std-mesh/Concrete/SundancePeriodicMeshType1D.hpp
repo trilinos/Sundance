@@ -56,7 +56,7 @@ namespace Sundance
       {return rcp(new PeriodicMesh1D(1, 0.0, 1.0));}
 
     /** */
-    string description() const {return "PeriodicMeshType1D";}
+    std::string description() const {return "PeriodicMeshType1D";}
 
     /** Return a ref count pointer to self */
     virtual RCP<MeshTypeBase> getRcp() {return rcp(this);}

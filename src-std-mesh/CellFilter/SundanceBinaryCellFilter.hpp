@@ -68,7 +68,7 @@ public:
   virtual bool lessThan(const CellFilterStub* other) const ;
 
   /** Return the name of the type. Used in ordering. */
-  virtual string typeName() const {return "BinaryOpCellFilter";}
+  virtual std::string typeName() const {return "BinaryOpCellFilter";}
 
   /* */
   GET_RCP(CellFilterStub);
@@ -79,7 +79,7 @@ protected:
 
 private:
   /** */
-  string opName() const ;
+  std::string opName() const ;
 
   /** The operation I perform */
   CellFilterOpType op_;

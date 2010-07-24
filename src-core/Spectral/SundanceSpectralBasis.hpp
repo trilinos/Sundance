@@ -41,9 +41,6 @@
 
 
 
-using namespace std;
-using namespace Sundance;
-
 namespace Sundance
 {
 /** Doxygen doc for SpectralBasis */
@@ -90,15 +87,15 @@ public:
   double expectation(int i, int j, int k) const 
     {return ptr()->expectation(i,j,k);}
 
-  /** Write to a string */
-  string toString() const {return ptr()->toString();}
+  /** Write to a std::string */
+  std::string toString() const {return ptr()->toString();}
 };
 }
 
 namespace std
 {
 /** \relates  Sundance::SpectralBasis */
-inline ostream& operator<<(ostream& os, const Sundance::SpectralBasis& s)
+inline ostream& operator<<(std::ostream& os, const Sundance::SpectralBasis& s)
 {
   os << s.toString();
   return os;

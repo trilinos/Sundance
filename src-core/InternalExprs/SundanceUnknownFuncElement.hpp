@@ -43,8 +43,8 @@ using namespace Sundance;
 
 using namespace Teuchos;
 
-using std::string;
-using std::ostream;
+
+
 
 /** 
  * UnknownFuncElement represents a scalar-valued element of a (possibly)
@@ -55,8 +55,8 @@ class UnknownFuncElement : public SymbolicFuncElement
 public:
   /** */
   UnknownFuncElement(const RCP<const UnknownFuncDataStub>& data,
-    const string& name,
-    const string& suffix,
+    const std::string& name,
+    const std::string& suffix,
     const FunctionIdentifier& fid);
 
 

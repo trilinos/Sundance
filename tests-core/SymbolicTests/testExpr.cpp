@@ -11,6 +11,12 @@
 #include "SundanceCellFilterStub.hpp"
 #include "SundanceQuadratureFamilyStub.hpp"
 
+using std::cout;
+using std::cerr;
+using std::exception;
+using namespace Teuchos;
+using namespace Sundance;
+
 int main(int argc, char** argv)
 {
   try
@@ -71,19 +77,19 @@ int main(int argc, char** argv)
           SpectralBasis basis = se->getSpectralBasis();
 
           for(int i=0; i< basis.nterms(); i++)
-            cout << se->getCoeff(i) << endl;
+            cout << se->getCoeff(i) << std::endl;
         }
 
-      cout << Sum << endl << endl; 
+      cout << Sum << std::endl << std::endl; 
 
-      cout << eqn << endl << endl; 
+      cout << eqn << std::endl << std::endl; 
 
 
     }
   
-  catch(exception& e)
+  catch(std::exception& e)
     {
-      cerr << e.what() << endl;
+      std::cerr << e.what() << std::endl;
     }
   MPISession::finalize();
 }

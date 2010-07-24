@@ -6,7 +6,7 @@ int main(int argc, char** argv)
   {
     int nx = 1;
     int ny = 1;
-    string solverFile = "amesos.xml";
+    std::string solverFile = "amesos.xml";
 
     Sundance::init(&argc, &argv);
     int np = MPIComm::world().getNProc();
@@ -80,9 +80,9 @@ int main(int argc, char** argv)
     Array<Expr> exact = tuple(exactP, exactU[0], exactU[1],
       exactS[0], exactS[1]);
 
-    Out::os() << "row map" << endl;
+    Out::os() << "row map" << std::endl;
     prob.rowMap(0)->print(Out::os());
-    Out::os() << "col map" << endl;
+    Out::os() << "col map" << std::endl;
     prob.colMap(0)->print(Out::os());
 
 
@@ -109,7 +109,7 @@ int main(int argc, char** argv)
       FunctionalEvaluator errInt(mesh, errExpr);
       double errorSq = errInt.evaluate();
       double err_i = std::sqrt(errorSq);
-      Out::os() << "i=" << i << " error=" << err_i << endl;
+      Out::os() << "i=" << i << " error=" << err_i << std::endl;
       totalErrSq += errorSq;
     }
 
@@ -117,7 +117,7 @@ int main(int argc, char** argv)
     Sundance::passFailTest(sqrt(totalErrSq), tol);
 
   }
-	catch(exception& e)
+	catch(std::exception& e)
   {
     Sundance::handleException(e);
   }

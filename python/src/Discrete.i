@@ -68,7 +68,7 @@
 /*
 %typemap(in) (const Sundance::BasisArray& basis)(Sundance::BasisArray basis)
 {
-  cerr << "in basis array typemap" << endl;
+  std::cerr << "in basis array typemap" << std::endl;
   basis = pyListToBasisArray($input);
 
   $1 = &basis;
@@ -83,7 +83,7 @@
    Sundance::BasisArray basis,
    TSFExtended::VectorType<double> vecType)
 {
-  cerr << "in (mesh, basis, vecType) typemap" << endl;
+  std::cerr << "in (mesh, basis, vecType) typemap" << std::endl;
   TEST_FOR_EXCEPTION(!PyTuple_Check($input), RuntimeError,
                      "expecting a tuple");
   TEST_FOR_EXCEPTION(PyTuple_Size($input) != 3, RuntimeError,
@@ -187,7 +187,7 @@ namespace Sundance
 %inline %{
   void printVecBasis(const Sundance::BasisArray& basis)
   {
-    cerr << "vector basis = " << basis << endl;
+    std::cerr << "vector basis = " << basis << std::endl;
   }
   %}
 
@@ -196,14 +196,14 @@ namespace Sundance
 %inline %{
   void printVecBasis(int i, const Sundance::BasisArray& basis)
   {
-    cerr << i << " vector basis = " << basis << endl;
+    std::cerr << i << " vector basis = " << basis << std::endl;
   }
   %}
 
 %inline %{
   void printVecBasis(const Sundance::BasisArray& basis, int i)
   {
-    cerr << "vector basis = " << basis << " " << i << endl;
+    std::cerr << "vector basis = " << basis << " " << i << std::endl;
   }
   %}
 */

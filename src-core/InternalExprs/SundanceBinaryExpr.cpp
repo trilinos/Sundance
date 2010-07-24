@@ -55,7 +55,7 @@ bool BinaryExpr::lessThan(const ScalarExpr* other) const
   return ExprWithChildren::lessThan(other);
 }
 
-ostream& BinaryExpr:: toText(ostream& os, bool paren) const 
+std::ostream& BinaryExpr:: toText(std::ostream& os, bool paren) const 
 {
 	if (Expr::showAllParens() || (paren && parenthesizeSelf())) os << "(";
 	leftScalar()->toText(os, parenthesizeOperands()) ;
@@ -73,24 +73,6 @@ ostream& BinaryExpr:: toText(ostream& os, bool paren) const
 	return os;
 }
 
-ostream& BinaryExpr:: toLatex(ostream& os, bool paren) const 
-{
-	if (Expr::showAllParens() || (paren && parenthesizeSelf())) os << "(";
-	leftScalar()->toLatex(os, parenthesizeOperands()) ;
-	os	 << opChar();
-
-	if (leftScalar()->isHungryDiffOp())
-		{
-			rightScalar()->toText(os, true);
-		}
-	else
-		{
-			rightScalar()->toText(os, parenthesizeOperands());
-		}
-	if (Expr::showAllParens() || (paren && parenthesizeSelf())) os << ")";
-
-	return os;
-}
 
 XMLObject BinaryExpr::toXML() const 
 {

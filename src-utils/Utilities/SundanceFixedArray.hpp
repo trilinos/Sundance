@@ -133,7 +133,7 @@ namespace std
 {
 /** \relates FixedArray */
 template <int N, class T> 
-ostream& operator<<(ostream& os, const Sundance::FixedArray<N, T>& f)
+ostream& operator<<(std::ostream& os, const Sundance::FixedArray<N, T>& f)
 {
   os << "{";
   for (int i=0; i<N; i++) 

@@ -70,9 +70,9 @@ void checkbasis( BasisFamily &b1 , BasisFamily &b2 )
   QuadratureFamily quad = new GaussianQuadrature(4);
   
   for (int spatialDim=1; spatialDim<=maxDim; spatialDim++) {
-    cerr << "\t" << "spatial dimension =" << spatialDim << endl;
+    std::cerr << "\t" << "spatial dimension =" << spatialDim << std::endl;
     for (int cellDim=0; cellDim<=spatialDim; cellDim++) { 
-      cerr << "\t\t" << "cell dimension =" << cellDim << endl;
+      std::cerr << "\t\t" << "cell dimension =" << cellDim << std::endl;
       CellType cellType;
       if (cellDim==0) cellType=PointCell;
       if (cellDim==1) cellType=LineCell;
@@ -85,53 +85,53 @@ void checkbasis( BasisFamily &b1 , BasisFamily &b2 )
       
       for (int d=0; d<=maxDiffOrder; d++) {
 	if (cellDim==0 && d>0) continue;
-	cerr << "\t\t\t" << "differentiation order = " << d << endl;
+	cerr << "\t\t\t" << "differentiation order = " << d << std::endl;
 	for (int dir=0; dir<iPow(cellDim, d); dir++) {
-	  cerr << "\t\t\t\t" << "direction = " << dir << endl;
+	  std::cerr << "\t\t\t\t" << "direction = " << dir << std::endl;
 	  MultiIndex mi;
 	  mi[dir]=d;
 	  Array<Array<double> > values1;
 	  Array<Array<double> > values2;
-	  cerr << "\t\t\t\t" << "computing basis1...";
+	  std::cerr << "\t\t\t\t" << "computing basis1...";
 	  b1.ptr()->refEval(spatialDim, cellType, qPts, mi, values1);
-	  cerr << "done" << endl << "\t\t\t\t" << "computing basis2...";
+	  std::cerr << "done" << std::endl << "\t\t\t\t" << "computing basis2...";
 	  b2.ptr()->refEval(spatialDim, cellType, qPts, mi, values2);
-	  cerr << "done" << endl;
+	  std::cerr << "done" << std::endl;
 	  int nNodes1 = b1.ptr()->nNodes(spatialDim, cellType);
 	  int nNodes2 = b2.ptr()->nNodes(spatialDim, cellType);
-	  cerr << "\t\t\t\t" << "num nodes: basis1=" << nNodes1
-	       << " basis2=" << nNodes2 << endl;
+	  std::cerr << "\t\t\t\t" << "num nodes: basis1=" << nNodes1
+	       << " basis2=" << nNodes2 << std::endl;
 	  if (nNodes1 != nNodes2) {	
-	    cerr << "******** ERROR: node counts should be equal" << endl;
+	    std::cerr << "******** ERROR: node counts should be equal" << std::endl;
 	    numErrors++;
 	    continue;
 	  }
 	  if (values1.size() != values2.size()) {
-	    cerr << "******** ERROR: value array outer sizes should be equal" << endl;
+	    std::cerr << "******** ERROR: value array outer sizes should be equal" << std::endl;
 	    numErrors++;
 	    continue;
 	  }
 	  if (values1.size() != qPts.size()) {
-	    cerr << "******** ERROR: value array outer size should be equal to number of quad points" << endl;
+	    std::cerr << "******** ERROR: value array outer size should be equal to number of quad points" << std::endl;
 	    numErrors++;
 	    continue;
 	  }
 	  for (int q=0; q<qPts.length(); q++) {
 	    if (values1[q].length() != nNodes1) {
-	      cerr << "******** ERROR: value array inner size should be equal to number of nodes" << endl;
+	      std::cerr << "******** ERROR: value array inner size should be equal to number of nodes" << std::endl;
 	      numErrors++;
 	      continue;
 	    }
-	    cerr << "\t\t\t\t\t" << "quad point q=" << q << " pt=" << qPts[q]
-		 << endl;
+	    std::cerr << "\t\t\t\t\t" << "quad point q=" << q << " pt=" << qPts[q]
+		 << std::endl;
 	    for (int n=0; n<nNodes1; n++) {
-	      cerr << "\t\t\t\t\t\t" << "node n=" << n << " phi1="
+	      std::cerr << "\t\t\t\t\t\t" << "node n=" << n << " phi1="
 		   << values1[q][n]
 		   << " phi2=" << values2[q][n]
 		   << " |phi1-phi2|=" << fabs(values1[q][n]-values2[q][n])
-		   << endl;
+		   << std::endl;
 	      if (fabs(values1[q][n]-values2[q][n]) > tol) {
-		cout << "ERROR" << endl; numErrors++;
+		cout << "ERROR" << std::endl; numErrors++;
 	      }
 	    }
 	  }
@@ -139,6 +139,6 @@ void checkbasis( BasisFamily &b1 , BasisFamily &b2 )
       }
     }
   }    
-  cerr << endl << endl << "Summary: detected " << numErrors << " errors " << endl;
+  std::cerr << std::endl << std::endl << "Summary: detected " << numErrors << " errors " << std::endl;
 }
 }

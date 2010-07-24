@@ -64,7 +64,7 @@ DerivOfSymbFuncEvaluator
   SUNDANCE_MSG1(verb, tabs << "initializing DerivOfSymbFunc evaluator for " 
                     << expr->toString());
 
-  SUNDANCE_MSG2(verb, tabs << "return sparsity " << endl << *(this->sparsity)());
+  SUNDANCE_MSG2(verb, tabs << "return sparsity " << std::endl << *(this->sparsity)());
 
   const MultiIndex& mi = expr->mi();
   const SymbolicFuncElement* sf 
@@ -201,7 +201,7 @@ void DerivOfSymbFuncEvaluator::internalEval(const EvalManager& mgr,
         funcConstantResults, funcVectorResults);
       if (mgr.verb() > 1)
         {
-          Out::os() << tabs1 << "DerivOfSymbFunc results" << endl;
+          Out::os() << tabs1 << "DerivOfSymbFunc results" << std::endl;
           funcSparsitySuperset_->print(Out::os(), funcVectorResults,
                                        funcConstantResults);
         }

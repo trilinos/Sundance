@@ -37,7 +37,7 @@ using namespace Sundance;
 using namespace Teuchos;
 
 LabeledSubsetCellFilter::LabeledSubsetCellFilter(const CellFilter& superset,
-                                                 const string& label)
+                                                 const std::string& label)
   : SubsetCellFilter(superset, new LabelPredicate(label))
 {;}
 

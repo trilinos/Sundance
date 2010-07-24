@@ -40,14 +40,9 @@
 
 namespace Sundance
 {
-using namespace Sundance;
-
 class DiscreteFunctionStub;
 
 using namespace Teuchos;
-
-using std::string;
-using std::ostream;
 
 /** 
  * TestFunctionStub is the base class for unknown functions. 
@@ -73,12 +68,12 @@ class TestFunctionStub : public SymbolicFunc
 {
 public:
   /** */
-  TestFunctionStub(const string& name, 
+  TestFunctionStub(const std::string& name, 
     int tensorOrder=0, int dim=1,
     const RCP<const TestFuncDataStub>& data=RCP<const TestFuncDataStub>());
 
   /** */
-  TestFunctionStub(const string& name, const SpectralBasis& sbasis, 
+  TestFunctionStub(const std::string& name, const SpectralBasis& sbasis, 
     int tensorOrder=0, int dim=1,
     const RCP<const TestFuncDataStub>& data=RCP<const TestFuncDataStub>());
 

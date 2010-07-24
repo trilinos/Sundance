@@ -409,7 +409,7 @@ int main(int argc, char** argv)
       }
       else
       {
-        Out::root() << "skipping 1D tests needing numprocs=1 or 4" << endl;
+        Out::root() << "skipping 1D tests needing numprocs=1 or 4" << std::endl;
       }
     }
 
@@ -421,11 +421,11 @@ int main(int argc, char** argv)
 
     bool pass = tests.run();
 
-    Out::root() << "total test status: " << pass << endl;
+    Out::root() << "total test status: " << pass << std::endl;
 
     Sundance::passFailTest(pass);
   }
-	catch(exception& e)
+	catch(std::exception& e)
   {
     Sundance::handleException(e);
   }

@@ -49,7 +49,7 @@ namespace Sundance
   {
   public:
     /** */
-    CellDiameterExpr(const string& name="h");
+    CellDiameterExpr(const std::string& name="h");
     
     /** */
     virtual ~CellDiameterExpr() {;}
@@ -57,16 +57,12 @@ namespace Sundance
     /** */
     virtual XMLObject toXML() const ;
 
-    const string& name() const {return name_;}
+    const std::string& name() const {return name_;}
 
     /** Write a simple text description suitable 
      * for output to a terminal */
-    virtual ostream& toText(ostream& os, bool paren) const ;
+    virtual std::ostream& toText(std::ostream& os, bool paren) const ;
     
-    /** Write in a form suitable for LaTeX formatting */
-    virtual ostream& toLatex(ostream& os, bool paren) const ;
-
-
     /** */
     virtual Set<MultipleDeriv> 
     internalFindW(int order, const EvalContext& context) const ;
@@ -77,7 +73,7 @@ namespace Sundance
     /** Ordering operator for use in transforming exprs to standard form */
     virtual bool lessThan(const ScalarExpr* other) const ;
   private:
-    string name_;
+    std::string name_;
   };
 }
 
