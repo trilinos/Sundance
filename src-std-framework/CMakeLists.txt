@@ -184,6 +184,9 @@ APPEND_SET(HEADERS
   Assembly/SundanceTrivialGrouper.hpp
   Assembly/SundanceVectorAssemblyKernel.hpp
   Assembly/SundanceVectorFillingAssemblyKernel.hpp
+  Assembly/SundanceCurveIntegralCalc.hpp
+  Assembly/SundanceCurveQuadratureIntegral.hpp
+  Assembly/SundanceCurveEvalMediator.hpp
   )
 
 
@@ -229,6 +232,9 @@ APPEND_SET(SOURCES
   Assembly/SundanceTrivialGrouper.cpp
   Assembly/SundanceVectorAssemblyKernel.cpp
   Assembly/SundanceVectorFillingAssemblyKernel.cpp
+  Assembly/SundanceCurveIntegralCalc.cpp
+  Assembly/SundanceCurveQuadratureIntegral.cpp
+  Assembly/SundanceCurveEvalMediator.cpp
   )
 #  Assembly/ElementIntegration/SundanceIQI_HdivLF_DivV_Cell.cpp
 #  Assembly/ElementIntegration/SundanceIQI_HdivLF_VN_Facet.cpp

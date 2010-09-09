@@ -79,6 +79,15 @@ public:
 		alphas[1] = _alpha2;
 	}
 
+	/** return the integration coefficient for the inner */
+	double getAlpha1() const { return _alpha1; }
+
+	/** return the integration coefficient for the outer */
+	double getAlpha2() const { return _alpha2; }
+
+	/** return the dimension of the curve , in which it is defined */
+	int getCurveDim() const { return _dimension; }
+
 	/**
 	 * @param evaluationPoint the point where we want the alpha integration parameter <br>
 	 * The parameter alpha is used for the Adaptive Cell Integration
@@ -118,6 +127,10 @@ public:
 	/** In some constructors we need to pass a Parametrized curve even if there is any
 	 * so we need sometimes to pass a dummy curve, and this function shows which curve is dummy and which is not */
 	virtual bool isCurveValid() const = 0;
+
+	/** function which shows if some integral schould be calculated along the curve <br>
+	 * default this returns false , only one wrapper class should overwrite this and return false */
+	virtual bool isCurveIntegral() const { return false; }
 
 protected:
 

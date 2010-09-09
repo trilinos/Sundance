@@ -52,6 +52,7 @@
 #include "SundanceDerivative.hpp"
 #include "SundanceCoordExpr.hpp"
 #include "SundanceCellDiameterExpr.hpp"
+#include "SundanceCurveNormExpr.hpp"
 #include "SundanceCellVectorExpr.hpp"
 #include "SundanceStdMathOps.hpp"
 #include "SundanceParameter.hpp"
@@ -64,6 +65,7 @@
 #include "SundanceCircle.hpp"
 #include "SundanceBox2D.hpp"
 #include "SundanceDummyParametrizedCurve.hpp"
+#include "SundanceParamCurveIntegral.hpp"
 #include "SundanceParametrizedCurve.hpp"
 
 /* Meshes */

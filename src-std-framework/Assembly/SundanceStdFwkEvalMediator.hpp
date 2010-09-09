@@ -126,6 +126,8 @@ public:
 protected:
   const Mesh& mesh() const {return mesh_;}
 
+  Mesh& mesh() {return mesh_;}
+
   bool& cacheIsValid() const {return cacheIsValid_;}
 
   /** */

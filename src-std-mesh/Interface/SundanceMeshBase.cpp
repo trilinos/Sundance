@@ -33,6 +33,7 @@
 #include "SundanceExceptions.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_TimeMonitor.hpp"
+#include "SundanceTabs.hpp"
 
 using namespace Sundance;
 using namespace Sundance;
@@ -47,8 +48,18 @@ MeshBase::MeshBase(int dim, const MPIComm& comm,
     order_(order),
     reorderer_(Mesh::defaultReorderer().createInstance(this)),
     validWeights_(true),
-    specialWeights_()
-{ specialWeights_.resize(dim_); }
+    specialWeights_(),
+    curvePoints_Are_Valid_(),
+    nrCurvesForIntegral_(0),
+    curvePoints_() ,
+    curveDerivative_(),
+    curveNormal_(),
+    curveID_to_ArrayIndex_()
+{ specialWeights_.resize(dim_);
+  curvePoints_.resize(0);
+  curveDerivative_.resize(0);
+  curveNormal_.resize(0);
+}
 
 
 
@@ -156,5 +167,58 @@ void MeshBase::getLabels(int cellDim, const Array<int>& cellLID,
 }
 
 
+// ===================== storing curve intersection/quadrature points ======================
 
+bool MeshBase::hasCurvePoints(int maxCellLID , int curveID) const {
+   	if (curvePoints_[mapCurveID_to_Index(curveID)].containsKey(maxCellLID))
+		return ( curvePoints_[mapCurveID_to_Index(curveID)].get(maxCellLID).size() > 0 );
+   	else
+   		return false;
+}
 
+void MeshBase::setCurvePoints(int maxCellLID, int curveID ,
+		Array<Point>& points , Array<Point>& derivs , Array<Point>& normals) const {
+
+	  Tabs tabs;
+	  int verbo = 0;
+	  SUNDANCE_MSG3(verbo, tabs << "MeshBase::setCurvePoints , nr:" << nrCurvesForIntegral_);
+   	  curvePoints_[mapCurveID_to_Index(curveID)].put( maxCellLID , points );
+   	  curveDerivative_[mapCurveID_to_Index(curveID)].put( maxCellLID , derivs );
+   	  curveNormal_[mapCurveID_to_Index(curveID)].put( maxCellLID , normals );
+
+}
+
+void MeshBase::getCurvePoints(int maxCellLID, int curveID ,
+		Array<Point>& points , Array<Point>& derivs , Array<Point>& normals) const {
+
+	  Tabs tabs;
+	  int verbo = 0;
+	  SUNDANCE_MSG3(verbo, tabs << "MeshBase::getCurvePoints , nr:" << nrCurvesForIntegral_);
+   	  points = curvePoints_[mapCurveID_to_Index(curveID)].get( maxCellLID );
+   	  derivs = curveDerivative_[mapCurveID_to_Index(curveID)].get( maxCellLID );
+   	  normals = curveNormal_[mapCurveID_to_Index(curveID)].get( maxCellLID );
+
+}
+
+int MeshBase::mapCurveID_to_Index(int curveID) const {
+
+	 Tabs tabs;
+	 int verbo = 0;
+
+	 SUNDANCE_MSG3(verbo, tabs << "MeshBase::mapCurveID_to_Index curveID:" << curveID);
+     if (curveID_to_ArrayIndex_.containsKey(curveID)){
+    	 SUNDANCE_MSG3(verbo, tabs << "MeshBase::mapCurveID_to_Index value found for curveID:" << curveID << " ret:" << curveID_to_ArrayIndex_.get(curveID));
+       	 return curveID_to_ArrayIndex_.get(curveID);
+     } else {
+    	 SUNDANCE_MSG3(verbo, tabs << "MeshBase::mapCurveID_to_Index create new :" << nrCurvesForIntegral_);
+       	 curveID_to_ArrayIndex_.put( curveID , nrCurvesForIntegral_ );
+       	 SUNDANCE_MSG3(verbo, tabs << "MeshBase::mapCurveID_to_Index , increment ");
+       	 nrCurvesForIntegral_++;
+    	 curvePoints_.resize(nrCurvesForIntegral_);
+    	 curveDerivative_.resize(nrCurvesForIntegral_);
+    	 curveNormal_.resize(nrCurvesForIntegral_);
+    	 SUNDANCE_MSG3(verbo, tabs << "MeshBase::mapCurveID_to_Index create new :" << nrCurvesForIntegral_);
+       	 return nrCurvesForIntegral_-1;
+     }
+
+}

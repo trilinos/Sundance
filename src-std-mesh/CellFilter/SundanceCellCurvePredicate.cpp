@@ -65,21 +65,21 @@ void CellCurvePredicate::testBatch(const Array<int>& cellLID,
     {
 	  switch (filterMode_){
 	  case Outside_Curve:
-	      for (unsigned int i=0; i<cellLID.size(); i++)
+	      for (int i=0; i<cellLID.size(); i++)
 	    	  if ( curve_.curveEquation( mesh().nodePosition(cellLID[i])) > 0.0 )
 	              results[i] = true;
 	    	  else
 	    		  results[i] = false;
 		  break;
 	  case Inside_Curve:
-	      for (unsigned int i=0; i<cellLID.size(); i++)
+	      for (int i=0; i<cellLID.size(); i++)
 	    	  if ( curve_.curveEquation( mesh().nodePosition(cellLID[i])) < 0.0 )
 	              results[i] = true;
 	    	  else
 	    		  results[i] = false;
 		  break;
 	  case On_Curve:
-	      for (unsigned int i=0; i<cellLID.size(); i++)
+	      for (int i=0; i<cellLID.size(); i++)
 	    	  if ( fabs(curve_.curveEquation( mesh().nodePosition(cellLID[i]))) < 1e-8 )
 	              results[i] = true;
 	    	  else
@@ -93,7 +93,7 @@ void CellCurvePredicate::testBatch(const Array<int>& cellLID,
       Array<int> facetSigns;
       int nf = mesh().numFacets(cellDim(), cellLID[0], 0);
       mesh().getFacetLIDs(cellDim(), cellLID, 0, facetLIDs, facetSigns);
-      for (unsigned int c=0; c<cellLID.size(); c++)
+      for (int c=0; c<cellLID.size(); c++)
         {
           results[c] = true;
           if (filterMode_ == On_Curve) results[c] = false;

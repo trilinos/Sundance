@@ -68,6 +68,10 @@ public:
     RCP<EvalVector>&  result) const ;
 
   /** */
+  void evalCurveNormExpr(const CurveNormExpr* expr,
+    RCP<EvalVector>&  result) const ;
+
+  /** */
   void evalCellVectorExpr(const CellVectorExpr* expr,
     RCP<EvalVector>&  result) const ;
 

@@ -32,6 +32,7 @@
 #include "SundanceRefIntegral.hpp"
 #include "SundanceQuadratureIntegral.hpp"
 #include "SundanceMaximalQuadratureIntegral.hpp"
+#include "SundanceCurveQuadratureIntegral.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
 #include "Teuchos_TimeMonitor.hpp"
@@ -309,6 +310,8 @@ bool IntegralGroup
       = dynamic_cast<const QuadratureIntegral*>(integrals_[i].get());
     const MaximalQuadratureIntegral* maxQuad 
       = dynamic_cast<const MaximalQuadratureIntegral*>(integrals_[i].get());
+    const CurveQuadratureIntegral* curveQuad
+      = dynamic_cast<const CurveQuadratureIntegral*>(integrals_[i].get());
 
     if (ref!=0)
     {
@@ -361,6 +364,33 @@ bool IntegralGroup
 
       const double* const f = vectorCoeffs[resultIndices_[i]]->start();
       maxQuad->transform(JTrans, JVol, isLocalFlag, facetIndex, cellLIDs , f, A);
+    }
+    else if (curveQuad != 0)
+    {
+        SUNDANCE_MSG2(integrationVerb(),
+          tab2 << "Integrating term group " << i
+          << " by curve integral (quadrature by default) , result index: " << resultIndices_[i]);
+
+        double f_const = 0.0;
+        if (constantCoeffs.size() > resultIndices_[i]){
+        	f_const = constantCoeffs[resultIndices_[i]];
+        }
+
+        SUNDANCE_MSG2(integrationVerb(),
+          tab2 << "Coefficient is " << f_const);
+
+        // set this
+        if (vectorCoeffs.size() > resultIndices_[i]){
+            Tabs tab3;
+            double* const f = vectorCoeffs[resultIndices_[i]]->start();
+        	SUNDANCE_MSG3(integrationVerb(),
+        			tab3 << "coefficients are " <<  vectorCoeffs[resultIndices_[i]]->str());
+            curveQuad->transform(JTrans, JVol, isLocalFlag, facetIndex, cellLIDs , f_const , f , A);
+        } else{
+            const double* f_null = 0;
+            curveQuad->transform(JTrans, JVol, isLocalFlag, facetIndex, cellLIDs , f_const , f_null , A);
+        }
+
     }
     else
     {

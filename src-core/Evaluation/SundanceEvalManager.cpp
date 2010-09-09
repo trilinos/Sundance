@@ -35,6 +35,7 @@
 #include "SundanceEvalVector.hpp"
 #include "SundanceCoordExpr.hpp"
 #include "SundanceCellDiameterExpr.hpp"
+#include "SundanceCurveNormExpr.hpp"
 #include "SundanceCellVectorExpr.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
 #include "SundanceMultiIndex.hpp"
@@ -80,6 +81,14 @@ void EvalManager::evalCellDiameterExpr(const CellDiameterExpr* expr,
   mediator()->evalCellDiameterExpr(expr, result);
 }
 
+void EvalManager::evalCurveNormExpr(const CurveNormExpr* expr,
+                                RCP<EvalVector>& result) const
+{
+  TEST_FOR_EXCEPTION(mediator() == 0, InternalError,
+                     "uninitialized mediator in "
+                     "EvalManager::evalCurveNormExpr");
+  mediator()->evalCurveNormExpr(expr, result);
+}
 
 void EvalManager::evalCellVectorExpr(const CellVectorExpr* expr,
                                 RCP<EvalVector>& result) const 

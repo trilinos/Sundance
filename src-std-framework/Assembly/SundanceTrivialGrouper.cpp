@@ -32,6 +32,7 @@
 #include "SundanceRefIntegral.hpp"
 #include "SundanceQuadratureIntegral.hpp"
 #include "SundanceMaximalQuadratureIntegral.hpp"
+#include "SundanceCurveQuadratureIntegral.hpp"
 #include "SundanceEquationSet.hpp"
 #include "SundanceIntegralGroup.hpp"
 #include "SundanceBasisFamily.hpp"
@@ -104,19 +105,34 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
       int resultIndex;
       if (sparsity->isConstant(i))
       {
-        integral = rcp(new RefIntegral(spatialDim, maxCellType, 
+    	if (globalCurve.isCurveValid() && globalCurve.isCurveIntegral() && isMaximal )
+    	{ // ----- curve Integral ------
+            integral = rcp(new CurveQuadratureIntegral( maxCellType, true ,
+                    quad, globalCurve , mesh , setupVerb() ) );
+    	}
+    	else
+    	{ // --- no curve integral ---
+          integral = rcp(new RefIntegral(spatialDim, maxCellType,
                 cellDim, cellType, quad , isInternalBdry, globalCurve , mesh , setupVerb()));
+    	}
         resultIndex = constCount++;
       }
       else
       {
         if (useMaxIntegral)
         {
-          integral = rcp(new MaximalQuadratureIntegral(maxCellType, 
-              quad, globalCurve , mesh ,
-              setupVerb()));
+          if (globalCurve.isCurveValid() && globalCurve.isCurveIntegral() && isMaximal )
+          { // ----- curve Integral ------
+             integral = rcp(new CurveQuadratureIntegral(maxCellType, false ,
+                     quad, globalCurve , mesh , setupVerb()));
+          }
+          else
+          { // --- no curve integral ---
+            integral = rcp(new MaximalQuadratureIntegral(maxCellType,
+              quad, globalCurve , mesh , setupVerb()));
+          }
         }
-        else
+        else // no maxCell Integral
         {
           integral = rcp(new QuadratureIntegral(spatialDim, maxCellType, 
               cellDim, cellType, quad, isInternalBdry, globalCurve , mesh ,
@@ -228,10 +244,20 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           {
             alpha = miTest.firstOrderDirection();
           }
-          integral = rcp(new RefIntegral(spatialDim, maxCellType, 
-              cellDim, cellType,
-              testBasis, alpha, 
-              miTest.order(), quad , isInternalBdry, globalCurve , mesh ,setupVerb()));
+          // test if we need to make curve Integral
+          if (globalCurve.isCurveValid() && globalCurve.isCurveIntegral() && isMaximal )
+          { // ----- curve Integral ------
+            integral = rcp(new CurveQuadratureIntegral(maxCellType, true ,
+            		 testBasis, alpha,
+            		 miTest.order(), quad, globalCurve , mesh ,setupVerb()));
+          }
+          else
+          { // --- no curve integral ---
+            integral = rcp(new RefIntegral(spatialDim, maxCellType,
+            		 cellDim, cellType,
+            		 testBasis, alpha,
+            		 miTest.order(), quad , isInternalBdry, globalCurve , mesh ,setupVerb()));
+          }
         }
         else
         {
@@ -245,16 +271,42 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           {
             beta = miUnk.firstOrderDirection();
           }
-          integral = rcp(new RefIntegral(spatialDim, maxCellType,
-              cellDim, cellType,
-              testBasis, alpha, miTest.order(),
-              unkBasis, beta, miUnk.order(), quad , isInternalBdry, globalCurve , mesh ,setupVerb()));
+          // test if we need to make curve Integral
+          if (globalCurve.isCurveValid() && globalCurve.isCurveIntegral() && isMaximal )
+          { // ----- curve Integral ------
+            integral = rcp(new CurveQuadratureIntegral(maxCellType, true ,
+            		 testBasis, alpha,
+            		 miTest.order(),
+            		 unkBasis, beta,
+            		 miUnk.order(), quad, globalCurve , mesh ,setupVerb()));
+          }
+          else // --- no curve integral ---
+          {
+            integral = rcp(new RefIntegral(spatialDim, maxCellType,
+                cellDim, cellType,
+                testBasis, alpha, miTest.order(),
+                unkBasis, beta, miUnk.order(), quad , isInternalBdry, globalCurve , mesh ,setupVerb()));
+          }
           if (transposeNeeded)
           {
-            transposedIntegral = rcp(new RefIntegral(spatialDim, maxCellType,
-                cellDim, cellType,
-                unkBasis, beta, miUnk.order(),
-                testBasis, alpha, miTest.order(), quad , isInternalBdry, globalCurve , mesh ,setupVerb()));
+              if (globalCurve.isCurveValid() && globalCurve.isCurveIntegral() && isMaximal )
+              { // ----- curve Integral ------
+            	 transposedIntegral = rcp(new CurveQuadratureIntegral(maxCellType, true ,
+                		 unkBasis, beta,
+                		 miUnk.order(),
+                		 testBasis, alpha,
+                		 miTest.order(),
+                		 quad, globalCurve , mesh ,setupVerb()));
+              }
+              else // --- no curve integral ---
+              {
+        	     transposedIntegral = rcp(new RefIntegral(spatialDim, maxCellType,
+                		cellDim, cellType,
+                		unkBasis, beta,
+                		miUnk.order(),
+                		testBasis, alpha,
+                		miTest.order(), quad , isInternalBdry, globalCurve , mesh ,setupVerb()));
+              }
           }
         }
         resultIndex = constCount++;
@@ -270,11 +322,20 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           }
           if (useMaxIntegral)
           {
-            integral = rcp(new MaximalQuadratureIntegral(maxCellType,
-                testBasis, alpha, 
-                miTest.order(), quad, globalCurve , mesh ,setupVerb()));
+              if ( globalCurve.isCurveValid() && globalCurve.isCurveIntegral() )
+              { // ----- curve Integral ------
+                integral = rcp(new CurveQuadratureIntegral(maxCellType, false ,
+                         testBasis, alpha,
+                         miTest.order(), quad, globalCurve , mesh ,setupVerb()));
+              }
+              else
+              {// --- no curve integral ---
+                integral = rcp(new MaximalQuadratureIntegral(maxCellType,
+                         testBasis, alpha,
+                         miTest.order(), quad, globalCurve , mesh ,setupVerb()));
+              }
           }
-          else
+          else // no maxCell Integral
           {
             integral = rcp(new QuadratureIntegral(spatialDim, maxCellType,
                 cellDim, cellType,
@@ -296,20 +357,41 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           }
           if (useMaxIntegral)
           {
-            integral = rcp(new MaximalQuadratureIntegral(maxCellType,
-                testBasis, alpha, 
-                miTest.order(),
-                unkBasis, beta, 
-                miUnk.order(), quad, globalCurve , mesh ,setupVerb()));
+              if ( globalCurve.isCurveValid() && globalCurve.isCurveIntegral() )
+              { // ----- curve Integral ------
+                 integral = rcp(new CurveQuadratureIntegral(maxCellType, false ,
+                         testBasis, alpha,
+                         miTest.order(),
+                         unkBasis, beta,
+                         miUnk.order(), quad, globalCurve , mesh ,setupVerb()));
+              }
+              else
+              {// --- no curve integral ---
+                 integral = rcp(new MaximalQuadratureIntegral(maxCellType,
+                         testBasis, alpha,
+                         miTest.order(),
+                         unkBasis, beta,
+                         miUnk.order(), quad, globalCurve , mesh ,setupVerb()));
+              }
             if (transposeNeeded)
             {
-              transposedIntegral = rcp(new MaximalQuadratureIntegral(maxCellType,
-                  unkBasis, beta, miUnk.order(),
-                  testBasis, alpha, miTest.order(), quad, 
-                  globalCurve , mesh ,setupVerb()));
+                if ( globalCurve.isCurveValid() && globalCurve.isCurveIntegral() )
+                { // ----- curve Integral ------
+                	transposedIntegral = rcp(new CurveQuadratureIntegral(maxCellType, false ,
+                            unkBasis, beta, miUnk.order(),
+                            testBasis, alpha, miTest.order(), quad,
+                            globalCurve , mesh ,setupVerb()));
+                }
+                else
+                { // --- no curve integral ---
+                	transposedIntegral = rcp(new MaximalQuadratureIntegral(maxCellType,
+                            unkBasis, beta, miUnk.order(),
+                            testBasis, alpha, miTest.order(), quad,
+                            globalCurve , mesh ,setupVerb()));
+                }
             }
           }
-          else
+          else // no MaxCell integral
           {
             integral = rcp(new QuadratureIntegral(spatialDim, maxCellType,
                 cellDim, cellType,

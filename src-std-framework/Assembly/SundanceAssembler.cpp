@@ -47,6 +47,7 @@
 #include "TSFLoadableVector.hpp"
 #include "TSFLoadableMatrix.hpp"
 #include "SundanceQuadratureEvalMediator.hpp"
+#include "SundanceCurveEvalMediator.hpp"
 #include "SundanceEvaluator.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_TimeMonitor.hpp"
@@ -501,9 +502,16 @@ void Assembler::init(const Mesh& mesh, const RCP<EquationSet>& eqn)
       /* Finally, create an evaluation mediator for this RQC. The evaluation
        * mediator is the object through which symbolic objects refer to
        * mesh-dependent quantities (e.g., discrete functions) during
-       * evaluation.  */
-      mediators_.append(rcp(new QuadratureEvalMediator(mesh, cellDim, 
-            quad)));
+       * evaluation.  , if we have to evaluate a curve integral then
+       * use a special mediator */
+      if ( rqc.paramCurve().isCurveIntegral() && rqc.paramCurve().isCurveValid() )
+      { // ----- curve Integral ------
+         mediators_.append(rcp(new CurveEvalMediator(mesh, rqc.paramCurve() , cellDim, quad)));
+      }
+      else
+      {
+         mediators_.append(rcp(new QuadratureEvalMediator(mesh, cellDim, quad)));
+      }
     }
     else
     {
@@ -637,8 +645,15 @@ void Assembler::init(const Mesh& mesh, const RCP<EquationSet>& eqn)
       {
         SUNDANCE_MSG2(rqcVerb, tab1 << "creating evaluation mediator for BC rqc=" 
           << rqc << std::endl << tab1 << "expr = " << expr);
-        mediators_.append(rcp(new QuadratureEvalMediator(mesh, cellDim, 
-              quad)));
+        // in case of curve integral use a special mediator
+        if ( rqc.paramCurve().isCurveIntegral() && rqc.paramCurve().isCurveValid() )
+        { // ----- curve Integral ------
+          mediators_.append(rcp(new CurveEvalMediator(mesh, rqc.paramCurve(), cellDim, quad)));
+        }
+        else
+        {
+          mediators_.append(rcp(new QuadratureEvalMediator(mesh, cellDim, quad)));
+        }
       }
       else
       {

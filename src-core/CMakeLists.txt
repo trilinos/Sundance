@@ -34,6 +34,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/UserExprs)
 
 APPEND_SET(HEADERS
   UserExprs/SundanceCellDiameterExpr.hpp
+  UserExprs/SundanceCurveNormExpr.hpp
   UserExprs/SundanceCellVectorExpr.hpp
   UserExprs/SundanceComplexExpr.hpp
   UserExprs/SundanceCoordExpr.hpp
@@ -53,6 +54,7 @@ APPEND_SET(HEADERS
 
 APPEND_SET(SOURCES
   UserExprs/SundanceCellDiameterExpr.cpp
+  UserExprs/SundanceCurveNormExpr.cpp
   UserExprs/SundanceCellVectorExpr.cpp
   UserExprs/SundanceComplexExpr.cpp
   UserExprs/SundanceCoordExpr.cpp
@@ -161,6 +163,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/Evaluation)
 APPEND_SET(HEADERS
   Evaluation/SundanceBinaryEvaluator.hpp
   Evaluation/SundanceCellDiameterEvaluator.hpp
+  Evaluation/SundanceCurveNormEvaluator.hpp
   Evaluation/SundanceCellVectorEvaluator.hpp
   Evaluation/SundanceChainRuleEvaluator.hpp
   Evaluation/SundanceChainRuleSum.hpp
@@ -189,6 +192,7 @@ APPEND_SET(HEADERS
 
 APPEND_SET(SOURCES
   Evaluation/SundanceCellDiameterEvaluator.cpp
+  Evaluation/SundanceCurveNormEvaluator.cpp
   Evaluation/SundanceCellVectorEvaluator.cpp
   Evaluation/SundanceChainRuleEvaluator.cpp
   Evaluation/SundanceChainRuleSum.cpp
@@ -357,6 +361,7 @@ APPEND_SET(HEADERS
   ParametrizedCurves/SundanceCurveBase.hpp
   ParametrizedCurves/SundanceCircle.hpp
   ParametrizedCurves/SundanceBox2D.hpp
+  ParametrizedCurves/SundanceParamCurveIntegral.hpp
   ParametrizedCurves/SundanceParametrizedCurve.hpp
   ParametrizedCurves/SundanceDummyParametrizedCurve.hpp
   )
@@ -364,6 +369,7 @@ APPEND_SET(HEADERS
 APPEND_SET(SOURCES
   ParametrizedCurves/SundanceCircle.cpp
   ParametrizedCurves/SundanceBox2D.cpp
+  ParametrizedCurves/SundanceParamCurveIntegral.cpp
   ParametrizedCurves/SundanceParametrizedCurve.cpp
   )
 

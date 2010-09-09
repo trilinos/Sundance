@@ -957,38 +957,68 @@ public:
 
     /** returns the status of the special weights if they are valid <br>
      *  These weights are usually computed for one setting of the curve (Adaptive Cell Integration)*/
-    virtual bool IsSpecialWeightValid() {return validWeights_;}
+    virtual bool IsSpecialWeightValid() const {return validWeights_;}
 
     /** specifies if the special weights are valid <br>
      *  if this is false then usually the special weights have to be recomputed */
-    virtual void setSpecialWeightValid(bool& val) { validWeights_ = val;}
+    virtual void setSpecialWeightValid(bool& val) const { validWeights_ = val;}
 
     /** removes the special weights */
-    virtual void removeSpecialWeights(int& dim, int& cellLID) {
+    virtual void removeSpecialWeights(int& dim, int& cellLID) const {
     	Array<double> nothing;
     	nothing.resize(0);
     	specialWeights_[dim].put(cellLID,nothing);
     }
 
     /** verifies if the specified cell with the given dimension has special weights */
-    virtual bool hasSpecialWeight(int& dim, int& cellLID) {
+    virtual bool hasSpecialWeight(int& dim, int& cellLID) const {
     	if (specialWeights_[dim].containsKey(cellLID))
-            return ((specialWeights_[dim].get(cellLID)).size() > 1);
+            return ((specialWeights_[dim].get(cellLID).size() > 0));
     	else
     		return false;
     }
 
     /** Sets the special weights */
-    virtual void setSpecialWeight(int& dim, int& cellLID, Array<double>& w) {
+    virtual void setSpecialWeight(int& dim, int& cellLID, Array<double>& w) const {
     	specialWeights_[dim].put(cellLID,w);
     }
 
     /** Returns the special weights */
-    virtual void getSpecialWeight(int& dim, int& cellLID, Array<double>& w) {
+    virtual void getSpecialWeight(int& dim, int& cellLID, Array<double>& w) const {
     	w = specialWeights_[dim].get(cellLID);
     }
     //@}
 
+
+    /** \name Store the intersection/quadrature points for the curve/surf integral <br>
+     *  for a curve or surf integral we need some quadrature points along the curve in one curve <br>
+     *  These */
+      //@{
+
+      /** */
+      virtual bool IsCurvePointsValid() const {return curvePoints_Are_Valid_;}
+
+      /**  */
+      virtual void setCurvePointsValid(bool& val) const { curvePoints_Are_Valid_ = val;}
+
+      /** removes the intersection points*/
+      virtual void removeCurvePoints(int maxCellLID , int curveID) const{
+      	// TODO:
+      }
+
+      /** verifies if the specified maxCell has already precalculated quadrature point for one curve */
+      virtual bool hasCurvePoints(int maxCellLID , int curveID) const;
+
+      /** Sets the points, curve derivatives and curve normals for one maxCell needed for curve/surf integral*/
+      virtual void setCurvePoints(int maxCellLID, int curveID , Array<Point>& points , Array<Point>& derivs , Array<Point>& normals) const;
+
+      /** Gets the points, curve derivatives and curve normals for one maxCell needed for curve/surf integral*/
+      virtual void getCurvePoints(int maxCellLID,  int curveID , Array<Point>& points , Array<Point>& derivs , Array<Point>& normals) const;
+
+private:
+      virtual int mapCurveID_to_Index(int curveID) const;
+public:
+      //@}
 
   /** \name Output */
   //@{
@@ -1016,12 +1046,34 @@ private:
 
   RCP<CellReordererImplemBase> reorderer_;
 
+
+
   /** flag to indicate if the weights stored are valid */
-  bool validWeights_;
+  mutable bool validWeights_;
 
   /** Object to store the special weights for integration */
-  Array < Sundance::Map< int , Array<double> > > specialWeights_;
+  mutable Array < Sundance::Map< int , Array<double> > > specialWeights_;
 
+
+
+  /** true if the curve did not moved, false if those points are not reusable*/
+  mutable bool curvePoints_Are_Valid_;
+
+  /** how many curves are participating in curve integrals*/
+  mutable int nrCurvesForIntegral_;
+
+  /** store intersection informations to calculate the curve integral*/
+  mutable Array < Sundance::Map< int , Array<Point> > > curvePoints_;
+
+  /** store directional derivative informations to calculate the curve integral*/
+  mutable Array < Sundance::Map< int , Array<Point> > > curveDerivative_;
+
+  /** store normal directional used in the curve or in the surf integral <br>
+   * in case of the surf integral it is the cross product from the integral */
+  mutable Array < Sundance::Map< int , Array<Point> > > curveNormal_;
+
+  /** map the curve ID to index in the previous arrays */
+  mutable Sundance::Map< int , int > curveID_to_ArrayIndex_;
 };
 
 

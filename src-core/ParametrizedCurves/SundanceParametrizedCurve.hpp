@@ -80,6 +80,15 @@ public:
 		return ptr()->getIntegrationParams(alphas);
 	}
 
+	/** return the integration coefficient for the inner */
+	double getAlpha1() const { return ptr()->getAlpha1(); }
+
+	/** return the integration coefficient for the outer */
+	double getAlpha2() const { return ptr()->getAlpha2(); }
+
+	/** return the dimension of the curve , in which it is defined */
+	int getCurveDim() const { return ptr()->getCurveDim(); }
+
 	/** Returns the integration parameter for the FCM method*/
 	double integrationParameter(const Point& evaluationPoint) const {
 		return ptr()->integrationParameter(evaluationPoint);
@@ -110,6 +119,10 @@ public:
 	/** Shows if the curve is a valid curve*/
 	inline bool isCurveValid() const { return ptr()->isCurveValid(); }
 
+	/** function which shows if some integral schould be calculated along the curve, <br>
+	 * True means we have to calculate a curve/surf integral */
+	inline bool isCurveIntegral() const { return ptr()->isCurveIntegral(); }
+
 	/** Static class returns the dummy class when this is needed */
 	static const ParametrizedCurve& returnDummyCurve() {return handle_; }
 
@@ -117,9 +130,12 @@ public:
 	 *  compare to another ParametrizedCurve, used for placement in STL containers*/
 	bool operator<(const ParametrizedCurve& other) const { return (myID_ < other.myID_)?true:false;}
 
+	/** return the ID of the curve */
+	int myID() const { return myID_; }
+
 private:
 
-	/** The ID to identify the ParamCurve uniqly*/
+	/** The ID to identify the ParamCurve uniquely*/
 	int myID_;
 
 	/* The dummy curve which does not do anything */

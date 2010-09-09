@@ -32,14 +32,14 @@
 #include "SundanceInstructionCachingEvaluator.hpp"
 #include "SundanceEvaluator.hpp"
 #include "SundanceCoordExpr.hpp"
+#include "SundanceCurveNormExpr.hpp"
+#include "SundanceCurveNormEvaluator.hpp"
 #include "SundanceSpatiallyConstantExpr.hpp"
 #include "SundanceSymbolicFuncElement.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
 
 using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
-using namespace Sundance;
 
 
 EvaluatorFactory::EvaluatorFactory()
@@ -74,6 +74,13 @@ Evaluator* EvaluatorFactory::commonCreate(const EvaluatableExpr* expr,
   if (df != 0)
     {
       return new DiscreteFuncElementEvaluator(df, context, topLevelDiffOrder);
+    }
+
+  const CurveNormExpr* cne
+    = dynamic_cast<const DiscreteFuncElement*>(expr);
+  if (cne != 0)
+    {
+      return new CurveNormEvaluator(cne, context, topLevelDiffOrder);
     }
 
   TEST_FOR_EXCEPTION(true, InternalError,

@@ -28,87 +28,122 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_EVALMEDIATOR_H
-#define SUNDANCE_EVALMEDIATOR_H
-
+#ifndef SUNDANCE_CURVEEVALMEDIATOR_H
+#define SUNDANCE_CURVEEVALMEDIATOR_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceEvalVector.hpp"
-#include "SundanceObjectWithVerbosity.hpp"
+#include "SundanceMap.hpp"
+#include "SundanceStdFwkEvalMediator.hpp"
+#include "SundanceQuadratureFamily.hpp"
+#include "SundanceBasisFamily.hpp"
+#include "SundanceOrderedTuple.hpp"
+#include "SundanceParametrizedCurve.hpp"
 
 namespace Sundance
 {
+using namespace Teuchos;
 
-using namespace Sundance;
-
-class CoordExpr;
-class CellDiameterExpr;
-class CurveNormExpr;
-class CellVectorExpr;
-class MultiIndex; 
-class DiscreteFuncElement;
 /**
- * Base class for evaluation mediator objects. 
- * Evaluation mediators are responsible
- * for evaluating those expressions whose
- * calculation must be delegated to the framework.
+ * 
  */
-class AbstractEvalMediator 
+class CurveEvalMediator : public StdFwkEvalMediator
 {
 public:
-  /** */
-  AbstractEvalMediator(int verb=0);
+
 
   /** */
-  virtual ~AbstractEvalMediator(){;}
+  CurveEvalMediator(const Mesh& mesh,
+	const ParametrizedCurve& paramcurve ,
+    int cellDim,
+    const QuadratureFamily& quad);
+
 
   /** */
-  void setVerbosity(int verb, int dfVerb) const 
-    {verb_ = verb; dfVerb_=dfVerb;}
+  virtual ~CurveEvalMediator(){;}
 
-  /** */
-  int verb() const {return verb_;}
-
-  /** */
-  int dfVerb() const {return dfVerb_;}
-
-          
-
+      
   /** Evaluate the given coordinate expression, putting
    * its numerical values in the given EvalVector. */
   virtual void evalCoordExpr(const CoordExpr* expr,
-    RCP<EvalVector>& vec) const = 0 ;
-
+    RCP<EvalVector>& vec) const ;
+      
   /** Evaluate the given discrete function, putting
    * its numerical values in the given EvalVector. */
   virtual void evalDiscreteFuncElement(const DiscreteFuncElement* expr,
     const Array<MultiIndex>& mi,
-    Array<RCP<EvalVector> >& vec) const = 0 ;
+    Array<RCP<EvalVector> >& vec) const ;
 
   /** Evaluate the given cell diameter expression, putting
    * its numerical values in the given EvalVector. */
   virtual void evalCellDiameterExpr(const CellDiameterExpr* expr,
-    RCP<EvalVector>& vec) const = 0 ;
+    RCP<EvalVector>& vec) const ;
 
   /** Evaluates one component of the normal vector to a given parameterized curve
    * i.e. x,y or z component of that vector in 3D <br>
    * , this method is only in the CurveEvalMediator class implemented */
   virtual void evalCurveNormExpr(const CurveNormExpr* expr,
-    RCP<EvalVector>& vec) const
-    {
-	  TEST_FOR_EXCEPTION( true , RuntimeError,
-		" EvalMediator::evalCurveNormExpr , not possible with the current EvalMediator (only with CurveEvalMediator)");
-    }
+    RCP<EvalVector>& vec) const ;
 
   /** Evaluate the given cell vector expression, putting
    * its numerical values in the given EvalVector. */
   virtual void evalCellVectorExpr(const CellVectorExpr* expr,
-    RCP<EvalVector>& vec) const = 0 ;
+    RCP<EvalVector>& vec) const ;
+            
+  /** */
+  virtual void setCellType(const CellType& cellType,
+    const CellType& maxCellType,
+    bool isInternalBdry) ;
+
+  /** */
+  virtual void print(std::ostream& os) const ;
+
+  /** */
+  RCP<Array<Array<Array<double> > > > getFacetRefBasisVals(const BasisFamily& basis, int diffOrder) const ;
+
+  /** */
+  int numQuadPts(const CellType& cellType) const ;
+
+  static double& totalFlops() {static double rtn = 0; return rtn;}
+
+      
+
+  static void addFlops(const double& flops) {totalFlops() += flops;}
+
+  /**
+   * Return the number of different cases for which reference
+   * basis functions must be evaluated. If we're on maximal cells,
+   * this will be one. If we're on lower-dimensional cells, this will
+   * be equal to the number of cellDim-dimensional facets of the maximal
+   * cells.
+   */
+  int numEvaluationCases() const {return numEvaluationCases_;}
+
+
+  /** */
+  static Time& coordEvaluationTimer() ;
+
 private:
-  mutable int verb_;
-  mutable int dfVerb_;
+
+  /** */
+  int numEvaluationCases_;
+
+  /** */
+  QuadratureFamily quad_;
+
+  /** */
+  int numQuadPtsForMaxCell_;
+
+  /** */
+  CellType maxCellType_;
+
+  /** */
+  CellType curveCellType_;
+
+  /** */
+  ParametrizedCurve paramcurve_;
+      
 };
 }
 
 
-#endif
+#endif /* SUNDANCE_CURVEEVALMEDIATOR_H */

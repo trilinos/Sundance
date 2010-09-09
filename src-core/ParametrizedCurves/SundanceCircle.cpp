@@ -36,7 +36,7 @@ using namespace Sundance;
 
 Circle::Circle(double centerx, double centery, double radius, double a1,
 		double a2) :
-	CurveBase(2, a1, a2), _centerx(centerx), _centery(centery), _radius(radius)
+	CurveBase(1, a1, a2), _centerx(centerx), _centery(centery), _radius(radius)
 {
 }
 

@@ -35,7 +35,7 @@
 using namespace Sundance;
 
 Box2D::Box2D(double px, double py, double ox, double oy, double a1, double a2) :
-	CurveBase(2, a1, a2), px_(px), py_(px), ox_(ox), oy_(oy)
+	CurveBase(1, a1, a2), px_(px), py_(px), ox_(ox), oy_(oy)
 {
 }
 

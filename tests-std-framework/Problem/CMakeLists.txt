@@ -39,6 +39,8 @@ SET(SerialTests
   StokesPeano2D 
   SecondOrderFloquet 
   MixedTest
+  NavStok_Chanel_stat_HN_Nitsch
+  Poisson2D_HN_Nitsch
 )
 
 

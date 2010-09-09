@@ -427,25 +427,53 @@ public:
    //@{
   /** returns the status of the special weights if they are valid <br>
     *  These weights are usually computed for one setting of the curve (Adaptive Cell Integration)*/
-  bool IsSpecialWeightValid() {return ptr()->IsSpecialWeightValid();}
+  bool IsSpecialWeightValid() const {return ptr()->IsSpecialWeightValid();}
 
   /** specifies if the special weights are valid <br>
    *  if this is false then usually the special weights have to be recomputed */
-  void setSpecialWeightValid(bool& val) { ptr()->setSpecialWeightValid(val);}
+  void setSpecialWeightValid(bool& val) const { ptr()->setSpecialWeightValid(val);}
 
   /** removes the special weights */
-  void removeSpecialWeights(int& dim, int& cellLID) {ptr()->removeSpecialWeights( dim, cellLID);}
+  void removeSpecialWeights(int& dim, int& cellLID) const {ptr()->removeSpecialWeights( dim, cellLID);}
 
   /** verifies if the specified cell with the given dimension has special weights */
-  bool hasSpecialWeight(int& dim, int& cellLID) {return ptr()->hasSpecialWeight( dim, cellLID); }
+  bool hasSpecialWeight(int& dim, int& cellLID) const {return ptr()->hasSpecialWeight( dim, cellLID); }
 
   /** Sets the special weights */
-  void setSpecialWeight(int& dim, int& cellLID, Array<double>& w) {ptr()->setSpecialWeight(dim, cellLID, w);}
+  void setSpecialWeight(int& dim, int& cellLID, Array<double>& w) const {ptr()->setSpecialWeight(dim, cellLID, w);}
 
   /** Returns the special weights */
-  void getSpecialWeight(int& dim, int& cellLID, Array<double>& w) {ptr()->getSpecialWeight(dim, cellLID, w);}
+  void getSpecialWeight(int& dim, int& cellLID, Array<double>& w) const {ptr()->getSpecialWeight(dim, cellLID, w);}
    //@}
 
+
+
+  /** \name Store the intersection/quadrature points for the curve/surf integral <br>
+   *  for a curve or surf integral we need some quadrature points along the curve in one curve <br>
+   *  These */
+    //@{
+
+  /** */
+  virtual bool IsCurvePointsValid() const {return ptr()->IsCurvePointsValid();}
+
+  /**  */
+  virtual void setCurvePointsValid(bool& val)  const {ptr()->setCurvePointsValid(val); }
+
+  /** removes the curve intersection points */
+  virtual void removeCurvePoints(int maxCellLID , int curveID)  const { ptr()->removeCurvePoints(maxCellLID , curveID); }
+
+  /** verifies if the specified maxCell has already precalculated quadrature point for one curve */
+  virtual bool hasCurvePoints(int maxCellLID , int curveID) const { return ptr()->hasCurvePoints( maxCellLID , curveID); }
+
+  /** Sets the points, curve derivatives and curve normals for one maxCell needed for curve/surf integral*/
+  virtual void setCurvePoints(int maxCellLID, int curveID , Array<Point>& points , Array<Point>& derivs , Array<Point>& normals) const
+		{ptr()->setCurvePoints( maxCellLID, curveID , points , derivs , normals); }
+
+  /** Gets the points, curve derivatives and curve normals for one maxCell needed for curve/surf integral*/
+  virtual void getCurvePoints(int maxCellLID,  int curveID , Array<Point>& points , Array<Point>& derivs , Array<Point>& normals) const
+		{ptr()->getCurvePoints( maxCellLID,  curveID ,  points , derivs , normals); }
+
+  //@}
 
 private:
   /** */
