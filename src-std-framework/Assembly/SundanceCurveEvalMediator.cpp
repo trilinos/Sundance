@@ -50,7 +50,7 @@ using namespace Sundance;
 using namespace Teuchos;
 using namespace TSFExtended;
 
-TEUCHOS_TIMER(coordEvalTimer, "Quad mediator: coord eval");
+TEUCHOS_TIMER(coordEvalTimer, "Quad mediator: coord eval")
 
 CurveEvalMediator::CurveEvalMediator(
 		const Mesh& mesh, 	const ParametrizedCurve& paramcurve ,
