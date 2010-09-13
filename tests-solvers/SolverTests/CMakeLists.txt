@@ -11,6 +11,7 @@ SET(MPITests
 
 SET(SerialOnlyTests 
              BelosPoissonTest 
+             EigenTest 
              UserDefPrecondTest)
 
 
