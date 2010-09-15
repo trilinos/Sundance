@@ -98,7 +98,7 @@ bool runit(const VectorType<double>& vecType,
   double err = (x-ans).norm2();
   Out::root() << "error norm = " << err << std::endl;
 
-  double tol = 1.0e-10;
+  double tol = 1.0e-7;
     
   if (err <= tol)
   {

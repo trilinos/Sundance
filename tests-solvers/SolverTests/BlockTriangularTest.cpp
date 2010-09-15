@@ -132,7 +132,7 @@ int main(int argc, char *argv[])
       double err = (bigSoln - bigX).norm2();
       std::cerr << "error norm = " << err << std::endl;
 
-      double tol = 1.0e-10;
+      double tol = 1.0e-8;
       if (err > tol)
         {
           std::cerr << "Poisson solve test FAILED" << std::endl;
