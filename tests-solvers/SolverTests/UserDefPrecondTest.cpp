@@ -85,9 +85,7 @@ int main(int argc, char *argv[])
     /* create the range space  */
     int nLocalRows = solverParams.get<int>("nLocal");
 
-    bool symBC = solverParams.get<bool>("Symmetrize BCs");
-
-    MatrixLaplacian1D builder(nLocalRows, type, symBC);
+    MatrixLaplacian1D builder(nLocalRows, type);
 
     LinearOperator<double> A = builder.getOp();
 

@@ -89,20 +89,13 @@ int main(int argc, char *argv[])
     ParameterList solverParams = reader.getParameters().sublist("Eigensolver");
 
     /* create the range space  */
-    int nLocalRows = 10;
-    bool symBC = true;
-
-    MatrixLaplacian1D builder(nLocalRows, type, symBC);
+    int nLocalRows = 40;
+    MatrixLaplacian1D builder(nLocalRows, type);
     typedef Anasazi::MultiVec<double> MV;
     typedef Anasazi::Operator<double> OP;
 
     LinearOperator<double> A = builder.getOp();
     LinearOperator<double> M;
-
-    Vector<double> d = A.domain().createMember();
-    for (int i=0; i<nLocalRows; i++) d.setElement(i, i+1);
-    LinearOperator<double> D = diagonalOperator(d);
-    LinearOperator<double> I = identityOperator(d.space());
 
     Teuchos::RCP<Anasazi::OutputManager<double> > MyOM = Teuchos::rcp( new Anasazi::BasicOutputManager<double>() );
     MyOM->setVerbosity(Anasazi::Warnings);
@@ -113,7 +106,7 @@ int main(int argc, char *argv[])
       = rcp_const_cast<Array<Vector<double> > >(initMV);
     for (int i=0; i<nv; i++) 
     {
-      (*nc)[i] = D.domain().createMember();
+      (*nc)[i] = A.domain().createMember();
       randomize((*nc)[i]);
     }
 
@@ -127,17 +120,26 @@ int main(int argc, char *argv[])
     if (opPass) Out::os() << "******* OP unit test PASSED ******* " << endl;
     else Out::os() << "******* OP unit test FAILED ******* " << endl;
 #endif
-
     Eigensolver<double> solver = new AnasaziEigensolver<double>(solverParams);
     
     Array<Vector<double> > ev;
     Array<std::complex<double> > ew;
     
-    solver.solve(D, M, ev, ew);
+    solver.solve(A, M, ev, ew);
 
     Out::os() << "Eigenvalues are " << ew << endl;
 
-    if (true)
+    const double pi = 4.0*atan(1.0);
+    double err = 0.0;
+    for (int i=0; i<ev.size(); i++)
+    {
+      double x = (i+1)*pi;
+      err += ::fabs(ew[i].real()-x*x)/x/x;
+    }
+    err = err / ew.size();
+    
+    Out::os() << "error = " << err << endl;
+    if (err < 0.01)
     {
       cout << "Belos poisson solve test PASSED" << std::endl;
       return 0;

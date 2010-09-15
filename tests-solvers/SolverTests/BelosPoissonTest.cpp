@@ -78,9 +78,8 @@ int main(int argc, char *argv[])
 
     /* create the range space  */
     int nLocalRows = 20;
-    bool symBC = false;
 
-    MatrixLaplacian1D builder(nLocalRows, type, symBC);
+    MatrixLaplacian1D builder(nLocalRows, type);
 
     LinearOperator<double> A = builder.getOp();
 

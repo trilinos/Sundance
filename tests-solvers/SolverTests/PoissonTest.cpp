@@ -65,7 +65,7 @@ bool runit(const VectorType<double>& vecType,
   /* create the range space  */
   int nLocalRows = 10;
   
-  MatrixLaplacian1D builder(nLocalRows, vecType, false);
+  MatrixLaplacian1D builder(nLocalRows, vecType);
 
   LinearOperator<double> A = builder.getOp();
 
