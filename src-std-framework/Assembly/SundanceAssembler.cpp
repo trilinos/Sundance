@@ -1268,6 +1268,11 @@ void Assembler::assemblyLoop(const ComputationType& compType,
        * a maximal cofacet, I need to know my index in the array of 
        * that cofacet's facets. */
       const Array<int>& facetIndices = mediators_[r]->facetIndices();
+      if (facetIndices.size() > 0)
+	{
+	  Tabs tab2;
+	  SUNDANCE_MSG2(rqcVerb, tab2 << "facet indices are " << facetIndices);
+	}
 
       /* Reset the assembly kernel for the current workset. What happens at this
        * step depends on the specific kernel being used. The kernel might, for instance,

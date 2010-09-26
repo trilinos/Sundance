@@ -86,7 +86,7 @@ int main(int argc, char** argv)
 		{
       int depth = 0;
       bool useCCode = false;
-      Sundance::ElementIntegral::alwaysUseCofacets() = false;
+      Sundance::ElementIntegral::alwaysUseCofacets() = true;
       Sundance::clp().setOption("depth", &depth, "expression depth");
       Sundance::clp().setOption("C", "symb", &useCCode, "Code type (C or symbolic)");
       Sundance::init(&argc, &argv);

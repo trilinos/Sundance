@@ -275,32 +275,35 @@ void QuadratureFamily::getTetFacetQuad(int facetDim,
           double s = facetPts[i][0];
           double t = facetPts[i][1];
           double x,y,z;
-          if (facetIndex==0)
+          if (facetIndex==0) 
             {
-              x = 1.0-s;
-              y = 1.0-s-t;
+              x = s;
+              y = 0.0;
               z = t;
             }
-          else if (facetIndex==1)
+          else if (facetIndex==1) 
             {
-              x = 1.0-s;
-              y = 0.0;
+              x = 1.0-s-t;
+              y = s;
               z = t;
             }
           else if (facetIndex==2) 
             {
               x = 0.0;
-              y = 1.0-s;
-              z = t;
+              y = t;
+              z = s;
             }
           else
             {
               x = s;
-              y = t;
+              y = 1.0-s-t;
               z = 0.0;
             }
           quadPoints[i] = Point(x, y, z);
-          quadWeights[i] = facetWts[i];
+	  if (facetIndex != 1)
+	    quadWeights[i] = facetWts[i];
+	  else 
+	    quadWeights[i] = facetWts[i] * sqrt(3.0);
 
         }
     }
