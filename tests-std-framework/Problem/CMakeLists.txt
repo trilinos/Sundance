@@ -69,7 +69,7 @@ SET(MPITests
              SpectralSqrt 
              SteadyBurgers1D
              NitschePoisson2D 
-             HelmholtzEigen2D
+             #HelmholtzEigen2D
              MixedTest_HN
              NavStok_Chanel_stat_HN
              Poisson3DTest_HN_Q1Q1
