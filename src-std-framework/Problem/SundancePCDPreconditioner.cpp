@@ -5,10 +5,15 @@
 #include "TSFSimpleIdentityOpDecl.hpp"
 #include "TSFSimpleIdentityOpImpl.hpp"
 #include "TSFSimpleComposedOpDecl.hpp"
+#include "TSFSimpleComposedOpImpl.hpp"
 #include "TSFSimpleBlockOpDecl.hpp"
+#include "TSFSimpleBlockOpImpl.hpp"
 #include "TSFSimpleScaledOpDecl.hpp"
+#include "TSFSimpleScaledOpImpl.hpp"
 #include "TSFGenericRightPreconditioner.hpp"
 #include "TSFLinearCombinationImpl.hpp"
+#include "TSFInverseOperatorDecl.hpp"
+#include "TSFInverseOperatorImpl.hpp"
 
 using namespace TSFExtended;
 using namespace Sundance;
