@@ -3,6 +3,7 @@
 #include "TSFLinearSolverBuilder.hpp"
 #include "TSFLinearSolverImpl.hpp"
 #include "TSFSimpleIdentityOpDecl.hpp"
+#include "TSFSimpleIdentityOpImpl.hpp"
 #include "TSFSimpleComposedOpDecl.hpp"
 #include "TSFSimpleBlockOpDecl.hpp"
 #include "TSFSimpleScaledOpDecl.hpp"
