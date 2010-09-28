@@ -3,6 +3,7 @@ INCLUDE(PackageMacros)
 INCLUDE(AddOptionAndDefine)
 
 # dummy change to test secondary git repo
+# another dummy change
 
 #
 # A) Define the package
