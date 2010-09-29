@@ -32,7 +32,7 @@
 using Sundance::List;
 
 // This test depends on Exodus, so skip it if Expdus hasn't been enabled. 
-#if defined(HAVE_SUNDANCE_EXODUS)
+#if defined(HAVE_SUNDANCE_EXODUS) && defined(HAVE_TRILINOS_DATA)
 
 /* 
  * </Ignore> 

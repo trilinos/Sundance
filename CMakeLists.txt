@@ -15,6 +15,9 @@ PACKAGE(Sundance  DISABLE_CIRCULAR_REF_DETECTION_FAILURE)
 # B) Set up package-specific options
 #
 
+IF (NOT (${Trilinos_DATA_DIR} STREQUAL "NOTFOUND"))
+   SET( HAVE_TRILINOS_DATA ON)
+ENDIF()
 
 
 ADD_OPTION_AND_DEFINE(${PACKAGE_NAME}_ENABLE_Python
@@ -39,11 +42,14 @@ ADD_OPTION_AND_DEFINE(${PACKAGE_NAME}_ENABLE_BROKEN_CODE
   "Enable broken code. For expert developer use only."
   OFF )
 
-
+IF(TPL_ENABLE_Netcdf)
 ADD_OPTION_AND_DEFINE(Sundance_ENABLE_Trios
   HAVE_SUNDANCE_EXODUS
   "Enable ExodusII reader in Sundance (via Trios package)."
   ON )
+ENDIF()
+
+PRINT_VAR(TPL_ENABLE_Netcdf)
 
 ADD_OPTION_AND_DEFINE(Sundance_ENABLE_EXTERNAL_CHACO
   HAVE_SUNDANCE_CHACO

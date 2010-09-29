@@ -21,6 +21,9 @@
 /* define if we want to use Stokhos */
 #cmakedefine HAVE_SUNDANCE_STOKHOS
 
+/* define if we have Trilinos data */
+#cmakedefine HAVE_TRILINOS_DATA
+
 /* define if we have enabled broken code */
 #cmakedefine HAVE_SUNDANCE_BROKEN_CODE
 
