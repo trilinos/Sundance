@@ -67,41 +67,7 @@ incomplet, inackurate, and is
 very much a work in progress trying to keep up with 
 a rapidly-evolving project.</b>
 
-<H2> PySundance </H2>
 
-Python wrappers for most Sundance capabilities are now available. These
-greatly simplify simulator development. See the \ref installation_page
-page for information on how to set up PySundance.
-
-<H2> Getting Started </H2>
-<ul>
-<li> \ref downloads_page
-<li> \ref licensing_page 
-<li> \ref installation_page instructions. Because Sundance depends 
-on having certain
-other packages installed, simply doing <tt>"configure; make"</tt> won't work.
-Please read the \ref installation_page page for information on what
-software must be installed first, and on how to choose <tt>configure</tt>
-options for Sundance.
-<li> <A HREF="PythonBuilds.html">
-Prebuilt shared libraries for PySundance
-</A>
-are available for some platforms.
-<li> There is a short <b><A HREF="Tutorial.pdf"> tutorial </A></b>
-on setting up linear and nonlinear PDE simulations.
-<li> \ref contrib_page
-<li> \ref DevelopersGuidePage
-</ul>
-
-<H2> User's Guide </H2>
-
-An online \ref users_guide is available.
-
-<H2> Sandia Software </H2>
-
-Other software for computational mathematics 
-is available at the <A HREF="http://software.sandia.gov/">
-Sandia math software server. </A>
 
 <H2> People </H2>
 
