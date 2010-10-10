@@ -55,27 +55,16 @@ int main(int argc, char** argv)
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
 
-      /* Create a mesh. It will be of type BasisSimplicialMesh, and will
-       * be built using a PartitionedRectangleMesher. */
-      int nx = 4;
-      int ny = 2;
+      /* Create a mesh */
       MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx, np,
-                                                         0.0, 1.0, ny, 1,
-                                                         meshType);
+      MeshSource mesher 
+        = new ExodusMeshReader("cube-0.1", meshType);
       Mesh mesh = mesher.getMesh();
 
 
       /* Create a cell filter that will identify the maximal cells
        * in the interior of the domain */
       CellFilter interior = new MaximalCellFilter();
-      CellFilter edges = new DimensionalCellFilter(1);
-
-      CellFilter left = edges.subset(new LeftPointTest());
-      CellFilter right = edges.subset(new RightPointTest());
-      CellFilter top = edges.subset(new TopPointTest());
-      CellFilter bottom = edges.subset(new BottomPointTest());
-
       
       /* Create unknown and test functions, discretized using first-order
        * Lagrange interpolants */
@@ -87,14 +76,16 @@ int main(int argc, char** argv)
       /* Create coordinate functions */
       Expr x = new CoordExpr(0);
       Expr y = new CoordExpr(1);
+      Expr z = new CoordExpr(2);
 
       /* We need a quadrature rule for doing the integrations */
       QuadratureFamily quad6 = new GaussianQuadrature(6);
 
       /* Define the weak form */
-      Expr alpha = sqrt(1.0);
-      Expr z = x + alpha*y;
-      Expr exactSoln = pow(z, p);
+      Expr alpha = sqrt(2.0);
+      Expr beta = sqrt(3.0);
+      Expr w = x + alpha*y + beta*z;
+      Expr exactSoln = pow(w, p);
       Expr eqn = Integral(interior, (v*(u - exactSoln)), quad6);
 
       /* Define the Dirichlet BC */
@@ -104,11 +95,7 @@ int main(int argc, char** argv)
       LinearProblem prob(mesh, eqn, bc, v, u, vecType);
 
 
-#ifdef HAVE_CONFIG_H
-      ParameterXMLFileReader reader(searchForFile("SolverParameters/aztec.xml"));
-#else
-      ParameterXMLFileReader reader("aztec.xml");
-#endif
+      ParameterXMLFileReader reader("amesos.xml");
       ParameterList solverParams = reader.getParameters();
 
       LinearSolver<double> solver 

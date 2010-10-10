@@ -500,7 +500,8 @@ void TriangleMeshReader::readSides(Mesh& mesh) const
                              "element GID " << elemGID << " not found");
           int elemLID = mesh.mapGIDToLID(elemDim, elemGID);
           int o=0; // dummy orientation variable; not needed here
-          int sideLID = mesh.facetLID(elemDim, elemLID, sideDim, elemFacet, o);
+          int sideLID = mesh.facetLID(elemDim, elemLID, sideDim, 
+            elemFacet, o);
           
           int sideLabel = atoi(tokens[3]);
 

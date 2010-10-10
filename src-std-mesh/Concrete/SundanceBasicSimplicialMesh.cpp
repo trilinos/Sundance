@@ -41,12 +41,11 @@
 #include "SundanceObjectWithVerbosity.hpp"
 #include "SundanceCollectiveExceptionCheck.hpp"
 
+#include <algorithm>
 #include <unistd.h>
 
 using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
-using namespace Sundance;
 
 using std::endl;
 
@@ -57,7 +56,12 @@ static Time& batchedFacetGrabTimer()
   return *rtn;
 }
 
-
+Array<int> sort(const Array<int>& in)
+{
+  Array<int> rtn = in;
+  std::sort(rtn.begin(), rtn.end());
+  return rtn;
+}
 
 
 static Time& getJacobianTimer() 
@@ -681,11 +685,11 @@ void BasicSimplicialMesh::getFacetLIDs(int cellDim,
       for (int c=0; c<cellLID.size(); c++)
       {
         const int* fPtr = &(elemEdges_.value(cellLID[c], 0));
-        const int* fsPtr = &(elemEdgeSigns_.value(cellLID[c], 0));
+//        const int* fsPtr = &(elemEdgeSigns_.value(cellLID[c], 0));
         for (int f=0; f<nf; f++, ptr++)
         {
           facetLID[ptr] = fPtr[f];
-          facetSign[ptr] = fsPtr[f];
+          facetSign[ptr] = 1;//fsPtr[f];
         }
       }
     }
@@ -709,11 +713,11 @@ void BasicSimplicialMesh::getFacetLIDs(int cellDim,
     for (int c=0; c<cellLID.size(); c++)
     {
       const int* fPtr = &(elemFaces_.value(cellLID[c], 0));
-      const int* fsPtr = &(elemFaceRotations_.value(cellLID[c], 0));
+//      const int* fsPtr = &(elemFaceRotations_.value(cellLID[c], 0));
       for (int f=0; f<nf; f++, ptr++)
       {
         facetLID[ptr] = fPtr[f];
-        facetSign[ptr] = fsPtr[f];
+        facetSign[ptr] = 1;//fsPtr[f];
       }
     }
   }
@@ -736,7 +740,7 @@ int BasicSimplicialMesh::facetLID(int cellDim, int cellLID,
   {
     if (cellDim==spatialDim())
     {
-      facetSign = elemEdgeSigns_.value(cellLID, facetIndex);
+      facetSign = 1;//elemEdgeSigns_.value(cellLID, facetIndex);
       return elemEdges_.value(cellLID, facetIndex);
     }
     else
@@ -747,7 +751,7 @@ int BasicSimplicialMesh::facetLID(int cellDim, int cellLID,
   }
   else
   {
-    facetSign = elemFaceRotations_.value(cellLID, facetIndex);
+    facetSign = 1;//elemFaceRotations_.value(cellLID, facetIndex);
     return elemFaces_.value(cellLID, facetIndex);
   }
 }
@@ -990,6 +994,8 @@ int BasicSimplicialMesh::addElement(int globalIndex,
   SUNDANCE_VERB_HIGH("p=" << comm().getRank() << "adding element " << globalIndex 
     << " with vertices:" << vertGID);
 
+  Array<int> sortedVertGID = sort(vertGID);
+
   /* 
    * do basic administrative steps for the new element: 
    * set LID, label, and procID; update element count. 
@@ -1016,7 +1022,7 @@ int BasicSimplicialMesh::addElement(int globalIndex,
   vertLID.resize(vertGID.size());
   for (int i=0; i<vertGID.size(); i++) 
   {
-    vertLID[i] = GIDToLIDMap_[0].get(vertGID[i]);
+    vertLID[i] = GIDToLIDMap_[0].get(sortedVertGID[i]);
   }
   
   /* 
@@ -1042,9 +1048,9 @@ int BasicSimplicialMesh::addElement(int globalIndex,
     faces.resize(0);
 
     /* add the edges and define the relative orientations of the edges */
-    edges[0] = addEdge(vertLID[0], vertLID[1], lid, globalIndex, 0);
-    edges[1] = addEdge(vertLID[1], vertLID[2], lid, globalIndex, 1);
-    edges[2] = addEdge(vertLID[2], vertLID[0], lid, globalIndex, 2);
+    edges[0] = addEdge(vertLID[1], vertLID[2], lid, globalIndex, 0);
+    edges[1] = addEdge(vertLID[0], vertLID[2], lid, globalIndex, 1);
+    edges[2] = addEdge(vertLID[0], vertLID[1], lid, globalIndex, 2);
 
     /* register the new element as a cofacet of its vertices. */
     vertCofacets_[vertLID[0]].append(lid);
@@ -1057,15 +1063,14 @@ int BasicSimplicialMesh::addElement(int globalIndex,
     /* In 3D, we need to define edges and faces for the new element. */
     edges.resize(6);
     faces.resize(4);
-    faceRotations.resize(4);
 
     /* add the edges and define the relative orientations of the edges */
-    edges[0] = addEdge(vertLID[0], vertLID[1], lid, globalIndex,  0);
-    edges[1] = addEdge(vertLID[1], vertLID[2], lid, globalIndex,  1);
-    edges[2] = addEdge(vertLID[2], vertLID[0], lid, globalIndex,  2);
+    edges[0] = addEdge(vertLID[2], vertLID[3], lid, globalIndex,  0);
+    edges[1] = addEdge(vertLID[1], vertLID[3], lid, globalIndex,  1);
+    edges[2] = addEdge(vertLID[1], vertLID[2], lid, globalIndex,  2);
     edges[3] = addEdge(vertLID[0], vertLID[3], lid, globalIndex,  3);
-    edges[4] = addEdge(vertLID[1], vertLID[3], lid, globalIndex,  4);
-    edges[5] = addEdge(vertLID[2], vertLID[3], lid, globalIndex,  5);
+    edges[4] = addEdge(vertLID[0], vertLID[2], lid, globalIndex,  4);
+    edges[5] = addEdge(vertLID[0], vertLID[1], lid, globalIndex,  5);
 
     /* register the new element as a cofacet of its vertices. */
     vertCofacets_[vertLID[0]].append(lid);
@@ -1073,23 +1078,22 @@ int BasicSimplicialMesh::addElement(int globalIndex,
     vertCofacets_[vertLID[2]].append(lid);
     vertCofacets_[vertLID[3]].append(lid);
 
-    /* add the faces and define the relative orientations of the faces */
-    faces[0] = addFace(vertLID[0], vertLID[1], vertLID[3], 
-      edges[0], edges[4], edges[3], lid, globalIndex, 
-      faceRotations[0]);
+    /* add the faces */
+    faces[0] = addFace(tuple(vertLID[1], vertLID[2], vertLID[3]), 
+      tuple(sortedVertGID[1], sortedVertGID[2], sortedVertGID[3]), 
+      tuple(edges[2], edges[0], edges[1]), lid, globalIndex);
 
+    faces[1] = addFace(tuple(vertLID[0], vertLID[2], vertLID[3]), 
+      tuple(sortedVertGID[0], sortedVertGID[2], sortedVertGID[3]), 
+      tuple(edges[3], edges[4], edges[0]), lid, globalIndex);
 
-    faces[1] = addFace(vertLID[1], vertLID[2], vertLID[3], 
-      edges[1], edges[5], edges[4], lid, globalIndex, 
-      faceRotations[1]);
+    faces[2] = addFace(tuple(vertLID[0], vertLID[1], vertLID[3]), 
+      tuple(sortedVertGID[0], sortedVertGID[1], sortedVertGID[3]), 
+      tuple(edges[5], edges[1], edges[3]), lid, globalIndex);
 
-    faces[2] = addFace(vertLID[0], vertLID[3], vertLID[2], 
-      edges[3], edges[5], edges[2], lid, globalIndex, 
-      faceRotations[2]);
-
-    faces[3] = addFace(vertLID[2], vertLID[1], vertLID[0], 
-      edges[1], edges[0], edges[2], lid, globalIndex, 
-      faceRotations[3]);
+    faces[3] = addFace(tuple(vertLID[0], vertLID[1], vertLID[2]), 
+      tuple(sortedVertGID[0], sortedVertGID[1], sortedVertGID[2]), 
+      tuple(edges[5], edges[2], edges[4]), lid, globalIndex);
   }
 
   elemVerts_.append(vertLID);
@@ -1108,30 +1112,15 @@ int BasicSimplicialMesh::addElement(int globalIndex,
   return lid;
 }
 
-int BasicSimplicialMesh::addFace(int v1, int v2, int v3, 
-  int e1, int e2, int e3,
+int BasicSimplicialMesh::addFace(
+  const Array<int>& vertLID,
+  const Array<int>& vertGID,
+  const Array<int>& edgeLID,
   int elemLID,
-  int elemGID,
-  int& rotation)
+  int elemGID)
 {
-  /* create static data for workspace arrays and pointers that will be
-   * used repeatedly */
-  static Array<int> sortedVertGIDs(3);
-  static Array<int> reorderedVertLIDs(3);
-  static Array<int> reorderedEdgeLIDs(3);
-  //  static Array<int> edgeSigns(3);
-  static int* sortedGIDs = &(sortedVertGIDs[0]);
-  static int* reorderedLIDs = &(reorderedVertLIDs[0]);
-  static int* reorderedEdges = &(reorderedEdgeLIDs[0]);
-
-  //static int* edgeSigns = &(edgeSigns[0]);
-
-  /* First we check whether the face already exists, and
-   * along the way determine the orientation of the new element's 
-   * face relative to the absolute orientation of the face. */
-  int lid = checkForExistingFace(v1, v2, v3, e1, e2, e3,
-    sortedGIDs, reorderedLIDs, reorderedEdges,
-    rotation);
+  /* First we check whether the face already exists */
+  int lid = lookupFace(vertGID);
 
   if (lid >= 0) /* if the face already exists, we're done */
   {
@@ -1144,19 +1133,19 @@ int BasicSimplicialMesh::addFace(int v1, int v2, int v3,
       
     /* record the new face's vertex sets (both GID and LID, ordered by GID)
      * and its edges (reordered to the the sorted-GID orientation) */
-    faceVertGIDs_.append(sortedGIDs, 3);
-    faceVertLIDs_.append(reorderedLIDs, 3);
-    faceEdges_.append(reorderedEdges, 3);
+    faceVertGIDs_.append(&(vertGID[0]), 3);
+    faceVertLIDs_.append(&(vertLID[0]), 3);
+    faceEdges_.append(&(edgeLID[0]), 3);
 
     SUNDANCE_VERB_EXTREME("p=" << comm().getRank() << " adding face "
-      << cellStr(3, sortedGIDs));
+      << vertGID);
 
 
     /* If we own all vertices, we own the face. 
      * Otherwise, mark it for later assignment of ownership */
-    int vert1Owner = ownerProcID_[0][v1];
-    int vert2Owner = ownerProcID_[0][v2];
-    int vert3Owner = ownerProcID_[0][v3];
+    int vert1Owner = ownerProcID_[0][vertLID[0]];
+    int vert2Owner = ownerProcID_[0][vertLID[1]];
+    int vert3Owner = ownerProcID_[0][vertLID[2]];
     int myRank = comm().getRank();
     if (vert1Owner==myRank && vert2Owner==myRank && vert3Owner==myRank) 
     {
@@ -1188,121 +1177,19 @@ int BasicSimplicialMesh::addFace(int v1, int v2, int v3,
     numCells_[spatialDim()-1]++;
 
     /* Register the face as a cofacet of its edges */
-    edgeFaces_[e1].append(lid);
-    edgeFaces_[e2].append(lid);
-    edgeFaces_[e3].append(lid);
+    edgeFaces_[edgeLID[0]].append(lid);
+    edgeFaces_[edgeLID[1]].append(lid);
+    edgeFaces_[edgeLID[2]].append(lid);
 
     /* Register the face as a cofacet of its vertices */
-    vertFaces_[v1].append(lid);
-    vertFaces_[v2].append(lid);
-    vertFaces_[v3].append(lid);
+    vertFaces_[vertLID[0]].append(lid);
+    vertFaces_[vertLID[1]].append(lid);
+    vertFaces_[vertLID[2]].append(lid);
 
     /* return the LID of the new face */
     return lid;
   }
 
-}
-
-
-void BasicSimplicialMesh::getSortedFaceVertices(int a, int b, int c,
-  int la, int lb, int lc,
-  int ea, int eb, int ec, 
-  int* sortedVertGIDs,
-  int* reorderedVertLIDs,
-  int* reorderedEdgeLIDs,
-  int& rotation) const
-{
-  /* 
-   * Do a hand-coded sort of a 3-tuple of vertex GIDs, reordering tuples of vertex LIDs
-   * and edge LIDs accordingly.
-   */
-  if (a < b)
-  {
-    if (c < a) 
-    {
-      fillSortedArray(c,a,b,sortedVertGIDs); 
-      fillSortedArray(lc,la,lb,reorderedVertLIDs); 
-      fillSortedArray(ec,ea,eb,reorderedEdgeLIDs); 
-      rotation=3;
-    }
-    else if (c > b) 
-    {
-      fillSortedArray(a,b,c,sortedVertGIDs); 
-      fillSortedArray(la,lb,lc,reorderedVertLIDs); 
-      fillSortedArray(ea,eb,ec,reorderedEdgeLIDs); 
-      rotation=1;
-    }
-    else 
-    {
-      fillSortedArray(a,c,b,sortedVertGIDs); 
-      fillSortedArray(la,lc,lb,reorderedVertLIDs); 
-      fillSortedArray(ea,ec,eb,reorderedEdgeLIDs); 
-      rotation=-1;
-    }
-  }
-  else /* b < a */
-  {
-    if (c < b) 
-    {
-      fillSortedArray(c,b,a,sortedVertGIDs); 
-      fillSortedArray(lc,lb,la,reorderedVertLIDs); 
-      fillSortedArray(ec,eb,ea,reorderedEdgeLIDs); 
-      rotation=-3;
-    }
-    else if (c > a) 
-    {
-      fillSortedArray(b,a,c,sortedVertGIDs); 
-      fillSortedArray(lb,la,lc,reorderedVertLIDs); 
-      fillSortedArray(eb,ea,ec,reorderedEdgeLIDs); 
-      rotation=-2;
-    }
-    else
-    {
-      fillSortedArray(b,c,a,sortedVertGIDs); 
-      fillSortedArray(lb,lc,la,reorderedVertLIDs); 
-      fillSortedArray(eb,ec,ea,reorderedEdgeLIDs); 
-      rotation=2;
-    }
-  }
-}
-
-
-void BasicSimplicialMesh::getSortedFaceVertices(int a, int b, int c,
-  int* sortedVertGIDs) const
-{
-  /* 
-   * Do a hand-coded sort of a 3-tuple of vertex GIDs
-   */
-  if (a < b)
-  {
-    if (c < a) 
-    {
-      fillSortedArray(c,a,b,sortedVertGIDs); 
-    }
-    else if (c > b) 
-    {
-      fillSortedArray(a,b,c,sortedVertGIDs); 
-    }
-    else 
-    {
-      fillSortedArray(a,c,b,sortedVertGIDs); 
-    }
-  }
-  else /* b < a */
-  {
-    if (c < b) 
-    {
-      fillSortedArray(c,b,a,sortedVertGIDs); 
-    }
-    else if (c > a) 
-    {
-      fillSortedArray(b,a,c,sortedVertGIDs); 
-    }
-    else
-    {
-      fillSortedArray(b,c,a,sortedVertGIDs); 
-    }
-  }
 }
 
 
@@ -1319,26 +1206,13 @@ int BasicSimplicialMesh::checkForExistingEdge(int vertLID1, int vertLID2)
   return -1;
 }
 
-int BasicSimplicialMesh::checkForExistingFace(int v1, int v2, int v3,
-  int e1, int e2, int e3,
-  int* sortedVertGIDs,
-  int* reorderedVertLIDs,
-  int* reorderedEdgeLIDs,
-  int& rotation) 
+int BasicSimplicialMesh::lookupFace(const Array<int>& vertGID) 
 {
-  /* sort the face's vertices by global ID, reordering the vertex LIDs and
-   * edge LIDs to follow. */
-  int g1 = LIDToGIDMap_[0][v1];
-  int g2 = LIDToGIDMap_[0][v2];
-  int g3 = LIDToGIDMap_[0][v3];
-
-  getSortedFaceVertices(g1, g2, g3, v1, v2, v3, e1, e2, e3, 
-    sortedVertGIDs, reorderedVertLIDs, reorderedEdgeLIDs,
-    rotation);
-
   /* see if the face is already in existence by checking for the
    * presence of the same ordered set of vertices. */
-  VertexView inputFaceView(&(sortedVertGIDs), 0, 3);
+  int* base = const_cast<int*>(&(vertGID[0]));
+  int** basePtr = &base;
+  VertexView inputFaceView(basePtr, 0, 3);
 
   if (vertexSetToFaceIndexMap_.containsKey(inputFaceView)) 
   {
@@ -1351,31 +1225,7 @@ int BasicSimplicialMesh::checkForExistingFace(int v1, int v2, int v3,
     return -1;
   }
 }
-
-int BasicSimplicialMesh::lookupFace(int g1, int g2, int g3) 
-{
-  static Array<int> sortedVertGIDs(3);
-  static int* sortedVertGIDPtr = &(sortedVertGIDs[0]);
-
-  /* sort the face's vertices by global ID */
-  getSortedFaceVertices(g1, g2, g3, sortedVertGIDPtr);
-
-  /* see if the face is already in existence by checking for the
-   * presence of the same ordered set of vertices. */
-  VertexView inputFaceView(&(sortedVertGIDPtr), 0, 3);
-
-  if (vertexSetToFaceIndexMap_.containsKey(inputFaceView)) 
-  {
-    /* return the existing face's LID */
-    return vertexSetToFaceIndexMap_.get(inputFaceView);
-  }
-  else 
-  {
-    /* return -1 as an indication that the face does not yet exist */
-    return -1;
-  }
-}
-                                                
+                                        
 int BasicSimplicialMesh::addEdge(int v1, int v2, 
   int elemLID, int elemGID,
   int myFacetNumber)
@@ -1391,16 +1241,7 @@ int BasicSimplicialMesh::addEdge(int v1, int v2,
     /* determine the sign of the existing edge */
     int g1 = LIDToGIDMap_[0][v1];
     int g2 = LIDToGIDMap_[0][v2];
-    int edgeSign;
-    if (g2 > g1) 
-    {
-      edgeSign = 1;
-    }
-    else 
-    {
-      edgeSign = -1;
-    }
-    elemEdgeSigns_.value(elemLID, myFacetNumber) = edgeSign;
+    TEST_FOR_EXCEPT(g2 <= g1);
 
     /* return the LID of the pre-existing edge */
     return lid;
@@ -1410,20 +1251,7 @@ int BasicSimplicialMesh::addEdge(int v1, int v2,
     /* get the LID of the new edge */
     lid = edgeVerts_.length();
 
-    /* create the new edge, oriented from lower to higher vertex GID */
-    int g1 = LIDToGIDMap_[0][v1];
-    int g2 = LIDToGIDMap_[0][v2];
-    int edgeSign;
-    if (g2 > g1) 
-    {
-      edgeVerts_.append(tuple(v1,v2));
-      edgeSign = 1;
-    }
-    else 
-    {
-      edgeVerts_.append(tuple(v2,v1));
-      edgeSign = -1;
-    }
+    edgeVerts_.append(tuple(v1,v2));
 
     /* if we own all vertices, we own the edge. Otherwise, mark it
      * for later assignment. */
@@ -1432,8 +1260,6 @@ int BasicSimplicialMesh::addEdge(int v1, int v2,
     if (vert2Owner==comm().getRank() && vert1Owner==comm().getRank()) 
       ownerProcID_[1].append(vert1Owner);
     else ownerProcID_[1].append(-1);
-
-    elemEdgeSigns_.value(elemLID, myFacetNumber) = edgeSign;
 
     /* register the new edge with its vertices */
     vertEdges_[v1].append(lid);
@@ -1727,9 +1553,9 @@ void BasicSimplicialMesh::assignIntermediateCellGIDs(int cellDim)
               <<  requestsFromProc[c]
               << ", " << requestsFromProc[c+1]
               << ", " << requestsFromProc[c+2]);
-            cellLID = lookupFace(requestsFromProc[c],
-              requestsFromProc[c+1],
-              requestsFromProc[c+2]);
+            cellLID = lookupFace(tuple(requestsFromProc[c],
+                requestsFromProc[c+1],
+                requestsFromProc[c+2]));
           }
           SUNDANCE_VERB_HIGH("p=" << myRank << "cell LID is " 
             << cellLID);
@@ -2119,7 +1945,7 @@ void BasicSimplicialMesh::resolveEdgeOwnership(int cellDim)
             }
             else
             {
-              cellLID = lookupFace(vertGID[0], vertGID[1], vertGID[2]);
+              cellLID = lookupFace(tuple(vertGID[0], vertGID[1], vertGID[2]));
             }
             /* Respond with -1 if the edge/face doesn't exist on this proc */
             if (cellLID==-1)

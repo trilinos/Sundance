@@ -18,6 +18,7 @@ SET(SerialTests
   LinearPeriodic1D
   NonlinearPeriodic1D
   Poisson3D
+  Projection3D
   PoissonBoltzmannDemo1D
   BesselTest2D 
   Coupled2D

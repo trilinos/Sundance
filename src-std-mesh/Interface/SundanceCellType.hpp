@@ -36,7 +36,6 @@
 
 namespace Sundance 
 {
-
 /** \defgroup Sundance_CellType_grp Cell Type Description
  */
 
@@ -106,6 +105,8 @@ int numFacets(const CellType& c, int facetDim);
  * \ingroup Sundance_CellType_grp
  */
 CellType facetType(const CellType& c, int facetDim, int facetIndex);
+
+
 
 /** \brief output stream operator for <tt>CellType</tt>.
  *

@@ -295,19 +295,16 @@ private:
    * This function is called from within addElement(),
    * not by the user, and is therefore private.
    *
-   * \param vertLID{1,2,3} The LIDs for the three vertices of the face 
+   * \param vertGID The sorted GIDs for the three vertices of the face 
+   * \param vertLID The LIDs for the three vertices of the face 
    * \param edgeLID{1,2,3} The LIDs for the three edges of the face 
-   * \param rotation An integer specifying the permutation that transforms
-   * the sorted ordering of vertGID{1,2,3} to the order given by the
-   * element definition. Initial value is not used; value is
-   * returned by reference argument.
    * \return LID of this face
    */
-  int addFace(int vertLID1, int vertLID2, int vertLID3,
-    int edgeLID1, int edgeLID2, int edgeLID3,
+  int addFace(const Array<int>& vertLID, 
+    const Array<int>& vertGID,
+    const Array<int>& edgeGID,
     int elemLID,
-    int elemGID,
-    int& rotation);
+    int elemGID);
 
   /**
    * Add a new edge, first checking to see if it already exists. 
@@ -330,25 +327,13 @@ private:
   int checkForExistingEdge(int vertLID1, int vertLID2);
 
   /** 
-   * Check for the presence of the face (vertLID1, int vertLID2, int vertLID3),
-   * returning information on orientation of the face as defined by the calling
-   * element. 
-   */
-  int checkForExistingFace(int vertLID1, int vertLID2, int vertLID3,
-    int edgeLID1, int edgeLID2, int edgeLID3,
-    int* sortedVertGIDs,
-    int* reorderedVertLIDs,
-    int* reorderedEdgeLIDs,
-    int& rotation) ;
-
-  /** 
    * Check whether the face defined by the given vertices exists
    * in the mesh. Returns -1 if the face does not exist.
    * Called during the synchronization of intermediate cell GIDs.
    * \param vertGID{1,2,3} the global indices of the vertices defining the face
    * \return the LID of the face
    */
-  int lookupFace(int vertGID1, int vertGID2, int vertGID3) ;
+  int lookupFace(const Array<int>& vertGID) ;
 
   /** */
   void synchronizeGIDNumbering(int dim, int localCount) ;
@@ -523,38 +508,6 @@ private:
   /** Whether the neighbor lists have been synchronized across 
    * processors */
   bool neighborsAreSynchronized_;
-
-
-  /** 
-   * Sort the 3 vertices of a face in order of increasing GID
-   * \param vertGID{1,2,3} the three vertices
-   * \param sortedVertGIDs array in which the sorted vertices are to be returned
-   */
-  void getSortedFaceVertices(int vertGID1, int vertGID2, int vertGID3,
-    int* sortedVertGIDs) const ;
-
-
-  /** 
-   * Sort the the vertices of a face in order or increasing GID, reordering
-   * the LIDs of the vertices and associated edges following the GID ordering.
-   * Also, return a rotation flag describing the permutation between
-   * the unsorted and sorted arrays. 
-   */
-  void getSortedFaceVertices(int a, int b, int c,
-    int la, int lb, int lc,
-    int eAB, int eBC, int eCA, 
-    int* sortedVertGIDs,
-    int* reorderedVertLIDs,
-    int* reorderedEdgeLIDs,
-    int& rotation) const ;
-
-  /** Helper function to stuff three numbers into an array */
-  inline void fillSortedArray(int a, int b, int c, int* s) const
-    {
-      s[0] = a;
-      s[1] = b;
-      s[2] = c;
-    }
 
 
 };

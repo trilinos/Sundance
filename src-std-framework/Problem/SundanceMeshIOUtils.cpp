@@ -128,6 +128,7 @@ double readbackTester(const std::string& infile, const MPIComm& comm)
   VectorType<double> vecType = new EpetraVectorType();
   
   /* Read a mesh */
+  Out::root() << "starting to read mesh " << std::endl;
   MeshType meshType = new BasicSimplicialMeshType();
   MeshSource mesher = new ExodusMeshReader(infile, meshType, comm);
   Mesh mesh = mesher.getMesh();

@@ -65,6 +65,7 @@ APPEND_SET(HEADERS
   Utilities/SundanceTypeUtils.hpp
   Utilities/SundanceUnaryFunctor.hpp
   Utilities/SundanceVersionString.hpp
+  Utilities/SundanceVertexSort.hpp
   Utilities/SundanceWatchFlag.hpp
   )
 
@@ -82,6 +83,7 @@ APPEND_SET(SOURCES
   Utilities/SundanceStdMathFunctors.cpp
   Utilities/SundanceTabs.cpp
   Utilities/SundanceUnaryFunctor.cpp
+  Utilities/SundanceVertexSort.cpp
   Utilities/SundanceWatchFlag.cpp
   )
 

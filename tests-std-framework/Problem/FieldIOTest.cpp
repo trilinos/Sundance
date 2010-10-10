@@ -68,8 +68,12 @@ int main(int argc, char** argv)
     }
 
     /* Now do a readback test on the mesh */
+    MPIComm::world().synchronize();
+    Out::root() << "starting readback" << endl;
+    MPIComm::world().synchronize();
     double err = readbackTester(infile, world);
 #else
+    Out::root() << "starting readback" << endl;
     double err = 0.0;
     if (world.getRank()==0)
     {

@@ -418,7 +418,6 @@ int main(int argc, char** argv)
     
     tests.registerTest(rcp(new Coupled1DTest(nx))); 
 
-
     bool pass = tests.run();
 
     Out::root() << "total test status: " << pass << std::endl;

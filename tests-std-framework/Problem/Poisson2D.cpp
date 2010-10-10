@@ -124,14 +124,18 @@ int main(int argc, char** argv)
     mesh.dump(meshFile+"-dump");
 
     WatchFlag watchMe("watch eqn");
-    watchMe.deactivate();
+    watchMe.setParam("integration setup", 0);
+    watchMe.setParam("integration", 6);
+    watchMe.setParam("fill", 6);
+    watchMe.setParam("evaluation", 0);
+//    watchMe.deactivate();
 
     WatchFlag watchBC("watch BCs");
     watchBC.setParam("integration setup", 0);
-    watchBC.setParam("integration", 0);
-    watchBC.setParam("fill", 0);
+    watchBC.setParam("integration", 6);
+    watchBC.setParam("fill", 6);
     watchBC.setParam("evaluation", 0);
-    watchBC.deactivate();
+//    watchBC.deactivate();
     
 
 
@@ -201,7 +205,7 @@ int main(int argc, char** argv)
     /* Define the weak form */
     //Expr eqn = Integral(interior, (grad*v)*(grad*u) + v, quad);
     Expr one = new Sundance::Parameter(1.0);
-    Expr exactSoln = 2.0*x+y;
+    Expr exactSoln = 1.0 + sqrt(3.0)*y+sqrt(2.0)*x;
     Expr eqn = Integral(interior, (grad*u)*(grad*v), quad2, watchMe);
     /* Define the Dirichlet BC */
     Expr h = new CellDiameterExpr();
@@ -209,6 +213,11 @@ int main(int argc, char** argv)
 
     /* We can now set up the linear problem! */
     LinearProblem prob(mesh, eqn, bc, v, u, vecType);
+
+    Out::os() << "row map" << endl;
+    prob.rowMap(0)->print(Out::os());
+    Out::os() << endl << "col map" << endl;
+    prob.colMap(0)->print(Out::os());
 
 
     ParameterXMLFileReader reader(solverFile);

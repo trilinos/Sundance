@@ -438,7 +438,8 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
           int elemID = sideSetElems[s][n];
           int facetNum = sideSetFacets[s][n];
           int fsign;
-          int sideLID = mesh.facetLID(dimension, elemID-1, dimension-1, facetNum-1,fsign);
+          int sideLID = mesh.facetLID(dimension, elemID-1, dimension-1, 
+            facetNum-1,fsign);
           mesh.setLabel(dimension-1, sideLID, s+1);
         }
     }

@@ -115,8 +115,8 @@ int main(int argc, char** argv)
       
       /* Create unknown and test functions, discretized using second-order
        * Lagrange interpolants */
-      Expr u = new UnknownFunction(new Lagrange(2), "u");
-      Expr v = new TestFunction(new Lagrange(2), "v");
+      Expr u = new UnknownFunction(new Lagrange(1), "u");
+      Expr v = new TestFunction(new Lagrange(1), "v");
 
       /* Create differential operator and coordinate functions */
       Expr dx = new Derivative(0);
@@ -150,10 +150,10 @@ int main(int argc, char** argv)
         }
       }
 #endif
-      Expr eqn = Integral(interior, coeff*(grad*v)*(grad*u) +2.0*v, quad2);
+      Expr eqn = Integral(interior, coeff*(grad*v)*(grad*u) /*+ 2.0*v*/, quad2);
 
       /* Define the Dirichlet BC */
-      Expr exactSoln = (x + 1.0)*x - 1.0/4.0;
+      Expr exactSoln = x;//(x + 1.0)*x - 1.0/4.0;
       Expr h = new CellDiameterExpr();
 
       WatchFlag watchBC("watch BCs");
