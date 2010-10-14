@@ -169,6 +169,28 @@ int exFacetIndexToUFCFacetIndex(int meshDim, int permKey,
   return missingUFCVert; // returns -1 if error
 }
 
+
+int ufcFacetIndexToExFacetIndex(int meshDim, int ufcFacetIndex)
+{
+  static Array<int> map2D = tuple(1,2,0);
+  static Array<int> map3D = tuple(1,2,0,3);
+
+  if (meshDim==2)
+  {
+    return map2D[ufcFacetIndex];
+  }
+  else if (meshDim==3)
+  {
+    return map3D[ufcFacetIndex];
+  }
+  else 
+  {
+    TEST_FOR_EXCEPT( meshDim!=3 && meshDim!=2 );
+  }
+  TEST_FOR_EXCEPT(true);
+  return -1; // -Wall
+}
+
 }
 
 

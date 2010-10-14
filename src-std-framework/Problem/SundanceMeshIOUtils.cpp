@@ -221,6 +221,11 @@ void serialPartition(
   Mesh mesh = mesher.getMesh();
   int dim = mesh.spatialDim();
 
+  /* */
+  FieldWriter origWriter = new ExodusWriter("orig-writback");
+  origWriter.addMesh(mesh);
+  origWriter.write();
+
   /* Set up maps between old (unpartitioned) and new (partitioned) element
    * and vertex indices. These will be needed to transfer fields, if any,
    * to the partitioned mesh */
@@ -250,10 +255,12 @@ void serialPartition(
     /* Prepare to map the field data to the new submeshes */
     Map<int, int> newElemLIDToOldLIDMap;
     Map<int, int> newVertLIDToOldLIDMap;
+    Out::os() << "preparing maps to submeshes" << std::endl; 
     invertMap(oldElemLIDToNewLIDMaps[p], newElemLIDToOldLIDMap);
     invertMap(oldVertLIDToNewLIDMaps[p], newVertLIDToOldLIDMap);
 
     /* Map the element-based field data */
+    Out::os() << "mapping element data to submeshes" << std::endl; 
     RCP<Array<double> > elemData;
     int nElemFuncs = oldElemData->size();
     int nElems = submesh[p].numCells(dim);
@@ -271,6 +278,7 @@ void serialPartition(
     }
 
     /* Map the node-based field data */
+    Out::os() << "mapping node data to submeshes" << std::endl; 
     RCP<Array<double> > nodeData;
     int nNodeFuncs = oldNodeData->size();
     int nNodes = submesh[p].numCells(0);
@@ -288,7 +296,9 @@ void serialPartition(
     }
         
     /* Complete the write of the p-th segment */
+    Out::os() << "doing write()" << std::endl; 
     writer.write();
+    Out::os() << "done part=" << p << " of " << numProc << std::endl; 
   }
 }
 

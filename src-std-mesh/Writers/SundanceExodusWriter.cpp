@@ -33,6 +33,7 @@
 #include "SundanceOut.hpp"
 #include "SundanceMaximalCellFilter.hpp"
 #include "SundanceCellFilter.hpp"
+#include "SundanceVertexSort.hpp"
 #include "SundanceTabs.hpp"
 #include "Teuchos_XMLObject.hpp"
 
@@ -48,6 +49,7 @@ using namespace std;
 
 void ExodusWriter::write() const 
 {
+  Out::os() << "in ExodusWriter::write()" << endl;
   std::string exoFile = filename();
   std::string parFile = filename();
   if (nProc() > 1) 
@@ -92,6 +94,8 @@ void ExodusWriter::write() const
   findBlocks(blockFilters, omniElemFuncs, funcsForBlock,
     elemsForBlock, blockID, nElemsPerBlock, blockElemPtr, allElems);
   
+
+
   writeMesh(exoid, nsFilters, nsID, nsNodesPerSet, nsNodePtr, allNodes );
   
   writeFields(exoid, nsFilters, omniNodalFuncs, omniElemFuncs, 
@@ -120,7 +124,7 @@ void ExodusWriter::writeMesh(int exoid,
   const RCP<Array<int> >& allNodes) const
 {
 #ifdef HAVE_SUNDANCE_EXODUS
-
+  Out::os() << "in ExodusWriter::writeMesh()" << endl;
   int ierr = 0;
 
   int dim = mesh().spatialDim();
@@ -202,11 +206,13 @@ void ExodusWriter::writeMesh(int exoid,
   TEST_FOR_EXCEPT(ierr < 0);
 
   /* write the element blocks */
+
   Array<int> blockLabels = mesh().getAllLabelsForDimension(dim).elements();
   int nodesPerElem = dim+1;
   std::string eType = elemType(mesh().cellType(dim));
   for (int b=0; b<blockLabels.size(); b++)
   {
+    Out::os() << "writing element block" << b << endl;
     int numBlockAttr = 0;
     Array<int> blockElemLIDs;
     Array<int> nodeLIDs;
@@ -224,41 +230,61 @@ void ExodusWriter::writeMesh(int exoid,
     ierr = ex_put_elem_conn(exoid, blockLabels[b]+1, &(nodeLIDs[0]));
     TEST_FOR_EXCEPT(ierr < 0);
   }
-
+  Out::os() << "done all element blocks" << endl;
 
   TEST_FOR_EXCEPT(ierr < 0);
   
   /* write the side sets */
   
+  Out::os() << "writing side sets "<< endl;  
   for (int ss=0; ss<ssLabels.size(); ss++)
   {
+    Out::os() << "writing side set=" << ss << " of " << ssLabels.size() << endl;
     if (ssLabels[ss]==0) continue;
     Array<int> sideLIDs;
     RCP<Array<int> > elemLIDs = rcp(new Array<int>());
     RCP<Array<int> > facets = rcp(new Array<int>());
     MaximalCofacetBatch maxCofacetBatch;
 
+    Out::os() << "getting LIDs "<< endl;  
     mesh().getLIDsForLabel(dim-1, ssLabels[ss], sideLIDs);
+    Out::os() << "LIDs= "<< sideLIDs << endl;  
+    Out::os() << "getting cofacets "<< endl;  
     mesh().getMaxCofacetLIDs(sideLIDs, maxCofacetBatch);
+    Out::os() << "getting specified cofacets "<< endl;  
     maxCofacetBatch.getSpecifiedCofacets(0, elemLIDs, facets);
 
     int numSides = sideLIDs.size();
     int numDists = 0;
 
+    for (int i=0; i<elemLIDs->size(); i++)
+    {
+      (*facets)[i] = ufcFacetIndexToExFacetIndex(dim,  (*facets)[i]);
+    }
+
     offset(sideLIDs);
     offset(*elemLIDs);
     offset(*facets);
 
+    for (int i=0; i<elemLIDs->size(); i++)
+    {
+      Out::os() << "elem=" << (*elemLIDs)[i] << ",\t facet=" << (*facets)[i]
+                << endl;
+    }
+
     ierr = ex_put_side_set_param(exoid, ssLabels[ss], numSides, numDists);
     ierr = ex_put_side_set(exoid, ssLabels[ss], &((*elemLIDs)[0]), &((*facets)[0]));
   }
+  Out::os() << "done all side sets" << endl;
   
   TEST_FOR_EXCEPT(ierr < 0);
 
-  
+
+  Out::os() << "writing node sets "<< endl;  
   if (nsID.size() > 0)
   {
     /* write the node sets */
+
     Array<int> nsDistPerSet(nsID.size(), 0);
     Array<int> nsDistPtr(nsID.size(), 0);
     Array<int> emptyDist(1, 0);
@@ -276,6 +302,7 @@ void ExodusWriter::writeMesh(int exoid,
 
     TEST_FOR_EXCEPT(ierr < 0);
   }
+  Out::os() << "done all node sets" << endl;
 #else
   TEST_FOR_EXCEPTION(true, RuntimeError, "Exodus not enabled");
 #endif
@@ -530,6 +557,7 @@ void ExodusWriter::findNodeSets(
   RCP<Array<int> > allNodes
   ) const 
 {
+  Out::os() << "in ExodusWriter::findNodeSets()" << endl;
   int verb = 0;
 
   const Array<RCP<FieldBase> >& f = pointScalarFields();
@@ -619,6 +647,7 @@ void ExodusWriter::findBlocks(
   RCP<Array<int> > allElems
   ) const 
 {
+  Out::os() << "in ExodusWriter::findBlocks()" << endl;
   int verb=0;
   const Array<RCP<FieldBase> >& f = cellScalarFields();
   CellFilter maximal = new MaximalCellFilter();

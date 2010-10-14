@@ -43,6 +43,7 @@ int main(int argc, char** argv)
 #endif
 
     std::string infile = "cyl-coarse";
+//    std::string infile = "./prism";
     int numProc = world.getNProc();
     
 
@@ -60,7 +61,7 @@ int main(int argc, char** argv)
 
         RCP<SerialPartitionerBase> part 
           = rcp(new FileIOChacoPartitioner("part"));
-
+        
         serialPartition(part, numProc, mesher, infile);
       }
       /* everyone else waits for the root processor to finish partitioning */

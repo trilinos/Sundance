@@ -827,6 +827,7 @@ void BasicSimplicialMesh::getMaxCofacetLIDs(
 
   for (int i=0; i<cellLIDs.size(); i++) 
   {
+    Out::os() << "getting max cof for " << cellLIDs[i] << endl;
     int f1;
     int cofacet1 = maxCofacetLID(d, cellLIDs[i], 0, f1);
     if (nc==1) cofacets.addSingleCofacet(i, cofacet1, f1);

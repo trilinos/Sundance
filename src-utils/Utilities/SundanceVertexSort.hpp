@@ -52,6 +52,9 @@ int exFacetIndexToUFCFacetIndex(int meshDim, int permKey,
   int exFacetID);
 
 /** */
+int ufcFacetIndexToExFacetIndex(int meshDim, int ufcFacetID);
+
+/** */
 int exVertPosToUFCVertPos(int meshDim, int permKey, int exVertPos);
 
 /** */

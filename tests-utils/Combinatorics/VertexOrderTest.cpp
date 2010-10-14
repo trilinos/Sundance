@@ -1,7 +1,7 @@
 #include "SundanceVertexSort.hpp"
 #include "SundanceOut.hpp"
 #include "Teuchos_GlobalMPISession.hpp"
-
+#include <algorithm>
 
 using namespace Sundance;
 using namespace Teuchos;
@@ -76,7 +76,7 @@ int main(int argc, char** argv)
           }
         }
         Out::os() << endl << endl;
-        more = next_permutation(exVerts.begin(), exVerts.end());
+        more = std::next_permutation(exVerts.begin(), exVerts.end());
       }
     }
     if (!bad) 
