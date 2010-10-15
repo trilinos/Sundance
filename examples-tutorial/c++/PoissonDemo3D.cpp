@@ -389,7 +389,7 @@ int main(int argc, char** argv)
      * is just a sanity check to ensure the code doesn't get completely 
      * broken after a change to the library. 
      */
-    Sundance::passFailTest(fabs(flux), 1.0e-3);
+    Sundance::passFailTest(fabs(flux), 5.0e-3);
 
     /*
      * <Header level="subsubsection" name="finalize">

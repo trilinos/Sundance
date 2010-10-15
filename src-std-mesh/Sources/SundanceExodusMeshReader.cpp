@@ -153,7 +153,6 @@ Mesh ExodusMeshReader::fillMesh() const
     {
       p = Point(x[n], y[n], z[n]);
     }
-    Out::os() << "adding vertex GID=" << ptGID[n] << " p=" << p << endl;
     mesh.addVertex(ptGID[n], p, ptOwner[n], 0);
   }
 
@@ -190,8 +189,9 @@ Mesh ExodusMeshReader::fillMesh() const
   }
   TEST_FOR_EXCEPT(ierr < 0);
   int count = 0;
-  Sundance::Map<int,int> permKey;
-  Sundance::Map<int,Array<int> > elemVerts;
+  Array<int> permKey;
+  permKey.resize(numElems);
+//  Sundance::Map<int,Array<int> > elemVerts;
   Array<int> blockIsSimplicial(numElemBlocks);
   bool allBlocksAreSimplicial = true;
 
@@ -234,8 +234,7 @@ Mesh ExodusMeshReader::fillMesh() const
       if (blockIsSimplicial) 
       {
         vertexSort(orderedVerts, &key);
-        elemVerts.put(elemGID[count], orderedVerts); 
-        permKey.put(elemGID[count],key);
+//        elemVerts.put(elemGID[count], orderedVerts); 
       }
 
       int elemLID 
@@ -243,12 +242,9 @@ Mesh ExodusMeshReader::fillMesh() const
           elemOwner[count], bid);
       if (blockIsSimplicial) 
       {
-        elemVerts.put(elemLID, orderedVerts); 
-        permKey.put(elemLID,key);
+//        elemVerts.put(elemLID, orderedVerts); 
+        permKey[elemLID]=key;
       }
-      Out::os() << "adding element GID=" << elemGID[count]
-                << " ex=" << exVerts << ",\t ufc="
-                << orderedVerts << endl;
     }
   }
 
@@ -287,7 +283,6 @@ Mesh ExodusMeshReader::fillMesh() const
   TEST_FOR_EXCEPT(ierr < 0);
   for (int ss=0; ss<numSideSets; ss++)
   {
-    Out::os() << "reading side set " << ss << " of " << numSideSets << endl;
     int nSides;
     int nDist;
     int ssID = ssIDs[ss];
@@ -304,31 +299,11 @@ Mesh ExodusMeshReader::fillMesh() const
       int fsign;
       if (allBlocksAreSimplicial)
       {
-        TEST_FOR_EXCEPT(!permKey.containsKey(elemID));
-        int key = permKey.get(elemID);
-        TEST_FOR_EXCEPT(!elemVerts.containsKey(elemID));
-        Array<int> verts = elemVerts.get(elemID);
-        int oldFacetNum = facetNum;
+        int key = permKey[elemID];
         facetNum = exFacetIndexToUFCFacetIndex(dim, key, facetNum);
-        Out::os() << "elemID=" << elemID << ",\t verts=" << verts 
-                  << ",\t old facet=" << oldFacetNum << "\t ufc facet=" << facetNum
-                  << endl;
-        TEST_FOR_EXCEPTION(facetNum < 0, RuntimeError,
-          "problem with assigning face " << oldFacetNum
-          << " of element " << elemID << ". Perm key = " << key
-          << ". Vertices are " << verts);
-
       }
       int sideLID = mesh.facetLID(dim, elemID, dim-1, 
         facetNum, fsign);
-      Array<int> fac;
-      Array<int> ori;
-      mesh.getFacetArray(dim, elemID, 0, fac, ori);
-      Out::os() << "verts of elem are " << fac << endl;
-      mesh.getFacetArray(dim-1, sideLID, 0, fac, ori);
-      Out::os() << "verts of side are " << fac << endl;
-      //    TEST_FOR_EXCEPTION(mesh.numMaxCofacets(dim-1, sideLID)!=1,
-//        RuntimeError, "internal side detected");
       mesh.setLabel(dim-1, sideLID, ssID);
     }
   }

@@ -190,8 +190,8 @@ void Bernstein::getReferenceDOFs(
           dof2[i] = dof2[i+1]+inc;
           inc++;
 	      }
-	    
-        dofs[1] = tuple<Aint>(dof0,dof1,dof2);
+        /** permuted from (0,1,2) to (1,2,0) for UFC ordering */
+        dofs[1] = tuple<Aint>(dof1,dof2,dof0);
       }
       else
       {

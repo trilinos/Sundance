@@ -14,6 +14,7 @@ SET(DisabledTests
 
 SET(SerialTests
   DiscFunc3D
+  TetQuadTransformationTest
   PoissonOnDisk 
   LinearPeriodic1D
   NonlinearPeriodic1D
