@@ -43,6 +43,8 @@ CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;})
 CELL_PREDICATE(TopPointTest, {return fabs(x[1]-1.0) < 1.0e-10;})
 
 
+#if defined(HAVE_SUNDANCE_EXODUS) && defined(Trilinos_DATA_DIR)
+
 
 int main(int argc, char** argv)
 {
@@ -123,3 +125,16 @@ int main(int argc, char** argv)
 		}
   Sundance::finalize(); return Sundance::testStatus(); 
 }
+
+#else
+
+int main(int argc, char** argv)
+{
+  Sundance::init(&argc, &argv);
+  std::cout << "dummy Projection3D PASSED. Enable exodus to run the actual test" <<
+ std::endl;
+  Sundance::finalize();
+  return 0;
+}
+
+#endif

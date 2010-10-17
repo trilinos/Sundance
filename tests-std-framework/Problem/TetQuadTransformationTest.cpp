@@ -4,6 +4,10 @@
 using Sundance::List;
 
 
+
+
+#if defined(HAVE_SUNDANCE_EXODUS) && defined(Trilinos_DATA_DIR)
+
 int main(int argc, char** argv)
 {
   try
@@ -144,3 +148,16 @@ int main(int argc, char** argv)
 
 }
 
+
+#else
+
+int main(int argc, char** argv)
+{
+  Sundance::init(&argc, &argv);
+  std::cout << "dummy TetQuadTransformationTest PASSED. Enable exodus to run the actual test" <<
+ std::endl;
+  Sundance::finalize();
+  return 0;
+}
+
+#endif
