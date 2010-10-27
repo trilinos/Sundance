@@ -44,16 +44,35 @@ public:
 								   Array<Point>& curveDerivs ,
 								   Array<Point>& curveNormals );
 
+    /** 0 - line , 1 - polygon */
+    static void setMethod(int methodNr) { method_option = methodNr; }
+
 private :
 
     static void getCurveQuadPoints_line(
+                                   int  maxCellLID ,
                                    CellType  maxCellType ,
+                                   const Mesh& mesh ,
                                    const Array<Point>& cellPoints,
 								   const ParametrizedCurve& paramCurve,
 								   const QuadratureFamily& quad ,
 								   Array<Point>& curvePoints ,
 								   Array<Point>& curveDerivs ,
 								   Array<Point>& curveNormals );
+
+    static void getCurveQuadPoints_polyline(
+                                   int  maxCellLID ,
+                                   CellType  maxCellType ,
+                                   const Mesh& mesh ,
+                                   const Array<Point>& cellPoints,
+                                   const ParametrizedCurve& paramCurve,
+                                   const QuadratureFamily& quad ,
+                                   Array<Point>& curvePoints ,
+                                   Array<Point>& curveDerivs ,
+                                   Array<Point>& curveNormals  );
+
+    /** the int "flag" which chooses among different curve discretization methods*/
+    static int method_option;
 
 };
 

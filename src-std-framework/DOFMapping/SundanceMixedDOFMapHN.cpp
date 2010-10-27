@@ -58,7 +58,7 @@ MixedDOFMapHN::MixedDOFMapHN(const Mesh& mesh,
   const Array<RCP<BasisDOFTopologyBase> >& basis,
   const CellFilter& maxCells,
   int setupVerb)
- : HNDoFMapBase(mesh, basis.size(), setupVerb),
+ : HNDoFMapBaseHomogeneous(mesh, basis.size(), setupVerb),
     maxCells_(maxCells),
     dim_(mesh.spatialDim()),
     dofs_(mesh.spatialDim()+1),

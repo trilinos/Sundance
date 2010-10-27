@@ -73,6 +73,7 @@ APPEND_SET(HEADERS
   Elements/SundanceBrickQuadrature.hpp
   Elements/SundanceUnknownFunction.hpp
   Elements/SundanceUnknownFunctionData.hpp
+  Elements/SundanceLegendre.hpp
   )
 
 APPEND_SET(SOURCES
@@ -112,6 +113,7 @@ APPEND_SET(SOURCES
   Elements/SundanceBrickQuadrature.cpp
   Elements/SundanceUnknownFunction.cpp
   Elements/SundanceUnknownFunctionData.cpp
+  Elements/SundanceLegendre.cpp
   )
 
 #
@@ -131,16 +133,17 @@ APPEND_SET(HEADERS
   DOFMapping/SundanceMixedDOFMapHN.hpp
   DOFMapping/SundanceNodalDOFMap.hpp
   DOFMapping/SundanceNodalDOFMapHN.hpp
+  DOFMapping/SundanceInhomogeneousDOFMapHN.hpp
   DOFMapping/SundancePartialElementDOFMap.hpp
   DOFMapping/SundanceSpatiallyHomogeneousDOFMapBase.hpp
   DOFMapping/SundanceHNDoFMapBase.hpp
+  DOFMapping/SundanceHNDoFMapBaseHomogeneous.hpp
   DOFMapping/SundanceNodalDOFMapHN.hpp
   DOFMapping/SundanceUnfoldPeriodicDF.hpp
   )
 
 APPEND_SET(SOURCES
   DOFMapping/SundanceDOFMapBase.cpp
-  DOFMapping/SundanceHNDoFMapBase.cpp
   DOFMapping/SundanceDOFMapBuilder.cpp
   DOFMapping/SundanceInhomogeneousNodalDOFMap.cpp
   DOFMapping/SundanceMapStructure.cpp
@@ -148,6 +151,7 @@ APPEND_SET(SOURCES
   DOFMapping/SundanceMixedDOFMapHN.cpp
   DOFMapping/SundanceNodalDOFMap.cpp
   DOFMapping/SundanceNodalDOFMapHN.cpp
+  DOFMapping/SundanceInhomogeneousDOFMapHN.cpp
   DOFMapping/SundancePartialElementDOFMap.cpp
   DOFMapping/SundanceSpatiallyHomogeneousDOFMapBase.cpp
   DOFMapping/SundanceUnfoldPeriodicDF.cpp

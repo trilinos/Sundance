@@ -46,7 +46,7 @@ NodalDOFMapHN::NodalDOFMapHN(const Mesh& mesh,
   int nFuncs, 
   const CellFilter& maxCellFilter,
   int setupVerb)
-  : HNDoFMapBase(mesh, nFuncs, setupVerb),
+  : HNDoFMapBaseHomogeneous(mesh, nFuncs, setupVerb),
     maxCellFilter_(maxCellFilter),
     dim_(mesh.spatialDim()),
     nFuncs_(nFuncs),

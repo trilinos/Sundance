@@ -9,7 +9,8 @@
 #define SUNDANCEHNMAPBASE_HPP_
 
 #include "SundanceDefs.hpp"
-#include "SundanceSpatiallyHomogeneousDOFMapBase.hpp"
+#include "SundanceMesh.hpp"
+
 namespace Sundance
 {
 using namespace Teuchos;
@@ -20,13 +21,12 @@ using namespace Teuchos;
  * , with the pre-fill transformations these constraints can be build in into the matrix
  *
  */
-class HNDoFMapBase : public SpatiallyHomogeneousDOFMapBase
+class HNDoFMapBase
 {
 public:
 
 	/** Empty Ctor */
-	HNDoFMapBase(const Mesh& mesh, int nFuncs, int setupVerb) :
-		    		SpatiallyHomogeneousDOFMapBase(mesh, nFuncs, setupVerb){;}
+	HNDoFMapBase(const Mesh& mesh, int nFuncs, int setupVerb) : mesh_(mesh){;}
 
 	virtual ~HNDoFMapBase() {;}
 
@@ -78,9 +78,13 @@ public:
 
 	  /** Returns the dimension where the DoF map is defined
 	   *  For HN we do transformation only for the maxCell type */
-	  int getSpacialMeshDim() const { return mesh().spatialDim();}
+	  int getSpacialMeshDim() const { return mesh_.spatialDim();}
 
 protected:
+
+private:
+
+	  const Mesh mesh_;
 
 };
 

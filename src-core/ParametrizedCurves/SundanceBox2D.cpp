@@ -35,7 +35,7 @@
 using namespace Sundance;
 
 Box2D::Box2D(double px, double py, double ox, double oy, double a1, double a2) :
-	CurveBase(1, a1, a2), px_(px), py_(px), ox_(ox), oy_(oy)
+	CurveBase(1, a1, a2), px_(px), py_(py), ox_(ox), oy_(oy)
 {
 }
 
@@ -51,79 +51,111 @@ Expr Box2D::getParams() const
 
 double Box2D::curveEquation(const Point& evalPoint) const
 {
+	int verb = 0;
 	TEST_FOR_EXCEPTION(evalPoint.dim() != 2, RuntimeError,
 			"Box2D::curveEquation() evaluation point dimension must be 2");
 
 	// calculate the distance compared to the middle point
 	double distX =  fabs(px_ + 0.5*ox_ - evalPoint[0]) - 0.5*ox_;
 	double distY =  fabs(py_ + 0.5*oy_ - evalPoint[1]) - 0.5*oy_;
-	return (distX > distY) ? distX : distY ;
+	distX = (distX > distY) ? distX : distY ;
+
+	SUNDANCE_OUT(verb > 3, " Box2D::curveEquation for:" << evalPoint << " is: " << distX);
+
+	return distX;
 }
 
-void Box2D::returnIntersectPoints(const Point& start, const Point& end, int& nrPoints,
-		Array<Point>& result) const
+void Box2D::returnIntersect(const Point& start, const Point& end, int& nrPoints,
+		Array<double>& result) const
 {
-	Array<double> t;
-	returnIntersect(start, end, nrPoints, t);
+
+	Array<Point> t;
+	returnIntersectPoints(start, end, nrPoints, t);
 
 	result.resize(nrPoints);
 
 	// Return coordinates instead of t values
 	for (int i = 0; i < nrPoints; i++)
 	{
-		result[i] = start + t[i] * (end - start);
+		Point tmp( end[0]-t[i][0]/(end[0]-start[0]) , end[1]-t[i][1]/(end[1]-start[1]) );
+		result[i] =  sqrt( tmp*tmp );
 	}
 }
 
-void Box2D::returnIntersect(const Point& start, const Point& end, int& nrPoints, Array<
-		double>& result) const
+void Box2D::returnIntersectPoints(const Point& start, const Point& end, int& nrPoints,
+		Array<Point>& result) const
 {
-
+    int verb = 0;
+    double num_zero = 1e-9;
     // first implementation
 	//TEST_FOR_EXCEPTION( true , RuntimeError, "Box2D::returnIntersect() not implemented yet");
-
+    nrPoints = 0;
 	// calc cut in X direction
-	if ( fabs(start[0] - end[0]) < 1e-6 ){
+	if ( fabs(start[0] - end[0]) < num_zero ){
         //
 	} else {
-       double a = (start[1] - end[1]) / (start[0] - end[0]);
+	   SUNDANCE_OUT(verb > 3, " Box2D::returnIntersectPoints , 1 ")
+	   // y = a*x + b
+       double a = (end[1] - start[1]) / (end[0] - start[0]);
        double b = start[1] - a*start[0];
        double y1 = a*px_ + b;
        double y2 = a*(px_ + ox_) + b;
        Point p1( px_ , y1 );
        Point p2( px_ + ox_ , y2 );
-       if ( (px_ >= p1[0] ) && ( px_ + ox_ <= p1[0] ) && (start[0] <= p1[0] ) && ( end[0]  >= p1[0] ) &&
-    		(py_ >= p1[1] ) && ( py_ + oy_ <= p1[1] ) && (start[1] <= p1[1] ) && ( end[1]  >= p1[1] )){
-    	   result.resize(1);
-    	   result[0] = (p1[1] - end[1])*(start[1] - end[1]) / (start[0] - end[0]);
+       SUNDANCE_OUT(verb > 3, " Box2D::returnIntersectPoints  px:" << px_ << " px+ox:" << px_+ox_ );
+       SUNDANCE_OUT(verb > 3, " Box2D::returnIntersectPoints  py:" << py_ << " py+oy:" << py_+oy_ );
+       SUNDANCE_OUT(verb > 3, " Box2D::returnIntersectPoints  p1:" << p1 << " p2:" << p2 );
+       SUNDANCE_OUT(verb > 3, " Box2D::returnIntersectPoints  start:" << start << " end:" << end );
+       // todo: compare to numerical zero
+       if ( (px_ <= p1[0] ) && ( px_ + ox_ >= p1[0] ) && (start[0] <= p1[0] ) && ( end[0]  >= p1[0] ) &&
+    		(py_ <= p1[1] ) && ( py_ + oy_ >= p1[1] ) && (start[1] <= p1[1] ) && ( end[1]  >= p1[1] )){
+    	   result.resize(nrPoints+1);
+    	   result[nrPoints] = p1; //(p1[1] - end[1])*(start[1] - end[1]) / (start[0] - end[0]);
+    	   nrPoints++;
+    	   SUNDANCE_OUT(verb > 3, " Box2D::returnIntersectPoints  ADD p1:" << p1 << " nrPoints:" << nrPoints);
        }
-       if ( (px_ >= p2[0] ) && ( px_ + ox_ <= p2[0] ) && (start[0] <= p2[0] ) && ( end[0]  >= p2[0] ) &&
-    		(py_ >= p2[1] ) && ( py_ + oy_ <= p2[1] ) && (start[1] <= p2[1] ) && ( end[1]  >= p2[1] )){
-    	   result.resize(2);
-    	   result[1] = (p2[1] - end[1])*(start[1] - end[1]) / (start[0] - end[0]);
+       if ( (px_ <= p2[0] ) && ( px_ + ox_ >= p2[0] ) && (start[0] <= p2[0] ) && ( end[0]  >= p2[0] ) &&
+    		(py_ <= p2[1] ) && ( py_ + oy_ >= p2[1] ) && (start[1] <= p2[1] ) && ( end[1]  >= p2[1] )){
+    	   result.resize(nrPoints+1);
+    	   result[nrPoints] = p2; //(p2[1] - end[1])*(start[1] - end[1]) / (start[0] - end[0]);
+    	   nrPoints++;
+    	   SUNDANCE_OUT(verb > 3, " Box2D::returnIntersectPoints  ADD p2:" << p2 << " nrPoints:" << nrPoints);
        }
 	}
 
 	// calc cut in Y direction
-	if ( fabs(start[1] - end[1]) < 1e-6 ){
+	if ( fabs(start[1] - end[1]) < num_zero ){
         //
 	} else {
-       double a = (start[1] - end[1]) / (start[0] - end[0]);
-       double b = start[1] - a*start[0];
-       double x1 = (py_ - b) * a;
-       double x2 = (py_ + oy_ - b) * a;
+	   SUNDANCE_OUT(verb > 3, " Box2D::returnIntersectPoints , 2 ")
+       // x = a*y + b
+       double a = (end[0] - start[0]) / (end[1] - start[1]);
+       double b = start[0] - a*start[1];
+       double x1 = a*py_ + b;
+       double x2 = a*(py_ + oy_) + b;
        Point p1( x1 , py_ );
        Point p2( x2 , py_ + oy_ );
-       if ( (px_ >= p1[0] ) && ( px_ + ox_ <= p1[0] ) && (start[0] <= p1[0] ) && ( end[0]  >= p1[0] ) &&
-    		(py_ >= p1[1] ) && ( py_ + oy_ <= p1[1] ) && (start[1] <= p1[1] ) && ( end[1]  >= p1[1] )){
-    	   result.resize(3);
-    	   result[2] = (p1[1] - end[1])*(start[1] - end[1]) / (start[0] - end[0]);
+       SUNDANCE_OUT(verb > 3, " Box2D::returnIntersectPoints  px:" << px_ << " px+ox:" << px_+ox_ );
+       SUNDANCE_OUT(verb > 3, " Box2D::returnIntersectPoints  py:" << py_ << " py+oy:" << py_+oy_ );
+       SUNDANCE_OUT(verb > 3, " Box2D::returnIntersectPoints  p1:" << p1 << " p2:" << p2 );
+       SUNDANCE_OUT(verb > 3, " Box2D::returnIntersectPoints  start:" << start << " end:" << end );
+       // todo: compare to numerical zero
+       if ( (px_ <= p1[0] ) && ( px_ + ox_ >= p1[0] ) && (start[0] <= p1[0] ) && ( end[0]  >= p1[0] ) &&
+    		(py_ <= p1[1] ) && ( py_ + oy_ >= p1[1] ) && (start[1] <= p1[1] ) && ( end[1]  >= p1[1] ) && (nrPoints < 2)){
+    	   result.resize(nrPoints+1);
+    	   result[nrPoints] = p1; //(p1[1] - end[1])*(start[1] - end[1]) / (start[0] - end[0]);
+    	   nrPoints++;
+    	   SUNDANCE_OUT(verb > 3, " Box2D::returnIntersectPoints  ADD p1:" << p1 << " nrPoints:" << nrPoints);
        }
-       if ( (px_ >= p2[0] ) && ( px_ + ox_ <= p2[0] ) && (start[0] <= p2[0] ) && ( end[0]  >= p2[0] ) &&
-    		(py_ >= p2[1] ) && ( py_ + oy_ <= p2[1] ) && (start[1] <= p2[0] ) && ( end[1]  >= p2[1] )){
-    	   result.resize(4);
-    	   result[3] = (p2[1] - end[1])*(start[1] - end[1]) / (start[0] - end[0]);
+       if ( (px_ <= p2[0] ) && ( px_ + ox_ >= p2[0] ) && (start[0] <= p2[0] ) && ( end[0]  >= p2[0] ) &&
+    		(py_ <= p2[1] ) && ( py_ + oy_ >= p2[1] ) && (start[1] <= p2[1] ) && ( end[1]  >= p2[1] ) && (nrPoints < 2)){
+    	   result.resize(nrPoints+1);
+    	   result[nrPoints] = p2; //(p2[1] - end[1])*(start[1] - end[1]) / (start[0] - end[0]);
+    	   nrPoints++;
+    	   SUNDANCE_OUT(verb > 3, " Box2D::returnIntersectPoints  ADD p2:" << p2 << " nrPoints:" << nrPoints);
        }
 	}
+	SUNDANCE_OUT(verb > 3, " Box2D::returnIntersectPoints END , nrPoints:" << nrPoints
+			<< " , start:" << start << " , end:" << end);
 }
 

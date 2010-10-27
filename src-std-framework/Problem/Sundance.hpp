@@ -64,9 +64,15 @@
 /* Parametrized Curves */
 #include "SundanceCircle.hpp"
 #include "SundanceBox2D.hpp"
+#include "SundanceBox3D.hpp"
+#include "SundanceLine2D.hpp"
+#include "SundancePlane3D.hpp"
+#include "SundanceEllipse2D.hpp"
+#include "SundanceSphere.hpp"
 #include "SundanceDummyParametrizedCurve.hpp"
 #include "SundanceParamCurveIntegral.hpp"
 #include "SundanceParametrizedCurve.hpp"
+#include "SundanceCurveIntegralCalc.hpp"
 
 /* Meshes */
 #include "SundanceMesh.hpp"
@@ -129,6 +135,7 @@
 #include "SundanceBernstein.hpp"
 #include "SundanceQuadratureFamily.hpp"
 #include "SundanceLagrange.hpp"
+#include "SundanceLegendre.hpp"
 #include "SundanceGaussianQuadrature.hpp"
 #include "SundanceFeketeQuadrature.hpp"
 

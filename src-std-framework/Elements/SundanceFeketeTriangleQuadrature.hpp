@@ -61,6 +61,8 @@ public:
 	static void
 			evalPKDpolynomials(int order, double x, double y, double* resultPtr);
 
+	static void computeBasisCoeffs(const int order, Array<double>& basisCoeffs);
+
 private:
 
 	static void permute(int m, const Array<double>& q,

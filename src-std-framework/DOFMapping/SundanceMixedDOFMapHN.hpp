@@ -36,7 +36,7 @@
 #include "SundanceMesh.hpp"
 #include "SundanceCellSet.hpp"
 #include "SundanceCellFilter.hpp"
-#include "SundanceHNDoFMapBase.hpp"
+#include "SundanceHNDoFMapBaseHomogeneous.hpp"
 #include "SundanceBasisFamilyBase.hpp"
 #include "SundanceMatrixStore.hpp"
 
@@ -53,7 +53,7 @@ class BasisDOFTopologyBase;
  * MixedDOFMapHN is defined on meshes with hanging nodes,
  * it builds the restriction matrix where it is needed.
  */
-class MixedDOFMapHN : public HNDoFMapBase
+class MixedDOFMapHN : public HNDoFMapBaseHomogeneous
 {
 public:
   /** */

@@ -49,6 +49,12 @@ namespace Sundance
                             Array<double>& x,
                             Array<double>& y);
 
+      static void computeBasisCoeffs(const int order,
+    		  Array<double>& basisCoeffs);
+
+      static void evalPolynomials(int nPts, double x,
+      		double y, double* resultPtr);
+
       static bool test(int p);
 
 

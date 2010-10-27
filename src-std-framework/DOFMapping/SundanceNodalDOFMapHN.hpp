@@ -37,7 +37,7 @@
 #include "SundanceCellFilter.hpp"
 #include "SundanceBasisFamily.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
-#include "SundanceHNDoFMapBase.hpp"
+#include "SundanceHNDoFMapBaseHomogeneous.hpp"
 #include "SundanceMatrixStore.hpp"
 
 namespace Sundance
@@ -47,7 +47,7 @@ using namespace Teuchos;
 /** 
  * 
  */
-class NodalDOFMapHN : public HNDoFMapBase
+class NodalDOFMapHN : public HNDoFMapBaseHomogeneous
 {
 public:
   /** */

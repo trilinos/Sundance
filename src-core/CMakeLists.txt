@@ -361,6 +361,11 @@ APPEND_SET(HEADERS
   ParametrizedCurves/SundanceCurveBase.hpp
   ParametrizedCurves/SundanceCircle.hpp
   ParametrizedCurves/SundanceBox2D.hpp
+  ParametrizedCurves/SundanceBox3D.hpp
+  ParametrizedCurves/SundanceEllipse2D.hpp
+  ParametrizedCurves/SundanceSphere.hpp
+  ParametrizedCurves/SundanceLine2D.hpp
+  ParametrizedCurves/SundancePlane3D.hpp
   ParametrizedCurves/SundanceParamCurveIntegral.hpp
   ParametrizedCurves/SundanceParametrizedCurve.hpp
   ParametrizedCurves/SundanceDummyParametrizedCurve.hpp
@@ -369,6 +374,11 @@ APPEND_SET(HEADERS
 APPEND_SET(SOURCES
   ParametrizedCurves/SundanceCircle.cpp
   ParametrizedCurves/SundanceBox2D.cpp
+  ParametrizedCurves/SundanceBox3D.cpp
+  ParametrizedCurves/SundanceEllipse2D.cpp
+  ParametrizedCurves/SundanceSphere.cpp
+  ParametrizedCurves/SundanceLine2D.cpp
+  ParametrizedCurves/SundancePlane3D.cpp
   ParametrizedCurves/SundanceParamCurveIntegral.cpp
   ParametrizedCurves/SundanceParametrizedCurve.cpp
   )

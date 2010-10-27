@@ -431,19 +431,19 @@ public:
 
   /** specifies if the special weights are valid <br>
    *  if this is false then usually the special weights have to be recomputed */
-  void setSpecialWeightValid(bool& val) const { ptr()->setSpecialWeightValid(val);}
+  void setSpecialWeightValid(bool val) const { ptr()->setSpecialWeightValid(val);}
 
   /** removes the special weights */
-  void removeSpecialWeights(int& dim, int& cellLID) const {ptr()->removeSpecialWeights( dim, cellLID);}
+  void removeSpecialWeights(int dim, int cellLID) const {ptr()->removeSpecialWeights( dim, cellLID);}
 
   /** verifies if the specified cell with the given dimension has special weights */
-  bool hasSpecialWeight(int& dim, int& cellLID) const {return ptr()->hasSpecialWeight( dim, cellLID); }
+  bool hasSpecialWeight(int dim, int cellLID) const {return ptr()->hasSpecialWeight( dim, cellLID); }
 
   /** Sets the special weights */
-  void setSpecialWeight(int& dim, int& cellLID, Array<double>& w) const {ptr()->setSpecialWeight(dim, cellLID, w);}
+  void setSpecialWeight(int dim, int cellLID, Array<double>& w) const {ptr()->setSpecialWeight(dim, cellLID, w);}
 
   /** Returns the special weights */
-  void getSpecialWeight(int& dim, int& cellLID, Array<double>& w) const {ptr()->getSpecialWeight(dim, cellLID, w);}
+  void getSpecialWeight(int dim, int cellLID, Array<double>& w) const {ptr()->getSpecialWeight(dim, cellLID, w);}
    //@}
 
 
@@ -457,7 +457,7 @@ public:
   virtual bool IsCurvePointsValid() const {return ptr()->IsCurvePointsValid();}
 
   /**  */
-  virtual void setCurvePointsValid(bool& val)  const {ptr()->setCurvePointsValid(val); }
+  virtual void setCurvePointsValid(bool val)  const {ptr()->setCurvePointsValid(val); }
 
   /** removes the curve intersection points */
   virtual void removeCurvePoints(int maxCellLID , int curveID)  const { ptr()->removeCurvePoints(maxCellLID , curveID); }

@@ -1,10 +1,23 @@
 #include "SundanceFeketeQuadQuadrature.hpp"
 #include "SundanceOut.hpp"
+#include "SundancePoint.hpp"
 #include "SundanceGaussLobatto1D.hpp"
 #include "SundanceTabs.hpp"
 
 using namespace Sundance;
 using namespace Teuchos;
+
+extern "C"
+{
+
+/* LAPACK factorization */
+void dgetrf_(const int* M, const int* N, double* A, const int* lda,
+		const int* iPiv, int* info);
+
+/* LAPACK inversion of factorized matrix */
+void dgetri_(const int* n, double* a, const int* lda, const int* iPiv,
+		double* work, const int* lwork, int* info);
+}
 
 void FeketeQuadQuadrature::getPoints(int order, Array<double>& wgt, Array<
 		double>& x, Array<double>& y)
@@ -33,6 +46,100 @@ void FeketeQuadQuadrature::getPoints(int order, Array<double>& wgt, Array<
 			y[k] = q;
 			wgt[k] = w[i] * w[j];
 		}
+	}
+}
+
+void FeketeQuadQuadrature::computeBasisCoeffs(const int order, Array<double>& basisCoeffs)
+{
+	// Get Fekete points of chosen order
+	Array<Point> feketePts;
+
+	Array<double> x;
+	Array<double> y;
+	Array<double> w;
+	getPoints(order, w, x, y);
+	int nFeketePts = w.length();
+	feketePts.resize(nFeketePts);
+	for (int i = 0; i < nFeketePts; i++)
+		feketePts[i] = Point(x[i], y[i]);
+
+	// We construct a Lagrange basis at feketePts (there are nFeketePts basis functions)
+	basisCoeffs.resize(nFeketePts * nFeketePts);
+
+	// Let's compute the coefficients:
+	// Build Vandermonde matrix at Fekete points
+	for (int n = 0; n < nFeketePts; n++)
+	{
+		// Set pointer to beginning of n-th row and determine values of
+		// polynomials at n-th Fekete point
+		double* start = &(basisCoeffs[n * nFeketePts]);
+		evalPolynomials(nFeketePts, feketePts[n][0], feketePts[n][1], start);
+	}
+
+	// Invert Vandermonde matrix to obtain basis coefficients:
+	// LAPACK error flag, array for switched rows, work array
+	int lapack_err = 0;
+	Array<int> pivot;
+	pivot.resize(nFeketePts);
+	Array<double> work;
+	work.resize(1);
+	int lwork = -1;
+
+	// LU factorization
+	::dgetrf_(&nFeketePts, &nFeketePts, &(basisCoeffs[0]), &nFeketePts,
+			&(pivot[0]), &lapack_err);
+
+	TEST_FOR_EXCEPTION(
+			lapack_err != 0,
+			RuntimeError,
+			"FeketeQuadQuadrature::computeBasisCoeffs(): factorization of generalized Vandermonde matrix failed");
+
+	// Determine work array size and invert factorized matrix
+	::dgetri_(&nFeketePts, &(basisCoeffs[0]), &nFeketePts, &(pivot[0]),
+			&(work[0]), &lwork, &lapack_err);
+	lwork = (int) work[0];
+	work.resize(lwork);
+	::dgetri_(&nFeketePts, &(basisCoeffs[0]), &nFeketePts, &(pivot[0]),
+			&(work[0]), &lwork, &lapack_err);
+
+	TEST_FOR_EXCEPTION(
+			lapack_err != 0,
+			RuntimeError,
+			"FeketeQuadQuadrature::computeBasisCoeffs(): inversion of generalized Vandermonde matrix failed");
+}
+
+void FeketeQuadQuadrature::evalPolynomials(int nPts, double x,
+		double y, double* resultPtr)
+{
+	// Calculate all (normalized and shifted) Legendre polynomials < order
+	int i = 0;
+	int order = (int) sqrt(nPts);
+
+	double xLegendre  = 1.;
+	double xLegendre1 = 0.;
+
+	for (int k = 0; k < order; k++)
+	{
+		double yLegendre  = 1.;
+		double yLegendre1 = 0.;
+		double normxLegendre = sqrt( 2. * k + 1 ) * xLegendre;
+
+		// 'i' implements a bijection polynomial index (k,l) onto basis index (i)
+		for (int l = 0; l < order ; l++)
+		{
+			double normyLegendre = sqrt( 2. * l + 1 ) * yLegendre;
+
+			// We will write order*order values
+			resultPtr[i++] = normxLegendre * normyLegendre;
+
+			double yLegendre2 = yLegendre1;
+			yLegendre1 = yLegendre;
+			yLegendre = ( (2 * l + 1) * (2 * y - 1) * yLegendre1 - l * yLegendre2 ) / ( l + 1 );
+		}
+
+		double xLegendre2 = xLegendre1;
+		xLegendre1 = xLegendre;
+		xLegendre = ( (2 * k + 1) * (2 * x - 1) * xLegendre1 - k * xLegendre2 ) / ( k + 1 );
 	}
 }
 

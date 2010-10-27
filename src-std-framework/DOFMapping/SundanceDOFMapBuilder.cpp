@@ -40,6 +40,7 @@
 #include "SundancePartialElementDOFMap.hpp"
 #include "SundanceMaximalCellFilter.hpp"
 #include "SundanceInhomogeneousNodalDOFMap.hpp"
+#include "SundanceInhomogeneousDOFMapHN.hpp"
 #include "SundanceCellFilter.hpp"
 #include "SundanceDimensionalCellFilter.hpp"
 #include "SundanceCellSet.hpp"
@@ -143,7 +144,7 @@ RCP<DOFMapBase> DOFMapBuilder::makeMap(const Mesh& mesh,
     	rtn = rcp(new MixedDOFMap(mesh, basis, maxCells, verb_));
     }
   }
-  else if (hasNodalBasis(basis))
+  else if ( hasNodalBasis(basis) && (!mesh.allowsHangingHodes()) )
   {
     SUNDANCE_MSG2(verb_, "creating inhomogeneous nodal map");
     Sundance::Map<CellFilter, Set<int> > fmap = domainToFuncSetMap(filters);
@@ -156,7 +157,14 @@ RCP<DOFMapBase> DOFMapBuilder::makeMap(const Mesh& mesh,
   }
   else
   {
-    TEST_FOR_EXCEPT(true);
+	SUNDANCE_MSG2(verb_, "creating inhomogeneous HN map (the last possibility)");
+	Sundance::Map<CellFilter, Set<int> > fmap = domainToFuncSetMap(filters);
+	Sundance::Map<CellFilter, Sundance::Map<Set<int>, CellSet> > inputChildren;
+
+	Array<Sundance::Map<Set<int>, CellFilter> > disjoint
+	      = DOFMapBuilder::funcDomains(mesh, fmap, inputChildren);
+    // the last option inhomogeneous mixed map, which supports hanging nodes
+	rtn = rcp(new InhomogeneousDOFMapHN(mesh, basis , disjoint, verb_));
   }
   return rtn;
 }
@@ -464,6 +472,8 @@ bool DOFMapBuilder::hasCellBasis(const Array<RCP<BasisDOFTopologyBase> >& basis)
 bool DOFMapBuilder::allFuncsAreOmnipresent(const Mesh& mesh, 
   const Array<Set<CellFilter> >& filters) const
 {
+  int rtn = 0;
+
   int maxFilterDim = 0;
   Set<Set<CellFilter> > distinctSets;
   for (int i=0; i<filters.size(); i++)
@@ -480,10 +490,16 @@ bool DOFMapBuilder::allFuncsAreOmnipresent(const Mesh& mesh,
   for (Set<Set<CellFilter> >::const_iterator 
          iter=distinctSets.begin(); iter != distinctSets.end(); iter++)
   {
-    if (!isWholeDomain(mesh, maxFilterDim, *iter)) return false;
+    if (!isWholeDomain(mesh, maxFilterDim, *iter)) rtn = 1;
   }
 
-  return true;
+  // make syncronization with the other processors
+  int omniPresent = rtn;
+  mesh.comm().allReduce((void*) &omniPresent, (void*) &rtn, 1,
+    MPIComm::INT, MPIComm::SUM);
+
+  // it is true only when the summed value is zero
+  return (rtn < 1);
 }
 
 bool DOFMapBuilder::isWholeDomain(const Mesh& mesh, 

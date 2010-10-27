@@ -961,31 +961,31 @@ public:
 
     /** specifies if the special weights are valid <br>
      *  if this is false then usually the special weights have to be recomputed */
-    virtual void setSpecialWeightValid(bool& val) const { validWeights_ = val;}
+    virtual void setSpecialWeightValid(bool val) const { validWeights_ = val;}
 
     /** removes the special weights */
-    virtual void removeSpecialWeights(int& dim, int& cellLID) const {
+    virtual void removeSpecialWeights(int dim, int cellLID) const {
     	Array<double> nothing;
     	nothing.resize(0);
-    	specialWeights_[dim].put(cellLID,nothing);
+    	specialWeights_[dim-1].put(cellLID,nothing);
     }
 
     /** verifies if the specified cell with the given dimension has special weights */
-    virtual bool hasSpecialWeight(int& dim, int& cellLID) const {
-    	if (specialWeights_[dim].containsKey(cellLID))
-            return ((specialWeights_[dim].get(cellLID).size() > 0));
+    virtual bool hasSpecialWeight(int dim, int cellLID) const {
+    	if (specialWeights_[dim-1].containsKey(cellLID))
+            return ((specialWeights_[dim-1].get(cellLID).size() > 0));
     	else
     		return false;
     }
 
     /** Sets the special weights */
-    virtual void setSpecialWeight(int& dim, int& cellLID, Array<double>& w) const {
-    	specialWeights_[dim].put(cellLID,w);
+    virtual void setSpecialWeight(int dim, int cellLID, Array<double>& w) const {
+    	specialWeights_[dim-1].put(cellLID,w);
     }
 
     /** Returns the special weights */
-    virtual void getSpecialWeight(int& dim, int& cellLID, Array<double>& w) const {
-    	w = specialWeights_[dim].get(cellLID);
+    virtual void getSpecialWeight(int dim, int cellLID, Array<double>& w) const {
+    	w = specialWeights_[dim-1].get(cellLID);
     }
     //@}
 
@@ -999,7 +999,7 @@ public:
       virtual bool IsCurvePointsValid() const {return curvePoints_Are_Valid_;}
 
       /**  */
-      virtual void setCurvePointsValid(bool& val) const { curvePoints_Are_Valid_ = val;}
+      virtual void setCurvePointsValid(bool val) const { curvePoints_Are_Valid_ = val;}
 
       /** removes the intersection points*/
       virtual void removeCurvePoints(int maxCellLID , int curveID) const{

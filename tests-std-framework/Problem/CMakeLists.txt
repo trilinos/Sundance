@@ -41,7 +41,6 @@ SET(SerialTests
   StokesPeano2D 
   SecondOrderFloquet 
   MixedTest
-  NavStok_Chanel_stat_HN_Nitsch
   Poisson2D_HN_Nitsch
 )
 
@@ -76,6 +75,9 @@ SET(MPITests
              NavStok_Chanel_stat_HN
              Poisson3DTest_HN_Q1Q1
              Poisson3DTest_HN_Q2Q1
+             LinearPartialDomain_mixed
+             NonlinearPartialDomain_mixed
+             NavStok_Chanel_stat_HN_Nitsch
    )
 
 
