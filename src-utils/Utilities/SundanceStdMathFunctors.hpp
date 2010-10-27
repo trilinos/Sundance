@@ -38,7 +38,6 @@
 # include "winmath.h"
 #endif
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
 
 namespace Sundance
 {
@@ -73,6 +72,8 @@ namespace Sundance
                       double* df_dx,
                       double* d2f_dxx,
                       double* d3f_dxxx) const ;
+
+    static RCP<FunctorDomain> powerDomain(const double& p);
 
   private:
     double p_;
@@ -150,6 +151,5 @@ namespace Sundance
 }
 
                   
-#endif  /* DOXYGEN_DEVELOPER_ONLY */  
 
 #endif

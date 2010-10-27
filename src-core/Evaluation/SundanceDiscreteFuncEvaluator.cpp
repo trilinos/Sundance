@@ -145,11 +145,13 @@ void DiscreteFuncElementEvaluator
   vectorResults.resize(mi_.size());
   for (int i=0; i<mi_.size(); i++)
     {
+      Tabs tab2;
       vectorResults[i] = mgr.popVector();
       TEST_FOR_EXCEPTION(!vectorResults[i]->isValid(), 
                          InternalError,
                          "invalid evaluation vector allocated in "
                          "DiscreteFuncElementEvaluator::internalEval()");
+      SUNDANCE_MSG2(mgr.verb(),tab2<< "setting string rep " << stringReps_[i]);
       vectorResults[i]->setString(stringReps_[i]);
     }
   mgr.evalDiscreteFuncElement(expr(), mi_, vectorResults);

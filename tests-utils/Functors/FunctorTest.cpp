@@ -11,6 +11,14 @@ template <class F> bool functorTest(int nx, double tol)
   return f->test(nx, tol);
 }
 
+bool powTest(double a, int nx, double tol)
+{
+  RCP<UnaryFunctor> f = rcp(new PowerFunctor(a));
+
+  return f->test(nx, tol);
+}
+
+
 
 int main(int argc, char** argv)
 {
@@ -34,6 +42,15 @@ int main(int argc, char** argv)
       isOK = functorTest<StdLog>(nx, tol) && isOK ;
 
       isOK = functorTest<StdSqrt>(nx, tol) && isOK ;
+
+      /* power functor */
+      isOK = powTest(-2.0, nx, tol) && isOK;
+      isOK = powTest(-2.5, nx, tol) && isOK;
+      isOK = powTest(0.0, nx, tol) && isOK;
+      isOK = powTest(0.5, nx, tol) && isOK;
+      isOK = powTest(1.0, nx, tol) && isOK;
+      isOK = powTest(2.0, nx, tol) && isOK;
+      isOK = powTest(4.0, nx, tol) && isOK;
 
       /* trig functions */
 

@@ -67,6 +67,10 @@ UnboundedDomain::UnboundedDomain() {;}
 
 PositiveDomain::PositiveDomain() {;}
 
+StrictlyPositiveDomain::StrictlyPositiveDomain() {;}
+
+
+
 BoundedDomain::BoundedDomain(const double& lower, const double& upper) 
   : FunctorDomain(), lower_(lower), upper_(upper) 
 {;}

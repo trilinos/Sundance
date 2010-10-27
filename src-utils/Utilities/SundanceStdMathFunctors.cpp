@@ -37,8 +37,32 @@ using namespace Teuchos;
 
 
 PowerFunctor::PowerFunctor(const double& p) 
-  : UnaryFunctor("pow("+Teuchos::toString(p)+")"), p_(p)
+  : UnaryFunctor("pow("+Teuchos::toString(p)+")",
+		 powerDomain(p)), p_(p)
 {;}
+
+RCP<FunctorDomain> PowerFunctor::powerDomain(const double& p)
+{
+  /* There are four cases: 
+   * (1) p is a positive integer, in which case the domain is all of R.
+   * (2) p is a negative integer, in which case the domain is R\0.
+   * (3) p is a positive real \notin Z, in which case the domain is [0,\infty).
+   * (3) p is a negative real \notin Z, in which case the domain is (0,\infty).
+   */
+  bool isInZ = floor(p)==p;
+  bool isNegative = p < 0.0;
+
+  if (isInZ)
+    {
+      if (isNegative) return rcp(new NonzeroDomain());
+    }
+  else
+    {
+      if (isNegative) return rcp(new StrictlyPositiveDomain());
+      return rcp(new PositiveDomain());
+    }
+  return rcp(new UnboundedDomain());
+}
 
 void PowerFunctor::eval1(const double* const x, 
                         int nx, 
@@ -57,8 +81,8 @@ void PowerFunctor::eval1(const double* const x,
     {
       for (int i=0; i<nx; i++) 
         {
-          df[i] = 0.0;
-          f[i] = 1.0;
+          df[i] = 1.0;
+          f[i] = x[i];
         }
     }
   else if (p_==0)
@@ -66,7 +90,7 @@ void PowerFunctor::eval1(const double* const x,
       for (int i=0; i<nx; i++) 
         {
           df[i] = 0.0;
-          f[i] = 0.0;
+          f[i] = 1.0;
         }
     }
   else

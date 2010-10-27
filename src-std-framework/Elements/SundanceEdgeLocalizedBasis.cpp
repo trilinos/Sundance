@@ -195,9 +195,9 @@ void EdgeLocalizedBasis::evalOnTriangle(const Point& pt,
   result.resize(3);
   tmp.resize(3);
 
-  bool onEdge0 = std::fabs(pt[1]) < 1.0e-14;
-  bool onEdge1 = std::fabs(1.0-pt[0]-pt[1]) < 1.0e-14;
-  bool onEdge2 = std::fabs(pt[0]) < 1.0e-14;
+  bool onEdge2 = std::fabs(pt[1]) < 1.0e-14;
+  bool onEdge0 = std::fabs(1.0-pt[0]-pt[1]) < 1.0e-14;
+  bool onEdge1 = std::fabs(pt[0]) < 1.0e-14;
   
   TEST_FOR_EXCEPTION(!(onEdge0 || onEdge1 || onEdge2),
     RuntimeError,

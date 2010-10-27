@@ -40,12 +40,6 @@
 #include "SundanceTabs.hpp"
 
 using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -258,9 +252,9 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
   for (SequentialIterator<double> i=space.begin(); i!=space.end(); i++, k++)
   {
     double num =  fabs(df_dx[k]-gf[i]);
-    double den = fabs(df_dx[k]) + fabs(gf[i]);
+    double den = fabs(df_dx[k]) + fabs(gf[i]) + 1.0e-14;
     double r = 0.0;
-    if (fabs(den) > 1.0e-10) r = num/den;
+    if (fabs(den) > 1.0e-16) r = num/den;
     else r = 1.0;
     if (showAll)
     {

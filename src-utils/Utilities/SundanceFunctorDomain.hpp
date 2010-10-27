@@ -77,6 +77,22 @@ namespace Sundance
      double lowerBound() const {return 0.0;}
   };
 
+  class StrictlyPositiveDomain : public FunctorDomain
+  {
+  public:
+    StrictlyPositiveDomain();
+
+     bool hasLowerBound() const {return true;}
+
+     double lowerBound() const {return 0.0;}
+
+     bool hasExcludedPoint() const {return true;}
+
+     double excludedPoint() const {return 0.0;}
+
+
+  };
+
 
   class BoundedDomain : public FunctorDomain
   {
