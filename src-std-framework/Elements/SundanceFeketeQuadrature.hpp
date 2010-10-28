@@ -104,18 +104,24 @@ protected:
 			Array<Point>& quadPoints, Array<double>& quadWeights,
 			bool &weightsChanged) const;
 
+	virtual void getAdaptedTriangleWeights(int cellLID, const Mesh& mesh,
+			const ParametrizedCurve& globalCurve, Array<Point>& quadPoints,
+			Array<double>& quadWeights, bool& weightsChanged) const;
+
+	virtual void getAdaptedQuadWeights(int cellLID, const Mesh& mesh,
+			const ParametrizedCurve& globalCurve, Array<Point>& quadPoints,
+			Array<double>& quadWeights, bool& weightsChanged) const;
+
 	virtual void integrateRegion(const CellType& cellType, int cellDim,
 			const int innerOrder, const Point& x, const Point& xref,
 			const Point& vec1, const Point& vec2, const Point& vec1ref,
 			const Point& vec2ref, const ParametrizedCurve& curve,
 			Array<double>& integrals) const;
 
-	virtual void evaluateAllBasisFunctions(const Point& q,
+	virtual void evaluateAllBasisFunctions(const CellType cellType, const Point& q,
 			Array<double>& result) const;
 
 private:
-
-	void computeBasisCoeffs() const;
 
 	mutable bool _hasBasisCoeffs;
 	mutable Array<double> _basisCoeffs;
