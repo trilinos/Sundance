@@ -788,6 +788,12 @@ RCP<const MapStructure> InhomogeneousDOFMapHN
   dofs.resize(nBasisChunks());
   nNodes.resize(nBasisChunks());
 
+  // here we specify which DoF to return at function places where
+  // these values might be input for "ghostView_" object
+  // as a dummy value this will be used, this dummy value should always exist
+  // now we take first DoF which is local on the processor
+  int DoFs_Non =  lowestLocalDOF()+1; //-1;
+
   if (cellDim == dim_)
   {
     Tabs tab1;
@@ -798,10 +804,10 @@ RCP<const MapStructure> InhomogeneousDOFMapHN
     {
     	// set the value and resize the dof array
     	nNodes[b] = totalNNodesPerCell_[ b ][cellDim];
-    	// resize the array with -1, so that in case of wrong access this will throw an exception
+    	// resize the array with, and put dummy DoFs in the array
     	dofs[b].resize( nNodes[b]* nFuncs(b) * nCells );
     	for (int tmpI = 0; tmpI < nNodes[b]* nFuncs(b) * nCells ; tmpI++)
-    		dofs[b][tmpI] = -1;
+    		dofs[b][tmpI] = DoFs_Non;
     }
 
     for (int b = 0; b < nBasisChunks() ; b++)
@@ -856,10 +862,10 @@ RCP<const MapStructure> InhomogeneousDOFMapHN
     for (int b = 0 ; b < nBasisChunks() ; b++)
     {
     	nNodes[b] = totalNNodesPerCell_[b][cellDim];
-    	// resize the array with -1, so that in case of wrong access this will throw an exception
+    	// resize the array with, and put dummy DoFs in the array
     	dofs[b].resize( nNodes[b]* nFuncs(b) * nCells , -1);
     	for (int tmpI = 0; tmpI < nNodes[b]* nFuncs(b) * nCells ; tmpI++)
-    		dofs[b][tmpI] = -1;
+    		dofs[b][tmpI] = DoFs_Non;
     }
 
     // for each function that has been requested
