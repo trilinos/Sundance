@@ -75,8 +75,23 @@ namespace Sundance
 
     static RCP<FunctorDomain> powerDomain(const double& p);
 
+  protected:
+    bool acceptX(int diffOrder, const double& x) const
+    {
+      if (powerIsInteger_)
+	{
+	  return p_>=0.0 || x!=0.0;
+	}
+      else
+	{
+	  if (x<0.0) return false; 
+	  if (x==0.0) return (p_ > diffOrder);
+	}
+      return true;      
+    }
   private:
     double p_;
+    bool powerIsInteger_;
   };
 
 

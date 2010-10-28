@@ -300,6 +300,7 @@ bool UnaryFunctor::test(int nx, const double& tol) const
   for (int i=1; i<=nx; i++)
     {
       double x = a + i*c;
+      std::cerr << "testing at " << x << std::endl;
       if (domain()->hasExcludedPoint() && fabs(x-domain()->excludedPoint())<1.0e-14)
         {
           continue;
@@ -310,18 +311,25 @@ bool UnaryFunctor::test(int nx, const double& tol) const
   /* Test for exception detection at the excluded point, if any */
   if (domain()->hasExcludedPoint())
     {
+      std::cerr << "testing detection of excluded point x=" 
+		<< domain()->excludedPoint() << std::endl;
       isOK =  testInvalidValue(domain()->excludedPoint()) && isOK ;
     }
 
   /* Test for exception detection at a point below the lower bound */
   if (domain()->hasLowerBound())
     {
+      std::cerr << "testing exception below lower bound x=" 
+		<< domain()->lowerBound() << std::endl;
       isOK =  testInvalidValue(domain()->lowerBound() - 0.1) && isOK ;
     }
   
   /* Test for exception detection at a point above the upper bound */
   if (domain()->hasUpperBound())
     {
+      std::cerr << "testing exception above lower bound x=" 
+		<< domain()->upperBound() << std::endl;
+
       isOK =  testInvalidValue(domain()->upperBound() + 0.1) && isOK ;
     }
   

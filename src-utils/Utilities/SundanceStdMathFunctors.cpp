@@ -30,16 +30,19 @@
 
 #include <math.h>
 #include "SundanceStdMathFunctors.hpp"
+#include "SundanceOut.hpp"
 #include "Teuchos_Utils.hpp"
 
 using namespace Sundance;
 using namespace Teuchos;
-
+using std::endl;
 
 PowerFunctor::PowerFunctor(const double& p) 
   : UnaryFunctor("pow("+Teuchos::toString(p)+")",
-		 powerDomain(p)), p_(p)
-{;}
+		 powerDomain(p)), 
+    p_(p),
+    powerIsInteger_(p==floor(p))
+{}
 
 RCP<FunctorDomain> PowerFunctor::powerDomain(const double& p)
 {
@@ -99,6 +102,11 @@ void PowerFunctor::eval1(const double* const x,
         {
           for (int i=0; i<nx; i++) 
             {
+	      TEST_FOR_EXCEPTION(!acceptX(1,x[i]), RuntimeError,
+				 "first deriv of pow(" << x[i] 
+				 << ", " << p_ << ") "
+				 "is undefined");
+	      
               double px = ::pow(x[i], p_-1);
               df[i] = p_*px;
               f[i] = x[i]*px;
@@ -112,82 +120,23 @@ void PowerFunctor::eval1(const double* const x,
 #endif
             }
         }
-      else
+      else 
         {
-          for (int i=0; i<nx; i++) 
-            {
-              double px = ::pow(x[i], p_-1);
-              df[i] = p_*px;
-              f[i] = x[i]*px;
-            }
+	  for (int i=0; i<nx; i++) 
+	    {
+	      TEST_FOR_EXCEPTION(!acceptX(1,x[i]), RuntimeError,
+				 "first deriv of pow(" << x[i] 
+				 << ", " << p_ << ") "
+				 "is undefined");
+	      double px = ::pow(x[i], p_-1);
+	      df[i] = p_*px;
+	      f[i] = x[i]*px;
+	    }
         }
     }
 }
 
-void PowerFunctor::eval2(const double* const x, 
-                        int nx, 
-                        double* f, 
-                        double* df,
-                        double* d2f_dxx) const
-{
-  if (p_==2)
-    {
-      for (int i=0; i<nx; i++) 
-        {
-          d2f_dxx[i] = 2.0;
-          df[i] = 2.0*x[i];
-          f[i] = x[i]*x[i];
-        }
-    }
-  else if (p_==1)
-    {
-       for (int i=0; i<nx; i++) 
-        {
-          d2f_dxx[i] = 0.0;
-          df[i] = 1.0;
-          f[i] = x[i];
-        }
-    }
-  else if (p_==0)
-    {
-      for (int i=0; i<nx; i++) 
-        {
-          d2f_dxx[i] = 0.0;
-          df[i] = 0.0;
-          f[i] = 1.0;
-        }
-    }
-  else
-    {
-      if (checkResults())
-        {
-          for (int i=0; i<nx; i++) 
-            {
-              double px = ::pow(x[i], p_-2);
-              d2f_dxx[i] = p_ * (p_-1) * px;
-              df[i] = p_*x[i]*px;
-              f[i] = x[i]*x[i]*px;
-#ifdef REDDISH_PORT_PROBLEM
-              TEST_FOR_EXCEPTION(fpclassify(f[i]) != FP_NORMAL 
-                                 || fpclassify(df[i]) != FP_NORMAL,
-                                 RuntimeError,
-                                 "Non-normal floating point result detected in "
-                                 "evaluation of unary functor " << name());
-#endif
-            }
-        }
-      else
-        {
-          for (int i=0; i<nx; i++) 
-            {
-              double px = ::pow(x[i], p_-2);
-              d2f_dxx[i] = p_ * (p_-1) * px;
-              df[i] = p_*x[i]*px;
-              f[i] = x[i]*x[i]*px;
-            }
-        }
-    }
-}
+
 
 
 void PowerFunctor::eval3(const double* const x, 
@@ -248,6 +197,12 @@ void PowerFunctor::eval3(const double* const x,
               d2f_dxx[i] = p_ * (p_-1) * x[i] * px;
               df[i] = p_*x[i]*x[i]*px;
               f[i] = x[i]*x[i]*x[i]*px;
+	      TEST_FOR_EXCEPTION(!acceptX(3,x[i]), RuntimeError,
+				 "third deriv of pow(" << x[i] 
+				 << ", " << p_ << ") "
+				 "is undefined");
+
+
 #ifdef REDDISH_PORT_PROBLEM
               TEST_FOR_EXCEPTION(fpclassify(f[i]) != FP_NORMAL 
                                  || fpclassify(df[i]) != FP_NORMAL,
@@ -261,6 +216,11 @@ void PowerFunctor::eval3(const double* const x,
         {
           for (int i=0; i<nx; i++) 
             {
+	      TEST_FOR_EXCEPTION(!acceptX(3,x[i]), RuntimeError,
+				 "third deriv of pow(" << x[i] 
+				 << ", " << p_ << ") "
+				 "is undefined");
+
               double px = ::pow(x[i], p_-3);
               d3f_dxxx[i] = p_ * (p_-1) * (p_-2) * px;
               d2f_dxx[i] = p_ * (p_-1) * x[i] * px;
@@ -271,6 +231,86 @@ void PowerFunctor::eval3(const double* const x,
     }
 }
 
+
+void PowerFunctor::eval2(const double* const x, 
+                        int nx, 
+                        double* f, 
+                        double* df,
+                        double* d2f_dxx) const
+{
+  if (p_==2)
+    {
+      for (int i=0; i<nx; i++) 
+        {
+          d2f_dxx[i] = 2.0;
+          df[i] = 2.0*x[i];
+          f[i] = x[i]*x[i];
+        }
+    }
+  else if (p_==1)
+    {
+       for (int i=0; i<nx; i++) 
+        {
+          d2f_dxx[i] = 0.0;
+          df[i] = 1.0;
+          f[i] = x[i];
+        }
+    }
+  else if (p_==0)
+    {
+      for (int i=0; i<nx; i++) 
+        {
+          d2f_dxx[i] = 0.0;
+          df[i] = 0.0;
+          f[i] = 1.0;
+        }
+    }
+  else
+    {
+      if (checkResults())
+        {
+          for (int i=0; i<nx; i++) 
+            {
+	      TEST_FOR_EXCEPTION(!acceptX(2,x[i]), RuntimeError,
+				 "second deriv of pow(" << x[i] 
+				 << ", " << p_ << ") "
+				 "is undefined");
+
+
+              double px = ::pow(x[i], p_-2);
+              d2f_dxx[i] = p_ * (p_-1) * px;
+              df[i] = p_*x[i]*px;
+              f[i] = x[i]*x[i]*px;
+#ifdef REDDISH_PORT_PROBLEM
+              TEST_FOR_EXCEPTION(fpclassify(f[i]) != FP_NORMAL 
+                                 || fpclassify(df[i]) != FP_NORMAL,
+                                 RuntimeError,
+                                 "Non-normal floating point result detected in "
+                                 "evaluation of unary functor " << name());
+#endif
+            }
+        }
+      else
+        {
+	  for (int i=0; i<nx; i++) 
+	    {
+	      TEST_FOR_EXCEPTION(!acceptX(2,x[i]), RuntimeError,
+				 "second deriv of pow(" << x[i] 
+				 << ", " << p_ << ") "
+				 "is undefined");
+	      
+	      double px = ::pow(x[i], p_-2);
+	      
+	      d2f_dxx[i] = p_ * (p_-1) * px;
+	      df[i] = p_*x[i]*px;
+	      f[i] = x[i]*x[i]*px;
+	    }
+	}
+    }
+}
+
+
+
 void PowerFunctor::eval0(const double* const x, 
                         int nx, 
                         double* f) const
@@ -279,6 +319,12 @@ void PowerFunctor::eval0(const double* const x,
     {
       for (int i=0; i<nx; i++) 
         {
+	  TEST_FOR_EXCEPTION(!acceptX(0,x[i]), RuntimeError,
+			     "pow(" << x[i] 
+			     << ", " << p_ << ") "
+			     "is undefined");
+
+
           f[i] = ::pow(x[i], p_);
 #ifdef REDDISH_PORT_PROBLEM
           TEST_FOR_EXCEPTION(fpclassify(f[i]) != FP_NORMAL, 
@@ -286,13 +332,21 @@ void PowerFunctor::eval0(const double* const x,
                              "Non-normal floating point result detected in "
                              "evaluation of unary functor " << name());
 #endif
-        }
+	}
     }
   else
     {
       for (int i=0; i<nx; i++) 
-        {
-          f[i] = ::pow(x[i], p_);
-        }
+	{
+	  TEST_FOR_EXCEPTION(!acceptX(0,x[i]), RuntimeError,
+			     "pow(" << x[i] 
+			     << ", " << p_ << ") "
+			     "is undefined");
+
+	  TEST_FOR_EXCEPTION(x[0] <= 0.0, RuntimeError,
+			     "pow(" << x[0] << ", " << p_ << ") "
+			     "is undefined");
+	  f[i] = ::pow(x[i], p_);
+	}
     }
 }
