@@ -343,9 +343,6 @@ void PowerFunctor::eval0(const double* const x,
 			     << ", " << p_ << ") "
 			     "is undefined");
 
-	  TEST_FOR_EXCEPTION(x[0] <= 0.0, RuntimeError,
-			     "pow(" << x[0] << ", " << p_ << ") "
-			     "is undefined");
 	  f[i] = ::pow(x[i], p_);
 	}
     }
