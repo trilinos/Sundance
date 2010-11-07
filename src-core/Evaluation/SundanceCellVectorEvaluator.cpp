@@ -89,7 +89,7 @@ void CellVectorEvaluator::internalEval(const EvalManager& mgr,
   Array<double>& constantResults,
   Array<RCP<EvalVector> >& vectorResults) const 
 {
-  Tabs tabs;
+  Tabs tabs(0);
 
   SUNDANCE_MSG1(mgr.verb(), tabs << "CellVectorEvaluator::eval() expr=" 
     << expr()->toString());
@@ -108,8 +108,8 @@ void CellVectorEvaluator::internalEval(const EvalManager& mgr,
   {
     Tabs tab1;
     Out::os() << tab1 << "results " << std::endl;
-    this->sparsity()->print(Out::os(), vectorResults,
-      constantResults);
+    mgr.showResults(Out::os(), this->sparsity(), vectorResults,
+		    constantResults);
   }
 
 }

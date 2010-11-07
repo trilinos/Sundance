@@ -84,7 +84,7 @@ void CurveNormEvaluator::internalEval(const EvalManager& mgr,
   Array<double>& constantResults,
   Array<RCP<EvalVector> >& vectorResults) const 
 {
-  Tabs tabs;
+  Tabs tabs(0);
 
   SUNDANCE_MSG2(mgr.verb(), tabs << "CurveNormEvaluator::eval() expr="
     << expr()->toString());
@@ -107,10 +107,10 @@ void CurveNormEvaluator::internalEval(const EvalManager& mgr,
       if (EvalVector::shadowOps()) vectorResults[0]->setString(stringRep_);
     }
 
-  if (mgr.verb() > 2)
+  if (mgr.verb() > 1)
     {
       Out::os() << tabs << "results " << std::endl;
-      this->sparsity()->print(Out::os(), vectorResults,
+      mgr.showResults(Out::os(), this->sparsity(), vectorResults,
                             constantResults);
     }
 }

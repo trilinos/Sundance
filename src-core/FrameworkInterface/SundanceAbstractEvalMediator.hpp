@@ -47,6 +47,8 @@ class CurveNormExpr;
 class CellVectorExpr;
 class MultiIndex; 
 class DiscreteFuncElement;
+class SparsitySuperset;
+
 /**
  * Base class for evaluation mediator objects. 
  * Evaluation mediators are responsible
@@ -104,6 +106,13 @@ public:
    * its numerical values in the given EvalVector. */
   virtual void evalCellVectorExpr(const CellVectorExpr* expr,
     RCP<EvalVector>& vec) const = 0 ;
+
+
+  /** Print evaluation results */
+  virtual void showResults(std::ostream& os,
+			   const RCP<SparsitySuperset>& sparsity,
+			   const Array<RCP<EvalVector> >& vecResults,
+			   const Array<double>& constantResults) const  ;
 private:
   mutable int verb_;
   mutable int dfVerb_;

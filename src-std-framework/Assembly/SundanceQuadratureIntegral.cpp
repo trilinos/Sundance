@@ -453,8 +453,14 @@ void QuadratureIntegral::transformZeroForm(const CellJacobianBatch& JTrans,
       {
     	    for (int c=0; c<JVol.numCells(); c++)
     	    {
+	      Tabs tab1;
+	      SUNDANCE_MSG4(integrationVerb(), tab1 << "cell #" << c
+			    << " of " << JVol.numCells());
     	      if (checkLocalFlag && !isLocalFlag[c])
     	      {
+		Tabs tab2;
+		SUNDANCE_MSG4(integrationVerb(), tab2 
+			      << "skipped -- is not local cell");
     	        coeffPtr += nQuad();
     	        continue;
     	      }
@@ -463,7 +469,11 @@ void QuadratureIntegral::transformZeroForm(const CellJacobianBatch& JTrans,
 
     	      for (int q=0; q<nQuad(); q++, coeffPtr++)
     	      {
-    	    	  a += w[q]*(*coeffPtr)*detJ;
+		Tabs tab3;
+		SUNDANCE_MSG4(integrationVerb(), 
+			      tab3 << "q=" << q << "\t w=" << w[q]
+			      << "\t\t coeff=" << *coeffPtr << "\t\t |J|=" << detJ);
+		a += w[q]*(*coeffPtr)*detJ;
     	      }
     	      flops += 3*nQuad();
     	    }

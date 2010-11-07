@@ -86,7 +86,7 @@ void CellDiameterExprEvaluator::internalEval(const EvalManager& mgr,
   Array<double>& constantResults,
   Array<RCP<EvalVector> >& vectorResults) const 
 {
-  Tabs tabs;
+  Tabs tabs(0);
 
   SUNDANCE_MSG2(mgr.verb(), tabs << "CellDiameterExprEvaluator::eval() expr=" 
     << expr()->toString());
@@ -111,11 +111,11 @@ void CellDiameterExprEvaluator::internalEval(const EvalManager& mgr,
     SUNDANCE_MSG4(mgr.verb(), tabs << "no results requested");
   }
 
-  if (mgr.verb() > 2)
+  if (mgr.verb() > 1)
     {
       Out::os() << tabs << "results " << std::endl;
-      this->sparsity()->print(Out::os(), vectorResults,
-                            constantResults);
+      mgr.showResults(Out::os(), this->sparsity(), vectorResults,
+		      constantResults);
     }
 }
 

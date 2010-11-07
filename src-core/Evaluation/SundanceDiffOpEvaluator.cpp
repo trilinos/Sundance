@@ -436,7 +436,7 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
   {
     Tabs tab1;
     Out::os() << tabs << "DiffOp operand results" << std::endl;
-    argSparsitySuperset()->print(Out::os(), argVectorResults,
+    mgr.showResults(Out::os(), argSparsitySuperset(), argVectorResults,
       argConstantResults);
   }
 
@@ -455,21 +455,21 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
   constantResults.resize(this->sparsity()->numConstantDerivs());
   vectorResults.resize(this->sparsity()->numVectorDerivs());
   
-  SUNDANCE_MSG2(mgr.verb(), tabs << "summing spatial/functional chain rule");
+  SUNDANCE_MSG3(mgr.verb(), tabs << "summing spatial/functional chain rule");
 
   for (int i=0; i<this->sparsity()->numDerivs(); i++)
   {
     Tabs tab1;
-    SUNDANCE_MSG2(mgr.verb(), tab1 << "working on deriv " 
+    SUNDANCE_MSG4(mgr.verb(), tab1 << "working on deriv " 
       << this->sparsity()->deriv(i));
 
     /* add constant monomials */
-    SUNDANCE_MSG2(mgr.verb(), tab1 << "have " <<  constantMonomials_[i].size()
+    SUNDANCE_MSG4(mgr.verb(), tab1 << "have " <<  constantMonomials_[i].size()
       << " constant monomials");
     double constantVal = 0.0;
     for (int j=0; j<constantMonomials_[i].size(); j++)
     {
-      SUNDANCE_MSG2(mgr.verb(), tab1 << "adding in constant monomial (index "
+      SUNDANCE_MSG4(mgr.verb(), tab1 << "adding in constant monomial (index "
         << constantMonomials_[i][j] 
         << " in arg results)");
       constantVal += argConstantResults[constantMonomials_[i][j]];
@@ -477,7 +477,7 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
     if (isConstant_[i])
     {
       constantResults[resultIndices_[i]] = constantVal;
-      SUNDANCE_MSG2(mgr.verb(), tab1 << "result is constant: value=" 
+      SUNDANCE_MSG4(mgr.verb(), tab1 << "result is constant: value=" 
         << constantVal);
       continue;
     }
@@ -487,7 +487,7 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
 
     /* add in the vector monomials */
     const Array<int>& vm = vectorMonomials_[i];
-    SUNDANCE_MSG2(mgr.verb(), tab1 << "have " << vm.size() 
+    SUNDANCE_MSG4(mgr.verb(), tab1 << "have " << vm.size() 
       << " vector monomials");
     for (int j=0; j<vm.size(); j++)
     {
@@ -495,13 +495,13 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
 
       const RCP<EvalVector>& v = argVectorResults[vm[j]];
 
-      SUNDANCE_MSG2(mgr.verb(), tab2 << "found term " << v->str());
+      SUNDANCE_MSG4(mgr.verb(), tab2 << "found vec monomial term " << v->str());
 
       /* if we've not yet allocated a vector for the results, 
        * do so now, and set it to the initial value */ 
       if (!vecHasBeenAllocated)
       {
-        SUNDANCE_MSG2(mgr.verb(), tab2 << "allocated result vector");
+        SUNDANCE_MSG4(mgr.verb(), tab2 << "allocated result vector");
         result = mgr.popVector();
         vecHasBeenAllocated = true;
         if (isZero(constantVal))
@@ -517,12 +517,12 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
       {
         result->add_V(v.get());
       }
-      SUNDANCE_MSG2(mgr.verb(), tab2 << "result is " << result->str());
+      SUNDANCE_MSG4(mgr.verb(), tab2 << "result is " << result->str());
     }
       
     /* add in the function terms with constant coeffs */
     const Array<int>& cf = constantFuncCoeffs_[i];
-    SUNDANCE_MSG2(mgr.verb(), tab1 << "adding " << cf.size()
+    SUNDANCE_MSG4(mgr.verb(), tab1 << "adding " << cf.size()
       << " func terms with constant coeffs");
     for (int j=0; j<cf.size(); j++)
     {
@@ -533,14 +533,14 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
       const RCP<EvalVector>& fValue 
         = funcVectorResults[fIndex][miIndex];
 
-      SUNDANCE_MSG2(mgr.verb(), tab2 << "found term: coeff= " 
+      SUNDANCE_MSG4(mgr.verb(), tab2 << "found term: coeff= " 
         << coeff << ", func value=" << fValue->str());
           
       /* if we've not yet allocated a vector for the results, 
        * do so now, and set it to the initial value */ 
       if (!vecHasBeenAllocated)
       {
-        SUNDANCE_MSG2(mgr.verb(), tab2 << "allocated result vector");
+        SUNDANCE_MSG4(mgr.verb(), tab2 << "allocated result vector");
         result = mgr.popVector();
         vecHasBeenAllocated = true;
         if (isOne(coeff))
@@ -577,13 +577,13 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
           result->add_SV(coeff, fValue.get());
         }
       }
-      SUNDANCE_MSG2(mgr.verb(), tab2 << "result is " << result->str());
+      SUNDANCE_MSG4(mgr.verb(), tab2 << "result is " << result->str());
     }
 
       
     /* add in the function terms with vector coeffs */
     const Array<int>& vf = vectorFuncCoeffs_[i];
-    SUNDANCE_MSG2(mgr.verb(), tab1 << "adding " << vf.size()
+    SUNDANCE_MSG4(mgr.verb(), tab1 << "adding " << vf.size()
       << " func terms with vector coeffs");
     for (int j=0; j<vf.size(); j++)
     {
@@ -595,7 +595,7 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
       const RCP<EvalVector>& fValue 
         = funcVectorResults[fIndex][miIndex];
 
-      SUNDANCE_MSG2(mgr.verb(), tab2 << "found term: coeff= " 
+      SUNDANCE_MSG4(mgr.verb(), tab2 << "found term: coeff= " 
         << coeff->str() << ", func value=" 
         << fValue->str());
           
@@ -603,7 +603,7 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
        * do so now, and set it to the initial value */ 
       if (!vecHasBeenAllocated)
       {
-        SUNDANCE_MSG2(mgr.verb(), tab2 << "allocated result vector");
+        SUNDANCE_MSG4(mgr.verb(), tab2 << "allocated result vector");
         result = mgr.popVector();
         vecHasBeenAllocated = true;
         result->setTo_VV(coeff.get(), fValue.get());
@@ -612,7 +612,7 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
       {
         result->add_VV(coeff.get(), fValue.get());
       }
-      SUNDANCE_MSG2(mgr.verb(), tab2 << "result is " << result->str());
+      SUNDANCE_MSG4(mgr.verb(), tab2 << "result is " << result->str());
     }
 
     TEST_FOR_EXCEPTION(!vecHasBeenAllocated, InternalError,
@@ -620,13 +620,13 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
     vectorResults[resultIndices_[i]] = result;
   }
 
-  if (mgr.verb() > 2)
+  if (mgr.verb() > 1)
   {
-    Out::os() << tabs << "operand results" << std::endl;
-    sparsity()->print(Out::os(), vectorResults,
+    Out::os() << tabs << "diff op results" << std::endl;
+    mgr.showResults(Out::os(), sparsity(), vectorResults,
       constantResults);
   }
-  SUNDANCE_MSG2(mgr.verb(), tabs << "done chain rule");
+  SUNDANCE_MSG1(mgr.verb(), tabs << "done spatial/functional chain rule");
 }
 
 

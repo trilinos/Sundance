@@ -43,9 +43,6 @@
 
 
 using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
 
 EvalManager::EvalManager()
@@ -112,6 +109,19 @@ void EvalManager::evalDiscreteFuncElement(const DiscreteFuncElement* expr,
 
   mediator()->evalDiscreteFuncElement(expr, mi, result);
 }
+
+void EvalManager::showResults(std::ostream& os,
+			      const RCP<SparsitySuperset>& sparsity,
+			      const Array<RCP<EvalVector> >& vecResults,
+			      const Array<double>& constantResults) const 
+{
+  TEST_FOR_EXCEPTION(mediator() == 0, InternalError,
+                     "uninitialized mediator in "
+                     "EvalManager::showResults");
+
+  mediator()->showResults(os, sparsity, vecResults, constantResults);
+}
+
 
 
 RCP<EvalVector> EvalManager::popVector() const

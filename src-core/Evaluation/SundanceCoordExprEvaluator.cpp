@@ -111,7 +111,7 @@ void CoordExprEvaluator::internalEval(const EvalManager& mgr,
   Array<double>& constantResults,
   Array<RCP<EvalVector> >& vectorResults) const 
 {
-  Tabs tabs;
+  Tabs tabs(0);
 
   SUNDANCE_MSG1(mgr.verb(), tabs << "CoordExprEvaluator::eval() expr=" << expr()->toString());
 
@@ -137,11 +137,11 @@ void CoordExprEvaluator::internalEval(const EvalManager& mgr,
       constantResults[0] = 1.0;
     }
 
-  if (mgr.verb() > 2)
+  if (mgr.verb() > 1)
     {
       Tabs tab1;
       Out::os() << tab1 << "results " << std::endl;
-      this->sparsity()->print(Out::os(), vectorResults,
+      mgr.showResults(Out::os(), this->sparsity(), vectorResults,
                             constantResults);
     }
 

@@ -57,7 +57,7 @@ SumEvaluator::SumEvaluator(const SumExpr* se,
     vcSums_(),
     vvSums_()
 {
-  Tabs tabs;
+  Tabs tabs(0);
 
   if (verb() > 2)
     {
@@ -202,7 +202,7 @@ void SumEvaluator
                Array<RCP<EvalVector> >& vectorResults) const 
 { 
   //  TimeMonitor timer(evalTimer());
-  Tabs tabs;
+  Tabs tabs(0);
 
   SUNDANCE_MSG1(mgr.verb(),
                tabs << "SumEvaluator::eval() expr=" << expr()->toString());
@@ -218,10 +218,10 @@ void SumEvaluator
   if (verb() > 2)
     {
       Out::os() << tabs << "left operand " << std::endl;
-      leftSparsity()->print(Out::os(), leftVectorResults,
+      mgr.showResults(Out::os(), leftSparsity(), leftVectorResults,
                             leftConstResults);
       Out::os() << tabs << "right operand " << std::endl;
-      rightSparsity()->print(Out::os(), rightVectorResults,
+      mgr.showResults(Out::os(), rightSparsity(), rightVectorResults,
                              rightConstResults);
     }
   
@@ -353,8 +353,8 @@ void SumEvaluator
   if (mgr.verb() > 1)
     {
       Out::os() << tabs << "sum result " << std::endl;
-      this->sparsity()->print(Out::os(), vectorResults,
-                        constantResults);
+      mgr.showResults(Out::os(), this->sparsity(), vectorResults,
+		      constantResults);
     }
 }
 

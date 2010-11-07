@@ -44,17 +44,13 @@
 #include "Teuchos_BLAS.hpp"
 
 
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
-using namespace TSFExtended;
-
 TEUCHOS_TIMER(coordEvalTimer, "Quad mediator: coord eval")
+
+using namespace Sundance;
+using namespace TSFExtended;
+using std::endl;
+using std::setw;
 
 
 QuadratureEvalMediator
@@ -565,7 +561,7 @@ void QuadratureEvalMediator
 void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
   const MultiIndex& mi) const 
 {
-  Tabs tab0;
+  Tabs tab0(0);
   
   SUNDANCE_MSG2(dfVerb(), tab0 << "QuadratureEvalMediator::fillFunctionCache()");
   SUNDANCE_MSG2(dfVerb(), tab0 << "multiIndex=" << mi);
@@ -584,7 +580,26 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
 
   {
     Tabs tab1;
+    if (cellDim() != maxCellDim())
+      {
+        if (dfVerb() >= 2)
+        {
+          Out::os() << tab1 << "alwaysUseCofacets = " 
+                    << ElementIntegral::alwaysUseCofacets() << std::endl;
+          Out::os() << tab1 << "diffOrder = " << diffOrder << std::endl;
+        }
+        if (ElementIntegral::alwaysUseCofacets() || diffOrder>0)
+        {
+          evalCellType = maxCellType();
+        }
+      }
+  
+    SUNDANCE_MSG2(dfVerb(), tab1 << "cell type=" << cellType());
+    SUNDANCE_MSG2(dfVerb(), tab1 << "max cell type=" << maxCellType());
+    SUNDANCE_MSG2(dfVerb(), tab1 << "eval cell type=" << evalCellType);
+
     SUNDANCE_MSG2(dfVerb(), tab1 << "packing local values");
+
     if (!localValueCacheIsValid().containsKey(f) 
       || !localValueCacheIsValid().get(f))
     {
@@ -593,18 +608,11 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
       localValues = rcp(new Array<Array<double> >());
       if (cellDim() != maxCellDim())
       {
-        if (dfVerb() >= 2)
-        {
-          Out::os() << tab2 << "alwaysUseCofacets = " 
-                    << ElementIntegral::alwaysUseCofacets() << std::endl;
-          Out::os() << tab2 << "diffOrder = " << diffOrder << std::endl;
-        }
         if (ElementIntegral::alwaysUseCofacets() || diffOrder>0)
         {
           if (!cofacetCellsAreReady()) setupFacetTransformations();
           mapStruct = f->getLocalValues(maxCellDim(), *cofacetCellLID(), 
             *localValues);
-          evalCellType = maxCellType();
         }
         else
         {
@@ -625,7 +633,7 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
     else
     {
       Tabs tab2;
-      SUNDANCE_MSG2(dfVerb(), tab2 << "reusing cache");
+      SUNDANCE_MSG2(dfVerb(), tab2 << "reusing local value cache");
       localValues = localValueCache().get(f);
       mapStruct = mapStructCache().get(f);
     }
@@ -667,19 +675,21 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
     Tabs tab1;
     SUNDANCE_MSG2(dfVerb(), tab1 << "processing dof map chunk=" << chunk
       << " of " << mapStruct->numBasisChunks());
+    Tabs tab2;
     BasisFamily basis = rcp_dynamic_cast<BasisFamilyBase>(mapStruct->basis(chunk));
-    SUNDANCE_MSG4(dfVerb(), tab1 << "basis=" << basis);
+    SUNDANCE_MSG4(dfVerb(), tab2 << "basis=" << basis);
 
     int nFuncs = mapStruct->numFuncs(chunk);
-    SUNDANCE_MSG2(dfVerb(), tab1 << "num funcs in this chunk=" << nFuncs);
+    SUNDANCE_MSG2(dfVerb(), tab2 << "num funcs in this chunk=" << nFuncs);
     
 
     Array<double>& cache = (*cacheVals)[chunk];
 
     int nQuad = numQuadPts(cellType());
     int nCells = cellLID()->size();
-    SUNDANCE_MSG2(dfVerb(), tab1 << "num quad points=" << nQuad);
-    SUNDANCE_MSG2(dfVerb(), tab1 << "num cells=" << nCells);
+    SUNDANCE_MSG2(dfVerb(), tab2 << "num quad points=" << nQuad);
+    SUNDANCE_MSG2(dfVerb(), tab2 << "num cells=" << nCells);
+
 
     int nDir;
 
@@ -930,3 +940,78 @@ void QuadratureEvalMediator::print(std::ostream& os) const
 }
 
 
+void QuadratureEvalMediator
+::showResults(std::ostream& os,
+	      const RCP<SparsitySuperset>& sp,
+	      const Array<RCP<EvalVector> >& vecResults,
+	      const Array<double>& constantResults) const
+{
+  Tabs tabs(0);
+
+  
+
+  /* find the maximum size of the std::string reps of the derivatives.
+   * We'll use this to set the field width for printing derivatives. */
+  int maxlen = 25;
+  for (int i=0; i<sp->numDerivs(); i++)
+    {
+      int s = sp->deriv(i).toString().length();
+      if (s > maxlen) maxlen = s;
+    }
+
+  
+  int vecIndex=0;
+  int constIndex = 0;
+  os << tabs << "Results Superset" << std::endl;
+  for (int i=0; i<sp->numDerivs(); i++)
+    {
+      Tabs tab1;
+      os << tab1 << i << " " ;
+      os.width(maxlen);
+      os.setf(std::ios_base::left, std::ios_base::adjustfield);
+      os << sp->deriv(i).toString() ;
+      Tabs tab2;
+      switch(sp->state(i))
+        {
+        case ZeroDeriv:
+          os  << "Zero" << std::endl;
+          break;
+        case ConstantDeriv:
+          os << "const val=" << constantResults[constIndex++] << std::endl;
+          break;
+        case VectorDeriv:
+          if (vecResults[vecIndex].get()==0)
+            {
+              os << "{Null}";
+            }
+          else
+            {
+	      const double* data = vecResults[vecIndex]->start();
+	      if (EvalVector::shadowOps())
+		{
+		  TEST_FOR_EXCEPT(vecResults[vecIndex]->str().size()==0);
+		  os << vecResults[vecIndex]->str();
+		}
+	      os << endl;
+	      int nQuad = numQuadPts(cellType());
+	      int k=0;
+	      TEST_FOR_EXCEPT(cellLID()->size() * nQuad 
+			      != vecResults[vecIndex]->length());
+	      for (int c=0; c<cellLID()->size(); c++)
+		{
+		  Tabs tab3;
+		  os << tab3 << "cell LID=" << (*cellLID())[c] << endl;
+		  for (int q=0; q<nQuad; q++, k++)
+		    {
+		      Tabs tab4;
+		      os << tab4 << "q=" << setw(5) << q 
+			 << setw(10) << Utils::chop(data[k]) << endl;
+		    }
+		}
+            }
+          vecIndex++;
+          os << std::endl;
+          break;
+        }
+    }
+}

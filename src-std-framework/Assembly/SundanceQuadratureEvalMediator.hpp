@@ -89,6 +89,13 @@ public:
   /** */
   virtual void print(std::ostream& os) const ;
 
+
+  /** Print evaluation results */
+  virtual void showResults(std::ostream& os,
+			   const RCP<SparsitySuperset>& sparsity,
+			   const Array<RCP<EvalVector> >& vecResults,
+			   const Array<double>& constantResults) const  ;
+
   /** */
   Array<Array<double> >* getRefBasisVals(const BasisFamily& basis, 
     int diffOrder) const ;

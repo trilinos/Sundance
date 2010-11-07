@@ -137,7 +137,7 @@ void DiscreteFuncElementEvaluator
                Array<double>& constantResults,
                Array<RCP<EvalVector> >& vectorResults) const 
 {
-  Tabs tabs;
+  Tabs tabs(0);
   SUNDANCE_MSG1(mgr.verb(),
     tabs << "DiscreteFuncElementEvaluator::eval: expr=" 
     << expr()->toString());
@@ -157,10 +157,10 @@ void DiscreteFuncElementEvaluator
   mgr.evalDiscreteFuncElement(expr(), mi_, vectorResults);
   mgr.stack().setVecSize(vectorResults[0]->length());
   
-  if (mgr.verb() > 2)
+  if (mgr.verb() > 1)
     {
       Out::os() << tabs << "results " << std::endl;
-      this->sparsity()->print(Out::os(), vectorResults,
+      mgr.showResults(Out::os(), sparsity(), vectorResults,
                             constantResults);
     }
   SUNDANCE_MSG1(mgr.verb(), tabs << "DiscreteFuncEvaluator::eval() done"); 

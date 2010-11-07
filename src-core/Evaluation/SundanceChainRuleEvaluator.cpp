@@ -421,7 +421,7 @@ void ChainRuleEvaluator::internalEval(const EvalManager& mgr,
   Array<RCP<EvalVector> >& vectorResults) const 
 {
   TimeMonitor timer(chainRuleEvalTimer());
-  Tabs tabs;
+  Tabs tabs(0);
 
   SUNDANCE_MSG1(mgr.verb(), tabs << "ChainRuleEvaluator::eval() expr=" 
     << expr()->toString());
@@ -455,7 +455,7 @@ void ChainRuleEvaluator::internalEval(const EvalManager& mgr,
     varArgResults[i] = rcp(new Array<RCP<EvalVector> >());
     childEvaluators_[i]->eval(mgr, *(constantArgResults[i]), 
       *(varArgResults[i]));
-    if (mgr.verb() > 2)
+    if (mgr.verb() > 3)
     {
       Out::os() << tabs << "constant arg #" << i << 
         " results:" << *(constantArgResults[i]) << std::endl;
@@ -530,11 +530,11 @@ void ChainRuleEvaluator::internalEval(const EvalManager& mgr,
   }
 
 
-  if (mgr.verb() > 2)
+  if (mgr.verb() > 1)
   {
     Tabs tab1;
     Out::os() << tab1 << "chain rule results " << std::endl;
-    this->sparsity()->print(Out::os(), vectorResults,
+    mgr.showResults(Out::os(), this->sparsity(), vectorResults,
       constantResults);
   }
 

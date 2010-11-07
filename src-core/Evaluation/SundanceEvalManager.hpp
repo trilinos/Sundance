@@ -80,6 +80,11 @@ public:
     const Array<MultiIndex>& mi,
     Array<RCP<EvalVector> >& result) const ;
 
+  void showResults(std::ostream& os,
+		   const RCP<SparsitySuperset>& sparsity,
+		   const Array<RCP<EvalVector> >& vecResults,
+		   const Array<double>& constantResults) const ;
+
   /** */
   void setMediator(const RCP<AbstractEvalMediator>& med) 
     {mediator_ = med;}

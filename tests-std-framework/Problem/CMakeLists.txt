@@ -23,6 +23,7 @@ SET(SerialTests
   PoissonBoltzmannDemo1D
   BesselTest2D 
   Coupled2D
+  EdgeDFTest
   Kepler 
   Stokes2D 
   PCDStokesCouette2D

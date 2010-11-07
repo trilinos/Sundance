@@ -131,12 +131,12 @@ void EFDEEvaluator::internalEval(const EvalManager& mgr,
   Array<RCP<EvalVector> >& vectorResults) const 
 {
   TimeMonitor timer(efdeEvalTimer());
-  Tabs tabs;
+  Tabs tabs(0);
 
   SUNDANCE_MSG1(mgr.verb(), tabs << "EFDEEvaluator::eval() expr=" 
     << expr()->toString());
 
-  SUNDANCE_MSG2(mgr.verb(), tabs << "sparsity = " << std::endl 
+  SUNDANCE_MSG3(mgr.verb(), tabs << "sparsity = " << std::endl 
     << *(this->sparsity)());
 
   constantResults.resize(constValIndexToArgIndexMap_.size());
@@ -153,8 +153,8 @@ void EFDEEvaluator::internalEval(const EvalManager& mgr,
     {
       Tabs tab1;
       Out::os() << tab1 << "EFDE operand results" << std::endl;
-      argSparsitySuperset()->print(Out::os(), argVectorResults,
-                                   argConstantResults);
+      mgr.showResults(Out::os(), argSparsitySuperset(), argVectorResults,
+		      argConstantResults);
     }
 
 
@@ -177,8 +177,8 @@ void EFDEEvaluator::internalEval(const EvalManager& mgr,
   if (mgr.verb() > 2)
   {
     Tabs tab1;
-    Out::os() << tab1 << "results " << std::endl;
-    this->sparsity()->print(Out::os(), vectorResults,
+    Out::os() << tab1 << "EFDE results " << std::endl;
+    mgr.showResults(Out::os(), this->sparsity(), vectorResults,
       constantResults);
   }
 }

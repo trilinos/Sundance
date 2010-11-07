@@ -30,6 +30,7 @@
 
 
 #include "SundanceAbstractEvalMediator.hpp"
+#include "SundanceSparsitySuperset.hpp"
 
 using namespace Sundance;
 using namespace Sundance;
@@ -40,3 +41,10 @@ AbstractEvalMediator::AbstractEvalMediator(int verb)
   : verb_(verb)
 {}
 
+void AbstractEvalMediator::showResults(std::ostream& os,
+				       const RCP<SparsitySuperset>& sparsity,
+				       const Array<RCP<EvalVector> >& vecResults,
+				       const Array<double>& constantResults) const 
+{
+  sparsity->print(os, vecResults, constantResults);
+}
