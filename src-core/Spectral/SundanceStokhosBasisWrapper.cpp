@@ -70,16 +70,7 @@ void StokhosBasisWrapper::fillCijk()
 
 double StokhosBasisWrapper::expectation(int i, int j, int k)
 {
-  int I;
-  int J;
-  int N = cijk_->num_values(k);
-  for (int L=0; L<N; L++)
-  {
-    double v;
-    cijk_->value(k, L, I, J, v);
-    if (i==I && j==J) return v;
-  }
-  return 0.0;
+  return cijk_->getValue(i,j,k);
 }
 
 
