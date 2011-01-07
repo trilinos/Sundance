@@ -31,6 +31,7 @@
 #include "SundanceBox2D.hpp"
 #include "SundancePoint.hpp"
 #include "SundanceDefs.hpp"
+#include "SundancePolygon2D.hpp"
 
 using namespace Sundance;
 
@@ -159,3 +160,52 @@ void Box2D::returnIntersectPoints(const Point& start, const Point& end, int& nrP
 			<< " , start:" << start << " , end:" << end);
 }
 
+
+const RCP<CurveBase> Box2D::getPolygon(const Mesh& mesh ,double resolution) const
+{
+
+   int nrXP = ::ceil(ox_/resolution);
+   double stepX = ox_ / (double) nrXP;
+   int nrYP = ::ceil(oy_/resolution);
+   double stepY = oy_ / (double) nrYP;
+
+   int verb = 0;
+
+   // start bottom left
+   Array<Point> points(2*(nrXP) + 2*nrYP + 1);
+   int actualPoint = 0;
+
+   // bottom
+   for (int i = 0 ; i < nrXP ; i++){
+	   Point tmp( px_ + stepX*(double)i , py_);
+	   SUNDANCE_MSG3( verb , " Box2D::getPolygon add index " << actualPoint << " tmp=" << tmp );
+	   points[actualPoint++] = tmp;
+   }
+   // right
+   for (int i = 0 ; i < nrYP ; i++){
+	   Point tmp( px_ + ox_ , py_ +  stepY*(double)i );
+	   SUNDANCE_MSG3( verb , " Box2D::getPolygon add index " << actualPoint << " tmp=" << tmp );
+	   points[actualPoint++] = tmp;
+   }
+
+   // add top right corner
+   points[actualPoint++] = Point(px_ + ox_ , py_ + oy_ );
+   SUNDANCE_MSG3( verb , " Box2D::getPolygon add index " << actualPoint << " tmp=" << points[actualPoint-1] );
+
+   // top
+   for (int i = nrXP-1 ; i >= 0 ; i--){
+	   Point tmp( px_ + stepX*(double)i , py_ + oy_ );
+	   SUNDANCE_MSG3( verb , " Box2D::getPolygon add index " << actualPoint << " tmp=" << tmp );
+	   points[actualPoint++] = tmp;
+   }
+   //left
+   for (int i = nrYP-1 ; i > 0 ; i--){
+	   Point tmp( px_ , py_ + stepY*(double)i);
+	   SUNDANCE_MSG3( verb , " Box2D::getPolygon add index " << actualPoint << " tmp=" << tmp );
+	   points[actualPoint++] = tmp;
+   }
+   points.resize(actualPoint);
+
+   // return the polygon
+   return rcp(new Polygon2D( mesh , points , _alpha1 , _alpha2 ));
+}

@@ -60,6 +60,14 @@ private :
 								   Array<Point>& curveDerivs ,
 								   Array<Point>& curveNormals );
 
+    static void get3DRealCoordsOnSurf(const Point &refP ,
+    		                          const Array<Point>& cellPoints,
+    		                          const Array<int> &triangles ,
+    		                          const int nrTriag ,
+    		                          const Array<Point> edgeIntersectPoint,
+    		                          int &triagIndex ,
+    		                          Point &realPoint);
+
     static void getCurveQuadPoints_polyline(
                                    int  maxCellLID ,
                                    CellType  maxCellType ,

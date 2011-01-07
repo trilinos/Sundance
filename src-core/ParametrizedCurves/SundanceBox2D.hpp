@@ -93,6 +93,12 @@ public:
 		return true;
 	}
 
+	/** In the case of simple geometries the geometry it can be transformed to a polygon, which
+	 * reflects the original geometry
+	 * @param mesh
+	 * @param resolution , the global resolution */
+	virtual const RCP<CurveBase> getPolygon(const Mesh& mesh ,double resolution) const ;
+
 private:
 
 	/** */

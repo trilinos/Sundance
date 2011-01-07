@@ -281,6 +281,8 @@ void CurveQuadratureIntegral::updateRefCellIntegralTwoForm(int maxCellLID , int 
 	    MultiIndex mi;
 	    if (testDerivOrder()==1) mi[r] = 1;
 	    SpatialDerivSpecifier deriv(mi);
+	    SUNDANCE_MSG1(setupVerb(), tabs
+	      << "evaluating basis functions for ref deriv direction " << r);
 	    testBasis().refEval(evalCellType(), quadPts_, deriv,
 	      testBasisVals[r], setupVerb());
 	  }
@@ -291,6 +293,8 @@ void CurveQuadratureIntegral::updateRefCellIntegralTwoForm(int maxCellLID , int 
 	    MultiIndex mi;
 	    if (unkDerivOrder()==1) mi[r] = 1;
 	    SpatialDerivSpecifier deriv(mi);
+	    SUNDANCE_MSG1(setupVerb(), tabs
+	      << "evaluating basis functions for ref deriv direction " << r);
 	    unkBasis().refEval(evalCellType(),
 	      quadPts_, deriv, unkBasisVals[r], setupVerb());
 	  }
@@ -340,14 +344,6 @@ void CurveQuadratureIntegral
     "CurveQuadratureIntegral::transformZeroForm() called "
     "for form of order " << order());
 
-  TEST_FOR_EXCEPTION( (int) isLocalFlag.size() != 0 
-    && (int) isLocalFlag.size() != JVol.numCells(),
-    RuntimeError,
-    "mismatch between isLocalFlag.size()=" << isLocalFlag.size()
-    << " and JVol.numCells()=" << JVol.numCells());
-
-  bool checkLocalFlag = (int) isLocalFlag.size() != 0;
-
   int nQuad = quadWeights_.size();
 
   // if we have constant coefficients then copy the constant value in the array
@@ -362,24 +358,22 @@ void CurveQuadratureIntegral
   SUNDANCE_MSG5(integrationVerb(), tabs << "input A=");
   if (integrationVerb() >= 5) writeTable(Out::os(), tabs, *A, 6);
   const Array<double>& w = W_;
+  double curveDerivNorm = 0.0;
 
 
     for (int c=0; c<JVol.numCells(); c++)
     {
 
-      if (checkLocalFlag && !isLocalFlag[c]) 
-      {
-        coeffPtr += nQuad;
-        continue;
-      }
+  	  // get the points on the reference cell, instead of "quadPts_" ,  and update "quadCurveDerivs_"
+  	  updateRefCellInformation( (*cellLIDs)[c] , globalCurve() );
       
       // here we do not have to update W_ since it is only the weight of the quadrature points
-
       for (int q=0; q<nQuad; q++, coeffPtr++)
       {
     	// no multiplication with the Jacobian!!!
     	// multiply with the norm of the derivative of the curve (this should be stored in the mesh)
-        a += w[q]*(*coeffPtr);
+    	curveDerivNorm = sqrt(quadCurveDerivs_[q]*quadCurveDerivs_[q]);
+        a += w[q]*(*coeffPtr)*curveDerivNorm;
       }
     }
 
@@ -420,6 +414,7 @@ void CurveQuadratureIntegral::transformOneForm(const CellJacobianBatch& JTrans,
     int offset = 0 ;
     const Array<double>& w = W_;
     double* coeffPtr = (double*) coeff;
+    double curveDerivNorm = 0.0 , f = 0.0;
     // if we have constant coefficient then copy the constant value into one array
     Array<double> constCoeff_arr( JVol.numCells() * nQuad);
     if (useConstCoeff_){
@@ -439,8 +434,8 @@ void CurveQuadratureIntegral::transformOneForm(const CellJacobianBatch& JTrans,
         {
           Tabs tab3;
           // multiply with the norm of the derivative , (not with the determinant)
-          double curveDerivNorm = sqrt(quadCurveDerivs_[q]*quadCurveDerivs_[q]);
-          double f = (*coeffPtr) * curveDerivNorm;
+          curveDerivNorm = sqrt(quadCurveDerivs_[q]*quadCurveDerivs_[q]);
+          f = (*coeffPtr) * curveDerivNorm;
           SUNDANCE_MSG4(integrationVerb(), tab3 << "q=" << q << " coeff=" <<
             *coeffPtr << " coeff*detJ=" << f);
           for (int n=0; n<nNodes(); n++)
@@ -512,6 +507,7 @@ void CurveQuadratureIntegral::transformTwoForm(const CellJacobianBatch& JTrans,
     int offset = 0 ;
     const Array<double>& w = W_;
     double* coeffPtr = (double*) coeff;
+    double curveDerivNorm = 0.0 , f = 0.0;
 
     // if we have constant coefficient then copy the constant value into one array
     Array<double> constCoeff_arr( JVol.numCells() * nQuad);
@@ -531,8 +527,8 @@ void CurveQuadratureIntegral::transformTwoForm(const CellJacobianBatch& JTrans,
         for (int q=0; q<nQuad; q++, coeffPtr++)
         {
           // multiply with the norm of the derivative , (not with the determinant)
-          double curveDerivNorm = sqrt(quadCurveDerivs_[q]*quadCurveDerivs_[q]);
-          double f = (*coeffPtr)*curveDerivNorm;
+          curveDerivNorm = sqrt(quadCurveDerivs_[q]*quadCurveDerivs_[q]);
+          f = (*coeffPtr)*curveDerivNorm;
           for (int n=0; n<nNodes(); n++)
           {
             aPtr[offset+n] += f*w[n + nNodes()*q];
@@ -608,6 +604,7 @@ void CurveQuadratureIntegral
   int swSize = transSize * nNodes();
   sumWorkspace.resize(swSize);
   const Array<double>& w = W_;
+  double curveDerivNorm = 0.0 , f = 0.0;
   
   /*
    * The number of operations for the sum-first method is 
@@ -634,9 +631,8 @@ void CurveQuadratureIntegral
       for (int q=0; q<nQuad; q++, coeffPtr++)
       {
         // multiply with the norm of the derivative ,(not with the determinant)
-      	double curveDerivNorm = sqrt(quadCurveDerivs_[q]*quadCurveDerivs_[q]);
-
-        double f = (*coeffPtr);
+      	curveDerivNorm = sqrt(quadCurveDerivs_[q]*quadCurveDerivs_[q]);
+        f = (*coeffPtr);
         for (int n=0; n<swSize; n++)
         {
           sumWorkspace[n] += f*w[n + q*swSize] * curveDerivNorm;

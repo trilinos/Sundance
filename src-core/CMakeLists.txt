@@ -29,7 +29,7 @@ SET(HEADERS ${HEADERS}
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../src-utils/Utilities)
-#INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../src-solvers/Vectors)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../src-std-mesh/Interface)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/UserExprs)
 
 APPEND_SET(HEADERS
@@ -369,6 +369,7 @@ APPEND_SET(HEADERS
   ParametrizedCurves/SundanceParamCurveIntegral.hpp
   ParametrizedCurves/SundanceParametrizedCurve.hpp
   ParametrizedCurves/SundanceDummyParametrizedCurve.hpp
+  ParametrizedCurves/SundancePolygon2D.hpp
   )
 
 APPEND_SET(SOURCES
@@ -381,6 +382,7 @@ APPEND_SET(SOURCES
   ParametrizedCurves/SundancePlane3D.cpp
   ParametrizedCurves/SundanceParamCurveIntegral.cpp
   ParametrizedCurves/SundanceParametrizedCurve.cpp
+  ParametrizedCurves/SundancePolygon2D.cpp
   )
 
 IF (TPL_ENABLE_MPI)

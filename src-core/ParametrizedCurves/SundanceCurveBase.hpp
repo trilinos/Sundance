@@ -39,6 +39,9 @@
 namespace Sundance
 {
 
+     // forward declaration of the mesh class
+     class Mesh;
+
 /**
  * The base class for parameterized curves<br>
  * This class is mean to used in the Adaptive Cell Integration. <br>
@@ -131,6 +134,21 @@ public:
 	/** function which shows if some integral schould be calculated along the curve <br>
 	 * default this returns false , only one wrapper class should overwrite this and return false */
 	virtual bool isCurveIntegral() const { return false; }
+
+	/** In the case of simple geometries the geometry it can be transformed to a polygon, which
+	 * reflects the original geometry
+	 * @param mesh
+	 * @param resolution , the global resolution */
+	virtual const RCP<CurveBase> getPolygon(const Mesh& mesh , double resolution) const {
+		TEST_FOR_EXCEPTION( true , RuntimeError, " getPolygon() method is not overwritten ");
+		return rcp((CurveBase*)0);
+	}
+
+	/** Writes the geometry into a VTK file for visualization purposes
+	 * @param filename */
+	virtual void writeToVTK(const std::string& filename) const {
+		TEST_FOR_EXCEPTION( true , RuntimeError, " writeToVTK() method is not overwritten ");
+	}
 
 protected:
 

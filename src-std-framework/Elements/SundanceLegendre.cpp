@@ -52,6 +52,8 @@ Legendre::Legendre(int order):order_(order)
 	else nrDOF_face_ = 0;
 
 	nrDOF_brick_ = 0;
+
+	//SUNDANCE_OUT( true , "Legendre ctor nrDOF_edge_:" << nrDOF_edge_ << " , nrDOF_face_:" << nrDOF_face_ << " , nrDOF_brick_:"<<nrDOF_brick_);
 }
 
 bool Legendre::supportsCellTypePair(
@@ -349,8 +351,18 @@ void Legendre::evalOnQuad(const Point& pt,
   }
 
   // loop over all internal DOFs
-  for (int i=0 ; i < nrDOF_face_ ; i++ , offs++){
-	  tmp[offs] = refAllx[2+i] * refAlly[2+(nrDOF_face_-1-i)];
+  if ( nrDOF_face_ > 0 ){
+	  // loop for each hierarchical layer
+	  for (int hierarch = 0 ; hierarch < order_ - 3 ; hierarch++)
+	  {
+		  //SUNDANCE_OUT( true , "Legendre::evalOnQuad hierarch:" << hierarch );
+		  // for each layer add the basis function
+		  for (int i=0 ; i < hierarch+1 ; i++ , offs++)
+		  {
+			  //SUNDANCE_OUT( true , "Legendre::evalOnQuad offs:" << offs << " 2+i:" << 2+i << " , 2+(hierarch-1-i):" << 2+(hierarch-i));
+			  tmp[offs] = refAllx[2+i] * refAlly[2+(hierarch-i)];
+		  }
+	  }
   }
 
   // compute the results

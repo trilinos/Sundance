@@ -31,6 +31,7 @@
 #include "SundanceLine2D.hpp"
 #include "SundancePoint.hpp"
 #include "SundanceDefs.hpp"
+#include "SundancePolygon2D.hpp"
 
 using namespace Sundance;
 
@@ -88,5 +89,28 @@ void Line2D::returnIntersect(const Point& start, const Point& end, int& nrPoints
     	 result[0] = fabs((b1-b_)/(b1-b2));
     	 nrPoints = 1;
      }
+}
+
+const RCP<CurveBase> Line2D::getPolygon(const Mesh& mesh , double resolution) const {
+
+	int verb = 0;
+
+	/* y = slope*x + b */
+
+	// dummy implementation
+	// have always 100 points, and x goes from 0 to 1
+	int nrPoints = 100;
+	SUNDANCE_MSG3( verb , " Line2D::getPolygon nrPoints = " << nrPoints );
+	Array<Point> points(nrPoints);
+
+
+	for (int pI = 0 ; pI < nrPoints ; pI++){
+		Point p( (double)(pI)/(double)(nrPoints-1) , slope_*(double)(pI)/(double)(nrPoints-1) + b_);
+		SUNDANCE_MSG3( verb , " Line2D::getPolygon add pint " << pI << " p=" << p );
+		points[pI] = p;
+	}
+
+	// return the polygon
+	return rcp(new Polygon2D( mesh , points , _alpha1 , _alpha2 ));
 }
 

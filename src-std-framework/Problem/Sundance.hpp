@@ -69,6 +69,7 @@
 #include "SundancePlane3D.hpp"
 #include "SundanceEllipse2D.hpp"
 #include "SundanceSphere.hpp"
+#include "SundancePolygon2D.hpp"
 #include "SundanceDummyParametrizedCurve.hpp"
 #include "SundanceParamCurveIntegral.hpp"
 #include "SundanceParametrizedCurve.hpp"

@@ -29,6 +29,7 @@
 /* @HEADER@ */
 
 #include "SundanceEllipse2D.hpp"
+#include "SundancePolygon2D.hpp"
 #include "SundancePoint.hpp"
 #include "SundanceDefs.hpp"
 
@@ -92,7 +93,8 @@ void Ellipse2D::returnIntersectPoints(const Point& start, const Point& end, int&
 	Point tmpP(0.0,0.0);
 	SUNDANCE_OUT(verb > 3, " Ellipse2D::returnIntersectPoints STARTS , start:" << start << " , end:" << end );
 	// we have two main cases
-	if ( fabs(end[0] - start[0]) < 1e-9){
+	if ( fabs(end[0] - start[0]) < 1e-9)
+	{
 	    // we have a vertical line, where x is constant
         double term = (b_/a_)* (end[0] - px_);
          // (y - py_)^2 = (b-(b/a)*(x-px))*(b+(b/a)*(x-px))
@@ -118,7 +120,8 @@ void Ellipse2D::returnIntersectPoints(const Point& start, const Point& end, int&
             }
         }
 	}
-	else{
+	else
+	{
 		double alpha = (end[1] - start[1])/(end[0] - start[0]);
 		double beta = start[1] - alpha*start[0];
 		// now set up the complicated second oreder equation
@@ -178,4 +181,38 @@ void Ellipse2D::returnIntersectPoints(const Point& start, const Point& end, int&
 			}
 		}
 	}
+}
+
+
+const RCP<CurveBase> Ellipse2D::getPolygon(const Mesh& mesh ,double resolution) const {
+
+	int verb = 0;
+	// 2*pi*r/h will give the angle
+	double average_angle = resolution/(3.14*::sqrt(a_*a_ + b_*b_));
+	int nrPoints = ::ceil ( 3.14/average_angle );
+	double stepAngle = ( 3.14/(double)(nrPoints-1) );
+	int pI = 0 , tmpI = 0;
+
+	SUNDANCE_MSG3( verb , " Ellipse2D::getPolygon average_angle=" << average_angle << " nrPoints = " << nrPoints << " stepAngle=" << stepAngle);
+	Array<Point> points(nrPoints);
+	for (pI = 0 ; pI < nrPoints ; pI++){
+		Point p(px_ + a_*::cos(stepAngle*(double)pI), py_ + b_*::sin(stepAngle*(double)pI));
+		SUNDANCE_MSG3( verb , " Ellipse2D::getPolygon add pint " << pI << " p=" << p );
+		points[pI] = p;
+		tmpI = pI;
+	}
+	tmpI = tmpI - 1;
+	nrPoints = nrPoints + nrPoints - 1;
+	points.resize(nrPoints-1);
+	for (pI = pI ; pI < nrPoints-1 ; pI++){
+		Point p = points[tmpI];
+		SUNDANCE_MSG3( verb , " Ellipse2D::getPolygon get symetric point " << tmpI << " p=" << p );
+		p[1] = p[1] - 2*(p[1] - py_);
+		points[pI] = p;
+		SUNDANCE_MSG3( verb , " Ellipse2D::getPolygon add pint " << pI << " p=" << p );
+		tmpI = tmpI - 1;
+	}
+
+	// return the polygon
+	return rcp(new Polygon2D( mesh , points , _alpha1 , _alpha2 ));
 }

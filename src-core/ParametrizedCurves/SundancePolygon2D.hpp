@@ -28,35 +28,35 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCELINE2D_H_
-#define SUNDANCELINE2D_H_
+#ifndef SUNDANCEPOLYGON2D_H_
+#define SUNDANCEPOLYGON2D_H_
 
 #include "SundanceCurveBase.hpp"
+#include "SundanceParametrizedCurve.hpp"
 
 namespace Sundance
 {
 
-/** This class models a line in 2D.<br>
- * y = slope *x + b */
-class Line2D: public Sundance::CurveBase
+/**  */
+class Polygon2D: public Sundance::CurveBase
 {
 public:
 
-	/** The constructor of the line in 2D
-	 * @param slope
-	 * @param b
-	 * @param a1 alpha1 coefficient for FCM
-	 * @param a2 alpha2 coefficient for FCM */
-	Line2D(double slope, double b, double a1, double a2);
+	/** Ctor with the points which form the polygon (the direction of the points matters for IN & OUT )*/
+	Polygon2D(const Mesh& mesh , const Array<Point>& points , double a1 , double a2);
 
-	virtual ~Line2D();
+	/** Ctor to read in the polygon from file from file */
+	Polygon2D(const Mesh& mesh , const std::string& filename , double a1 , double a2);
+
+	/** */
+	virtual ~Polygon2D() {;}
 
 	/** @return Expr The parameters of the curve which uniquely defines the curve*/
 	virtual Expr getParams() const;
 
 	/**
 	 * This function should be implemented
-	 * @param evalPoint point where the line equation is evaluated <br>
+	 * @param evalPoint point where the polygon equation is evaluated <br>
 	 * @return double the value of the curve equation at the evaluation point  */
 	virtual double curveEquation(const Point& evalPoint) const;
 
@@ -91,21 +91,32 @@ public:
 		return true;
 	}
 
-	/** In the case of simple geometries the geometry it can be transformed to a polygon, which
-	 * reflects the original geometry
-	 * @param mesh
-	 * @param resolution , the global resolution */
-	virtual const RCP<CurveBase> getPolygon(const Mesh& mesh ,double resolution) const ;
+	/** Writes the geometry into a VTK file for visualization purposes
+	 * @param filename */
+	virtual void writeToVTK(const std::string& filename) const;
+
+	/** generate the polygon which is the unification (not intersection) of two polygons */
+    static RCP<CurveBase> unite(ParametrizedCurve& c1 , ParametrizedCurve& c2);
 
 private:
 
-	/** */
-	double slope_;
+	/** looks for each point in which cell it is contained (later for evaluation purposes)*/
+	void computeMaxCellLIDs();
 
-	/** */
-	double b_;
+	/** the mesh will be needed for point location, since the geometry is
+	 * non-conform with respect to the mesh */
+	const Mesh& mesh_;
+
+	/** The points in the specified order which form */
+	Array<Point> polyPoints_;
+
+	/** each points should know in which cell is evaluable (DiscreteSpace)*/
+	Array<int> pointsMaxCellLID_;
+
+	/** the index of the line which is at last the intersection point */
+	static int intersectionEdge_;
 
 };
 
 }
-#endif /* SUNDANCELINE2D_H_ */
+#endif /* SUNDANCEPOLYGON2D_H_ */

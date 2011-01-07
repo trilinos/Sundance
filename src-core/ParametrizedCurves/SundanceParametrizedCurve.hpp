@@ -116,6 +116,20 @@ public:
 			ptr()->returnIntersect( startEdgePoint , endEdgePoint , nrPoints , result);
 		}
 
+	/** In the case of simple geometries the geometry it can be transformed to a polygon, which
+	 * reflects the original geometry
+	 * @param mesh
+	 * @param resolution , the global resolution */
+	const RCP<CurveBase> getPolygon(const Mesh& mesh , double resolution) const {
+		return ptr()->getPolygon( mesh , resolution);
+	}
+
+	/** Writes the geometry into a VTK file for visualization purposes
+	 * @param filename */
+	void writeToVTK(const std::string& filename) const {
+		ptr()->writeToVTK(filename);
+	}
+
 	/** Shows if the curve is a valid curve*/
 	inline bool isCurveValid() const { return ptr()->isCurveValid(); }
 
