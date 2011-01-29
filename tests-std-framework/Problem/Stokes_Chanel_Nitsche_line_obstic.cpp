@@ -38,7 +38,7 @@ int main(int argc, char** argv)
   try
 	{
       Sundance::init(&argc, &argv);
-      int np = MPIComm::world().getNProc();
+      //int np = MPIComm::world().getNProc();
       int myrank = MPIComm::world().getRank();
  
       /* We will do our linear algebra using Epetra */
@@ -196,7 +196,7 @@ int main(int argc, char** argv)
       Expr curveExp = Integral(OnCircle, 1 ,quad_c , curveIntegral );
       FunctionalEvaluator curveInt( mesh , curveExp);
       double RcurveInt = curveInt.evaluate();
-      Out::os() << "curveInt \int 1 dc = " << RcurveInt << std::endl;
+      Out::os() << "curveInt int 1 dc = " << RcurveInt << std::endl;
       Sundance::passFailTest( (RcurveInt - std::sqrt(2*offsPoint*offsPoint)) , 1e-6);
       
       Expr curveExpX = Integral(OnCircle, x ,quad_c , curveIntegral );
@@ -205,7 +205,7 @@ int main(int argc, char** argv)
       Out::os() << "curveIntX = " << RcurveIntX << std::endl;
       double lx = offsPoint;
       double analyticSolCX = (std::sqrt(2.0)/2.0)*(2.2*2.2 - (2.2-lx)*(2.2-lx));
-      Out::os() << "curveIntX(analytic) \int x dc = " << analyticSolCX << std::endl;
+      Out::os() << "curveIntX(analytic) int x dc = " << analyticSolCX << std::endl;
       Sundance::passFailTest( (RcurveIntX-analyticSolCX) , 1e-6);
       
       Expr curveExpY = Integral(OnCircle, y ,quad_c , curveIntegral );
@@ -213,7 +213,7 @@ int main(int argc, char** argv)
       double RcurveIntY = curveIntY.evaluate();
       Out::os() << "curveIntY = " << RcurveIntY << std::endl;
       double analyticSolCY = (std::sqrt(2.0)/2.0)*(0.41*0.41 - (0.41-lx)*(0.41-lx));
-      Out::os() << "curveIntY(analytic) \int y dc = " << analyticSolCY << std::endl;
+      Out::os() << "curveIntY(analytic) int y dc = " << analyticSolCY << std::endl;
       Sundance::passFailTest( (RcurveIntY-analyticSolCY) , 1e-6);
       
       Expr areaExp = Integral(OutsideCircle , 1 , quad2 ) + Integral(OnCircle , 1 , quad_adaptive , curve ); // watchMe
@@ -228,9 +228,9 @@ int main(int argc, char** argv)
       FunctionalEvaluator funcInt2( mesh , funcExp2);
       double funcI1 = funcInt1.evaluate();
       double funcI2 = funcInt2.evaluate();
-      Out::os() << "\int_{whole cell} (x*y) = " << funcI1 << std::endl;
-      Out::os() << "\int_{cutt cell} (x*y) = " << funcI2 << std::endl;
-      Out::os() << "\int_{omega} (x*y) = " << funcI1+funcI2 << std::endl;
+      Out::os() << " int_{whole cell} (x*y) = " << funcI1 << std::endl;
+      Out::os() << " int_{cutt cell} (x*y) = " << funcI2 << std::endl;
+      Out::os() << " int_{omega} (x*y) = " << funcI1+funcI2 << std::endl;
       // here we calculate the analytical solution of the integral
       double b = 2.2+0.41-lx;
       double i1 = ( ((0.41*0.41) / 2.0) * (((2.2-lx)*(2.2-lx))/2.0));
@@ -239,7 +239,7 @@ int main(int argc, char** argv)
       double x1 = 2.2-lx;
       double F1 = (0.5*( (1.0/2.0)*b*b*x1*x1 - (2.0/3.0)*b*x1*x1*x1 + x1*x1*x1*x1/4.0));
       double totalInt = i1 + (F2-F1);
-      Out::os() << "(Analytic) \int_{omega} (x*y)  = " << totalInt << std::endl;
+      Out::os() << "(Analytic) int_{omega} (x*y)  = " << totalInt << std::endl;
       Sundance::passFailTest( (funcI1+funcI2-totalInt) , 1e-6); //0.196237948515625 -> the are with 0.135
       
     }
