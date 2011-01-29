@@ -40,8 +40,8 @@ using namespace Sundance;
 
 int Polygon2D::intersectionEdge_ = -1;
 
-Polygon2D::Polygon2D(const Mesh& mesh , const Array<Point>& points , double a1, double a2) :
-	CurveBase(1, a1, a2), mesh_(mesh)
+Polygon2D::Polygon2D(const Mesh& mesh , const Array<Point>& points , double a1, double a2, bool flipD ) :
+	CurveBase(1, a1, a2, flipD), mesh_(mesh)
 {
 	int verb = 0;
 	// just store the input points
@@ -55,8 +55,8 @@ Polygon2D::Polygon2D(const Mesh& mesh , const Array<Point>& points , double a1, 
 	computeMaxCellLIDs();
 }
 
-Polygon2D::Polygon2D(const Mesh& mesh , const std::string& filename , double a1, double a2) :
-CurveBase(1, a1, a2) , mesh_(mesh)
+Polygon2D::Polygon2D(const Mesh& mesh , const std::string& filename , double a1, double a2, bool flipD ) :
+CurveBase(1, a1, a2, flipD) , mesh_(mesh)
 {
 	std::string str_tmp;
 	std::ifstream myfile;
@@ -223,7 +223,7 @@ double Polygon2D::curveEquation(const Point& evalPoint) const
     }
 
     //SUNDANCE_MSG3( verb , "curveEquation() valPoint=" << evalPoint << " return distance = " << dist);
-	return dist;
+	return flipDomains_*dist;
 }
 
 void Polygon2D::returnIntersectPoints(const Point& start, const Point& end, int& nrPoints,
@@ -495,5 +495,5 @@ RCP<CurveBase> Polygon2D::unite(ParametrizedCurve& c1 , ParametrizedCurve& c2)
    }
 
    // now create one polygon
-   return rcp( new Polygon2D(pol1->mesh_ , allPoints , pol1->_alpha1 , pol2->_alpha2) );
+   return rcp( new Polygon2D(pol1->mesh_ , allPoints , pol1->_alpha1 , pol2->_alpha2 ) );
 }

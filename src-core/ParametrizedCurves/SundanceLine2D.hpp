@@ -47,7 +47,7 @@ public:
 	 * @param b
 	 * @param a1 alpha1 coefficient for FCM
 	 * @param a2 alpha2 coefficient for FCM */
-	Line2D(double slope, double b, double a1, double a2);
+	Line2D(double slope, double b, double a1, double a2,bool flipD = false);
 
 	virtual ~Line2D();
 

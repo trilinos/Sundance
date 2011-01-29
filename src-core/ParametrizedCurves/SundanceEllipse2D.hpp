@@ -49,7 +49,7 @@ public:
 	 * @param c
 	 * @param a1 alpha1 coefficient for FCM
 	 * @param a2 alpha2 coefficient for FCM */
-	Ellipse2D(double px, double py, double a, double b, double a1, double a2);
+	Ellipse2D(double px, double py, double a, double b, double a1, double a2, bool flipD = false);
 
 	virtual ~Ellipse2D();
 

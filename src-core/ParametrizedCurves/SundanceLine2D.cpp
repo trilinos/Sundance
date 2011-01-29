@@ -35,8 +35,8 @@
 
 using namespace Sundance;
 
-Line2D::Line2D(double slope, double b, double a1, double a2) :
-	CurveBase(1, a1, a2), slope_(slope), b_(b)
+Line2D::Line2D(double slope, double b, double a1, double a2, bool flipD ) :
+	CurveBase(1, a1, a2, flipD), slope_(slope), b_(b)
 {
 }
 
@@ -56,7 +56,7 @@ double Line2D::curveEquation(const Point& evalPoint) const
 			"Line2D::curveEquation() evaluation point dimension must be 2");
 
 	// y = slope *x + b
-	return (slope_ * evalPoint[0] + b_ - evalPoint[1]);
+	return flipDomains_*(slope_ * evalPoint[0] + b_ - evalPoint[1]);
 }
 
 void Line2D::returnIntersectPoints(const Point& start, const Point& end, int& nrPoints,
@@ -105,12 +105,12 @@ const RCP<CurveBase> Line2D::getPolygon(const Mesh& mesh , double resolution) co
 
 
 	for (int pI = 0 ; pI < nrPoints ; pI++){
-		Point p( (double)(pI)/(double)(nrPoints-1) , slope_*(double)(pI)/(double)(nrPoints-1) + b_);
+		Point p( (-5.0 +10.0*(double)(pI)/(double)(nrPoints-1)) , slope_*(-5.0 +10.0*(double)(pI)/(double)(nrPoints-1)) + b_);
 		SUNDANCE_MSG3( verb , " Line2D::getPolygon add pint " << pI << " p=" << p );
 		points[pI] = p;
 	}
 
 	// return the polygon
-	return rcp(new Polygon2D( mesh , points , _alpha1 , _alpha2 ));
+	return rcp(new Polygon2D( mesh , points , _alpha1 , _alpha2 , (flipDomains_<0)));
 }
 

@@ -43,6 +43,7 @@ SET(SerialTests
   SecondOrderFloquet 
   MixedTest
   Poisson2D_HN_Nitsch
+  Stokes_Chanel_Nitsche_line_obstic
 )
 
 

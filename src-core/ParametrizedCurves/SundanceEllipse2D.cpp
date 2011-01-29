@@ -35,8 +35,9 @@
 
 using namespace Sundance;
 
-Ellipse2D::Ellipse2D(double px, double py, double a, double b, double a1, double a2) :
-	CurveBase(1, a1, a2), px_(px), py_(px), a_(a), b_(b)
+Ellipse2D::Ellipse2D(double px, double py, double a, double b, double a1, double a2,
+		bool flipD ) :
+	CurveBase(1, a1, a2, flipD), px_(px), py_(px), a_(a), b_(b)
 {
 }
 
@@ -63,7 +64,7 @@ double Ellipse2D::curveEquation(const Point& evalPoint) const
 	double distY =  (evalPoint[1] - py_)*(evalPoint[1] - py_)/(b_*b_);
 	distX = distX + distY - 1.0;
 	SUNDANCE_OUT(verb > 3, " Ellipse2D::curveEquation for:" << evalPoint << " is: " << distX);
-	return distX;
+	return flipDomains_*distX;
 }
 
 void Ellipse2D::returnIntersect(const Point& start, const Point& end, int& nrPoints, Array<
@@ -214,5 +215,5 @@ const RCP<CurveBase> Ellipse2D::getPolygon(const Mesh& mesh ,double resolution) 
 	}
 
 	// return the polygon
-	return rcp(new Polygon2D( mesh , points , _alpha1 , _alpha2 ));
+	return rcp(new Polygon2D( mesh , points , _alpha1 , _alpha2 , (flipDomains_ < 0)));
 }

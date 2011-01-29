@@ -35,8 +35,8 @@
 using namespace Sundance;
 
 Sphere::Sphere(double centerx, double centery, double centerz, double radius, double a1,
-		double a2) :
-	CurveBase(2, a1, a2), _centerx(centerx), _centery(centery), _centerz(centerz), _radius(radius)
+		double a2 , bool flipD ) :
+	CurveBase(2, a1, a2, flipD), _centerx(centerx), _centery(centery), _centerz(centerz), _radius(radius)
 {
 }
 
@@ -58,7 +58,7 @@ double Sphere::curveEquation(const Point& evalPoint) const
 	Point center( _centerx , _centery , _centerz );
 
 	// the sphere equation is (x-cx)^2 + (y-cy)^2 + (z-cz)^2 - r^2 = 0
-	return ((evalPoint - center) * (evalPoint - center)) - _radius * _radius;
+	return flipDomains_*((evalPoint - center) * (evalPoint - center)) - _radius * _radius;
 }
 
 void Sphere::returnIntersectPoints(const Point& start, const Point& end, int& nrPoints,

@@ -43,10 +43,10 @@ class Polygon2D: public Sundance::CurveBase
 public:
 
 	/** Ctor with the points which form the polygon (the direction of the points matters for IN & OUT )*/
-	Polygon2D(const Mesh& mesh , const Array<Point>& points , double a1 , double a2);
+	Polygon2D(const Mesh& mesh , const Array<Point>& points , double a1 , double a2, bool flipD = false);
 
 	/** Ctor to read in the polygon from file from file */
-	Polygon2D(const Mesh& mesh , const std::string& filename , double a1 , double a2);
+	Polygon2D(const Mesh& mesh , const std::string& filename , double a1 , double a2, bool flipD = false);
 
 	/** */
 	virtual ~Polygon2D() {;}

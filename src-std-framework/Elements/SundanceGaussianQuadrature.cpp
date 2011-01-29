@@ -151,7 +151,17 @@ void GaussianQuadrature::getAdaptedWeights(const CellType& cellType ,
 	                                       Array<Point>& quadPoints ,
 	                                       Array<double>& quadWeights ,
 	                                       bool &isCut) const {
-	// First implementation ...
+
+	isCut = true; // todo: this not always might be true to save computations we might test if this is the case
+	if (mesh.IsSpecialWeightValid() && mesh.hasSpecialWeight(cellDim, celLID))
+	{
+		mesh.getSpecialWeight(cellDim, celLID, quadWeights);
+		//SUNDANCE_MSG3(verb, tabs << "GaussianQuadrature::getAdaptedWeights Found cached weights for cell LID " << cellLID)
+		return;
+	}
+
+	// if we have no quad points then get them
+	if (quadPoints.size() <= 1) getPoints(cellType,  quadPoints, quadWeights);
 
 	// we say that the cell is always cut by the curve so these weights will be used
 	isCut = true;
@@ -168,6 +178,8 @@ void GaussianQuadrature::getAdaptedWeights(const CellType& cellType ,
 		quadWeights[i] = quadWeights[i] * globalCurve.integrationParameter(tmpPoints[i]);
 	}
 
+	// store the weights in the mesh
+	mesh.setSpecialWeight(cellDim, celLID, quadWeights);
 /*
 	Array<Point> vertices;
     Array<int>  nodeLIDs;

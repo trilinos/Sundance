@@ -35,8 +35,8 @@
 using namespace Sundance;
 
 Box3D::Box3D(double px, double py, double pz,
-		     double ox, double oy, double oz, double a1, double a2) :
-	CurveBase(2, a1, a2), px_(px), py_(py), pz_(pz), ox_(ox), oy_(oy), oz_(oz)
+		     double ox, double oy, double oz, double a1, double a2, bool flipD ) :
+	CurveBase(2, a1, a2,flipD), px_(px), py_(py), pz_(pz), ox_(ox), oy_(oy), oz_(oz)
 {
 }
 
@@ -65,7 +65,7 @@ double Box3D::curveEquation(const Point& evalPoint) const
 
 	SUNDANCE_OUT(verb > 3, " Box3D::curveEquation for:" << evalPoint << " is: " << distX);
 
-	return distX;
+	return flipDomains_*distX;
 }
 
 void Box3D::returnIntersect(const Point& start, const Point& end, int& nrPoints,

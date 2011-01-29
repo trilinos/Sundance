@@ -48,7 +48,7 @@ public:
 	 * @param radius
 	 * @param a1 alpha1 coefficient for FCM
 	 * @param a2 alpha2 coefficient for FCM */
-	Circle(double centerx, double centery, double radius, double a1, double a2);
+	Circle(double centerx, double centery, double radius, double a1, double a2, bool flipD = false);
 
 	virtual ~Circle();
 

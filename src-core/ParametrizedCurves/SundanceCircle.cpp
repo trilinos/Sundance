@@ -36,8 +36,8 @@
 using namespace Sundance;
 
 Circle::Circle(double centerx, double centery, double radius, double a1,
-		double a2) :
-	CurveBase(1, a1, a2), _centerx(centerx), _centery(centery), _radius(radius)
+		double a2, bool flipD ) :
+	CurveBase(1, a1, a2, flipD), _centerx(centerx), _centery(centery), _radius(radius)
 {
 }
 
@@ -59,7 +59,7 @@ double Circle::curveEquation(const Point& evalPoint) const
 	Point center(_centerx, _centery);
 
 	// the circle equation is (x-cx)^2 + (y-cy)^2 - r^2 = 0
-	return ((evalPoint - center) * (evalPoint - center)) - _radius * _radius;
+	return flipDomains_*(((evalPoint - center) * (evalPoint - center)) - _radius * _radius);
 }
 
 void Circle::returnIntersectPoints(const Point& start, const Point& end, int& nrPoints,
@@ -149,5 +149,5 @@ const RCP<CurveBase> Circle::getPolygon(const Mesh& mesh , double resolution) co
 	}
 
 	// return the polygon
-	return rcp(new Polygon2D( mesh , points , _alpha1 , _alpha2 ));
+	return rcp(new Polygon2D( mesh , points , _alpha1 , _alpha2 , (flipDomains_ < 0) ));
 }

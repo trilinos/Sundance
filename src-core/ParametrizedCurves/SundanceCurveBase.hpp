@@ -60,9 +60,11 @@ public:
 	/** Base constructor
 	 * @param dim , the dimension of the curve, where it is defined
 	 * @param alpha1 , the integration coefficient for inside the domain
-	 * @param alpha2 , the integration coefficient for outside the domain*/
-	CurveBase(int dim , double alpha1 , double alpha2):_dimension(dim),
-	_alpha1(alpha1),_alpha2(alpha2) {
+	 * @param alpha2 , the integration coefficient for outside the domain
+	 * @param flipD, to flip the domains for this curve*/
+	CurveBase(int dim , double alpha1 , double alpha2 , bool flipD = false):_dimension(dim),
+	_alpha1(alpha1),_alpha2(alpha2) , flipDomains_(1.0){
+		if (flipD) flipDomains_ = -1.0;
 	}
 
 	virtual ~CurveBase(){;}
@@ -101,6 +103,15 @@ public:
 			return _alpha1;
 		else
 			return _alpha2;
+	}
+
+	/** If we want to flip the ficticious with the real computational domain then call this method */
+	void flipDomains() const {
+      if ( flipDomains_ > 0){
+    	  flipDomains_ = -1.0;
+      } else {
+    	  flipDomains_ = 1.0;
+      }
 	}
 
 	/**
@@ -160,6 +171,9 @@ protected:
 
 	/** The integration parameter when the curve equation is negative*/
 	double _alpha2;
+
+	/** by default this value is 1.0 , if we want to flip the domains then -1.0*/
+	mutable double flipDomains_;
 };
 
 } // end from namespace

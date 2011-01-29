@@ -35,8 +35,8 @@
 
 using namespace Sundance;
 
-Box2D::Box2D(double px, double py, double ox, double oy, double a1, double a2) :
-	CurveBase(1, a1, a2), px_(px), py_(py), ox_(ox), oy_(oy)
+Box2D::Box2D(double px, double py, double ox, double oy, double a1, double a2,  bool flipD) :
+	CurveBase(1, a1, a2, flipD), px_(px), py_(py), ox_(ox), oy_(oy)
 {
 }
 
@@ -63,7 +63,7 @@ double Box2D::curveEquation(const Point& evalPoint) const
 
 	SUNDANCE_OUT(verb > 3, " Box2D::curveEquation for:" << evalPoint << " is: " << distX);
 
-	return distX;
+	return flipDomains_*distX;
 }
 
 void Box2D::returnIntersect(const Point& start, const Point& end, int& nrPoints,
@@ -207,5 +207,5 @@ const RCP<CurveBase> Box2D::getPolygon(const Mesh& mesh ,double resolution) cons
    points.resize(actualPoint);
 
    // return the polygon
-   return rcp(new Polygon2D( mesh , points , _alpha1 , _alpha2 ));
+   return rcp(new Polygon2D( mesh , points , _alpha1 , _alpha2 , (flipDomains_ < 0) ));
 }

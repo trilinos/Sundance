@@ -34,8 +34,8 @@
 
 using namespace Sundance;
 
-Plane3D::Plane3D(double a, double b, double c, double a1, double a2) :
-	CurveBase(2, a1, a2), a_(a) , b_(b) , c_(c)
+Plane3D::Plane3D(double a, double b, double c, double a1, double a2, bool flipD ) :
+	CurveBase(2, a1, a2, flipD), a_(a) , b_(b) , c_(c)
 {
 }
 
@@ -55,7 +55,7 @@ double Plane3D::curveEquation(const Point& evalPoint) const
 			"Plane3D::curveEquation() evaluation point dimension must be 3");
 
 	// z = a*x + b*y + c
-	return ( a_*evalPoint[0] + b_*evalPoint[1] + c_ -  evalPoint[2]);
+	return flipDomains_*( a_*evalPoint[0] + b_*evalPoint[1] + c_ -  evalPoint[2]);
 }
 
 void Plane3D::returnIntersectPoints(const Point& start, const Point& end, int& nrPoints,

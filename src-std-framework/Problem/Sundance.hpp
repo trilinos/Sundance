@@ -139,6 +139,8 @@
 #include "SundanceLegendre.hpp"
 #include "SundanceGaussianQuadrature.hpp"
 #include "SundanceFeketeQuadrature.hpp"
+#include "SundanceTrapesoidQuadrature.hpp"
+#include "SundanceGaussLobattoQuadrature.hpp"
 
 /* Spectral */
 #include "SundanceHermiteSpectralBasis.hpp"

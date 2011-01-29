@@ -48,7 +48,7 @@ public:
 	 * @param c ,
 	 * @param a1 alpha1 coefficient for FCM
 	 * @param a2 alpha2 coefficient for FCM */
-	Plane3D(double a, double b, double c, double a1, double a2);
+	Plane3D(double a, double b, double c, double a1, double a2, bool flipD = false);
 
 	virtual ~Plane3D();
 

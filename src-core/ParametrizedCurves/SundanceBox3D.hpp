@@ -52,7 +52,7 @@ public:
 	 * @param a1 alpha1 coefficient for FCM
 	 * @param a2 alpha2 coefficient for FCM */
 	Box3D(double px, double py, double pz,
-		  double ox, double oy, double oz, double a1, double a2);
+		  double ox, double oy, double oz, double a1, double a2, bool flipD = false);
 
 	virtual ~Box3D();
 

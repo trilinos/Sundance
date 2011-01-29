@@ -49,7 +49,7 @@ public:
 	 * @param oy offset of the box in Y direction
 	 * @param a1 alpha1 coefficient for FCM
 	 * @param a2 alpha2 coefficient for FCM */
-	Box2D(double px, double py, double ox, double oy, double a1, double a2);
+	Box2D(double px, double py, double ox, double oy, double a1, double a2, bool flipD = false);
 
 	virtual ~Box2D();
 

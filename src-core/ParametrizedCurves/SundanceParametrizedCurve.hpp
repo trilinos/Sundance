@@ -99,6 +99,11 @@ public:
 		return ptr()->curveEquation(evaluationPoint);
 	}
 
+	/** flip the domains from the ficticious to the real */
+	void flipDomains() const {
+		ptr()->flipDomains();
+	}
+
 	/** Returns the points of intersection of the curve with the line defined by the points <br>
 	 *  Only intersection between start and end point will be stated */
 	void returnIntersectPoints(const Point& startEdgePoint, const Point& endEdgePoint,
