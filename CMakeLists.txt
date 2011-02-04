@@ -97,11 +97,13 @@ ENDIF()
 # C) Add the libraries, tests, and examples
 #
 
+ADD_SUBDIRECTORY(Playa)
+
 ADD_SUBDIRECTORY(src-utils)
 PACKAGE_ADD_TEST_DIRECTORIES(tests-utils)
 
 ADD_SUBDIRECTORY(src-solvers)
-PACKAGE_ADD_TEST_DIRECTORIES(tests-solvers)
+#PACKAGE_ADD_TEST_DIRECTORIES(tests-solvers)
 
 ADD_SUBDIRECTORY(src-interop)
 

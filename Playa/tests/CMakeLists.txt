@@ -1,0 +1,9 @@
+
+ADD_SUBDIRECTORY(Vector)
+
+ADD_SUBDIRECTORY(Operator)
+
+ADD_SUBDIRECTORY(Solver)
+
+
+
