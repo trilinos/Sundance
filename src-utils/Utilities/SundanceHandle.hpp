@@ -1,7 +1,7 @@
 /* @HEADER@ */
 /* ***********************************************************************
 // 
-//           TSFExtended: Trilinos Solver Framework Extended
+//           Playa: Trilinos Solver Framework Extended
 //                 Copyright (2004) Sandia Corporation
 // 
 // Under terms of Contract DE-AC04-94AL85000, there is a non-exclusive
@@ -31,9 +31,9 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceOut.hpp"
-#include "SundancePrintable.hpp"
+#include "PlayaPrintable.hpp"
 #include "Teuchos_Describable.hpp"
-#include "SundanceHandleable.hpp"
+#include "PlayaHandleable.hpp"
 #include "SundanceNamedObject.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
 #include "Teuchos_RefCountPtr.hpp"
@@ -53,11 +53,11 @@
   * The macro will also create appropriate doxygen for the handle ctors */
 #define HANDLE_CTORS(handle, contents) \
   /** Empty ctor */ \
-handle() : Sundance::Handle<contents >() {;} \
+handle() : Playa::Handle<contents >() {;} \
   /** Construct a #handle with a raw pointer to a #contents */ \
-  handle(Sundance::Handleable<contents >* rawPtr) : Sundance::Handle<contents >(rawPtr) {;} \
+  handle(Playa::Handleable<contents >* rawPtr) : Playa::Handle<contents >(rawPtr) {;} \
   /** Construct a #handle with a smart pointer to a #contents */ \
-  handle(const Teuchos::RCP<contents >& smartPtr) : Sundance::Handle<contents >(smartPtr){;}
+  handle(const Teuchos::RCP<contents >& smartPtr) : Playa::Handle<contents >(smartPtr){;}
 
 
 
@@ -88,7 +88,7 @@ public:
 
 
 /**
- * Class Sundance::Handle provides a general implementation
+ * Class Playa::Handle provides a general implementation
  * of the common features of reference-counted handles.
  */
 template <class PointerType>
@@ -163,7 +163,7 @@ public:
    * or crosscasted into an ObjectWithVerbosity, this call will be
    * ignored and a warning printed.
    */
-  void setVerbosity(int x) 
+  void setVerb(int x) 
     {
       /* Hack warning: this is a trick to deal with the case where
        * PointerType is const, e.g., someone has written a RCP<const X>. 
@@ -175,7 +175,7 @@ public:
       ObjectWithVerbosityBase* v 
         = dynamic_cast<ObjectWithVerbosityBase*>(p);
 
-      if (v) v->setVerbosity(x);
+      if (v) v->setVerb(x);
       else
       {
         Out::os() << "WARNING: cannot set verbosity of object=";
@@ -197,7 +197,7 @@ template <class PointerType> inline
 void Handle<PointerType>::print(std::ostream& os) const 
 {
   const NamedObject* n = dynamic_cast<const NamedObject*>(ptr_.get());
-  const Printable* p = dynamic_cast<const Printable*>(ptr_.get());
+  const Playa::Printable* p = dynamic_cast<const Playa::Printable*>(ptr_.get());
   const Describable* d = dynamic_cast<const Describable*>(ptr_.get());
   const ObjectWithVerbosityBase* v 
     = dynamic_cast<const ObjectWithVerbosityBase*>(ptr_.get());
@@ -279,7 +279,7 @@ std::string Handle<PointerType>::fallbackDescription() const
 
 
 template <class PointerType> inline
-std::ostream& operator<<(std::ostream& os, const Sundance::Handle<PointerType>& h)
+std::ostream& operator<<(std::ostream& os, const Playa::Handle<PointerType>& h)
 {
   h.print(os);
   return os;

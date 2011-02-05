@@ -122,7 +122,7 @@ const ParameterData* Parameter::data() const
 {
   const ParameterData* pd = dynamic_cast<const ParameterData*>(commonData().get());
 
-  TEST_FOR_EXCEPTION(pd==0, InternalError, "cast failed");
+  TEST_FOR_EXCEPTION(pd==0, std::logic_error, "cast failed");
 
   return pd;
 }
@@ -133,7 +133,7 @@ ParameterData* Parameter::data()
 {
   ParameterData* pd = dynamic_cast<ParameterData*>(commonData());
 
-  TEST_FOR_EXCEPTION(pd==0, InternalError, "cast failed");
+  TEST_FOR_EXCEPTION(pd==0, std::logic_error, "cast failed");
 
   return pd;
 }

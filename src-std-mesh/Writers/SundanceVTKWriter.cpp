@@ -29,9 +29,9 @@
 /* @HEADER@ */
 
 #include "SundanceVTKWriter.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "Teuchos_XMLObject.hpp"
 
 
@@ -215,7 +215,7 @@ void VTKWriter::writeCells(std::ostream& os) const
 		          os << std::endl;
 				break;
             default:
-            	 TEST_FOR_EXCEPTION(true, RuntimeError, "call type " << cellType <<
+            	 TEST_FOR_EXCEPTION(true, std::runtime_error, "call type " << cellType <<
             			 " not handled in VTKWriter::writeCells()");
 			}
     }
@@ -265,7 +265,7 @@ void VTKWriter::writeCells(std::ostream& os) const
 					vtkCode = 11;
 					break;
         default:
-          TEST_FOR_EXCEPTION(true, RuntimeError,
+          TEST_FOR_EXCEPTION(true, std::runtime_error,
                              "call type " << cellType << " not handled "
                              "in VTKWriter::writeCells()");
 				}

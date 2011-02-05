@@ -34,7 +34,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceMap.hpp"
 #include "SundanceMultiSet.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "Teuchos_Array.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 

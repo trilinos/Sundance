@@ -53,7 +53,7 @@ Expr Box3D::getParams() const
 double Box3D::curveEquation(const Point& evalPoint) const
 {
 	int verb = 0;
-	TEST_FOR_EXCEPTION(evalPoint.dim() != 3, RuntimeError,
+	TEST_FOR_EXCEPTION(evalPoint.dim() != 3, std::runtime_error,
 			"Box3D::curveEquation() evaluation point dimension must be 3");
 
 	// calculate the distance compared to the middle point
@@ -88,7 +88,7 @@ void Box3D::returnIntersect(const Point& start, const Point& end, int& nrPoints,
 void Box3D::returnIntersectPoints(const Point& start, const Point& end, int& nrPoints,
 		Array<Point>& result) const
 {
-	TEST_FOR_EXCEPTION(true, RuntimeError,
+	TEST_FOR_EXCEPTION(true, std::runtime_error,
 				"Box3D::returnIntersectPoints() not implemented yet");
 	// todo: implement this
 }

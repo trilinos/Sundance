@@ -31,8 +31,8 @@
 #include "SundanceStdFwkEvalMediator.hpp"
 #include "SundanceCoordExpr.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaTabs.hpp"
+#include "PlayaExceptions.hpp"
 
 
 using namespace Sundance;

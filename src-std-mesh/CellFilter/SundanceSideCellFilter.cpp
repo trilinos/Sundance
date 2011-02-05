@@ -30,7 +30,7 @@
 
 #include "SundanceSideCellFilter.hpp"
 #include "SundanceImplicitCellSet.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 
 using namespace Sundance;
 using namespace Sundance;
@@ -67,7 +67,7 @@ bool SideCellFilter::lessThan(const CellFilterStub* other) const
     = dynamic_cast<const SideCellFilter*>(other);
 
   TEST_FOR_EXCEPTION(S==0,
-                     InternalError,
+                     std::logic_error,
                      "argument " << other->toXML() 
                      << " to SideCellFilter::lessThan() should be "
                      "a SideCellFilter pointer.");

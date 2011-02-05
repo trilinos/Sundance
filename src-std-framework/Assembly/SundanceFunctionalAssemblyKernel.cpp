@@ -29,7 +29,7 @@
 /* @HEADER@ */
 
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceFunctionalAssemblyKernel.hpp"
 #include "SundanceIntegralGroup.hpp"
 #include "Teuchos_Time.hpp"

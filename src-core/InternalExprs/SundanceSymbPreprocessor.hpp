@@ -133,7 +133,7 @@ public:
       {
         /* make sure all input functions have the correct type */
         const T* uPtr = dynamic_cast<const T*>(u[i].ptr().get());
-        TEST_FOR_EXCEPTION(uPtr==0, RuntimeError, 
+        TEST_FOR_EXCEPTION(uPtr==0, std::runtime_error, 
           "Unexpected function type error: function " << u[i].toString()
           << " is of type=" << typeid(u).name() 
           << ", but we expected type=" << typeid(T).name());
@@ -141,7 +141,7 @@ public:
         /* Add the function's ID to the ID set. While we're here, check
          * to ensure we have no duplicates in the input list. */
         int fid = uPtr->fid().dofID();
-        TEST_FOR_EXCEPTION(idSet.contains(fid), RuntimeError,
+        TEST_FOR_EXCEPTION(idSet.contains(fid), std::runtime_error,
           "duplicate function in input list " << u.toString());
         idSet.put(fid);
 
@@ -153,7 +153,7 @@ public:
         RCP<ZeroExpr> u0ZeroPtr
           = rcp_dynamic_cast<ZeroExpr>(u0[i].ptr());
         TEST_FOR_EXCEPTION(u0Ptr.get()==NULL && u0ZeroPtr.get()==NULL,
-          RuntimeError,
+          std::runtime_error,
           "evaluation point " << u0[i].toString() << " for func=" << u[i]
           << " is neither a discrete function nor a zero expr");
 
@@ -184,13 +184,13 @@ public:
       {
         /* ensure everyone has the correct type */
         const T* aPtr = dynamic_cast<const T*>(alpha[i].ptr().get());
-        TEST_FOR_EXCEPTION(aPtr==0, RuntimeError,
+        TEST_FOR_EXCEPTION(aPtr==0, std::runtime_error,
           "list of purported parameters "
           "contains a function that is not an unknown parameter:"
           << alpha[i].toString());
 
         int fid = aPtr->fid().dofID();
-        TEST_FOR_EXCEPTION(paramID.contains(fid), RuntimeError,
+        TEST_FOR_EXCEPTION(paramID.contains(fid), std::runtime_error,
           "duplicate input parameter in list "
           << alpha.toString());
         paramID.put(fid);
@@ -198,7 +198,7 @@ public:
         RCP<Parameter> a0Ptr
           = rcp_dynamic_cast<Parameter>(alpha0[i].ptr());
         TEST_FOR_EXCEPTION(a0Ptr.get()==NULL,
-          RuntimeError,
+          std::runtime_error,
           "parameter evaluation point " << alpha0[i].toString()
           << " is not a parameter");
         aPtr->substituteFunction(a0Ptr);

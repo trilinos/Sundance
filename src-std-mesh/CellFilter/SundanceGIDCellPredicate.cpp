@@ -37,7 +37,7 @@ using namespace Teuchos;
 bool GIDCellPredicate::lessThan(const CellPredicateBase* other) const
 {
   TEST_FOR_EXCEPTION(dynamic_cast<const GIDCellPredicate*>(other) == 0,
-                     InternalError,
+                     std::logic_error,
                      "argument " << other->toXML() 
                      << " to GIDCellPredicate::lessThan() should be "
                      "a GIDCellPredicate pointer.");

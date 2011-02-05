@@ -42,7 +42,7 @@ bool BasisFamilyBase::lessThan(const BasisDOFTopologyBase* other) const
   if (typeLessThan(other, this)) return false;
 
   const BasisFamilyBase* bfb = dynamic_cast<const BasisFamilyBase*>(other);
-  TEST_FOR_EXCEPTION(bfb==0, InternalError,
+  TEST_FOR_EXCEPTION(bfb==0, std::logic_error,
     "BasisFamilyBase::lessThan() given an argument that is not a BFB*");
   return order() < bfb->order();
 }

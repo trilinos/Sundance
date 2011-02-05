@@ -1,7 +1,7 @@
 //@HEADER
 // ***********************************************************************
 // 
-//           TSFExtended: Trilinos Solver Framework Extended
+//           Playa: Trilinos Solver Framework Extended
 //                 Copyright (2004) Sandia Corporation
 // 
 // Under terms of Contract DE-AC04-94AL85000, there is a non-exclusive
@@ -27,39 +27,39 @@
 //@HEADER
 
 #include "Teuchos_GlobalMPISession.hpp"
-#include "TSFVectorDecl.hpp"
-#include "TSFLinearOperatorDecl.hpp"
-#include "TSFLoadableMatrix.hpp"
-#include "TSFVectorType.hpp"
-#include "TSFVectorSpaceDecl.hpp"
-#include "TSFEpetraVectorType.hpp"
+#include "PlayaVectorDecl.hpp"
+#include "PlayaLinearOperatorDecl.hpp"
+#include "PlayaLoadableMatrix.hpp"
+#include "PlayaVectorType.hpp"
+#include "PlayaVectorSpaceDecl.hpp"
+#include "PlayaEpetraVectorType.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_MPIComm.hpp"
-#include "TSFLinearSolverDecl.hpp"
-#include "TSFBlockTriangularSolverDecl.hpp"
-#include "TSFLinearCombinationDecl.hpp"
-#include "TSFProductVectorSpaceDecl.hpp"
-#include "TSFAztecSolver.hpp"
-#include "TSFMatrixLaplacian1D.hpp"
-#include "TSFLinearSolverBuilder.hpp"
+#include "PlayaLinearSolverDecl.hpp"
+#include "PlayaBlockTriangularSolverDecl.hpp"
+#include "PlayaLinearCombinationDecl.hpp"
+#include "PlayaBlockVectorSpaceDecl.hpp"
+#include "PlayaAztecSolver.hpp"
+#include "PlayaMatrixLaplacian1D.hpp"
+#include "PlayaLinearSolverBuilder.hpp"
 #include "SundancePathUtils.hpp"
 #include "Teuchos_ParameterXMLFileReader.hpp"
-#include "TSFLinearCombinationImpl.hpp"
-#include "TSFSimpleBlockOpDecl.hpp"
+#include "PlayaLinearCombinationImpl.hpp"
+#include "PlayaSimpleBlockOpDecl.hpp"
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
-#include "TSFLinearOperatorImpl.hpp"
-#include "TSFLinearSolverImpl.hpp"
-#include "TSFSimpleBlockOpImpl.hpp"
-#include "TSFProductVectorSpaceImpl.hpp"
-#include "TSFBlockTriangularSolverImpl.hpp"
+#include "PlayaLinearOperatorImpl.hpp"
+#include "PlayaLinearSolverImpl.hpp"
+#include "PlayaSimpleBlockOpImpl.hpp"
+#include "PlayaBlockVectorSpaceImpl.hpp"
+#include "PlayaBlockTriangularSolverImpl.hpp"
 
 #endif
 
 
 using namespace Teuchos;
-using namespace TSFExtended;
-using namespace TSFExtendedOps;
+using namespace Playa;
+using namespace PlayaOps;
 
 
 int main(int argc, char *argv[]) 
@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
           Thyra::randomize(-ST::one(),+ST::one(),x[i].ptr().ptr());          
         }
 
-      VectorSpace<double> blockSpace = productSpace(space);
+      VectorSpace<double> blockSpace = blockSpace(space);
 
       LinearOperator<double> bigA = makeBlockOperator(blockSpace, blockSpace);
       Vector<double> bigRHS = blockSpace.createMember();

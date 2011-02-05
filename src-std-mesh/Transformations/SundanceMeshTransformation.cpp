@@ -1,11 +1,10 @@
 #include "SundanceMeshTransformation.hpp"
 
-using namespace Sundance;
-using namespace Sundance;
 
 using namespace Teuchos;
 using namespace Sundance;
-
+using Playa::Handle;
+using Playa::Handleable;
 
 
 MeshTransformation::MeshTransformation()

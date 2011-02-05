@@ -1,15 +1,15 @@
 #include "PySundanceLinearSolver.hpp"
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
-#include "TSFLinearOperatorImpl.hpp"
-#include "TSFLinearSolverImpl.hpp"
+#include "PlayaLinearOperatorImpl.hpp"
+#include "PlayaLinearSolverImpl.hpp"
 #endif
 
 
-using namespace TSFExtended;
+using namespace Playa;
 
 
-namespace TSFExtended
+namespace Playa
 {
   SolverState<double> 
   PySundanceLinearSolver_solve(const PySundanceLinearSolver* solver,

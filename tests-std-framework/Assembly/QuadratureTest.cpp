@@ -35,7 +35,7 @@
 
 using namespace Sundance;
 using namespace Teuchos;
-using namespace TSFExtended;
+using namespace Playa;
 
 
 int main(int argc, char** argv)

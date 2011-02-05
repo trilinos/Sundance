@@ -32,7 +32,7 @@
 #include "SundanceGaussianQuadrature.hpp"
 #include "SundanceMultiIndex.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
 using namespace Sundance;

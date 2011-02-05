@@ -42,7 +42,7 @@
 #include "SundanceZeroExpr.hpp"
 #include "SundanceComplexExpr.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceStdSumTransformations.hpp"
 #include "SundanceStdProductTransformations.hpp"
 #include "SundanceNonlinearUnaryOp.hpp"
@@ -100,11 +100,11 @@ static Time& prodTimer()
 
 
 Expr::Expr(const double& c)
-	: Sundance::Handle<ExprBase>(new ConstantExpr(c))
+	: Playa::Handle<ExprBase>(new ConstantExpr(c))
 {}
 
 Expr::Expr(const std::complex<double>& c)
-	: Sundance::Handle<ExprBase>(new ComplexExpr(new ConstantExpr(c.real()),
+	: Playa::Handle<ExprBase>(new ComplexExpr(new ConstantExpr(c.real()),
       new ConstantExpr(c.imag())))
 {}
 
@@ -157,11 +157,11 @@ bool Expr::lessThan(const Expr& other) const
   RCP<ScalarExpr> sThis = rcp_dynamic_cast<ScalarExpr>(ptr());
   RCP<ScalarExpr> sOther = rcp_dynamic_cast<ScalarExpr>(other.ptr());
 
-  TEST_FOR_EXCEPTION(sThis.get()==0, InternalError,
+  TEST_FOR_EXCEPTION(sThis.get()==0, std::logic_error,
     "ordering not defined for non-scalar expression "
     << toString());
 
-  TEST_FOR_EXCEPTION(sOther.get()==0, InternalError,
+  TEST_FOR_EXCEPTION(sOther.get()==0, std::logic_error,
     "ordering not defined for non-scalar expressions"
     << other.toString());
 
@@ -196,7 +196,7 @@ Sundance::Map<Expr, int> Expr::getSumTree() const
 {
   RCP<ScalarExpr> sThis = rcp_dynamic_cast<ScalarExpr>(ptr());
 
-  TEST_FOR_EXCEPTION(sThis.get()==0, InternalError,
+  TEST_FOR_EXCEPTION(sThis.get()==0, std::logic_error,
     "etSumTree() not defined for non-scalar expression "
     << toString());
   
@@ -225,7 +225,7 @@ bool Expr::tryAddComplex(const Expr& L, const Expr& R, int sign,
   Expr& rtn) const
 {
   TimeMonitor t(trySumComplexTimer());
-  TEST_FOR_EXCEPTION(L.size() != 1 || R.size() != 1, InternalError, 
+  TEST_FOR_EXCEPTION(L.size() != 1 || R.size() != 1, std::logic_error, 
     "non-scalar exprs should have been reduced before "
     "call to tryAddComplex(). Left=" << L << " right="
     << R);
@@ -255,7 +255,7 @@ bool Expr::tryMultiplyComplex(const Expr& L, const Expr& R,
   Expr& rtn) const
 {
   TimeMonitor t(tryMultiplyComplexTimer());
-  TEST_FOR_EXCEPTION(L.size() != 1 || R.size() != 1, InternalError, 
+  TEST_FOR_EXCEPTION(L.size() != 1 || R.size() != 1, std::logic_error, 
     "non-scalar exprs should have been reduced before "
     "call to tryMultiplyComplex(). Left=" << L << " right="
     << R);
@@ -293,7 +293,7 @@ Expr Expr::operator+(const Expr& other) const
   {
     TEUCHOS_FUNC_TIME_MONITOR("plus branch 1");
     Array<Expr> rtn(this->size());
-    TEST_FOR_EXCEPTION(this->size() != other.size(), RuntimeError,
+    TEST_FOR_EXCEPTION(this->size() != other.size(), std::runtime_error,
       "mismatched list structures in operands L="
       << *this << ", R=" << other);
     for (int i=0; i<this->size(); i++)
@@ -323,7 +323,7 @@ Expr Expr::operator-(const Expr& other) const
   {
     TEUCHOS_FUNC_TIME_MONITOR("minus branch 1");
     Array<Expr> rtn(this->size());
-    TEST_FOR_EXCEPTION(this->size() != other.size(), RuntimeError,
+    TEST_FOR_EXCEPTION(this->size() != other.size(), std::runtime_error,
       "mismatched list structures in operands L="
       << *this << ", R=" << other);
     for (int i=0; i<this->size(); i++)
@@ -351,15 +351,15 @@ Expr Expr::sum(const Expr& other, int sign) const
   RCP<ScalarExpr> sThis = rcp_dynamic_cast<ScalarExpr>(ptr());
   RCP<ScalarExpr> sOther = rcp_dynamic_cast<ScalarExpr>(other.ptr());
 
-  TEST_FOR_EXCEPTION(ptr().get()==NULL, InternalError,
+  TEST_FOR_EXCEPTION(ptr().get()==NULL, std::logic_error,
     "Expr::sum() detected null this pointer");
 
-  TEST_FOR_EXCEPTION(sThis.get()==NULL, InternalError,
+  TEST_FOR_EXCEPTION(sThis.get()==NULL, std::logic_error,
     "Expr::sum(): Left operand " << toString() 
     << " is a non-scalar expression. All list structure "
     "should have been handled before this point");
 
-  TEST_FOR_EXCEPTION(sOther.get()==NULL, InternalError,
+  TEST_FOR_EXCEPTION(sOther.get()==NULL, std::logic_error,
     "Expr::sum(): Right operand " << other.toString() 
     << " is a non-scalar expression. All list structure "
     "should have been handled before this point");
@@ -445,12 +445,12 @@ Expr Expr::operator*(const Expr& other) const
   {
     if ((*this)[i].size() != cols) rectangular = false;
   }
-  TEST_FOR_EXCEPTION(!rectangular, BadSymbolicsError,
+  TEST_FOR_EXCEPTION(!rectangular, std::runtime_error,
     "Expr::operator* detected list-list multiplication "
     "with a non-rectangular left operator " 
     << toString());
   
-  TEST_FOR_EXCEPTION(cols != other.size(), BadSymbolicsError,
+  TEST_FOR_EXCEPTION(cols != other.size(), std::runtime_error,
     "Expr::operator* detected mismatched dimensions in "
     "list-list multiplication. Left operator is "
     << toString() << ", right operator is "
@@ -478,12 +478,12 @@ Expr Expr::multiply(const Expr& other) const
   RCP<ScalarExpr> sThis = rcp_dynamic_cast<ScalarExpr>(ptr());
   RCP<ScalarExpr> sOther = rcp_dynamic_cast<ScalarExpr>(other.ptr());
 
-  TEST_FOR_EXCEPTION(sThis.get()==NULL, InternalError,
+  TEST_FOR_EXCEPTION(sThis.get()==NULL, std::logic_error,
     "Expr::multiply(): Left operand " << toString() 
     << " is a non-scalar expression. All list structure "
     "should have been handled before this point");
 
-  TEST_FOR_EXCEPTION(sOther.get()==NULL, InternalError,
+  TEST_FOR_EXCEPTION(sOther.get()==NULL, std::logic_error,
     "Expr::multiply(): Right operand " << other.toString() 
     << " is a non-scalar expression. All list structure "
     "should have been handled before this point");
@@ -560,7 +560,7 @@ Expr Expr::operator-() const
     {
       RCP<ScalarExpr> sThis 
         = rcp_dynamic_cast<ScalarExpr>((*this)[0].ptr());
-      TEST_FOR_EXCEPTION(sThis.get()==NULL, InternalError,
+      TEST_FOR_EXCEPTION(sThis.get()==NULL, std::logic_error,
         "Expr::operator-(): Operand " << (*this)[0].toString() 
         << " is a non-scalar expression. All list structure "
         "should have been handled before this point");
@@ -585,11 +585,11 @@ Expr Expr::operator/(const Expr& other) const
   /* if the right operand is a list, this operation
    * makes no sense */
   TEST_FOR_EXCEPTION(other.size() != 1,
-    BadSymbolicsError, 
+    std::runtime_error, 
     "Expr::operator/ detected division by a non-scalar "
     "expression " << toString());
 
-  TEST_FOR_EXCEPTION(other.isSpectral(), InternalError, 
+  TEST_FOR_EXCEPTION(other.isSpectral(), std::logic_error, 
     "Division by a Spectral Expr is not yet defined");
 
   /* If other is complex, transform to make the denominator real */
@@ -639,10 +639,10 @@ Expr Expr::operator/(const Expr& other) const
 
 const Expr& Expr::operator[](int i) const
 {
-  TEST_FOR_EXCEPTION(ptr().get()==NULL, InternalError,
+  TEST_FOR_EXCEPTION(ptr().get()==NULL, std::logic_error,
     "null this detected in Expr::operator[].");
 
-  TEST_FOR_EXCEPTION(i<0 || i>=(int) this->size(), RuntimeError,
+  TEST_FOR_EXCEPTION(i<0 || i>=(int) this->size(), std::runtime_error,
     "Expr::operator[]() index i=" << i << " out of range [0, "
     << this->size() << " in expr " << toString());
 
@@ -651,18 +651,18 @@ const Expr& Expr::operator[](int i) const
   if (le != 0)
   {
     const Expr& rtn = le->element(i);
-    TEST_FOR_EXCEPTION(rtn.size() == 0, InternalError,
+    TEST_FOR_EXCEPTION(rtn.size() == 0, std::logic_error,
       "attempt to access an empty list; this should "
       "never happen because the case should have been "
       "dealt with earlier");
     if (rtn.size()==1) 
     {
-      TEST_FOR_EXCEPTION(rtn[0].ptr().get()==NULL, InternalError,
+      TEST_FOR_EXCEPTION(rtn[0].ptr().get()==NULL, std::logic_error,
         "null return detected in Expr::operator[]. This="
         << toString() << ", i=" << i);
       return rtn[0];
     }
-    TEST_FOR_EXCEPTION(rtn.ptr().get()==NULL, InternalError,
+    TEST_FOR_EXCEPTION(rtn.ptr().get()==NULL, std::logic_error,
       "null return detected in Expr::operator[]. This="
       << toString() << ", i=" << i);
     return rtn;
@@ -837,7 +837,7 @@ Expr Expr::conj() const
 void Expr::setParameterValue(const double& value)
 {
   Parameter* pe = dynamic_cast<Parameter*>(ptr().get());
-  TEST_FOR_EXCEPTION(pe==0, RuntimeError, 
+  TEST_FOR_EXCEPTION(pe==0, std::runtime_error, 
     "Expr " << *this << " is not a Parameter expr, and "
     "so setParameterValue() should not be called");
   pe->setValue(value);
@@ -846,7 +846,7 @@ void Expr::setParameterValue(const double& value)
 double Expr::getParameterValue() const 
 {
   const Parameter* pe = dynamic_cast<const Parameter*>(ptr().get());
-  TEST_FOR_EXCEPTION(pe==0, RuntimeError, 
+  TEST_FOR_EXCEPTION(pe==0, std::runtime_error, 
     "Expr " << *this << " is not a Parameter expr, and "
     "so getParameterValue() should not be called");
   return pe->value();
@@ -855,7 +855,7 @@ double Expr::getParameterValue() const
 
 bool Expr::isIndependentOf(const Expr& u) const
 {
-  TEST_FOR_EXCEPTION(ptr().get()==0, RuntimeError, 
+  TEST_FOR_EXCEPTION(ptr().get()==0, std::runtime_error, 
     "function called on null expression");
   
   return scalarExpr()->isIndependentOf(u);
@@ -864,7 +864,7 @@ bool Expr::isIndependentOf(const Expr& u) const
 
 bool Expr::isLinearForm(const Expr& u) const
 {
-  TEST_FOR_EXCEPTION(ptr().get()==0, RuntimeError, 
+  TEST_FOR_EXCEPTION(ptr().get()==0, std::runtime_error, 
     "function called on null expression");
 
   return scalarExpr()->isLinearForm(u);
@@ -874,7 +874,7 @@ bool Expr::isLinearForm(const Expr& u) const
 
 bool Expr::isQuadraticForm(const Expr& u) const
 {
-  TEST_FOR_EXCEPTION(ptr().get()==0, RuntimeError, 
+  TEST_FOR_EXCEPTION(ptr().get()==0, std::runtime_error, 
     "function called on null expression");
 
   return scalarExpr()->isQuadraticForm(u);
@@ -884,7 +884,7 @@ bool Expr::isQuadraticForm(const Expr& u) const
 
 bool Expr::isLinearInTests() const
 {
-  TEST_FOR_EXCEPTION(ptr().get()==0, RuntimeError, 
+  TEST_FOR_EXCEPTION(ptr().get()==0, std::runtime_error, 
     "function called on null expression");
 
   return scalarExpr()->isLinearInTests();
@@ -893,7 +893,7 @@ bool Expr::isLinearInTests() const
 
 bool Expr::hasTestFunctions() const
 {
-  TEST_FOR_EXCEPTION(ptr().get()==0, RuntimeError, 
+  TEST_FOR_EXCEPTION(ptr().get()==0, std::runtime_error, 
     "function called on null expression");
 
   return scalarExpr()->hasTestFunctions();
@@ -902,7 +902,7 @@ bool Expr::hasTestFunctions() const
 
 bool Expr::everyTermHasTestFunctions() const
 {
-  TEST_FOR_EXCEPTION(ptr().get()==0, RuntimeError, 
+  TEST_FOR_EXCEPTION(ptr().get()==0, std::runtime_error, 
     "function called on null expression");
 
   return scalarExpr()->everyTermHasTestFunctions();
@@ -927,7 +927,7 @@ bool Expr::isUnknownElement() const
 void Expr::getUnknowns(Set<int>& unkID, 
   Array<Expr>& unks) const
 {
-  TEST_FOR_EXCEPTION(ptr().get()==0, RuntimeError, 
+  TEST_FOR_EXCEPTION(ptr().get()==0, std::runtime_error, 
     "function called on null expression");
 
   const UnknownFuncElement* u 
@@ -950,7 +950,7 @@ void Expr::getUnknowns(Set<int>& unkID,
 
 void Expr::getTests(Set<int>& varID, Array<Expr>& vars) const
 {
-  TEST_FOR_EXCEPTION(ptr().get()==0, RuntimeError, 
+  TEST_FOR_EXCEPTION(ptr().get()==0, std::runtime_error, 
     "function called on null expression");
 
   const TestFuncElement* u 
@@ -974,7 +974,7 @@ void Expr::getTests(Set<int>& varID, Array<Expr>& vars) const
 const ScalarExpr* Expr::scalarExpr() const 
 {
   const ScalarExpr* se = dynamic_cast<const ScalarExpr*>(ptr().get());
-  TEST_FOR_EXCEPTION(se==0, InternalError, "ScalarExpr expected here");
+  TEST_FOR_EXCEPTION(se==0, std::logic_error, "ScalarExpr expected here");
   return se;
 }
 
@@ -994,11 +994,11 @@ using namespace Sundance;
 
 Expr Complex(const Expr& re, const Expr& im)
 {
-  TEST_FOR_EXCEPTION(re.size() != im.size(), RuntimeError,
+  TEST_FOR_EXCEPTION(re.size() != im.size(), std::runtime_error,
     "arguments mismatched in Complex(). Real part="
     << re << ", imaginary part=" << im);
 
-  TEST_FOR_EXCEPTION(re.isComplex() || im.isComplex(), RuntimeError,
+  TEST_FOR_EXCEPTION(re.isComplex() || im.isComplex(), std::runtime_error,
     "recursively defined complex number. Real part="
     << re << ", imaginary part=" << im);
 

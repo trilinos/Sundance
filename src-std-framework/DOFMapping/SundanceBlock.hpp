@@ -33,13 +33,13 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceExpr.hpp"
-#include "TSFVectorType.hpp"
+#include "PlayaVectorType.hpp"
 
 
 namespace Sundance
 {
 using namespace Teuchos;
-using namespace TSFExtended;
+using namespace Playa;
   
 /** 
  * 

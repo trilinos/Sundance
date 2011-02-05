@@ -30,7 +30,7 @@
 
 #include "SundanceAToCDensitySampler.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceGeomUtils.hpp"
 #include "SundanceLagrange.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
@@ -44,7 +44,7 @@ using namespace Sundance;
 using namespace Sundance;
 using namespace Sundance;
 using namespace Teuchos;
-using namespace TSFExtended;
+using namespace Playa;
 
 
 static Time& densitySamplingTimer() 
@@ -131,7 +131,7 @@ void AToCDensitySampler::init()
           double dPerp = ::sqrt(xCell*xCell - (xCell*axis_)*(xCell*axis_));
           vol = vol * dPerp;
         }
-      elemWeightVec_.setElement(vecIndex, vol);
+      elemWeightVec_[vecIndex] = vol;
     }
 }
 
@@ -155,7 +155,7 @@ Expr AToCDensitySampler::sample(const std::vector<double>& positions,
 {
   TimeMonitor timer(densitySamplingTimer());
 
-  TEST_FOR_EXCEPTION(positions.size() % dim_ != 0, RuntimeError,
+  TEST_FOR_EXCEPTION(positions.size() % dim_ != 0, std::runtime_error,
                      "vector of coordinates should by an integer multiple "
                      "of the spatial dimension");
 
@@ -170,15 +170,15 @@ Expr AToCDensitySampler::sample(const std::vector<double>& positions,
 
       int guess = locator_.guessCell(x);
 
-      TEST_FOR_EXCEPTION(guess < 0, RuntimeError, "particle #" << i << " position="
+      TEST_FOR_EXCEPTION(guess < 0, std::runtime_error, "particle #" << i << " position="
                          << AToCPointLocator::makePoint(dim_, x) 
                          << " is out of search grid");
 
       int cellLID = locator_.findEnclosingCell(guess, x);
 
       int vecIndex = (*elemToVecIndexMap_)[cellLID];
-      double vol = elemWeightVec_.getElement(vecIndex);
-      density.addToElement(vecIndex, particleWeight/vol);
+      double vol = elemWeightVec_[vecIndex];
+      density[vecIndex] += particleWeight/vol;
     }
 
   return rtn;
@@ -198,7 +198,7 @@ void AToCDensitySampler::addToCounts(const std::vector<double>& positions,
 {
   TimeMonitor timer(densitySamplingTimer());
 
-  TEST_FOR_EXCEPTION(positions.size() % dim_ != 0, RuntimeError,
+  TEST_FOR_EXCEPTION(positions.size() % dim_ != 0, std::runtime_error,
                      "vector of coordinates should by an integer multiple "
                      "of the spatial dimension");
 
@@ -212,15 +212,15 @@ void AToCDensitySampler::addToCounts(const std::vector<double>& positions,
 
       int guess = locator_.guessCell(x);
 
-      TEST_FOR_EXCEPTION(guess < 0, RuntimeError, "particle #" << i << " position="
+      TEST_FOR_EXCEPTION(guess < 0, std::runtime_error, "particle #" << i << " position="
                          << AToCPointLocator::makePoint(dim_, x) 
                          << " is out of search grid");
 
       int cellLID = locator_.findEnclosingCell(guess, x);
 
       int vecIndex = (*elemToVecIndexMap_)[cellLID];
-      double vol = elemWeightVec_.getElement(vecIndex);
-      vec.addToElement(vecIndex, particleWeight/vol);
+      double vol = elemWeightVec_[vecIndex];
+      vec[vecIndex] += particleWeight/vol;
     }
 }
 

@@ -33,7 +33,7 @@
 #include "SundanceZeroExpr.hpp"
 
 #include "SundanceDerivSet.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 
 using namespace Sundance;
 using namespace Sundance;
@@ -53,7 +53,7 @@ void SymbolicFunc::substituteZero() const
     {
       const SymbolicFuncElement* u 
         = dynamic_cast<const SymbolicFuncElement*>(element(i).ptr().get());
-      TEST_FOR_EXCEPTION(u==0, InternalError, 
+      TEST_FOR_EXCEPTION(u==0, std::logic_error, 
                          "Non-symbolic function "
                          << element(i).toString() 
                          << " detected in SymbolicFunc::substituteZero()");
@@ -64,7 +64,7 @@ void SymbolicFunc::substituteZero() const
 void SymbolicFunc
 ::substituteFunction(const RCP<DiscreteFunctionStub>& u0) const
 {
-  TEST_FOR_EXCEPTION(this->size() != u0->size(), InternalError,
+  TEST_FOR_EXCEPTION(this->size() != u0->size(), std::logic_error,
                      "Mismatch between sizes of symbolic " << toString()
                      << " and discrete func " << u0->toString()
                      << " in substituteFunction()");
@@ -73,7 +73,7 @@ void SymbolicFunc
     {
       const SymbolicFuncElement* u 
         = dynamic_cast<const SymbolicFuncElement*>(element(i).ptr().get());
-      TEST_FOR_EXCEPTION(u==0, InternalError, 
+      TEST_FOR_EXCEPTION(u==0, std::logic_error, 
                          "Non-symbolic function "
                          << element(i).toString() 
                          << " detected in SymbolicFunc::substituteFunction()");

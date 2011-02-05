@@ -94,7 +94,7 @@ int main(int argc, char** argv)
       /* Define the Dirichlet BC */
       Expr bc = EssentialBC(leftPoint+rightPoint, v*u, quad);
 
-      /* Create a TSF NonlinearOperator object */
+      /* Create a Playa NonlinearOperator object */
       NonlinearProblem prob(mesh, eqn, bc, v, u, u0, 
         p, p0, vecType);
 

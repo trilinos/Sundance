@@ -71,14 +71,14 @@ namespace Thyra
     /** Get the space of model parameters */
     RCP<const VectorSpaceBase<double> > get_p_space(int i) const 
     {
-      TEST_FOR_EXCEPTION(i != 0, RuntimeError, "invalid index for parameter space");
+      TEST_FOR_EXCEPTION(i != 0, std::runtime_error, "invalid index for parameter space");
       return paramSpace().ptr();
     }
 
     /** Get the range space of the objective function */
     RCP<const VectorSpaceBase<double> > get_g_space(int i) const 
     {
-      TEST_FOR_EXCEPTION(i != 0, RuntimeError, "invalid index for objective space");
+      TEST_FOR_EXCEPTION(i != 0, std::runtime_error, "invalid index for objective space");
       return objectiveSpace_.ptr();
     }
 

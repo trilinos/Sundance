@@ -55,14 +55,14 @@ RCP<ScalarExpr> SymbolicTransformation::chooseSign(int sign,
       {
         Expr e = -Expr::handle(expr);
         RCP<ScalarExpr> rtn = rcp_dynamic_cast<ScalarExpr>(e.ptr());
-        TEST_FOR_EXCEPTION(rtn.get() == NULL, InternalError,
+        TEST_FOR_EXCEPTION(rtn.get() == NULL, std::logic_error,
                            "Non-scalar expr "
                            << e.toString() 
                            << " detected in SymbolicTransformation::chooseSign");
         return rtn;
       }
     default:
-      TEST_FOR_EXCEPTION(true, InternalError, 
+      TEST_FOR_EXCEPTION(true, std::logic_error, 
                          "sign != +/- 1 in Expr::transformSign()");
     }
   return expr;
@@ -80,7 +80,7 @@ Expr SymbolicTransformation::chooseSign(int sign,
     case -1:
       return -expr;
     default:
-      TEST_FOR_EXCEPTION(true, InternalError, 
+      TEST_FOR_EXCEPTION(true, std::logic_error, 
                          "sign != +/- 1 in Expr::transformSign()");
     }
   return expr;
@@ -90,7 +90,7 @@ RCP<ScalarExpr> SymbolicTransformation::getScalar(const Expr& expr)
 {
   RCP<ScalarExpr> s = rcp_dynamic_cast<ScalarExpr>(expr.ptr());
 
-  TEST_FOR_EXCEPTION(s.get()==NULL, InternalError,
+  TEST_FOR_EXCEPTION(s.get()==NULL, std::logic_error,
                      "non-scalar detected in SymbolicTransformation::getScalar");
 
   return s;

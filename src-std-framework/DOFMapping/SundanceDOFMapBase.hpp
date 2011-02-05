@@ -108,7 +108,7 @@ using namespace Teuchos;
  *
  * </ul>
  */
-class DOFMapBase : public Sundance::Printable
+class DOFMapBase : public Playa::Printable
 {
 public:
 

@@ -32,7 +32,7 @@
 #include "SundanceEvalManager.hpp"
 #include "SundanceDerivOfSymbFunc.hpp"
 
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceUnknownFuncElement.hpp"
 #include "SundanceTestFuncElement.hpp"
@@ -70,7 +70,7 @@ DerivOfSymbFuncEvaluator
   const SymbolicFuncElement* sf 
     = dynamic_cast<const SymbolicFuncElement*>(expr->evaluatableArg());
 
-  TEST_FOR_EXCEPTION(sf==0, InternalError,
+  TEST_FOR_EXCEPTION(sf==0, std::logic_error,
                      "Non-symbolic function detected where a symbolic "
                      "function was expected in "
                      "DerivOfSymbFuncEvaluator ctor");
@@ -92,7 +92,7 @@ DerivOfSymbFuncEvaluator
   /* If we have an unknown function, we need to see if it is to
    * be evaluated at zero. */
   
-  TEST_FOR_EXCEPTION(u==0, InternalError,
+  TEST_FOR_EXCEPTION(u==0, std::logic_error,
                      "Non-unknown function detected where an unknown "
                      "function was expected in "
                      "DerivOfSymbFuncEvaluator ctor");
@@ -131,20 +131,20 @@ DerivOfSymbFuncEvaluator
           const DiscreteFuncElement* df 
             = dynamic_cast<const DiscreteFuncElement*>(evalPt);
           
-          TEST_FOR_EXCEPTION(df==0, InternalError,
+          TEST_FOR_EXCEPTION(df==0, std::logic_error,
                              "DerivOfSymbFuncEvaluator ctor: evaluation point of "
                              "unknown function " << u->toString() 
                              << " is not a discrete function");
   
           const SymbolicFuncElementEvaluator* uEval 
             = dynamic_cast<const SymbolicFuncElementEvaluator*>(u->evaluator(context).get());
-          TEST_FOR_EXCEPTION(uEval==0, InternalError,
+          TEST_FOR_EXCEPTION(uEval==0, std::logic_error,
                              "DerivOfSymbFuncEvaluator ctor: null evaluator for "
                              "evaluation point");
           
           const DiscreteFuncElementEvaluator* dfEval = uEval->dfEval();
 
-          TEST_FOR_EXCEPTION(dfEval==0, InternalError,
+          TEST_FOR_EXCEPTION(dfEval==0, std::logic_error,
                              "DerivOfSymbFuncEvaluator ctor: evaluator for "
                              "evaluation point is not a "
                              "DiscreteFuncElementEvaluator");
@@ -153,7 +153,7 @@ DerivOfSymbFuncEvaluator
           funcSparsitySuperset_ = dfEval->sparsity();
 
   
-          TEST_FOR_EXCEPTION(!dfEval->hasMultiIndex(mi), InternalError,
+          TEST_FOR_EXCEPTION(!dfEval->hasMultiIndex(mi), std::logic_error,
                              "DerivOfSymbFuncEvaluator ctor: evaluator for "
                              "discrete function " << df->toString()
                              << " does not know about multiindex "

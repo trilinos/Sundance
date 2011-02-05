@@ -34,7 +34,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceExpr.hpp"
 #include <complex>
-#include "TSFVectorDecl.hpp"
+#include "PlayaVectorDecl.hpp"
 
 namespace Sundance
 {

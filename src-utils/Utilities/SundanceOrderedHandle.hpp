@@ -32,7 +32,7 @@
 #define SUNDANCEORDEREDHANDLE_HPP
 
 #include "SundanceDefs.hpp"
-#include "SundanceHandle.hpp"
+#include "PlayaHandle.hpp"
 #include <typeinfo>
 
 
@@ -40,7 +40,7 @@
 /** Empty ctor */ \
 handle() : OrderedHandle<contents >() {;} \
 /** Construct a #handle with a raw pointer to a #contents */ \
-handle(Sundance::Handleable<contents >* rawPtr) : OrderedHandle<contents >(rawPtr) {;} \
+handle(Playa::Handleable<contents >* rawPtr) : OrderedHandle<contents >(rawPtr) {;} \
 /** Construct a #handle with a smart pointer to a #contents */ \
 handle(const RCP<contents >& smartPtr) : OrderedHandle<contents >(smartPtr){;}
 
@@ -52,23 +52,23 @@ namespace Sundance
   using namespace Teuchos;
 
   /**
-   * Class OrderedHandle is an extension to Sundance::Handle that 
+   * Class OrderedHandle is an extension to Playa::Handle that 
    * includes a comparison operator ("<" operator) so that
    * the handle can be used in ordered containers such as STL maps and sets.
    */
   template <class PointerType>
-  class OrderedHandle : public Sundance::Handle<PointerType>
+  class OrderedHandle : public Playa::Handle<PointerType>
   {
   public:
     /** empty ctor */
-    OrderedHandle() : Sundance::Handle<PointerType>() {;}
+    OrderedHandle() : Playa::Handle<PointerType>() {;}
 
     /** Construct from a raw ptr */
-    OrderedHandle(Sundance::Handleable<PointerType>* rawPtr) : Sundance::Handle<PointerType>(rawPtr) {;}
+    OrderedHandle(Playa::Handleable<PointerType>* rawPtr) : Playa::Handle<PointerType>(rawPtr) {;}
 
     /** Construct from a smart ptr*/
     OrderedHandle(const RCP<PointerType>& smartPtr) 
-      : Sundance::Handle<PointerType>(smartPtr) {;}
+      : Playa::Handle<PointerType>(smartPtr) {;}
 
     /** comparison operator */
     bool operator<(const OrderedHandle<PointerType>& other) const 

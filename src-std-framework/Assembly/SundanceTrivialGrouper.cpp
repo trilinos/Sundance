@@ -40,7 +40,7 @@
 #include "SundanceQuadratureFamily.hpp"
 #include "SundanceMap.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 
 using namespace Sundance;
 using namespace Teuchos;
@@ -140,7 +140,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
         }
         resultIndex = vecCount++;
       }
-      integral->setVerbosity(integrationVerb(), transformVerb());
+      integral->setVerb(integrationVerb(), transformVerb());
       SUNDANCE_MSG3(setupVerb(), tab << "is zero-form");
       groups.append(rcp(new IntegralGroup(tuple(integral),
             tuple(resultIndex), setupVerb())));
@@ -413,10 +413,10 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
       }
 
       /* Set the verbosity for the integrals */
-      integral->setVerbosity(integrationVerb(), transformVerb());
+      integral->setVerb(integrationVerb(), transformVerb());
       if (transposeNeeded)
       {
-        transposedIntegral->setVerbosity(integrationVerb(), transformVerb());
+        transposedIntegral->setVerb(integrationVerb(), transformVerb());
       }
           
       

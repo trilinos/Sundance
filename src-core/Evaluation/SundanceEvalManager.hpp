@@ -90,7 +90,7 @@ public:
     {mediator_ = med;}
 
   /** */
-  void setVerbosity(int verb) ;
+  void setVerb(int verb) ;
 
 
   /** */

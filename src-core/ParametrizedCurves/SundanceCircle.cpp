@@ -32,6 +32,7 @@
 #include "SundancePoint.hpp"
 #include "SundancePolygon2D.hpp"
 #include "SundanceDefs.hpp"
+#include "SundanceOut.hpp"
 
 using namespace Sundance;
 
@@ -53,7 +54,7 @@ Expr Circle::getParams() const
 
 double Circle::curveEquation(const Point& evalPoint) const
 {
-	TEST_FOR_EXCEPTION(evalPoint.dim() != 2, RuntimeError,
+	TEST_FOR_EXCEPTION(evalPoint.dim() != 2, std::runtime_error,
 			"Circle::curveEquation() evaluation point dimension must be 2");
 
 	Point center(_centerx, _centery);

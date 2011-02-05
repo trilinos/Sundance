@@ -29,7 +29,7 @@
 /* @HEADER@ */
 
 #include "SundanceVectorBasisComponent.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 
 using namespace Sundance;
 using namespace Sundance;
@@ -40,7 +40,7 @@ VectorBasisComponent::VectorBasisComponent(const BasisFamily& master,
   : master_(master),
     direction_(direction)
 {
-  TEST_FOR_EXCEPTION(master_.ptr()->isScalarBasis(), RuntimeError,
+  TEST_FOR_EXCEPTION(master_.ptr()->isScalarBasis(), std::runtime_error,
     "scalar-valued basis " << master << " given as master argument to "
     "a vector basis component object. The master object must be a "
     "vector-valued basis");
@@ -51,7 +51,7 @@ bool VectorBasisComponent::lessThan(const BasisFamilyBase* other) const
   TEST_FOR_EXCEPTION(
     (typeid(*this).before(typeid(*other)) 
       || typeid(*other).before(typeid(*this))),
-    InternalError,
+    std::logic_error,
     "mismatched types: this=" << typeid(*this).name()
     << " and other=" << typeid(*other).name() 
     << " in BasisFamilyBase::lessThan(). This is most likely "

@@ -33,7 +33,7 @@
 #include "Teuchos_GlobalMPISession.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 #include "SundanceMeshType.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceBasicSimplicialMeshType.hpp"
 #include "SundanceMesh.hpp"
 #include "SundanceMeshSource.hpp"
@@ -64,10 +64,10 @@
 #include "SundanceEvalVector.hpp"
 #include "SundanceRefIntegral.hpp"
 #include "SundanceQuadratureIntegral.hpp"
-#include "TSFVectorType.hpp"
-#include "TSFEpetraVectorType.hpp"
+#include "PlayaVectorType.hpp"
+#include "PlayaEpetraVectorType.hpp"
 
-using namespace TSFExtended;
+using namespace Playa;
 using namespace Teuchos;
 using namespace Sundance;
 

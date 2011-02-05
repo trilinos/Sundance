@@ -65,7 +65,6 @@ SET(MPITests
              AdvectionDiffusion2D 
              LinearVariationalTest 
              OptPoisson1D
-             SimpleModelEvalTest 
              VorticityStokes2D 
              VorticityNavierStokes2D
              SpectralPoisson1D 

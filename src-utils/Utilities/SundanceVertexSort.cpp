@@ -3,7 +3,7 @@
 /* @HEADER@ */
 
 #include "SundanceVertexSort.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceOut.hpp"
 
 namespace Sundance
@@ -24,7 +24,7 @@ int mapExSideToMissingVertex(int dim, int exFaceID)
     case 2:
       return map2D[exFaceID];
     default:
-      TEST_FOR_EXCEPTION(dim != 3, RuntimeError,
+      TEST_FOR_EXCEPTION(dim != 3, std::runtime_error,
         "dimension " << dim << " not supported "
         "in mapExSideToMissingVertex()");
   }

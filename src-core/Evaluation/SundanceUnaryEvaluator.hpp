@@ -71,7 +71,7 @@ public:
       }
       catch(std::exception& e)
       {
-        TEST_FOR_EXCEPTION(true, RuntimeError, 
+        TEST_FOR_EXCEPTION(true, std::runtime_error, 
           "exception detected in UnaryEvaluator: expr="
           << expr->toString() << std::endl
           << "arg=" << expr->evaluatableArg()->toString() << std::endl

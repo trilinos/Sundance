@@ -32,9 +32,9 @@
 #include "SundanceSubtypeEvaluator.hpp"
 #include "SundanceEvalManager.hpp"
 #include "SundanceCurveNormExpr.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceSet.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceOut.hpp"
 
 using namespace Sundance;
@@ -54,7 +54,7 @@ CurveNormEvaluator::CurveNormEvaluator(
                     << expr->toString());
   SUNDANCE_MSG2(verb, tabs << "return sparsity " << std::endl << *(this->sparsity)());
 
-  TEST_FOR_EXCEPTION(this->sparsity()->numDerivs() > 1, InternalError,
+  TEST_FOR_EXCEPTION(this->sparsity()->numDerivs() > 1, std::logic_error,
                      "CurveNormEvaluator ctor found a sparsity table "
                      "with more than one entry. The bad sparsity table is "
                      << *(this->sparsity)());
@@ -68,7 +68,7 @@ CurveNormEvaluator::CurveNormEvaluator(
     {
       const MultipleDeriv& d = this->sparsity()->deriv(i);
 
-      TEST_FOR_EXCEPTION(d.order()!=0, InternalError,
+      TEST_FOR_EXCEPTION(d.order()!=0, std::logic_error,
                          "CurveNormEvaluator ctor found an entry in the "
                          "sparsity superset that is not a zeroth-order derivative. "
                          "The bad entry is " << this->sparsity()->deriv(i) 

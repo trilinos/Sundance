@@ -33,11 +33,11 @@
 
 
 #include "SundanceDefs.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceSet.hpp"
 #include "Teuchos_XMLObject.hpp"
 #include "Teuchos_RefCountPtrDecl.hpp"
-#include "SundanceHandleable.hpp"
+#include "PlayaHandleable.hpp"
 
 
 
@@ -51,7 +51,7 @@ using namespace Teuchos;
 
 
 /** */
-class ExprBase : public Sundance::Handleable<ExprBase>
+class ExprBase : public Playa::Handleable<ExprBase>
 {
 public:
   /** empty ctor */

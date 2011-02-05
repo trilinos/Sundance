@@ -37,7 +37,7 @@
 #include "SundanceMesh.hpp"
 #include "SundanceCellPredicateBase.hpp"
 #include "SundancePositionalCellPredicate.hpp"
-#include "SundanceHandle.hpp"
+#include "PlayaHandle.hpp"
 #include "SundanceParametrizedCurve.hpp"
 #include "SundanceCellCurvePredicate.hpp"
 
@@ -51,7 +51,7 @@ using namespace Teuchos;
  * used to decide whether
  * a given cell passes a CellFilter.
  */
-class CellPredicate : public Sundance::Handle<CellPredicateBase>
+class CellPredicate : public Playa::Handle<CellPredicateBase>
 {
 public:
     
@@ -62,7 +62,7 @@ public:
   CellPredicate(const RCP<CellPredicateFunctorBase>& func);
 
   /** construct from a positional cell predicate functor */
-  CellPredicate(Sundance::Handleable<CellPredicateFunctorBase>* func);
+  CellPredicate(Playa::Handleable<CellPredicateFunctorBase>* func);
 
   /** construct from a positional cell predicate functor */
   CellPredicate(ParametrizedCurve& curve, CurveCellFilterMode filterMode);

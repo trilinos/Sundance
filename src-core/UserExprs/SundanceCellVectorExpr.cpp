@@ -90,7 +90,7 @@ CellVectorExpr::CellVectorExpr(int normalComponentIndex, int dim,
 bool CellVectorExpr::lessThan(const ScalarExpr* other) const
 {
   const CellVectorExpr* f = dynamic_cast<const CellVectorExpr*>(other);
-  TEST_FOR_EXCEPTION(f==0, InternalError, "cast should never fail at this point");
+  TEST_FOR_EXCEPTION(f==0, std::logic_error, "cast should never fail at this point");
   if (type_ < f->type_) return true;
   if (type_ > f->type_) return false;
   if (dim_ < f->dim_) return true;

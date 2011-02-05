@@ -34,7 +34,7 @@
 #include "SundanceMaximalQuadratureIntegral.hpp"
 #include "SundanceCurveQuadratureIntegral.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
 using namespace Sundance;
@@ -148,7 +148,7 @@ IntegralGroup
     int nt = integrals[i]->nNodesTest();
     if (i > 0) 
     {
-      TEST_FOR_EXCEPTION(nt != nTestNodes_, InternalError,
+      TEST_FOR_EXCEPTION(nt != nTestNodes_, std::logic_error,
         "IntegralGroup ctor detected integrals with inconsistent numbers of test nodes");
     }
     Tabs tab1;
@@ -225,9 +225,9 @@ IntegralGroup
     int nu = integrals[i]->nNodesUnk();
     if (i > 0) 
     {
-      TEST_FOR_EXCEPTION(nt != nTestNodes_, InternalError,
+      TEST_FOR_EXCEPTION(nt != nTestNodes_, std::logic_error,
         "IntegralGroup ctor detected integrals with inconsistent numbers of test nodes");
-      TEST_FOR_EXCEPTION(nu != nUnkNodes_, InternalError,
+      TEST_FOR_EXCEPTION(nu != nUnkNodes_, std::logic_error,
         "IntegralGroup ctor detected integrals with inconsistent numbers of unk nodes");
     }
     nTestNodes_ = nt;
@@ -330,7 +330,7 @@ bool IntegralGroup
         << " by quadrature");
           
       TEST_FOR_EXCEPTION(vectorCoeffs[resultIndices_[i]]->length()==0,
-        InternalError,
+        std::logic_error,
         "zero-length coeff vector detected in "
         "quadrature integration branch of "
         "IntegralGroup::evaluate(). std::string value is ["
@@ -351,7 +351,7 @@ bool IntegralGroup
         << " by quadrature");
           
       TEST_FOR_EXCEPTION(vectorCoeffs[resultIndices_[i]]->length()==0,
-        InternalError,
+        std::logic_error,
         "zero-length coeff vector detected in "
         "quadrature integration branch of "
         "IntegralGroup::evaluate(). std::string value is ["

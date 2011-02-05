@@ -30,14 +30,14 @@
 
 #include "SundanceDiscreteFunction.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceMaximalCellFilter.hpp"
 #include "SundanceCellFilter.hpp"
 #include "SundanceCellSet.hpp"
 #include "SundanceSubtypeEvaluator.hpp"
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
-#include "TSFVectorImpl.hpp"
+#include "PlayaVectorImpl.hpp"
 #endif
 
 using namespace Sundance;
@@ -163,7 +163,7 @@ const DiscreteFunction* DiscreteFunction::discFunc(const Expr& expr)
   const DiscreteFunction* df 
     = dynamic_cast<const DiscreteFunction*>(e);
 
-  TEST_FOR_EXCEPTION(df==0, RuntimeError,
+  TEST_FOR_EXCEPTION(df==0, std::runtime_error,
     "failed to cast " << expr << " to a discrete function. "
     "It appears to be of type " << e->typeName());
 
@@ -177,7 +177,7 @@ DiscreteFunction* DiscreteFunction::discFunc(Expr& expr)
   DiscreteFunction* df 
     = dynamic_cast<DiscreteFunction*>(expr.ptr().get());
 
-  TEST_FOR_EXCEPTION(df==0, RuntimeError,
+  TEST_FOR_EXCEPTION(df==0, std::runtime_error,
     "failed to cast " << expr << " to a discrete function. "
     "It appears to be of type " << expr.ptr()->typeName());
 

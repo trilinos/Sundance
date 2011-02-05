@@ -35,9 +35,9 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceMesh.hpp"
-#include "SundanceHandleable.hpp"
+#include "PlayaHandleable.hpp"
 #include "Teuchos_XMLObject.hpp"
-#include "SundancePrintable.hpp"
+#include "PlayaPrintable.hpp"
 #include "Teuchos_Describable.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
 #include <typeinfo>
@@ -57,7 +57,7 @@ using namespace Teuchos;
  * in LabelCellPredicate and PositionalCellPredicate.
  */
 class CellPredicateBase 
-  : public Sundance::Handleable<CellPredicateBase>,
+  : public Playa::Handleable<CellPredicateBase>,
     public Noncopyable,
     public ObjectWithClassVerbosity<CellPredicateBase>
 {

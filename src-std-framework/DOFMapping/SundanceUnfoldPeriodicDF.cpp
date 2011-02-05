@@ -29,7 +29,7 @@
 /* @HEADER@ */
 
 #include "SundanceMap.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceUnfoldPeriodicDF.hpp"
 #include "SundancePeriodicMesh1D.hpp"
@@ -39,13 +39,13 @@
 #include "SundanceDOFMapBase.hpp"
 #include "Teuchos_MPIContainerComm.hpp"
 #include "Teuchos_TimeMonitor.hpp"
-
+#include "PlayaLoadableVector.hpp"
 
 
 namespace Sundance
 {
 using namespace Teuchos;
-using namespace TSFExtended;
+using namespace Playa;
 
 Mesh unfoldPeriodicMesh(const Mesh& mesh)
 {
@@ -89,8 +89,11 @@ Expr unfoldPeriodicDiscreteFunction(const Expr& f)
   Mesh oldMesh = perSpace.mesh();
   Mesh newMesh = space.mesh();
 
-  Vector<double> oldVec = df->getVector();
+  df->updateGhosts();
+  RCP<GhostView<double> > ghostView = df->ghostView();
+
   Vector<double> newVec = space.createVector();
+
 
   const RCP<DOFMapBase>& oldMap = perSpace.map();
   const RCP<DOFMapBase>& newMap = space.map();
@@ -130,7 +133,7 @@ Expr unfoldPeriodicDiscreteFunction(const Expr& f)
         {
           int oldDof = oldElemDofs[chunk][nDofsPerCell*c + d];
           int newDof = newElemDofs[chunk][nDofsPerCell*c + d];
-          newVec.setElement(newDof, oldVec.getElement(oldDof));
+          loadable(newVec)->setElement(newDof, ghostView->getElement(oldDof));
         }
       }
     }
@@ -170,7 +173,7 @@ Expr unfoldPeriodicDiscreteFunction(const Expr& f)
           {
             int oldDof = oldElemDofs[chunk][nDofsPerCell*c + d];
             int newDof = newElemDofs[chunk][nDofsPerCell*c + d];
-            newVec.setElement(newDof, oldVec.getElement(oldDof));
+            loadable(newVec)->setElement(newDof, ghostView->getElement(oldDof));
           }
         }
         else
@@ -179,7 +182,7 @@ Expr unfoldPeriodicDiscreteFunction(const Expr& f)
           {
             int oldDof = oldElemDofs[chunk][d];
             int newDof = newElemDofs[chunk][nDofsPerCell*c + d];
-            newVec.setElement(newDof, oldVec.getElement(oldDof));
+            loadable(newVec)->setElement(newDof, ghostView->getElement(oldDof));
           }
         }
       }

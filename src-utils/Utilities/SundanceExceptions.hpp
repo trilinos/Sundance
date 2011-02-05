@@ -47,7 +47,7 @@
   TeuchosOStringStream omsg; \
 	omsg << __FILE__ << ":" << __LINE__ << ": " \
        << ": " << msg; \
-  throw Sundance::RuntimeError(TEUCHOS_OSTRINGSTREAM_GET_C_STR(omsg)); \
+  throw Sundance::std::runtime_error(TEUCHOS_OSTRINGSTREAM_GET_C_STR(omsg)); \
 }
 
 #define SUNDANCE_ERROR(msg) \
@@ -57,7 +57,7 @@
        << ": " << msg; \
   const std::string &omsgstr = omsg.str(); \
   TestForException_break(omsgstr); \
-  throw Sundance::RuntimeError(TEUCHOS_OSTRINGSTREAM_GET_C_STR(omsg)); \
+  throw Sundance::std::runtime_error(TEUCHOS_OSTRINGSTREAM_GET_C_STR(omsg)); \
 }
 
 
@@ -66,7 +66,7 @@
   TeuchosOStringStream omsg; \
 	omsg << e.what() << std::endl \
   << "caught in " << __FILE__ << ":" << __LINE__ << std::endl ; \
-  throw Sundance::RuntimeError(TEUCHOS_OSTRINGSTREAM_GET_C_STR(omsg)); \
+  throw Sundance::std::runtime_error(TEUCHOS_OSTRINGSTREAM_GET_C_STR(omsg)); \
 }
 
 #define SUNDANCE_TRACE_MSG(e, msg)                      \
@@ -75,19 +75,19 @@
 	omsg << e.what() << std::endl \
   << "caught in " << __FILE__ << ":" << __LINE__ << std::endl ; \
   omsg << msg << std::endl; \
-  throw Sundance::RuntimeError(TEUCHOS_OSTRINGSTREAM_GET_C_STR(omsg)); \
+  throw Sundance::std::runtime_error(TEUCHOS_OSTRINGSTREAM_GET_C_STR(omsg)); \
 }
 
 #define SUNDANCE_BOUNDSCHECK(i, low, high, msg) \
 { \
-  TEST_FOR_EXCEPTION( i < low || i > high, Sundance::RuntimeError, \
+  TEST_FOR_EXCEPTION( i < low || i > high, Sundance::std::runtime_error, \
                      "Bounds violation: " << #i << "is out of range [" \
                       << #low << ", " << #high << "]") \
 }
 
 #define SUNDANCE_CHECK_ARRAY_SIZE_MATCH(a1, a2) \
   {\
-    TEST_FOR_EXCEPTION(a1.size() != a2.size(), Sundance::RuntimeError, \
+    TEST_FOR_EXCEPTION(a1.size() != a2.size(), Sundance::std::runtime_error, \
       "Mismatched array sizes: size(" << #a1 << ")=" << a1.size() \
       << " size(" << #a2 << ")=" << a2.size() << ". Expected equal sizes");\
   }
@@ -97,27 +97,27 @@
 namespace Sundance
 {
   /**
-   * InternalError is thrown when an "impossible" case is detected
-   * in Sundance's internals. Occurance of an InternalError indicates
+   * std::logic_error is thrown when an "impossible" case is detected
+   * in Sundance's internals. Occurance of an std::logic_error indicates
    * either a bug in Sundance or runtime memory corruption that is
    * scrambling an object's virtual tables.
    */
-  class InternalError : public std::logic_error
+  class std::logic_error : public std::logic_error
     {
     public:
       /** */
-      InternalError(const std::string& msg);
+      std::logic_error(const std::string& msg);
     };
 
   /**
-   * RuntimeError is an exception that occurs as a result of invalid
+   * std::runtime_error is an exception that occurs as a result of invalid
    * user-level code.
    */
-  class RuntimeError : public std::runtime_error
+  class std::runtime_error : public std::runtime_error
     {
     public:
       /** */
-      RuntimeError(const std::string& msg);
+      std::runtime_error(const std::string& msg);
     };
 
   /**
@@ -131,7 +131,7 @@ namespace Sundance
    * Expr e = dx/f;
    * \endcode
    */
-  class BadSymbolicsError : public RuntimeError
+  class BadSymbolicsError : public std::runtime_error
     {
     public:
       /** */

@@ -30,7 +30,7 @@
 
 #include "SundanceFunctional.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceTestFunction.hpp"
 #include "SundanceUnknownFunction.hpp"
 #include "SundanceEssentialBC.hpp"
@@ -43,11 +43,11 @@
 
 using namespace Sundance;
 using namespace Teuchos;
-using namespace TSFExtended;
+using namespace Playa;
 
 
 Functional::Functional(const Mesh& mesh, const Expr& integral, 
-  const TSFExtended::VectorType<double>& vecType)
+  const Playa::VectorType<double>& vecType)
   : mesh_(mesh),
     integral_(integral),
     bc_(),
@@ -60,7 +60,7 @@ Functional::Functional(
   const Mesh& mesh, 
   const Expr& integral,  
   const Expr& essentialBC,
-  const TSFExtended::VectorType<double>& vecType)
+  const Playa::VectorType<double>& vecType)
   : mesh_(mesh),
     integral_(integral),
     bc_(essentialBC),

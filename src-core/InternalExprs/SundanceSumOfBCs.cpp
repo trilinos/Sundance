@@ -29,7 +29,7 @@
 /* @HEADER@ */
 
 #include "SundanceSumOfBCs.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 
 using namespace Sundance;
 using namespace Teuchos;

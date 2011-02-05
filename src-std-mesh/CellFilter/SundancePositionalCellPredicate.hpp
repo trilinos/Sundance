@@ -42,7 +42,7 @@ using namespace Teuchos;
 
 #define NEW_CELL_PREDICATE(name)  \
   class name : public CellPredicateFunctorBase,  \
-               public Sundance::Handleable<CellPredicateFunctorBase>  \
+               public Playa::Handleable<CellPredicateFunctorBase>  \
   {  \
   public:  \
     name() : CellPredicateFunctorBase(#name) {} \
@@ -56,7 +56,7 @@ using namespace Teuchos;
 
 #define CELL_PREDICATE_(name, code) \
   class name : public CellPredicateFunctorBase, \
-               public Sundance::Handleable<CellPredicateFunctorBase> \
+               public Playa::Handleable<CellPredicateFunctorBase> \
   { \
   public:\
     name() : CellPredicateFunctorBase(#name){;}            \

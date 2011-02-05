@@ -30,7 +30,7 @@
 
 #include "SundanceSumExpr.hpp"
 #include "SundanceExpr.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceEvalManager.hpp"
 #include "SundanceSparsitySuperset.hpp"
 #include "SundanceOut.hpp"

@@ -120,7 +120,7 @@ public:
   static bool& alwaysUseCofacets();
 
   /** */
-  void setVerbosity(
+  void setVerb(
     int integrationVerb,
     int transformVerb);
 

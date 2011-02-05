@@ -33,7 +33,7 @@
 #include "SundanceSumExpr.hpp"
 #include "SundanceProductExpr.hpp"
 
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceOut.hpp"
 
 using namespace Sundance;
@@ -90,7 +90,7 @@ SumEvaluator::SumEvaluator(const SumExpr* se,
       const MultipleDeriv& d = this->sparsity()->deriv(i);
       TEST_FOR_EXCEPTION(!leftSparsity()->containsDeriv(d) 
                          && !rightSparsity()->containsDeriv(d),
-                         InternalError,
+                         std::logic_error,
                          "deriv " << d.toString() 
                          << " was not found in either left or right operand "
                          "of expr " << expr()->toString());

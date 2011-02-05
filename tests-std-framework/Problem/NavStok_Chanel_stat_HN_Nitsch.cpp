@@ -165,7 +165,7 @@ int main(int argc, char** argv)
  
       //Evaluator::classVerbosity() = 6;
 
-      // Create a TSF NonlinearOperator object 
+      // Create a Playa NonlinearOperator object 
       NonlinearProblem prob(mesh, eqn+eqnp, bc, List(v, q),
                                List(u, p), up, vecType );
 

@@ -30,7 +30,7 @@
 
 #include "SundanceMaximalCellFilter.hpp"
 #include "SundanceImplicitCellSet.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 
 using namespace Sundance;
 using namespace Sundance;

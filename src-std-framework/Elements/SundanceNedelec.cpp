@@ -30,7 +30,7 @@
 
 #include "SundanceNedelec.hpp"
 #include "SundanceADReal.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceSpatialDerivSpecifier.hpp"
 #include "SundancePoint.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
@@ -101,7 +101,7 @@ int Nedelec::nReferenceDOFsWithoutFacets(
     case TriangleCell:
       return 0;
     default:
-      TEST_FOR_EXCEPTION(true, RuntimeError, "Cell type "
+      TEST_FOR_EXCEPTION(true, std::runtime_error, "Cell type "
                          << cellType << " not implemented in Nedelec basis");
       return -1; // -Wall
     }
@@ -137,7 +137,7 @@ void Nedelec::getReferenceDOFs(
       dofs[3] = tuple(Array<int>());
       return;
     default:
-      TEST_FOR_EXCEPTION(true, RuntimeError, "Cell type "
+      TEST_FOR_EXCEPTION(true, std::runtime_error, "Cell type "
                          << cellType << " not implemented in Nedelec basis");
     }
 }
@@ -151,7 +151,7 @@ void Nedelec::refEval(
   Array<Array<Array<double> > >& result,
   int verbosity) const
 {
-  TEST_FOR_EXCEPTION(true, RuntimeError, "evaluation of Nedelec elements not yet supported");
+  TEST_FOR_EXCEPTION(true, std::runtime_error, "evaluation of Nedelec elements not yet supported");
 }
 
 

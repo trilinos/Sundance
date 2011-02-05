@@ -34,7 +34,7 @@
 #include "SundanceFeketeTriangleQuadrature.hpp"
 #include "SundanceGaussLobatto1D.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include <stack>
 
 using namespace Sundance;

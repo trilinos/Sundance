@@ -39,7 +39,7 @@
 #include "SundanceSparsitySubset.hpp"
 #include "SundanceSet.hpp"
 #include "SundanceMultiIndex.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceOut.hpp"
 
 namespace Sundance 

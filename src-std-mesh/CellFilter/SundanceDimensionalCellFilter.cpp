@@ -30,7 +30,7 @@
 
 #include "SundanceDimensionalCellFilter.hpp"
 #include "SundanceImplicitCellSet.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 
 using namespace Sundance;
 using namespace Sundance;
@@ -53,7 +53,7 @@ XMLObject DimensionalCellFilter::toXML() const
 bool DimensionalCellFilter::lessThan(const CellFilterStub* other) const
 {
   TEST_FOR_EXCEPTION(dynamic_cast<const DimensionalCellFilter*>(other) == 0,
-                     InternalError,
+                     std::logic_error,
                      "argument " << other->toXML() 
                      << " to DimensionalCellFilter::lessThan() should be "
                      "a DimensionalCellFilter pointer.");

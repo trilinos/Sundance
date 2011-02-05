@@ -29,12 +29,12 @@
 /* @HEADER@ */
 
 #include "SundanceExodusWriter.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceMaximalCellFilter.hpp"
 #include "SundanceCellFilter.hpp"
 #include "SundanceVertexSort.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "Teuchos_XMLObject.hpp"
 
 #ifdef HAVE_SUNDANCE_EXODUS 
@@ -65,7 +65,7 @@ void ExodusWriter::write() const
   int ws = 8;
   int exoid = ex_create(exoFile.c_str(), EX_CLOBBER, &ws, &ws);
 
-  TEST_FOR_EXCEPTION(exoid < 0, RuntimeError, "failure to create file "
+  TEST_FOR_EXCEPTION(exoid < 0, std::runtime_error, "failure to create file "
     << filename());
 
 
@@ -105,7 +105,7 @@ void ExodusWriter::write() const
 
   ex_close(exoid);
 #else
-  TEST_FOR_EXCEPTION(true, RuntimeError, "Exodus not enabled");
+  TEST_FOR_EXCEPTION(true, std::runtime_error, "Exodus not enabled");
 #endif
 }
 
@@ -299,7 +299,7 @@ void ExodusWriter::writeMesh(int exoid,
   }
 //  Out::os() << "done all node sets" << endl;
 #else
-  TEST_FOR_EXCEPTION(true, RuntimeError, "Exodus not enabled");
+  TEST_FOR_EXCEPTION(true, std::runtime_error, "Exodus not enabled");
 #endif
 }
 
@@ -483,7 +483,7 @@ void ExodusWriter::writeFields(int exoid,
 
 
 #else
-  TEST_FOR_EXCEPTION(true, RuntimeError, "Exodus not enabled");
+  TEST_FOR_EXCEPTION(true, std::runtime_error, "Exodus not enabled");
 #endif
   
 }
@@ -499,7 +499,7 @@ std::string ExodusWriter::elemType(const CellType& type) const
     case TetCell:
       return "TETRA";
     default:
-      TEST_FOR_EXCEPTION(true, RuntimeError, "cell type=" << type << " cannot be used as a "
+      TEST_FOR_EXCEPTION(true, std::runtime_error, "cell type=" << type << " cannot be used as a "
         "maximal-dimension cell in exodus");
   }
   return "NULL"; //-Wall

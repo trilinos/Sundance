@@ -29,7 +29,7 @@
 /* @HEADER@ */
 
 #include "SundanceMaximalCofacetBatch.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 
 using namespace Sundance;
 using namespace Teuchos;
@@ -50,7 +50,7 @@ MaximalCofacetBatch::MaximalCofacetBatch()
 
 void MaximalCofacetBatch::reset(int numCells, int numCofacets)
 {
-  TEST_FOR_EXCEPTION(numCofacets < 0 || numCofacets > 2, RuntimeError,
+  TEST_FOR_EXCEPTION(numCofacets < 0 || numCofacets > 2, std::runtime_error,
     "invalid number of maximal cofacets = " << numCofacets);
   numCofacets_ = numCofacets;
   reset(numCells);
@@ -59,7 +59,7 @@ void MaximalCofacetBatch::reset(int numCells, int numCofacets)
 void MaximalCofacetBatch::reset(int numCells)
 {
   numCells_ = numCells;
-  TEST_FOR_EXCEPTION(numCells_ <= 0, RuntimeError,
+  TEST_FOR_EXCEPTION(numCells_ <= 0, std::runtime_error,
     "invalid number of cells = " << numCells_);
   for (int i=0; i<numCofacets_; i++)
   {
@@ -71,7 +71,7 @@ void MaximalCofacetBatch::reset(int numCells)
 void MaximalCofacetBatch::addSingleCofacet(int c, 
   int cofacetLID, int facetIndex)
 {
-  TEST_FOR_EXCEPTION(numCofacets_ != 1, RuntimeError,
+  TEST_FOR_EXCEPTION(numCofacets_ != 1, std::runtime_error,
     "addSingleCofacet called for a batch configured with " << numCofacets_ 
     << " cofacets");
 
@@ -83,7 +83,7 @@ void MaximalCofacetBatch::addTwoCofacets(int c,
   int cofacet2, int facetIndex2
 )
 {
-  TEST_FOR_EXCEPTION(numCofacets_ != 2, RuntimeError,
+  TEST_FOR_EXCEPTION(numCofacets_ != 2, std::runtime_error,
     "addTwoCofacets called for a batch configured with " << numCofacets_ 
     << " cofacets");
 
@@ -96,9 +96,9 @@ void MaximalCofacetBatch::addTwoCofacets(int c,
 
 int MaximalCofacetBatch::cofacetLID(int c, int n, int& facetIndex) const
 {
-  TEST_FOR_EXCEPTION(n >= numCofacets_, RuntimeError,
+  TEST_FOR_EXCEPTION(n >= numCofacets_, std::runtime_error,
     "invalid cofacet number n=" << n);
-  TEST_FOR_EXCEPTION(c >= numCells_, RuntimeError,
+  TEST_FOR_EXCEPTION(c >= numCells_, std::runtime_error,
     "invalid cell number c=" << c);
 
   facetIndex = facetIndices_[n]->operator[](c);
@@ -111,7 +111,7 @@ void MaximalCofacetBatch::getSpecifiedCofacets(
   RCP<Array<int> >& facetIndices) const
 {
   TEST_FOR_EXCEPTION((int) cofacetNumbers.size() != numCells(),
-    RuntimeError,
+    std::runtime_error,
     "mismatch between cofacet batch size (" << numCells() << ") and "
     "requested number of cofacets (" << cofacetNumbers.size() << ")");
 
@@ -130,7 +130,7 @@ void MaximalCofacetBatch::getSpecifiedCofacets(
   RCP<Array<int> >& facetIndices) const
 {
   TEST_FOR_EXCEPTION(cofacetNumber < 0 || cofacetNumber>1,    
-    RuntimeError,
+    std::runtime_error,
     "invalid cofacet number=" << cofacetNumber);
 
   cofacets = cofacetLIDs_[cofacetNumber];

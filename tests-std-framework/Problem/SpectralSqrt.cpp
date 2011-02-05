@@ -34,7 +34,7 @@
 #include "NOX.H"
 #include "NOX_Common.H"
 #include "NOX_Utils.H"
-#include "NOX_TSF_Group.H"
+#include "NOX_Playa_Group.hpp"
 
 
 /*
@@ -45,93 +45,92 @@
 int main(int argc, char** argv)
 {
   try
-		{
-      Sundance::init(&argc, &argv);
-      int np = MPIComm::world().getNProc();
+  {
+    Sundance::init(&argc, &argv);
+    int np = MPIComm::world().getNProc();
 
-      /* We will do our linear algebra using Epetra */
-      VectorType<double> vecType = new EpetraVectorType();
+    /* We will do our linear algebra using Epetra */
+    VectorType<double> vecType = new EpetraVectorType();
 
-      /* Create a mesh. It will be of type BasisSimplicialMesh, and will
-       * be built using a PartitionedLineMesher. */
-      MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 1*np, meshType);
-      Mesh mesh = mesher.getMesh();
+    /* Create a mesh. It will be of type BasisSimplicialMesh, and will
+     * be built using a PartitionedLineMesher. */
+    MeshType meshType = new BasicSimplicialMeshType();
+    MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 1*np, meshType);
+    Mesh mesh = mesher.getMesh();
 
-      /* Create a cell filter that will identify the maximal cells
-       * in the interior of the domain */
-      CellFilter interior = new MaximalCellFilter();
+    /* Create a cell filter that will identify the maximal cells
+     * in the interior of the domain */
+    CellFilter interior = new MaximalCellFilter();
 
-      /* Create the Spectral Basis */
-      int ndim = 1;
-      int order = 2;
-      SpectralBasis sbasis = new HermiteSpectralBasis(ndim, order); 
+    /* Create the Spectral Basis */
+    int ndim = 1;
+    int order = 2;
+    SpectralBasis sbasis = new HermiteSpectralBasis(ndim, order); 
       
-      /* Create unknown and test functions, discretized using first-order
-       * Lagrange interpolants */
-      Expr u = new UnknownFunction(new Lagrange(1), sbasis, "u");
-      Expr v = new TestFunction(new Lagrange(1), sbasis, "v");
+    /* Create unknown and test functions, discretized using first-order
+     * Lagrange interpolants */
+    Expr u = new UnknownFunction(new Lagrange(1), sbasis, "u");
+    Expr v = new TestFunction(new Lagrange(1), sbasis, "v");
 
-      /* Create the stochastic input function. */
-      Expr a0 = new Sundance::Parameter(1.0);
-      Expr a1 = new Sundance::Parameter(0.1);
-      Expr a2 = new Sundance::Parameter(0.01);
-      Expr alpha = new SpectralExpr(sbasis, tuple(a0, a1, a2));
+    /* Create the stochastic input function. */
+    Expr a0 = new Sundance::Parameter(1.0);
+    Expr a1 = new Sundance::Parameter(0.1);
+    Expr a2 = new Sundance::Parameter(0.01);
+    Expr alpha = new SpectralExpr(sbasis, tuple(a0, a1, a2));
 
-      /* Create a discrete space, and discretize the function 1.0 on it */
-      cout << "forming discrete space" << std::endl;
-      DiscreteSpace discSpace(mesh, new Lagrange(1), sbasis, vecType);
-      cout << "forming discrete func" << std::endl;
-      Expr u0 = new DiscreteFunction(discSpace, 0.5, "u0");
+    /* Create a discrete space, and discretize the function 1.0 on it */
+    cout << "forming discrete space" << std::endl;
+    DiscreteSpace discSpace(mesh, new Lagrange(1), sbasis, vecType);
+    cout << "forming discrete func" << std::endl;
+    Expr u0 = new DiscreteFunction(discSpace, 0.5, "u0");
 
-      /* We need a quadrature rule for doing the integrations */
-      QuadratureFamily quad = new GaussianQuadrature(2);
+    /* We need a quadrature rule for doing the integrations */
+    QuadratureFamily quad = new GaussianQuadrature(2);
 
-      /* Now we set up the weak form of our equation. */
-      Expr eqn = Integral(interior, v*(u*u-alpha), quad);
+    /* Now we set up the weak form of our equation. */
+    Expr eqn = Integral(interior, v*(u*u-alpha), quad);
 
-      cout << "equation = " << eqn << std::endl;
+    cout << "equation = " << eqn << std::endl;
 
-      /* There are no boundary conditions for this problem, so the
-       * BC expression is empty */
-      Expr bc;
+    /* There are no boundary conditions for this problem, so the
+     * BC expression is empty */
+    Expr bc;
 
-      /* We can now set up the nonlinear problem! */
+    /* We can now set up the nonlinear problem! */
 
-      NonlinearProblem prob(mesh, eqn, bc, v, u, u0, vecType);
+    NonlinearProblem prob(mesh, eqn, bc, v, u, u0, vecType);
 
 
 
 #ifdef HAVE_CONFIG_H
-      ParameterXMLFileReader reader(searchForFile("SolverParameters/nox.xml"));
+    ParameterXMLFileReader reader(searchForFile("SolverParameters/nox.xml"));
 #else
-      ParameterXMLFileReader reader("nox.xml");
+    ParameterXMLFileReader reader("nox.xml");
 #endif
-      ParameterList noxParams = reader.getParameters();
+    ParameterList noxParams = reader.getParameters();
 
-      std::cerr << "solver params = " << noxParams << std::endl;
+    std::cerr << "solver params = " << noxParams << std::endl;
 
-      NOXSolver solver(noxParams);
+    NOXSolver solver(noxParams);
 
-      prob.solve(solver);
+    prob.solve(solver);
 
-      /* Inspect solution values. The solution is constant in space,
-       * so we can simply take the first NTerms entries in the vector */
-      Vector<double> vec = DiscreteFunction::discFunc(u0)->getVector();
+    /* Inspect solution values. The solution is constant in space,
+     * so we can simply take the first NTerms entries in the vector */
+    Vector<double> vec = DiscreteFunction::discFunc(u0)->getVector();
 
-      int k=0;
-      for (SequentialIterator<double> i=vec.space().begin(); i!=vec.space().end(); i++, k++)
-        {
-          cout << "u[" << k << "] = " << vec[i] << std::endl;
-        }
-
-      double tol = 1.0e-12;
-      double errorSq = 0.0;
-      Sundance::passFailTest(errorSq, tol);
+    for (int i=0; i<vec.space().numLocalElements(); i++)
+    {
+      cout << "u[" << i << "] = " << vec[i] << std::endl;
     }
+
+    double tol = 1.0e-12;
+    double errorSq = 0.0;
+    Sundance::passFailTest(errorSq, tol);
+  }
 	catch(std::exception& e)
-		{
-      std::cerr << e.what() << std::endl;
-		}
+  {
+    std::cerr << e.what() << std::endl;
+  }
   Sundance::finalize(); return Sundance::testStatus(); 
 }

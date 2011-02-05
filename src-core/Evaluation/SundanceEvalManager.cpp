@@ -51,10 +51,10 @@ EvalManager::EvalManager()
     mediator_()
 {}
 
-void EvalManager::setVerbosity(int verb)
+void EvalManager::setVerb(int verb)
 {
   verb_ = verb;
-//  if (mediator_.get()) mediator_->setVerbosity(verb);
+//  if (mediator_.get()) mediator_->setVerb(verb);
 }
 
 void EvalManager::evalCoordExpr(const CoordExpr* expr,
@@ -62,7 +62,7 @@ void EvalManager::evalCoordExpr(const CoordExpr* expr,
 {
 
   TimeMonitor timer(coordEvalTimer());
-  TEST_FOR_EXCEPTION(mediator() == 0, InternalError,
+  TEST_FOR_EXCEPTION(mediator() == 0, std::logic_error,
                      "uninitialized mediator in "
                      "EvalManager::evalCoordExpr");
   mediator()->evalCoordExpr(expr, result);
@@ -72,7 +72,7 @@ void EvalManager::evalCoordExpr(const CoordExpr* expr,
 void EvalManager::evalCellDiameterExpr(const CellDiameterExpr* expr,
                                 RCP<EvalVector>& result) const 
 {
-  TEST_FOR_EXCEPTION(mediator() == 0, InternalError,
+  TEST_FOR_EXCEPTION(mediator() == 0, std::logic_error,
                      "uninitialized mediator in "
                      "EvalManager::evalCellDiameterExpr");
   mediator()->evalCellDiameterExpr(expr, result);
@@ -81,7 +81,7 @@ void EvalManager::evalCellDiameterExpr(const CellDiameterExpr* expr,
 void EvalManager::evalCurveNormExpr(const CurveNormExpr* expr,
                                 RCP<EvalVector>& result) const
 {
-  TEST_FOR_EXCEPTION(mediator() == 0, InternalError,
+  TEST_FOR_EXCEPTION(mediator() == 0, std::logic_error,
                      "uninitialized mediator in "
                      "EvalManager::evalCurveNormExpr");
   mediator()->evalCurveNormExpr(expr, result);
@@ -90,7 +90,7 @@ void EvalManager::evalCurveNormExpr(const CurveNormExpr* expr,
 void EvalManager::evalCellVectorExpr(const CellVectorExpr* expr,
                                 RCP<EvalVector>& result) const 
 {
-  TEST_FOR_EXCEPTION(mediator() == 0, InternalError,
+  TEST_FOR_EXCEPTION(mediator() == 0, std::logic_error,
                      "uninitialized mediator in "
                      "EvalManager::evalCellVectorExpr");
   mediator()->evalCellVectorExpr(expr, result);
@@ -103,7 +103,7 @@ void EvalManager::evalDiscreteFuncElement(const DiscreteFuncElement* expr,
 {
   TimeMonitor timer(discFuncEvalTimer());
 
-  TEST_FOR_EXCEPTION(mediator() == 0, InternalError,
+  TEST_FOR_EXCEPTION(mediator() == 0, std::logic_error,
                      "uninitialized mediator in "
                      "EvalManager::evalDiscreteFuncElement");
 
@@ -115,7 +115,7 @@ void EvalManager::showResults(std::ostream& os,
 			      const Array<RCP<EvalVector> >& vecResults,
 			      const Array<double>& constantResults) const 
 {
-  TEST_FOR_EXCEPTION(mediator() == 0, InternalError,
+  TEST_FOR_EXCEPTION(mediator() == 0, std::logic_error,
                      "uninitialized mediator in "
                      "EvalManager::showResults");
 

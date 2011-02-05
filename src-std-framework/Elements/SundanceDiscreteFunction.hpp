@@ -37,7 +37,7 @@
 #include "SundanceDiscreteFunctionData.hpp"
 #include "SundanceFuncWithBasis.hpp"
 #include "SundanceDiscreteSpace.hpp"
-#include "TSFVectorDecl.hpp"
+#include "PlayaVectorDecl.hpp"
 
 namespace Sundance
 {

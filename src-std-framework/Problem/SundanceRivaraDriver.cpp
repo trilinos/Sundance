@@ -54,7 +54,7 @@ Mesh RefinementTransformation::apply(const Mesh& inputMesh) const
   meshToRivara(inputMesh, lidMap,rivMesh);
   
   ExprFieldWrapper expr(errExpr_);
-  TEST_FOR_EXCEPTION(expr.isPointData(), RuntimeError,
+  TEST_FOR_EXCEPTION(expr.isPointData(), std::runtime_error,
     "Expected cell-based discrete function for area specification");
 
   {

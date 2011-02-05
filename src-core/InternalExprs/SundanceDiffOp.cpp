@@ -29,13 +29,13 @@
 /* @HEADER@ */
 
 #include "SundanceDiffOp.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 
 #include "SundanceTestFuncElement.hpp"
 
 #include "SundanceCoordExpr.hpp"
 #include "SundanceZeroExpr.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceOut.hpp"
 
 using namespace Sundance;
@@ -104,9 +104,9 @@ void DiffOp::requestMultiIndexAtEvalPoint(const MultiIndex& mi,
   {
     const SpatialDerivSpecifier& sds = d.opOnFunc();
 
-    TEST_FOR_EXCEPTION(sds.isDivergence(), InternalError,
+    TEST_FOR_EXCEPTION(sds.isDivergence(), std::logic_error,
       "divergence operators not possible within DiffOp");
-    TEST_FOR_EXCEPTION(sds.isNormal(), InternalError,
+    TEST_FOR_EXCEPTION(sds.isNormal(), std::logic_error,
       "normal deriv operators not possible within DiffOp");
 
     const MultiIndex& newMi = sds.mi();
@@ -321,7 +321,7 @@ Set<MultipleDeriv> DiffOp::internalFindC(int order, const EvalContext& context) 
 bool DiffOp::lessThan(const ScalarExpr* other) const
 {
   const DiffOp* d = dynamic_cast<const DiffOp*>(other);
-  TEST_FOR_EXCEPTION(d==0, InternalError, "cast should never fail at this point");
+  TEST_FOR_EXCEPTION(d==0, std::logic_error, "cast should never fail at this point");
   
   if (myCoordDeriv_ < d->myCoordDeriv_) return true;
   if (d->myCoordDeriv_ < myCoordDeriv_) return false;

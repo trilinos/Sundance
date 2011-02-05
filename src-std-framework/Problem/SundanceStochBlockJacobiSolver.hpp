@@ -1,12 +1,12 @@
 #ifndef SUNDANCE_STOCHBLOCKJACOBISOLVER_HPP
 #define SUNDANCE_STOCHBLOCKJACOBISOLVER_HPP
 
-#include "TSFLinearSolverDecl.hpp"
+#include "PlayaLinearSolverDecl.hpp"
 #include "SundanceSpectralBasis.hpp"
 
-using TSFExtended::LinearSolver;
-using TSFExtended::LinearOperator;
-using TSFExtended::Vector;
+using Playa::LinearSolver;
+using Playa::LinearOperator;
+using Playa::Vector;
 using Sundance::SpectralBasis;
 
 namespace Sundance

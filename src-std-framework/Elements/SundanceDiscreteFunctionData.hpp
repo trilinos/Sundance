@@ -35,7 +35,7 @@
 #include "SundanceDiscreteFuncDataStub.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
 #include "SundanceDiscreteSpace.hpp"
-#include "TSFVectorDecl.hpp"
+#include "PlayaVectorDecl.hpp"
 
 namespace Sundance
 {
@@ -52,7 +52,7 @@ public:
 
   /** */
   DiscreteFunctionData(const DiscreteSpace& space, 
-    const TSFExtended::Vector<double>& vec);
+    const Playa::Vector<double>& vec);
 
   /** */
   DiscreteFunctionData(const DiscreteSpace& space, const double& constantValue);

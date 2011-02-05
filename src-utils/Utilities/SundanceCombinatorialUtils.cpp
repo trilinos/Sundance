@@ -1,6 +1,6 @@
 #include "SundanceCombinatorialUtils.hpp"
-#include "SundanceExceptions.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaExceptions.hpp"
+#include "PlayaTabs.hpp"
 #include <algorithm>
 #include <iterator>
 #include <iostream>
@@ -20,7 +20,7 @@ Array<Array<int> > partitionInteger(int n)
       tuple<Aint>(tuple(2), tuple(1, 1)),
       tuple<Aint>(tuple(3), tuple(2, 1), tuple(1, 1, 1)),
       tuple<Aint>(tuple(4), tuple(3, 1), tuple(2, 2), tuple(2, 1, 1), tuple(1,1,1,1)));
-  TEST_FOR_EXCEPTION(n<1 || n>4, RuntimeError, 
+  TEST_FOR_EXCEPTION(n<1 || n>4, std::runtime_error, 
     "case n=" << n << " not implemented in partitionInteger()");
   return rtn[n-1];
 }
@@ -431,7 +431,7 @@ Array<Array<int> > distinctIndexTuples(int m, int n)
   
 Array<int> bitsOfAnInteger(int x, int n)
 {
-  TEST_FOR_EXCEPTION(x >= pow2(n), InternalError,
+  TEST_FOR_EXCEPTION(x >= pow2(n), std::logic_error,
     "Invalid input to bitsOfAnIteger");
                      
   Array<int> rtn(n);

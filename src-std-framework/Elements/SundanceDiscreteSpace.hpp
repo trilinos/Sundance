@@ -36,8 +36,8 @@
 #include "SundanceBasisFamily.hpp"
 #include "SundanceSpectralBasis.hpp"
 #include "SundanceDOFMapBase.hpp"
-#include "TSFVectorType.hpp"
-#include "TSFVectorSpaceDecl.hpp"
+#include "PlayaVectorType.hpp"
+#include "PlayaVectorSpaceDecl.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
 #include "SundanceDiscreteSpaceTransfBuilder.hpp"
 
@@ -50,7 +50,7 @@ class FunctionSupportResolver;
 namespace Sundance
 {
   using namespace Teuchos;
-  using namespace TSFExtended;
+  using namespace Playa;
 
   /** 
    * DiscreteSpace represents a discrete finite-element space (i.e., 

@@ -35,12 +35,12 @@
 #include "SundanceDiscreteFunction.hpp"
 #include "SundanceEquationSet.hpp"
 #include "SundanceDiscreteSpace.hpp"
-#include "TSFSequentialIteratorImpl.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 
 using namespace Sundance;
 using namespace Teuchos;
+using namespace Playa;
 
 
 using std::endl;
@@ -190,14 +190,14 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
   RCP<GhostView<double> > gradF0View = dg->ghostView();
 
 
-  TEST_FOR_EXCEPTION(xView.get() == 0, RuntimeError, 
+  TEST_FOR_EXCEPTION(xView.get() == 0, std::runtime_error, 
     "bad pointer in FunctionalEvaluator::fdGradientCheck");
-  TEST_FOR_EXCEPTION(gradF0View.get() == 0, RuntimeError, 
+  TEST_FOR_EXCEPTION(gradF0View.get() == 0, std::runtime_error, 
     "bad pointer in FunctionalEvaluator::fdGradientCheck");
 
   int nTot = x.space().dim();
   int n = x.space().numLocalElements();
-  int lowestIndex = x.space().lowestLocallyOwnedIndex();
+  int lowestIndex = x.space().baseGlobalNaturalIndex();
 
   os << tabs << "doing fd check:  h=" << h << std::endl;
   Array<double> df_dx(n);
@@ -211,14 +211,14 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
     if (isLocal)
     {
       tmp = xView->getElement(globalIndex);
-      x.setElement(globalIndex, tmp + h);
+      loadable(x)->setElement(globalIndex, tmp + h);
     }
 
     df->setVector(x);
     fPlus = evaluate();
     if (isLocal)
     {
-      x.setElement(globalIndex, tmp - h);
+      loadable(x)->setElement(globalIndex, tmp - h);
     }
 
     df->setVector(x);
@@ -238,7 +238,7 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
            << " f(x+h)=" << fPlus 
            << " f(x-h)=" << fMinus << std::endl;
       }
-      x.setElement(globalIndex, tmp);
+      loadable(x)->setElement(globalIndex, tmp);
       localIndex++;
     }
     df->setVector(x);
@@ -247,19 +247,18 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
   double localMaxErr = 0.0;
 
   showAll = true;
-  int k=0;
   VectorSpace<double> space = x.space();
-  for (SequentialIterator<double> i=space.begin(); i!=space.end(); i++, k++)
+  for (int i=0; i<space.numLocalElements(); i++)
   {
-    double num =  fabs(df_dx[k]-gf[i]);
-    double den = fabs(df_dx[k]) + fabs(gf[i]) + 1.0e-14;
+    double num =  fabs(df_dx[i]-gf[i]);
+    double den = fabs(df_dx[i]) + fabs(gf[i]) + 1.0e-14;
     double r = 0.0;
     if (fabs(den) > 1.0e-16) r = num/den;
     else r = 1.0;
     if (showAll)
     {
       os << "i " << i;
-      os << " FD=" << df_dx[k] 
+      os << " FD=" << df_dx[i] 
          << " grad=" << gf[i]
          << " r=" << r << std::endl;
     }

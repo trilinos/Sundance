@@ -33,7 +33,7 @@
 
 
 #include "SundanceDefs.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "Teuchos_XMLObject.hpp"
 #include "Teuchos_RefCountPtrDecl.hpp"
 #include "SundanceExprBase.hpp"

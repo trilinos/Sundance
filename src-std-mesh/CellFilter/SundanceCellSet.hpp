@@ -34,7 +34,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceCellSetBase.hpp"
 #include "SundanceCellPredicate.hpp"
-#include "SundanceHandle.hpp"
+#include "PlayaHandle.hpp"
 
 
 namespace Sundance
@@ -48,7 +48,7 @@ using namespace Teuchos;
  * 
  * @see CellFilter, CellIterator
  **/
-class CellSet : public Sundance::Handle<CellSetBase>
+class CellSet : public Playa::Handle<CellSetBase>
 {
 public:
   /* handle boilerplate */

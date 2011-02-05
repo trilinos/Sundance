@@ -30,7 +30,7 @@
 
 #include "SundanceTestFunction.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 
 using namespace Sundance;
 using namespace Sundance;

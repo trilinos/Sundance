@@ -1,8 +1,8 @@
 #include "SundanceFeketeTriangleQuadrature.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceOut.hpp"
 #include "SundancePoint.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 
 using namespace Sundance;
 using namespace Teuchos;
@@ -240,7 +240,7 @@ void FeketeTriangleQuadrature::computeBasisCoeffs(const int order, Array<double>
 
 	TEST_FOR_EXCEPTION(
 			lapack_err != 0,
-			RuntimeError,
+			std::runtime_error,
 			"FeketeTriangleQuadrature::computeBasisCoeffs(): factorization of generalized Vandermonde matrix failed");
 
 	// Determine work array size and invert factorized matrix
@@ -253,7 +253,7 @@ void FeketeTriangleQuadrature::computeBasisCoeffs(const int order, Array<double>
 
 	TEST_FOR_EXCEPTION(
 			lapack_err != 0,
-			RuntimeError,
+			std::runtime_error,
 			"FeketeTriangleQuadrature::computeBasisCoeffs(): inversion of generalized Vandermonde matrix failed");
 }
 

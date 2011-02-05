@@ -31,7 +31,7 @@
 #include "SundanceUnaryExpr.hpp"
 #include "SundanceExpr.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
 
 using namespace Sundance;

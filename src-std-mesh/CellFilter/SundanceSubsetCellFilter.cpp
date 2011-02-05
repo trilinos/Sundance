@@ -30,7 +30,7 @@
 
 #include "SundanceSubsetCellFilter.hpp"
 #include "SundanceExplicitCellSet.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceOrderedTuple.hpp"
 #include "SundanceOut.hpp"
 
@@ -70,7 +70,7 @@ bool SubsetCellFilter::lessThan(const CellFilterStub* other) const
     = dynamic_cast<const SubsetCellFilter*>(other);
 
   TEST_FOR_EXCEPTION(S==0,
-                     InternalError,
+                     std::logic_error,
                      "argument " << other->toXML() 
                      << " to SubsetCellFilter::lessThan() should be "
                      "a SubsetCellFilter pointer.");

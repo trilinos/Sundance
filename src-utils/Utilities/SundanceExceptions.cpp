@@ -28,20 +28,20 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 
 using namespace Sundance;
 
-InternalError::InternalError(const std::string& msg)
+std::logic_error::std::logic_error(const std::string& msg)
   : std::logic_error(msg)
 {;}
 
-RuntimeError::RuntimeError(const std::string& msg)
+std::runtime_error::std::runtime_error(const std::string& msg)
   : std::runtime_error(msg)
 {;}
 
 BadSymbolicsError::BadSymbolicsError(const std::string& msg)
-  : RuntimeError(msg)
+  : std::runtime_error(msg)
 {;}
 
 

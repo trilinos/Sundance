@@ -1,8 +1,8 @@
 #include "SundanceTriangleQuadrature.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceGauss1D.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 
 using namespace Sundance;
 using namespace Sundance;

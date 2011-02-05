@@ -29,7 +29,7 @@
 /* @HEADER@ */
 
 #include "SundanceMap.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceOrderedTuple.hpp"
 #include "SundanceInhomogeneousNodalDOFMap.hpp"
@@ -382,7 +382,7 @@ void InhomogeneousNodalDOFMap::assignNode(int fLID,
 void InhomogeneousNodalDOFMap::computeOffsets(int localCount)
 {
   TEST_FOR_EXCEPTION(mesh().comm().getNProc() != 1,
-    RuntimeError,
+    std::runtime_error,
     "parallel inhomogeneous DOF maps not yet supported");
   
   int totalDOFCount = localCount;
@@ -395,7 +395,7 @@ void InhomogeneousNodalDOFMap::computeOffsets(int localCount)
 void InhomogeneousNodalDOFMap::shareRemoteDOFs(const Array<Array<int> >& remoteNodes)
 {
   TEST_FOR_EXCEPTION(mesh().comm().getNProc() != 1,
-    RuntimeError,
+    std::runtime_error,
     "parallel inhomogeneous DOF maps not yet supported");
 }
 

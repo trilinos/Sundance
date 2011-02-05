@@ -1,7 +1,7 @@
 //@HEADER
 // ***********************************************************************
 // 
-//           TSFExtended: Trilinos Solver Framework Extended
+//           Playa: Trilinos Solver Framework Extended
 //                 Copyright (2004) Sandia Corporation
 // 
 // Under terms of Contract DE-AC04-94AL85000, there is a non-exclusive
@@ -29,24 +29,24 @@
 
 #include <cstdlib>
 #include "Teuchos_GlobalMPISession.hpp"
-#include "TSFVectorDecl.hpp"
-#include "TSFLinearOperatorDecl.hpp"
-#include "TSFVectorType.hpp"
-#include "TSFEpetraVectorType.hpp"
+#include "PlayaVectorDecl.hpp"
+#include "PlayaLinearOperatorDecl.hpp"
+#include "PlayaVectorType.hpp"
+#include "PlayaEpetraVectorType.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_MPIComm.hpp"
-#include "TSFRandomSparseMatrixBuilderDecl.hpp"
-#include "TSFCompoundTester.hpp"
-#include "TSFMatrixMatrixTester.hpp"
+#include "PlayaRandomSparseMatrixBuilderDecl.hpp"
+#include "PlayaCompoundTester.hpp"
+#include "PlayaMatrixMatrixTester.hpp"
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
-#include "TSFLinearOperatorImpl.hpp"
+#include "PlayaLinearOperatorImpl.hpp"
 #endif
 
 STREAM_OUT(Vector<double>)
 //using namespace Teuchos;
-using namespace TSFExtended;
-using namespace TSFExtendedOps;
+using namespace Playa;
+using namespace PlayaOps;
 using Thyra::TestSpecifier;
 
 int main(int argc, char *argv[]) 

@@ -36,7 +36,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceCellReordererImplemBase.hpp"
 #include "SundanceCellReordererBase.hpp"
-#include "SundanceHandleable.hpp"
+#include "PlayaHandleable.hpp"
 
 namespace Sundance
 {

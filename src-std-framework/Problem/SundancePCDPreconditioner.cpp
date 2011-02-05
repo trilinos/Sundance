@@ -1,21 +1,21 @@
 #include "SundancePCDPreconditioner.hpp"
 #include "Sundance.hpp"
-#include "TSFLinearSolverBuilder.hpp"
-#include "TSFLinearSolverImpl.hpp"
-#include "TSFSimpleIdentityOpDecl.hpp"
-#include "TSFSimpleIdentityOpImpl.hpp"
-#include "TSFSimpleComposedOpDecl.hpp"
-#include "TSFSimpleComposedOpImpl.hpp"
-#include "TSFSimpleBlockOpDecl.hpp"
-#include "TSFSimpleBlockOpImpl.hpp"
-#include "TSFSimpleScaledOpDecl.hpp"
-#include "TSFSimpleScaledOpImpl.hpp"
-#include "TSFGenericRightPreconditioner.hpp"
-#include "TSFLinearCombinationImpl.hpp"
-#include "TSFInverseOperatorDecl.hpp"
-#include "TSFInverseOperatorImpl.hpp"
+#include "PlayaLinearSolverBuilder.hpp"
+#include "PlayaLinearSolverImpl.hpp"
+#include "PlayaSimpleIdentityOpDecl.hpp"
+#include "PlayaSimpleIdentityOpImpl.hpp"
+#include "PlayaSimpleComposedOpDecl.hpp"
+#include "PlayaSimpleComposedOpImpl.hpp"
+#include "PlayaSimpleBlockOpDecl.hpp"
+#include "PlayaSimpleBlockOpImpl.hpp"
+#include "PlayaSimpleScaledOpDecl.hpp"
+#include "PlayaSimpleScaledOpImpl.hpp"
+#include "PlayaGenericRightPreconditioner.hpp"
+#include "PlayaLinearCombinationImpl.hpp"
+#include "PlayaInverseOperatorDecl.hpp"
+#include "PlayaInverseOperatorImpl.hpp"
 
-using namespace TSFExtended;
+using namespace Playa;
 using namespace Sundance;
 
 PCDPreconditionerFactory::PCDPreconditionerFactory(
@@ -46,35 +46,35 @@ createPreconditioner(const LinearOperator<double>& K) const
   Tabs tab;
 
   LinearOperator<double> F = K.getBlock(0,0);
-  F.setName("F");
+//  F.setName("F");
   LinearOperator<double> FInv = inverse(F, FSolver_);
-  FInv.setName("FInv");
+//  FInv.setName("FInv");
   LinearOperator<double> Bt = K.getBlock(0,1);
-  Bt.setName("Bt");
+//  Bt.setName("Bt");
 
 
   LinearOperator<double> Fp = FpProb_.getOperator();
 
   LinearOperator<double> Mp = MpProb_.getOperator();
-  Mp.setName("Mp");
+//  Mp.setName("Mp");
 
   LinearOperator<double> MpInv = inverse(Mp, MpSolver_);
-  MpInv.setName("MpInv");
+//  MpInv.setName("MpInv");
 
   LinearOperator<double> Ap = ApProb_.getOperator();
-  Ap.setName("Ap");
+//  Ap.setName("Ap");
 
   LinearOperator<double> ApInv = inverse(Ap, ApSolver_);
-  ApInv.setName("ApInv");
+//  ApInv.setName("ApInv");
 
 
   VectorSpace<double> pDomain = Bt.domain();
   VectorSpace<double> uDomain = F.domain();
 
   LinearOperator<double> Iu = identityOperator(uDomain);
-  Iu.setName("Iu");
+//  Iu.setName("Iu");
   LinearOperator<double> Ip = identityOperator(pDomain);
-  Ip.setName("Ip");
+//  Ip.setName("Ip");
 
   LinearOperator<double> XInv = MpInv * Fp * ApInv;
 
@@ -82,11 +82,11 @@ createPreconditioner(const LinearOperator<double>& K) const
   VectorSpace<double> colSpace = K.domain();
    
   LinearOperator<double> Q1 = makeBlockOperator(colSpace, rowSpace);
-  Q1.setName("Q1");
+//  Q1.setName("Q1");
   LinearOperator<double> Q2 = makeBlockOperator(colSpace, rowSpace);
-  Q2.setName("Q2");
+  // Q2.setName("Q2");
   LinearOperator<double> Q3 = makeBlockOperator(colSpace, rowSpace);
-  Q3.setName("Q3");
+  //Q3.setName("Q3");
    
   Q1.setBlock(0, 0, FInv);
   Q1.setBlock(1, 1, Ip);

@@ -33,7 +33,7 @@
 #include "SundanceEvaluator.hpp"
 #include "SundanceEvalManager.hpp"
 #include "SundanceExpr.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceZeroExpr.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
 #include "SundanceDiscreteFunctionStub.hpp"
@@ -216,7 +216,7 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
     << fixedParamEvalPts 
     << tab << std::endl);
 
-  TEST_FOR_EXCEPTION(e==0, InternalError,
+  TEST_FOR_EXCEPTION(e==0, std::logic_error,
     "Non-evaluatable expr " << expr.toString()
     << " given to SymbPreprocessor::setupExpr()");
 

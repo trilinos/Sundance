@@ -32,7 +32,7 @@
 #include "SundanceSpatialDerivSpecifier.hpp"
 #include "SundancePoint.hpp"
 #include "SundanceADReal.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
 #include "SundanceOut.hpp"
 
@@ -155,7 +155,7 @@ void Bubble::getReferenceDOFs(
         }
         return;
       default:
-        TEST_FOR_EXCEPTION(true, RuntimeError, "Cell type "
+        TEST_FOR_EXCEPTION(true, std::runtime_error, "Cell type "
           << cellType << " not implemented in Bubble basis");
     }
 }
@@ -171,7 +171,7 @@ void Bubble::refEval(
   int verbosity) const
 {
   TEST_FOR_EXCEPTION(!(sds.isPartial() || sds.isIdentity()), 
-    RuntimeError,
+    std::runtime_error,
     "cannot evaluate spatial derivative " << sds << " on Bubble basis");
   const MultiIndex& deriv = sds.mi();
   typedef Array<double> Adouble;
@@ -202,7 +202,7 @@ void Bubble::refEval(
         }
       break;
     default:
-      TEST_FOR_EXCEPTION(true, RuntimeError,
+      TEST_FOR_EXCEPTION(true, std::runtime_error,
                          "Bubble::refEval() unimplemented for cell type "
                          << cellType);
 

@@ -53,7 +53,7 @@ LinearSolver<double> LinearSolverBuilder::createSolver(const ParameterList& para
   {
     return new AztecSolver(solverSublist);
   }
-  else if (solverType=="TSF" || solverType=="Playa")
+  else if (solverType=="Playa" || solverType=="TSF")
   {
     const std::string& solverMethod = getParameter<string>(solverSublist, "Method");
     if (solverMethod=="BICGSTAB") 

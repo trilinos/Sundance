@@ -62,10 +62,10 @@
 #include "SundanceAssembler.hpp"
 #include "SundanceEvalVector.hpp"
 #include "SundanceRefIntegral.hpp"
-#include "TSFVectorType.hpp"
-#include "TSFEpetraVectorType.hpp"
+#include "PlayaVectorType.hpp"
+#include "PlayaEpetraVectorType.hpp"
 
-using namespace TSFExtended;
+using namespace Playa;
 using namespace Teuchos;
 using namespace Sundance;
 using namespace Sundance;

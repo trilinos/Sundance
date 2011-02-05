@@ -29,9 +29,9 @@
 /* @HEADER@ */
 
 #include "SundanceCellJacobianBatch.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
@@ -122,7 +122,7 @@ void CellJacobianBatch::factor() const
    * project of the diagonal elements of U. 
    */
 
-  TEST_FOR_EXCEPTION(spatialDim_ != cellDim_, InternalError,
+  TEST_FOR_EXCEPTION(spatialDim_ != cellDim_, std::logic_error,
                      "Attempting to factor the Jacobian of a cell "
                      "that is not of maximal dimension");
   Tabs tabs;
@@ -147,7 +147,7 @@ void CellJacobianBatch::factor() const
           /* Factor J */
           ::dgetrf_( &spatialDim_,  &spatialDim_, jFactPtr, &lda, iPiv, &info);
           
-          TEST_FOR_EXCEPTION(info != 0, RuntimeError,
+          TEST_FOR_EXCEPTION(info != 0, std::runtime_error,
                              "CellJacobianBatch::setJacobian(): factoring failed");
 
           /* the determinant is the product of the diagonal elements 
@@ -204,7 +204,7 @@ void CellJacobianBatch::computeInverses() const
           ::dgetrs_("N",  &spatialDim_,  &spatialDim_, jFactPtr, 
                      &spatialDim_, iPiv, invJPtr,  &spatialDim_, &info);
           
-          TEST_FOR_EXCEPTION(info != 0, RuntimeError,
+          TEST_FOR_EXCEPTION(info != 0, std::runtime_error,
                              "CellJacobianBatch::setJacobian(): inversion failed");
         }
     }
@@ -234,7 +234,7 @@ void CellJacobianBatch::applyInvJ(int cell, int q,
     }
 
   addFlops(numCells_ * spatialDim_ * spatialDim_ * nRhs);          
-  TEST_FOR_EXCEPTION(info != 0, RuntimeError,
+  TEST_FOR_EXCEPTION(info != 0, std::runtime_error,
                      "CellJacobianBatch::applyInvJ(): backsolve failed");
 }
 

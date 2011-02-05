@@ -34,10 +34,10 @@
 #include "NOX.H"
 #include "NOX_Common.H"
 #include "NOX_Utils.H"
-#include "NOX_TSF_Group.H"
+#include "NOX_Playa_Group.hpp"
 
 
-#include "TSFNOXSolver.H"
+#include "PlayaNOXSolver.hpp"
 
 /** 
  * Solves Kepler's equation x = u(x) + e*sin(u(x))
@@ -88,7 +88,7 @@ int main(int argc, char** argv)
       Expr eqn = Integral(interior, v*(u - ecc*sin(u) - x), quad);
       Expr bc;
 
-      /* Create a TSF NonlinearOperator object */
+      /* Create a Playa NonlinearOperator object */
       NonlinearProblem nlp(mesh, eqn, bc, v, u, u0, vecType);
 
 #ifdef HAVE_CONFIG_H

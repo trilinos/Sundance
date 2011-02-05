@@ -33,7 +33,7 @@
 #include "SundanceMaximalCellFilter.hpp"
 #include "Teuchos_MPIContainerComm.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
@@ -327,7 +327,7 @@ void HomogeneousDOFMap::shareDOFs(int cellDim,
 
   if (np == 1) return;
 
-  TEST_FOR_EXCEPTION(np != outgoingCellRequests.size(), RuntimeError,
+  TEST_FOR_EXCEPTION(np != outgoingCellRequests.size(), std::runtime_error,
                      "incorrect size of outgoingCellRequests array. Size is "
                      << outgoingCellRequests.size() << ", should be np=" << np);
 

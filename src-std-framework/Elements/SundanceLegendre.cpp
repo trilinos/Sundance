@@ -30,7 +30,7 @@
 
 #include "SundanceLegendre.hpp"
 #include "SundanceADReal.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceSpatialDerivSpecifier.hpp"
 #include "SundancePoint.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
@@ -201,7 +201,7 @@ void Legendre::getReferenceDOFs(
     }
     break;
     default:
-      TEST_FOR_EXCEPTION(true, RuntimeError, "Cell type "
+      TEST_FOR_EXCEPTION(true, std::runtime_error, "Cell type "
         << cellType << " not implemented in Legendre basis");
   }
 }
@@ -215,7 +215,7 @@ void Legendre::refEval(
   int verbosity) const
 {
   TEST_FOR_EXCEPTION(!(sds.isPartial() || sds.isIdentity()), 
-    RuntimeError,
+    std::runtime_error,
     "cannot evaluate spatial derivative " << sds << " on Legendre basis");
   const MultiIndex& deriv = sds.mi();
   typedef Array<double> Adouble;
@@ -246,7 +246,7 @@ void Legendre::refEval(
       }
       return;
     default:
-      TEST_FOR_EXCEPTION(true, RuntimeError,
+      TEST_FOR_EXCEPTION(true, std::runtime_error,
         "Legendre::refEval() unimplemented for cell type "
         << cellType);
 

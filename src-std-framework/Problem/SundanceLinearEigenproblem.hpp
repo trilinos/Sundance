@@ -35,7 +35,7 @@
 #include "SundanceLinearProblem.hpp"
 #include "SundanceEigensolution.hpp"
 #include "SundanceFunctionalEvaluator.hpp"
-#include "TSFEigensolver.hpp"
+#include "PlayaEigensolver.hpp"
 
 namespace Sundance
 {
@@ -45,7 +45,7 @@ using namespace Sundance;
 using namespace Sundance;
 using namespace Sundance;
 using namespace Teuchos;
-using namespace TSFExtended;
+using namespace Playa;
 
 
 /**

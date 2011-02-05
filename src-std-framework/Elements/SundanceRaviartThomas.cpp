@@ -32,7 +32,7 @@
 #include "SundancePoint.hpp"
 #include "SundanceCellType.hpp"
 #include "SundanceSpatialDerivSpecifier.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceTypeUtils.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
 #include "SundanceOut.hpp"
@@ -129,7 +129,7 @@ void RaviartThomas::getReferenceDOFs(
       dofs[3] = tuple(Array<int>());
       return;
     default:
-      TEST_FOR_EXCEPTION(true, RuntimeError, "Cell type "
+      TEST_FOR_EXCEPTION(true, std::runtime_error, "Cell type "
         << cellType << " not implemented in RaviartThomas basis");
   }
 }
@@ -156,7 +156,7 @@ void RaviartThomas::refEval(
   switch(cellType) {
     case PointCell:
     {
-      TEST_FOR_EXCEPTION(true, RuntimeError, "evaluation of RaviartThomas elements for PointCell not supported");
+      TEST_FOR_EXCEPTION(true, std::runtime_error, "evaluation of RaviartThomas elements for PointCell not supported");
     }
     break;
     case LineCell:
@@ -223,11 +223,11 @@ void RaviartThomas::refEval(
     break;
     case TetCell:
     {
-      TEST_FOR_EXCEPTION(true, RuntimeError, "evaluation of RaviartThomas elements for TetCell not supported");
+      TEST_FOR_EXCEPTION(true, std::runtime_error, "evaluation of RaviartThomas elements for TetCell not supported");
     }
     break;
     default:
-      TEST_FOR_EXCEPTION(true, RuntimeError, "evaluation of RaviartThomas elements unknown cell type");
+      TEST_FOR_EXCEPTION(true, std::runtime_error, "evaluation of RaviartThomas elements unknown cell type");
       break;
   }
 

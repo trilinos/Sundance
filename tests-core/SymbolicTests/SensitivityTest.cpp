@@ -45,7 +45,7 @@ void doit(const Expr& e,
   TimeMonitor t0(doitTimer());
   EvalManager mgr;
   mgr.setRegion(region);
-  mgr.setVerbosity(5);
+  mgr.setVerb(5);
 
   static RCP<AbstractEvalMediator> mediator 
     = rcp(new StringEvalMediator());

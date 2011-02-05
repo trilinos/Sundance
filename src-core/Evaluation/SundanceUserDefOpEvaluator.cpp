@@ -33,7 +33,7 @@
 #include "SundanceUserDefOpElement.hpp"
 #include "SundanceEvalManager.hpp"
 
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceUserDefOp.hpp"
 

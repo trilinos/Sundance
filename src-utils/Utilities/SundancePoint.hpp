@@ -32,7 +32,8 @@
 #define SUNDANCE_POINT_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
+#include "SundanceOut.hpp"
 #include "Teuchos_Utils.hpp"
 
 
@@ -168,7 +169,7 @@ namespace Sundance
   void Point::resize(int i)
     {
 #ifndef NOBOUNDSCHECK
-      TEST_FOR_EXCEPTION(i < 0 || i>3, RuntimeError,
+      TEST_FOR_EXCEPTION(i < 0 || i>3, std::runtime_error,
                          "void Point::resize() invalid dimension");
 #endif
       dim_ = i;
@@ -176,7 +177,7 @@ namespace Sundance
 
   Point& Point::operator+=(const Point& p)
     {
-      TEST_FOR_EXCEPTION(p.dim() != dim_, RuntimeError,
+      TEST_FOR_EXCEPTION(p.dim() != dim_, std::runtime_error,
                          "Point::operator+=() dimension mismatch "
                          "operands are: " << *this << " and " 
                          << p );
@@ -188,7 +189,7 @@ namespace Sundance
   Point& Point::operator-=(const Point& p)
     {
 
-      TEST_FOR_EXCEPTION(p.dim() != dim_, RuntimeError,
+      TEST_FOR_EXCEPTION(p.dim() != dim_, std::runtime_error,
                          "Point::operator-=() dimension mismatch "
                          "operands are: " << *this << " and " 
                          << p );
@@ -239,7 +240,7 @@ namespace Sundance
     {
       double rtn = 0.0;
 
-      TEST_FOR_EXCEPTION(p.dim() != dim_, RuntimeError,
+      TEST_FOR_EXCEPTION(p.dim() != dim_, std::runtime_error,
                          "Point::operator*() dimension mismatch "
                          "operands are: " << *this << " and " 
                          << p );

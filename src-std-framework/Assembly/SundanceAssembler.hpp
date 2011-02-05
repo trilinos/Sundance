@@ -32,17 +32,15 @@
 #define SUNDANCE_ASSEMBLER_H
 
 #include "SundanceDefs.hpp"
-#include "TSFLoadableVector.hpp"
-#include "TSFLoadableMatrix.hpp"
-#include "TSFLinearOperatorDecl.hpp"
-#include "TSFVectorDecl.hpp"
-#include "TSFVectorType.hpp"
+#include "PlayaLoadableVector.hpp"
+#include "PlayaLoadableMatrix.hpp"
+#include "PlayaLinearOperatorDecl.hpp"
+#include "PlayaVectorDecl.hpp"
+#include "PlayaVectorType.hpp"
 #include "Teuchos_HashSet.hpp"
 #include "Teuchos_ParameterList.hpp"
-#include "TSFIncrementallyConfigurableMatrixFactory.hpp"
-#include "TSFCollectivelyConfigurableMatrixFactory.hpp"
-#include "TSFPartitionedMatrixFactory.hpp"
-#include "TSFPartitionedToMonolithicConverter.hpp"
+#include "PlayaIncrementallyConfigurableMatrixFactory.hpp"
+#include "PlayaCollectivelyConfigurableMatrixFactory.hpp"
 #include "SundanceRegionQuadCombo.hpp"
 #include "SundanceMesh.hpp"
 #include "SundanceEvalContext.hpp"
@@ -53,6 +51,7 @@
 namespace Sundance
 {
 using namespace Teuchos;
+using namespace Playa;
 
 class EquationSet;
 class EvaluatableExpr;
@@ -65,7 +64,6 @@ class DOFMapBase;
 class IntegralGroup;
 class StdFwkEvalMediator;
 class AssemblyKernelBase;
-
 
 typedef std::set<int> ColSetType;
 
@@ -115,14 +113,14 @@ public:
   const Array<RCP<Set<int> > >& bcRows() {return bcRows_;}
 
   /** Allocate, but do not fill, the matrix */
-  TSFExtended::LinearOperator<double> allocateMatrix() const ;
+  Playa::LinearOperator<double> allocateMatrix() const ;
 
   /** */
-  void assemble(TSFExtended::LinearOperator<double>& A,
+  void assemble(Playa::LinearOperator<double>& A,
     Array<Vector<double> >& b) const ;
 
   /** */
-  void assembleSensitivities(TSFExtended::LinearOperator<double>& A,
+  void assembleSensitivities(Playa::LinearOperator<double>& A,
     Array<Vector<double> >& b) const ;
 
 
@@ -157,10 +155,6 @@ public:
       matNeedsConfiguration_ = true;
     }
 
-  /** */
-  Vector<double> convertToMonolithicVector(
-    const Array<Vector<double> >& internalBlock,
-    const Array<Vector<double> >& bcBlock) const ;
 
   /** */
   static int& numAssembleCalls() {static int rtn=0; return rtn;}
@@ -316,8 +310,6 @@ private:
   Map<int, int> fixedParamIDToVectorNumber_;
 
   Map<ComputationType, Array<IntegrationCellSpecifier> > rqcRequiresMaximalCofacets_;
-
-  Array<RCP<PartitionedToMonolithicConverter> > converter_;
 
 };
 

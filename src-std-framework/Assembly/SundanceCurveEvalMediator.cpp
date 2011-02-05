@@ -39,8 +39,8 @@
 #include "SundanceDiscreteFuncElement.hpp"
 #include "SundanceCellJacobianBatch.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaTabs.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceCurveIntegralCalc.hpp"
 
 #include "Teuchos_BLAS.hpp"
@@ -48,7 +48,7 @@
 
 using namespace Sundance;
 using namespace Teuchos;
-using namespace TSFExtended;
+using namespace Playa;
 
 TEUCHOS_TIMER(coordEvalTimer, "Quad mediator: coord eval")
 
@@ -117,7 +117,7 @@ int CurveEvalMediator::numQuadPts(const CellType& ct) const
 {
 	if (ct != maxCellType_){
 		// throw error
-		TEST_FOR_EXCEPTION(true, RuntimeError, "CurveEvalMediator::numQuadPts , cellType must be maxCellType_:" << ct);
+		TEST_FOR_EXCEPTION(true, std::runtime_error, "CurveEvalMediator::numQuadPts , cellType must be maxCellType_:" << ct);
 	}
 	return numQuadPtsForMaxCell_;
 }
@@ -174,7 +174,7 @@ void CurveEvalMediator::evalCellVectorExpr(const CellVectorExpr* expr,
   }
   else
   {
-    TEST_FOR_EXCEPTION(cellDim() != 1, RuntimeError,
+    TEST_FOR_EXCEPTION(cellDim() != 1, std::runtime_error,
       "unable to compute tangent vectors for cell dim = " << cellDim());
     mesh().tangentsToEdges(*cellLID(), vectors);
   }
@@ -315,7 +315,7 @@ void CurveEvalMediator
 
 	  const DiscreteFunctionData* f = DiscreteFunctionData::getData(expr);
 
-	  TEST_FOR_EXCEPTION(f==0, InternalError,
+	  TEST_FOR_EXCEPTION(f==0, std::logic_error,
 	    "QuadratureEvalMediator::evalDiscreteFuncElement() called "
 	    "with expr that is not a discrete function");
 

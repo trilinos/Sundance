@@ -44,7 +44,7 @@ CellDiameterExpr::CellDiameterExpr(const std::string& name)
 bool CellDiameterExpr::lessThan(const ScalarExpr* other) const
 {
   const CellDiameterExpr* f = dynamic_cast<const CellDiameterExpr*>(other);
-  TEST_FOR_EXCEPTION(f==0, InternalError, "cast should never fail at this point");
+  TEST_FOR_EXCEPTION(f==0, std::logic_error, "cast should never fail at this point");
   
   return false;
 }

@@ -30,7 +30,7 @@
 
 #include "SundanceEdgeLocalizedBasis.hpp"
 #include "SundanceADReal.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceSpatialDerivSpecifier.hpp"
 #include "SundancePoint.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
@@ -107,7 +107,7 @@ void EdgeLocalizedBasis::getReferenceDOFs(
       dofs[2] = tuple(Array<int>());
       return;
     default:
-      TEST_FOR_EXCEPTION(true, RuntimeError, "Cell type "
+      TEST_FOR_EXCEPTION(true, std::runtime_error, "Cell type "
         << cellType << " not implemented in EdgeLocalizedBasis basis");
   }
 }
@@ -122,7 +122,7 @@ void EdgeLocalizedBasis::refEval(
   int verbosity) const
 {
   TEST_FOR_EXCEPTION(!(sds.isPartial() || sds.isIdentity()), 
-    RuntimeError,
+    std::runtime_error,
     "cannot evaluate spatial derivative " << sds << " on EdgeLocalizedBasis basis");
   const MultiIndex& deriv = sds.mi();
   typedef Array<double> Adouble;
@@ -200,11 +200,11 @@ void EdgeLocalizedBasis::evalOnTriangle(const Point& pt,
   bool onEdge1 = std::fabs(pt[0]) < 1.0e-14;
   
   TEST_FOR_EXCEPTION(!(onEdge0 || onEdge1 || onEdge2),
-    RuntimeError,
+    std::runtime_error,
     "EdgeLocalizedBasis should not be evaluated at points not on edges");
   
   TEST_FOR_EXCEPTION((onEdge0 && onEdge1) || (onEdge1 && onEdge2)
-    || (onEdge2 && onEdge0), RuntimeError,
+    || (onEdge2 && onEdge0), std::runtime_error,
     "Ambiguous edge in EdgeLocalizedBasis::evalOnTriangle()");
 
   if (onEdge0)
@@ -246,6 +246,6 @@ void EdgeLocalizedBasis::evalOnTet(const Point& pt,
   const MultiIndex& deriv,
   Array<double>& result) const
 {
-  TEST_FOR_EXCEPTION(true, RuntimeError,
+  TEST_FOR_EXCEPTION(true, std::runtime_error,
     "EdgeLocalizedBasis::evalOnTet not implemented");
 }

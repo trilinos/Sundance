@@ -141,7 +141,7 @@ void BasicSimplicialMesh::getJacobians(int cellDim, const Array<int>& cellLID,
   int flops = 0 ;
   int nCells = cellLID.size();
 
-  TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), InternalError,
+  TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), std::logic_error,
     "cellDim=" << cellDim 
     << " is not in expected range [0, " << spatialDim()
     << "]");
@@ -195,7 +195,7 @@ void BasicSimplicialMesh::getJacobians(int cellDim, const Array<int>& cellLID,
         }
         break;
         default:
-          TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value "
+          TEST_FOR_EXCEPTION(true, std::logic_error, "impossible switch value "
             "cellDim=" << cellDim 
             << " in BasicSimplicialMesh::getJacobians()");
       }
@@ -262,7 +262,7 @@ void BasicSimplicialMesh::getJacobians(int cellDim, const Array<int>& cellLID,
         }
         break;
         default:
-          TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value "
+          TEST_FOR_EXCEPTION(true, std::logic_error, "impossible switch value "
             "cellDim=" << cellDim 
             << " in BasicSimplicialMesh::getJacobians()");
       }
@@ -276,7 +276,7 @@ void BasicSimplicialMesh::getJacobians(int cellDim, const Array<int>& cellLID,
 void BasicSimplicialMesh::getCellDiameters(int cellDim, const Array<int>& cellLID,
   Array<double>& cellDiameters) const
 {
-  TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), InternalError,
+  TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), std::logic_error,
     "cellDim=" << cellDim 
     << " is not in expected range [0, " << spatialDim()
     << "]");
@@ -316,7 +316,7 @@ void BasicSimplicialMesh::getCellDiameters(int cellDim, const Array<int>& cellLI
         }
         break;
         default:
-          TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value "
+          TEST_FOR_EXCEPTION(true, std::logic_error, "impossible switch value "
             "cellDim=" << cellDim 
             << " in BasicSimplicialMesh::getCellDiameters()");
       }
@@ -371,7 +371,7 @@ void BasicSimplicialMesh::getCellDiameters(int cellDim, const Array<int>& cellLI
         }
         break;
         default:
-          TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value "
+          TEST_FOR_EXCEPTION(true, std::logic_error, "impossible switch value "
             "cellDim=" << cellDim 
             << " in BasicSimplicialMesh::getCellDiameters()");
       }
@@ -384,7 +384,7 @@ void BasicSimplicialMesh::pushForward(int cellDim, const Array<int>& cellLID,
   const Array<Point>& refQuadPts,
   Array<Point>& physQuadPts) const
 {
-  TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), InternalError,
+  TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), std::logic_error,
     "cellDim=" << cellDim 
     << " is not in expected range [0, " << spatialDim()
     << "]");
@@ -531,7 +531,7 @@ void BasicSimplicialMesh::pushForward(int cellDim, const Array<int>& cellLID,
       }
       break;
       default:
-        TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value "
+        TEST_FOR_EXCEPTION(true, std::logic_error, "impossible switch value "
           "in BasicSimplicialMesh::getJacobians()");
     }
   }
@@ -796,7 +796,7 @@ int BasicSimplicialMesh::maxCofacetLID(int cellDim, int cellLID,
   }
   else
   {
-    TEST_FOR_EXCEPTION(true, RuntimeError, "invalid cell dimension " << cellDim
+    TEST_FOR_EXCEPTION(true, std::runtime_error, "invalid cell dimension " << cellDim
       << " in request for cofacet");
   }
 
@@ -809,7 +809,7 @@ int BasicSimplicialMesh::maxCofacetLID(int cellDim, int cellLID,
       return rtn;
     }
   }
-  TEST_FOR_EXCEPTION(true, RuntimeError, "reverse pointer to facet not found"
+  TEST_FOR_EXCEPTION(true, std::runtime_error, "reverse pointer to facet not found"
     " in request for cofacet");
   return -1; // -Wall
 }
@@ -844,9 +844,9 @@ void BasicSimplicialMesh::getCofacets(int cellDim, int cellLID,
   int cofacetDim, Array<int>& cofacetLIDs) const 
 {
   //  TimeMonitor timer(cofacetGrabTimer());
-  TEST_FOR_EXCEPTION(cofacetDim > spatialDim() || cofacetDim < 0, RuntimeError,
+  TEST_FOR_EXCEPTION(cofacetDim > spatialDim() || cofacetDim < 0, std::runtime_error,
     "invalid cofacet dimension=" << cofacetDim);
-  TEST_FOR_EXCEPTION( cofacetDim <= cellDim, RuntimeError,
+  TEST_FOR_EXCEPTION( cofacetDim <= cellDim, std::runtime_error,
     "invalid cofacet dimension=" << cofacetDim
     << " for cell dim=" << cellDim);
   if (cofacetDim==spatialDim())
@@ -1394,7 +1394,7 @@ void BasicSimplicialMesh::assignIntermediateCellGIDs(int cellDim)
   {
     if (numWaits > 1 && q != myRank) 
     {
-      TEST_FOR_EXCEPTION(checkForFailures(comm()), RuntimeError, 
+      TEST_FOR_EXCEPTION(checkForFailures(comm()), std::runtime_error, 
         "off-proc error detected on proc=" << myRank
         << " while computing GID resolution requests");
       continue;
@@ -1457,7 +1457,7 @@ void BasicSimplicialMesh::assignIntermediateCellGIDs(int cellDim)
       reportFailure(comm());
       SUNDANCE_TRACE_MSG(e0, "while computing GID resolution requests");
     }
-    TEST_FOR_EXCEPTION(checkForFailures(comm()), RuntimeError, 
+    TEST_FOR_EXCEPTION(checkForFailures(comm()), std::runtime_error, 
       "off-proc error detected on proc=" << myRank
       << " while computing GID resolution requests");
   }
@@ -1473,7 +1473,7 @@ void BasicSimplicialMesh::assignIntermediateCellGIDs(int cellDim)
     reportFailure(comm());
     SUNDANCE_TRACE_MSG(e0, "while computing GID offsets");
   }
-  TEST_FOR_EXCEPTION(checkForFailures(comm()), RuntimeError, 
+  TEST_FOR_EXCEPTION(checkForFailures(comm()), std::runtime_error, 
     "off-proc error detected on proc=" << myRank
     << " while computing GID offsets");
   
@@ -1498,7 +1498,7 @@ void BasicSimplicialMesh::assignIntermediateCellGIDs(int cellDim)
     reportFailure(comm());
     SUNDANCE_TRACE_MSG(e0, "while distributing GID resolution requests");
   }
-  TEST_FOR_EXCEPTION(checkForFailures(comm()), RuntimeError, 
+  TEST_FOR_EXCEPTION(checkForFailures(comm()), std::runtime_error, 
     "off-proc error detected on proc=" << myRank
     << " while distributing GID resolution requests");
 
@@ -1516,7 +1516,7 @@ void BasicSimplicialMesh::assignIntermediateCellGIDs(int cellDim)
   {
     if (numWaits>1 && q != myRank) 
     {
-      TEST_FOR_EXCEPTION(checkForFailures(comm()), RuntimeError, 
+      TEST_FOR_EXCEPTION(checkForFailures(comm()), std::runtime_error, 
         "off-proc error detected on proc=" << myRank
         << " while computing edge/face GID responses");
       continue;
@@ -1561,14 +1561,14 @@ void BasicSimplicialMesh::assignIntermediateCellGIDs(int cellDim)
           SUNDANCE_VERB_HIGH("p=" << myRank << "cell LID is " 
             << cellLID);
                   
-          TEST_FOR_EXCEPTION(cellLID < 0, RuntimeError,
+          TEST_FOR_EXCEPTION(cellLID < 0, std::runtime_error,
             "unable to find requested cell "
             << cellStr(cellDim+1, &(requestsFromProc[c])));
                   
           /* Finally, we get the cell's GID and append to the list 
            * of GIDs to send back as answers. */
           int cellGID = mapLIDToGID(cellDim, cellLID);
-          TEST_FOR_EXCEPTION(cellGID < 0, RuntimeError,
+          TEST_FOR_EXCEPTION(cellGID < 0, std::runtime_error,
             "proc " << myRank 
             << " was asked by proc " << p
             << " to provide a GID for cell "
@@ -1585,7 +1585,7 @@ void BasicSimplicialMesh::assignIntermediateCellGIDs(int cellDim)
       reportFailure(comm());
       SUNDANCE_TRACE_MSG(e0, "while computing edge/face GID responses");
     }
-    TEST_FOR_EXCEPTION(checkForFailures(comm()), RuntimeError, 
+    TEST_FOR_EXCEPTION(checkForFailures(comm()), std::runtime_error, 
       "off-proc error detected "
       "on proc=" << myRank
       << " while computing edge/face GID responses");
@@ -1613,7 +1613,7 @@ void BasicSimplicialMesh::assignIntermediateCellGIDs(int cellDim)
     reportFailure(comm());
     SUNDANCE_TRACE_MSG(e0, "while distributing edge/face GIDs");
   }
-  TEST_FOR_EXCEPTION(checkForFailures(comm()), RuntimeError, 
+  TEST_FOR_EXCEPTION(checkForFailures(comm()), std::runtime_error, 
     "off-proc error detected on proc=" << myRank
     << " while distributing edge/face GIDs");
   
@@ -1624,7 +1624,7 @@ void BasicSimplicialMesh::assignIntermediateCellGIDs(int cellDim)
   {
     if (numWaits > 1 && q != myRank) 
     {
-      TEST_FOR_EXCEPTION(checkForFailures(comm()), RuntimeError, 
+      TEST_FOR_EXCEPTION(checkForFailures(comm()), std::runtime_error, 
         "off-proc error detected on proc=" << myRank
         << " while setting remote edge/face GIDs");
       continue;
@@ -1662,7 +1662,7 @@ void BasicSimplicialMesh::assignIntermediateCellGIDs(int cellDim)
       reportFailure(comm());
       SUNDANCE_TRACE_MSG(e0, " while setting remote edge/face GIDs");
     }
-    TEST_FOR_EXCEPTION(checkForFailures(comm()), RuntimeError, 
+    TEST_FOR_EXCEPTION(checkForFailures(comm()), std::runtime_error, 
       "off-proc error detected on proc=" << myRank
       << " while setting remote edge/face GIDs");
   }
@@ -1701,7 +1701,7 @@ void BasicSimplicialMesh::synchronizeNeighborLists()
     reportFailure(comm());
     SUNDANCE_TRACE_MSG(e0, "while distributing neighbor information");
   }
-  TEST_FOR_EXCEPTION(checkForFailures(comm()), RuntimeError, 
+  TEST_FOR_EXCEPTION(checkForFailures(comm()), std::runtime_error, 
     "off-proc error detected on proc=" << myRank
     << " while distributing neighbor information");
 
@@ -1786,7 +1786,7 @@ void BasicSimplicialMesh::resolveEdgeOwnership(int cellDim)
   {
     if (numWaits > 1 && q != myRank) 
     {
-      TEST_FOR_EXCEPTION(checkForFailures(comm()), RuntimeError, 
+      TEST_FOR_EXCEPTION(checkForFailures(comm()), std::runtime_error, 
         "off-proc error detected on proc=" << myRank
         << " while determining edges to be resolved");
       continue;
@@ -1846,7 +1846,7 @@ void BasicSimplicialMesh::resolveEdgeOwnership(int cellDim)
       reportFailure(comm());
       SUNDANCE_TRACE_MSG(e0, "while determining edges to be resolved");
     }
-    TEST_FOR_EXCEPTION(checkForFailures(comm()), RuntimeError, 
+    TEST_FOR_EXCEPTION(checkForFailures(comm()), std::runtime_error, 
       "off-proc error detected on proc=" << myRank
       << " while determining edges to be resolved");
   }
@@ -1868,7 +1868,7 @@ void BasicSimplicialMesh::resolveEdgeOwnership(int cellDim)
     reportFailure(comm());
     SUNDANCE_TRACE_MSG(e0, "while distributing edge resolution reqs");
   }
-  TEST_FOR_EXCEPTION(checkForFailures(comm()), RuntimeError, 
+  TEST_FOR_EXCEPTION(checkForFailures(comm()), std::runtime_error, 
     "off-proc error detected on proc=" << myRank
     << " while distributing edge resolution reqs");
     
@@ -1879,7 +1879,7 @@ void BasicSimplicialMesh::resolveEdgeOwnership(int cellDim)
 
     if (numWaits > 1 && q != myRank) 
     {
-      TEST_FOR_EXCEPTION(checkForFailures(comm()), RuntimeError, 
+      TEST_FOR_EXCEPTION(checkForFailures(comm()), std::runtime_error, 
         "off-proc error detected on proc=" << myRank
         << " while resolving edge ownership results");
       continue;
@@ -1986,7 +1986,7 @@ void BasicSimplicialMesh::resolveEdgeOwnership(int cellDim)
       reportFailure(comm());
       SUNDANCE_TRACE_MSG(e0, "while resolving edge ownership results");
     }
-    TEST_FOR_EXCEPTION(checkForFailures(comm()), RuntimeError, 
+    TEST_FOR_EXCEPTION(checkForFailures(comm()), std::runtime_error, 
       "off-proc error detected on proc=" << myRank
       << " while resolving edge ownership results");
   }
@@ -2007,7 +2007,7 @@ void BasicSimplicialMesh::resolveEdgeOwnership(int cellDim)
     reportFailure(comm());
     SUNDANCE_TRACE_MSG(e0, "while distributing edge resolution results");
   }
-  TEST_FOR_EXCEPTION(checkForFailures(comm()), RuntimeError, 
+  TEST_FOR_EXCEPTION(checkForFailures(comm()), std::runtime_error, 
     "off-proc error detected on proc=" << myRank
     << " while distributing edge ownership results");
 
@@ -2020,7 +2020,7 @@ void BasicSimplicialMesh::resolveEdgeOwnership(int cellDim)
   {
     if (numWaits > 1 && q != myRank)
     {
-      TEST_FOR_EXCEPTION(checkForFailures(comm()), RuntimeError, 
+      TEST_FOR_EXCEPTION(checkForFailures(comm()), std::runtime_error, 
         "off-proc error detected on proc=" << myRank
         << " while finalizing edge ownership");
       continue;
@@ -2077,7 +2077,7 @@ void BasicSimplicialMesh::resolveEdgeOwnership(int cellDim)
       reportFailure(comm());
       SUNDANCE_TRACE_MSG(e0, "while finalizing edge ownership");
     }
-    TEST_FOR_EXCEPTION(checkForFailures(comm()), RuntimeError, 
+    TEST_FOR_EXCEPTION(checkForFailures(comm()), std::runtime_error, 
       "off-proc error detected on proc=" << myRank
       << " while finalizing edge ownership");
   }

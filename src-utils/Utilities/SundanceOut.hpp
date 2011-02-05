@@ -34,132 +34,54 @@
 #include "SundanceDefs.hpp"
 #include "Teuchos_TestForException.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
+#include "PlayaOut.hpp"
+#include "PlayaTabs.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 #include "Teuchos_FancyOStream.hpp"
 #include "Teuchos_MPIComm.hpp"
 
-namespace Teuchos
-{
-template <class T> class Array;
-}
-namespace Sundance
-{
-class Tabs;
-using namespace Teuchos;
+using Playa::Out;
+using Playa::Tabs;
 
-/**
- *
- */
-class Out
-{
-public:
-      
-  static void println(const std::string& str) 
-    {
-      if (hasLogFile()) *logFile() << str << std::endl;
-      if (!suppressStdout()) os() << str << std::endl;
-    }
-
-  static void setLogFile(const std::string& filename)
-    {
-      logFile() = rcp(new std::ofstream(filename.c_str()));
-      hasLogFile() = true;
-    }
-
-  static FancyOStream& os()
-    {
-      static RCP<std::ostream> os = rcp(&std::cout, false);
-      static RCP<FancyOStream> rtn = fancyOStream(os);
-      static bool first = true;
-      if (first)
-      {
-        rtn->setShowProcRank(true);
-        first = false;
-      }
-      return *rtn;
-    }
-
-  static FancyOStream& root()
-    {
-      static bool isRoot = MPIComm::world().getRank()==0;
-      static RCP<FancyOStream> blackHole
-        = rcp(new FancyOStream(rcp(new oblackholestream())));
-
-      if (isRoot)
-      {
-        return os();
-      }
-      else
-      {
-        return *blackHole;
-      }
-    }
-
-  static bool& suppressStdout() {static bool rtn=false; return rtn;}
-
-private:
-  static bool& hasLogFile() {static bool rtn=false; return rtn;}
-  static RCP<std::ostream>& logFile() {static RCP<std::ostream> rtn; return rtn;}
-      
-};
+#define SUNDANCE_OUT(test, msg) PLAYA_OUT(test, msg)
 
 
-/** */
-void writeTable(std::ostream& os, const Tabs& tab,
-  const Array<double>& a, int cols);
-/** */
-void writeTable(std::ostream& os, const Tabs& tab, 
-  const Array<int>& a, int cols);
-
-}
-
-#define SUNDANCE_OUT(test, msg) \
-  { \
-    if (test) \
-    { \
-      TeuchosOStringStream omsg; \
-      omsg << msg; \
-      Out::println(omsg.str());                 \
-    } \
-  }
-
-
-#define SUNDANCE_VERB_EXTREME(msg) SUNDANCE_MSG4(this->verb(), msg)
-#define SUNDANCE_VERB_HIGH(msg) SUNDANCE_MSG3(this->verb(), msg)
-#define SUNDANCE_VERB_MEDIUM(msg) SUNDANCE_MSG2(this->verb(), msg)
-#define SUNDANCE_VERB_LOW(msg) SUNDANCE_MSG1(this->verb(), msg)
+#define SUNDANCE_VERB_EXTREME(msg) PLAYA_MSG4(this->verb(), msg)
+#define SUNDANCE_VERB_HIGH(msg) PLAYA_MSG3(this->verb(), msg)
+#define SUNDANCE_VERB_MEDIUM(msg) PLAYA_MSG2(this->verb(), msg)
+#define SUNDANCE_VERB_LOW(msg) PLAYA_MSG1(this->verb(), msg)
 
 #define SUNDANCE_HEADER_LINE "\n------------------------------------------------------------------\n"
 
-#define SUNDANCE_MSG(context, level, msg) SUNDANCE_OUT(this->verbLevel(context) >= level, msg)
+#define SUNDANCE_MSG(context, level, msg) PLAYA_OUT(this->verbLevel(context) >= level, msg)
 
-#define SUNDANCE_LEVEL1(context, msg) SUNDANCE_MSG(context, 1, msg)
+#define SUNDANCE_LEVEL1(context, msg) PLAYA_MSG(context, 1, msg)
 
-#define SUNDANCE_LEVEL2(context, msg) SUNDANCE_MSG(context, 2, msg)
+#define SUNDANCE_LEVEL2(context, msg) PLAYA_MSG(context, 2, msg)
 
-#define SUNDANCE_LEVEL3(context, msg) SUNDANCE_MSG(context, 3, msg)
+#define SUNDANCE_LEVEL3(context, msg) PLAYA_MSG(context, 3, msg)
 
-#define SUNDANCE_LEVEL4(context, msg) SUNDANCE_MSG(context, 4, msg)
+#define SUNDANCE_LEVEL4(context, msg) PLAYA_MSG(context, 4, msg)
 
-#define SUNDANCE_LEVEL5(context, msg) SUNDANCE_MSG(context, 5, msg)
+#define SUNDANCE_LEVEL5(context, msg) PLAYA_MSG(context, 5, msg)
 
 
-#define SUNDANCE_MSG1(level, msg) SUNDANCE_OUT(level >= 1, msg)
+#define SUNDANCE_MSG1(level, msg) PLAYA_OUT(level >= 1, msg)
 
-#define SUNDANCE_MSG2(level, msg) SUNDANCE_OUT(level >= 2, msg)
+#define SUNDANCE_MSG2(level, msg) PLAYA_OUT(level >= 2, msg)
 
-#define SUNDANCE_MSG3(level, msg) SUNDANCE_OUT(level >= 3, msg)
+#define SUNDANCE_MSG3(level, msg) PLAYA_OUT(level >= 3, msg)
 
-#define SUNDANCE_MSG4(level, msg) SUNDANCE_OUT(level >= 4, msg)
+#define SUNDANCE_MSG4(level, msg) PLAYA_OUT(level >= 4, msg)
 
-#define SUNDANCE_MSG5(level, msg) SUNDANCE_OUT(level >= 5, msg)
+#define SUNDANCE_MSG5(level, msg) PLAYA_OUT(level >= 5, msg)
 
 #define SUNDANCE_BANNER1(level, tab, msg) \
-  SUNDANCE_MSG1(level, tab \
+  PLAYA_MSG1(level, tab \
     << "===================================================================");\
-  SUNDANCE_MSG1(level, tab << std::endl << tab \
+  PLAYA_MSG1(level, tab << std::endl << tab \
     << "  " << msg); \
-  SUNDANCE_MSG1(level, tab << std::endl << tab\
+  PLAYA_MSG1(level, tab << std::endl << tab\
     << "===================================================================");
 
 
@@ -179,5 +101,34 @@ void writeTable(std::ostream& os, const Tabs& tab,
     << msg); \
   SUNDANCE_MSG3(level, tab << std::endl << tab\
     << "-------------------------------------------------------------------");
+
+#define SUNDANCE_TRACE(e) \
+{ \
+  TeuchosOStringStream omsg; \
+        omsg << e.what() << std::endl \
+  << "caught in " << __FILE__ << ":" << __LINE__ << std::endl ; \
+        throw std::runtime_error(TEUCHOS_OSTRINGSTREAM_GET_C_STR(omsg)); \
+}
+
+#define SUNDANCE_TRACE_MSG(e, msg)                      \
+{ \
+  TeuchosOStringStream omsg; \
+        omsg << e.what() << std::endl \
+  << "caught in " << __FILE__ << ":" << __LINE__ << std::endl ; \
+  omsg << msg << std::endl; \
+  throw std::runtime_error(TEUCHOS_OSTRINGSTREAM_GET_C_STR(omsg)); \
+}
+
+
+#define SUNDANCE_ERROR(msg) \
+{ \
+  TeuchosOStringStream omsg; \
+        omsg << __FILE__ << ":" << __LINE__ << ": " \
+       << ": " << msg; \
+  const std::string &omsgstr = omsg.str(); \
+  TestForException_break(omsgstr); \
+  throw std::runtime_error(TEUCHOS_OSTRINGSTREAM_GET_C_STR(omsg)); \
+}
+
 
 #endif

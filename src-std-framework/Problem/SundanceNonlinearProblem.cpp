@@ -30,21 +30,21 @@
 
 #include "SundanceNonlinearProblem.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceAssembler.hpp"
 #include "SundanceDiscreteFunction.hpp"
 #include "SundanceEquationSet.hpp"
 #include "SundanceLinearSolveDriver.hpp"
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
-#include "TSFLinearOperatorImpl.hpp"
+#include "PlayaLinearOperatorImpl.hpp"
 #endif
 
 
 using namespace Sundance;
 using namespace Teuchos;
 using namespace std;
-using namespace TSFExtended;
+using namespace Playa;
 
 
 static Time& nlpCtorTimer() 

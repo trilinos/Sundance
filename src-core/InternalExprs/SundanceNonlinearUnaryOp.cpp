@@ -48,7 +48,7 @@ NonlinearUnaryOp::NonlinearUnaryOp(const RCP<ScalarExpr>& arg,
 bool NonlinearUnaryOp::lessThan(const ScalarExpr* other) const
 {
   const NonlinearUnaryOp* f = dynamic_cast<const NonlinearUnaryOp*>(other);
-  TEST_FOR_EXCEPTION(f==0, InternalError, "cast should never fail at this point");
+  TEST_FOR_EXCEPTION(f==0, std::logic_error, "cast should never fail at this point");
   
   if (op() < f->op()) return true;
   if (op() > f->op()) return false;

@@ -60,7 +60,7 @@ public:
       vecKernel_(rcp(new VectorAssemblyKernel(dofMap, isBCIndex,
             lowestLocalIndex, grad, partitionBCs, verb)))
     {
-      TEST_FOR_EXCEPTION(grad.size() != 1, InternalError,
+      TEST_FOR_EXCEPTION(grad.size() != 1, std::logic_error,
         "assembly target in FunctionalGradientAssemblyKernel should not "
         "be a multivector");
     }
@@ -102,11 +102,11 @@ public:
     }
 
   /** */
-  void setVerbosity(int verb) 
+  void setVerb(int verb) 
     {
-      AssemblyKernelBase::setVerbosity(verb);
-      funcKernel_->setVerbosity(verb);
-      vecKernel_->setVerbosity(verb);
+      AssemblyKernelBase::setVerb(verb);
+      funcKernel_->setVerb(verb);
+      vecKernel_->setVerb(verb);
     }
 
 private:

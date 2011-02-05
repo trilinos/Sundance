@@ -26,8 +26,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 #
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../src-solvers/Vectors)
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../src-solvers/Operators)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../Playa/src)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../src-core/UserExprs)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../src-core/InternalExprs)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../src-core/FrameworkInterface)
@@ -277,9 +276,7 @@ APPEND_SET(HEADERS
   Problem/SundanceLinearProblem.hpp
   Problem/SundanceLinearSolveDriver.hpp
   Problem/SundanceMeshIOUtils.hpp
-  Problem/SundanceModelEvaluatorBase.hpp
   Problem/SundanceNitscheBC.hpp
-  Problem/SundanceNLPModelEvaluator.hpp
   Problem/SundanceNLOp.hpp
   Problem/SundancePCDPreconditioner.hpp
   Problem/SundanceProblemTesting.hpp
@@ -301,9 +298,7 @@ APPEND_SET(SOURCES
   Problem/SundanceLinearProblem.cpp
   Problem/SundanceLinearSolveDriver.cpp
   Problem/SundanceMeshIOUtils.cpp
-  Problem/SundanceModelEvaluatorBase.cpp
   Problem/SundanceNitscheBC.cpp
-  Problem/SundanceNLPModelEvaluator.cpp
   Problem/SundanceNLOp.cpp
   Problem/SundancePCDPreconditioner.cpp
   Problem/SundanceProblemTesting.cpp
@@ -350,5 +345,5 @@ PACKAGE_ADD_LIBRARY(
   sundanceStdFwk
   HEADERS ${HEADERS}
   SOURCES ${SOURCES}
-  DEPLIBS sundanceCore sundanceStdMesh TSFExtended sundanceInterop sundanceUtils
+  DEPLIBS sundanceCore sundanceStdMesh sundanceInterop sundanceUtils playa
   )

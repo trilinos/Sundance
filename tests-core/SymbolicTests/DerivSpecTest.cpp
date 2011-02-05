@@ -1,6 +1,6 @@
 #include "SundanceDefs.hpp"
 #include "SundanceFunctionIdentifier.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceDeriv.hpp"
 #include "SundanceUnknownFunctionStub.hpp"
 #include "SundanceTestFunctionStub.hpp"

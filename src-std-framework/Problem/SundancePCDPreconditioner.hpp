@@ -2,11 +2,11 @@
 #define SUNDANCE_PCD_PRECONDITIONER_HPP
 
 #include "SundanceLinearProblem.hpp"
-#include "TSFLinearSolverDecl.hpp"
-#include "TSFPreconditionerFactory.hpp"
+#include "PlayaLinearSolverDecl.hpp"
+#include "PlayaPreconditionerFactory.hpp"
 
 
-namespace TSFExtended
+namespace Playa
 {
 using namespace Sundance;
 

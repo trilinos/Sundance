@@ -80,7 +80,7 @@ ConstantExpr::internalFindC(int order, const EvalContext& context) const
 bool ConstantExpr::lessThan(const ScalarExpr* other) const
 {
   const ConstantExpr* c = dynamic_cast<const ConstantExpr*>(other);
-  TEST_FOR_EXCEPTION(c==0, InternalError, "cast should never fail at this point");
+  TEST_FOR_EXCEPTION(c==0, std::logic_error, "cast should never fail at this point");
   return value() < c->value();
 }
 

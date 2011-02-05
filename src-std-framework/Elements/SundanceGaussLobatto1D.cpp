@@ -28,7 +28,7 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceGaussLobatto1D.hpp"
 #ifdef _MSC_VER
 # include "winmath.h"
@@ -52,7 +52,7 @@ GaussLobatto1D::GaussLobatto1D(int n, double a, double b) :
 void GaussLobatto1D::computeWeights(int n, double a, double b)
 {
 
-	TEST_FOR_EXCEPTION(n < 2, RuntimeError, "number of points=" << n
+	TEST_FOR_EXCEPTION(n < 2, std::runtime_error, "number of points=" << n
 			<< " must be at least 2 for Gauss-Lobatto-Legendre quadrature!");
 
 	int m = (n + 1) / 2;

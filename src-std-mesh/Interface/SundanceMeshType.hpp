@@ -34,7 +34,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceMeshTypeBase.hpp"
 #include "SundanceMesh.hpp"
-#include "SundanceHandle.hpp"
+#include "PlayaHandle.hpp"
 
 namespace Sundance
 {
@@ -50,14 +50,14 @@ namespace Sundance
  * The internal representation of the mesh will be as a BasicSimplicialMesh
  * object. 
  */
-class MeshType : public Sundance::Handle<MeshTypeBase>
+class MeshType : public Playa::Handle<MeshTypeBase>
 {
 public:
   /** Construct an empty mesh type object */
   MeshType();
 
   /** Construct from a raw pointer to a mesh type subtype */
-  MeshType(Sundance::Handleable<MeshTypeBase>* rawPtr);
+  MeshType(Playa::Handleable<MeshTypeBase>* rawPtr);
 
   /** Construct from a smart pointer to a mesh type subtype */
   MeshType(const RCP<MeshTypeBase>& smartPtr);

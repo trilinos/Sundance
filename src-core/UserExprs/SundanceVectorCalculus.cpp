@@ -60,11 +60,11 @@ Expr div(const Expr& f)
 
 Expr cross(const Expr& a, const Expr& b)
 {
-  TEST_FOR_EXCEPTION(a.size() != b.size(), RuntimeError,
+  TEST_FOR_EXCEPTION(a.size() != b.size(), std::runtime_error,
     "mismatched vector sizes in cross(a,b): a.size()=" << a.size()
     << ", b.size()=" << b.size());
 
-  TEST_FOR_EXCEPTION(a.size() < 2 || a.size() > 3, RuntimeError,
+  TEST_FOR_EXCEPTION(a.size() < 2 || a.size() > 3, std::runtime_error,
     "cross(a,b) undefined for dim=" << a.size());
 
   if (a.size()==2)
@@ -92,12 +92,12 @@ Expr colonProduct(const Expr& A, const Expr& B)
 {
   int nA = 0;
   int nB = 0;
-  TEST_FOR_EXCEPTION(!isSquareMatrix(A, nA), RuntimeError,
+  TEST_FOR_EXCEPTION(!isSquareMatrix(A, nA), std::runtime_error,
     "Colon product expected argument A=" << A << " to be a square matrix");
-  TEST_FOR_EXCEPTION(!isSquareMatrix(B, nB), RuntimeError,
+  TEST_FOR_EXCEPTION(!isSquareMatrix(B, nB), std::runtime_error,
     "Colon product expected argument B=" << B << " to be a square matrix");
 
-  TEST_FOR_EXCEPTION(nA!=nB, RuntimeError,
+  TEST_FOR_EXCEPTION(nA!=nB, std::runtime_error,
     "Colon product expected operands A=" << A << " and B=" << B 
     << " to have identical sizes");
 
@@ -117,12 +117,12 @@ Expr outerProduct(const Expr& A, const Expr& B)
 {
   int nA = 0;
   int nB = 0;
-  TEST_FOR_EXCEPTION(!isVector(A, nA), RuntimeError,
+  TEST_FOR_EXCEPTION(!isVector(A, nA), std::runtime_error,
     "Outer product expected argument A=" << A << " to be a vector");
-  TEST_FOR_EXCEPTION(!isVector(B, nB), RuntimeError,
+  TEST_FOR_EXCEPTION(!isVector(B, nB), std::runtime_error,
     "Outer product expected argument B=" << B << " to be a vector");
 
-  TEST_FOR_EXCEPTION(nA!=nB, RuntimeError,
+  TEST_FOR_EXCEPTION(nA!=nB, std::runtime_error,
     "Colon product expected operands A=" << A << " and B=" << B 
     << " to have identical sizes");
 

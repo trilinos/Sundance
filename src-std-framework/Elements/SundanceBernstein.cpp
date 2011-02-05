@@ -30,7 +30,7 @@
 
 #include "SundanceBernstein.hpp"
 #include "SundanceADReal.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceSpatialDerivSpecifier.hpp"
 #include "SundancePoint.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
@@ -43,7 +43,7 @@ using namespace Teuchos;
 Bernstein::Bernstein(int order)
   : order_(order)
 {
-  TEST_FOR_EXCEPTION(order < 0, RuntimeError,
+  TEST_FOR_EXCEPTION(order < 0, std::runtime_error,
     "invalid polynomial order=" << order
     << " in Bernstein ctor");
 }
@@ -119,22 +119,22 @@ int Bernstein::nReferenceDOFsWithoutFacets(
     case QuadCell:
       if (order_==1) return 0;
       if (order_==2) return 1;
-      TEST_FOR_EXCEPTION(order_>2, RuntimeError, 
+      TEST_FOR_EXCEPTION(order_>2, std::runtime_error, 
         "Bernstein order > 2 not implemented "
         "for quad cells");
     case TetCell:
       if (order_<=2) return 0;
-      TEST_FOR_EXCEPTION(order_>2, RuntimeError, 
+      TEST_FOR_EXCEPTION(order_>2, std::runtime_error, 
         "Bernstein order > 2 not implemented "
         "for tet cells");
     case BrickCell:
       if (order_<=1) return 0;
       if (order_==2) return 1;
-      TEST_FOR_EXCEPTION(order_>2, RuntimeError, 
+      TEST_FOR_EXCEPTION(order_>2, std::runtime_error, 
         "Bernstein order > 2 not implemented "
         "for brick cells");
     default:
-      TEST_FOR_EXCEPTION(true, RuntimeError, "Cell type "
+      TEST_FOR_EXCEPTION(true, std::runtime_error, "Cell type "
         << cellType << " not implemented in Bernstein basis");
       return -1; // -Wall
   }
@@ -225,7 +225,7 @@ void Bernstein::getReferenceDOFs(
     {
     }
     default:
-      TEST_FOR_EXCEPTION(true, RuntimeError, "Cell type "
+      TEST_FOR_EXCEPTION(true, std::runtime_error, "Cell type "
         << cellType << " not implemented in Bernstein basis");
   }
 }
@@ -249,7 +249,7 @@ void Bernstein::refEval(
   int verbosity) const
 {
   TEST_FOR_EXCEPTION(!(sds.isPartial() || sds.isIdentity()), 
-    RuntimeError,
+    std::runtime_error,
     "cannot evaluate spatial derivative " << sds << " on Bernstein basis");
   const MultiIndex& deriv = sds.mi();
   typedef Array<double> Adouble;
@@ -280,7 +280,7 @@ void Bernstein::refEval(
       }
       return;
     default:
-      TEST_FOR_EXCEPTION(true, RuntimeError,
+      TEST_FOR_EXCEPTION(true, std::runtime_error,
         "Bernstein::refEval() unimplemented for cell type "
         << cellType);
 

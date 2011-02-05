@@ -47,7 +47,7 @@ bool CellCurvePredicate::lessThan(const CellPredicateBase* other) const
   const CellCurvePredicate* S = dynamic_cast<const CellCurvePredicate*>(other);
 
   TEST_FOR_EXCEPTION( S== 0,
-                     InternalError,
+                     std::logic_error,
                      "argument " << other->toXML()
                      << " to CellCurvePredicate::lessThan() should be "
                      "a CellCurvePredicate pointer.");

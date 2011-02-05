@@ -83,7 +83,7 @@ Evaluator* EvaluatorFactory::commonCreate(const EvaluatableExpr* expr,
       return new CurveNormEvaluator(cne, context, topLevelDiffOrder);
     }
 
-  TEST_FOR_EXCEPTION(true, InternalError,
+  TEST_FOR_EXCEPTION(true, std::logic_error,
                      "EvaluatorFactory::commonCreate() could not create an "
                      "evaluator for " << expr->toString());
 

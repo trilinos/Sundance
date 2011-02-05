@@ -38,8 +38,8 @@
 #include "SundanceDiscreteFuncElement.hpp"
 #include "SundanceCellJacobianBatch.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaTabs.hpp"
+#include "PlayaExceptions.hpp"
 
 #include "Teuchos_BLAS.hpp"
 
@@ -48,7 +48,7 @@ using namespace Teuchos;
 TEUCHOS_TIMER(coordEvalTimer, "Quad mediator: coord eval")
 
 using namespace Sundance;
-using namespace TSFExtended;
+using namespace Playa;
 using std::endl;
 using std::setw;
 
@@ -152,7 +152,7 @@ void QuadratureEvalMediator::setCellType(const CellType& cellType,
 int QuadratureEvalMediator::numQuadPts(const CellType& ct) const 
 {
   TEST_FOR_EXCEPTION(!numQuadPtsForCellType_.containsKey(ct),
-    RuntimeError,
+    std::runtime_error,
     "no quadrature points have been tabulated for cell type=" << ct);
   return numQuadPtsForCellType_.get(ct);
 }
@@ -208,7 +208,7 @@ void QuadratureEvalMediator::evalCellVectorExpr(const CellVectorExpr* expr,
   }
   else
   {
-    TEST_FOR_EXCEPTION(cellDim() != 1, RuntimeError,
+    TEST_FOR_EXCEPTION(cellDim() != 1, std::runtime_error,
       "unable to compute tangent vectors for cell dim = " << cellDim());
     mesh().tangentsToEdges(*cellLID(), vectors);
   }
@@ -269,7 +269,7 @@ RCP<Array<Array<Array<double> > > > QuadratureEvalMediator
       if (!cofacetCellsAreReady()) setupFacetTransformations();
       evalCellType = maxCellType();
     
-      TEST_FOR_EXCEPTION(!cofacetCellsAreReady(), RuntimeError, 
+      TEST_FOR_EXCEPTION(!cofacetCellsAreReady(), std::runtime_error, 
         "cofacet cells not ready in getFacetRefBasisVals()");
     }
   }
@@ -308,13 +308,13 @@ RCP<Array<Array<Array<double> > > > QuadratureEvalMediator
     if (evalCellType!=cellType())
     { 
       TEST_FOR_EXCEPTION(quadPtsReferredToMaxCell_.size() == 0,
-        RuntimeError,
+        std::runtime_error,
         "empty quadrature point map (max cell)");
     }
     else
     {
       TEST_FOR_EXCEPTION(quadPtsForReferenceCell_.size() == 0,
-        RuntimeError,
+        std::runtime_error,
         "empty quadrature point map (ref cell)");
     }
 
@@ -400,7 +400,7 @@ void QuadratureEvalMediator
   Array<RCP<EvalVector> >& vec) const
 {
   const DiscreteFunctionData* f = DiscreteFunctionData::getData(expr);
-  TEST_FOR_EXCEPTION(f==0, InternalError,
+  TEST_FOR_EXCEPTION(f==0, std::logic_error,
     "QuadratureEvalMediator::evalDiscreteFuncElement() called "
     "with expr that is not a discrete function");
   Tabs tab;

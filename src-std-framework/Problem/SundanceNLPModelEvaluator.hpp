@@ -109,7 +109,7 @@ namespace Thyra
     LinearOperator<double> createW() const 
     {
       static LinearOperator<double> J = prob_.allocateJacobian();
-      TEST_FOR_EXCEPTION(J.ptr().get()==0, RuntimeError,
+      TEST_FOR_EXCEPTION(J.ptr().get()==0, std::runtime_error,
                          "null Jacobian");
       return J;
     }

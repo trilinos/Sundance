@@ -29,7 +29,7 @@
 /* @HEADER@ */
 
 #include "SundanceFunctorDomain.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 
 using namespace Sundance;
 using namespace Teuchos;
@@ -39,7 +39,7 @@ FunctorDomain::FunctorDomain() {;}
 
 double FunctorDomain::lowerBound() const
 {
-  TEST_FOR_EXCEPTION(true, InternalError, 
+  TEST_FOR_EXCEPTION(true, std::logic_error, 
                      "FunctorDomain::lowerBound() called for a domain without "
                      "a lower bound");
   return 0.0;
@@ -47,7 +47,7 @@ double FunctorDomain::lowerBound() const
 
 double FunctorDomain::upperBound() const
 {
-  TEST_FOR_EXCEPTION(true, InternalError, 
+  TEST_FOR_EXCEPTION(true, std::logic_error, 
                      "FunctorDomain::upperBound() called for a domain without "
                      "an upper bound");
 
@@ -56,7 +56,7 @@ double FunctorDomain::upperBound() const
 
 double FunctorDomain::excludedPoint() const
 {
-  TEST_FOR_EXCEPTION(true, InternalError, 
+  TEST_FOR_EXCEPTION(true, std::logic_error, 
                      "FunctorDomain::excludedPoint() called for a domain without "
                      "an excluded point");
 

@@ -29,7 +29,7 @@
 
 #include "SundanceExpr.hpp"
 #include "SundanceCoordExpr.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include <cmath>
 
 
@@ -39,7 +39,7 @@ using Sundance::Expr;
 using namespace Teuchos;
 
 class CoordinateSystemBase : 
-  public Sundance::Handleable<CoordinateSystemBase>
+  public Playa::Handleable<CoordinateSystemBase>
 {
 public:
   /** */
@@ -59,7 +59,7 @@ public:
 };
 
 
-class CoordinateSystem : public Sundance::Handle<CoordinateSystemBase>
+class CoordinateSystem : public Playa::Handle<CoordinateSystemBase>
 {
 public:
   /* boilerplate handle ctors */

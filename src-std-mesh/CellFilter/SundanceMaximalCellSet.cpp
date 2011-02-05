@@ -29,7 +29,7 @@
 /* @HEADER@ */
 
 #include "SundanceMaximalCellSet.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceImplicitCellSet.hpp"
 
 using namespace Sundance;
@@ -50,7 +50,7 @@ XMLObject MaximalCellSet::toXML() const
 bool MaximalCellSet::lessThan(const CellSetBase* other) const
 {
   TEST_FOR_EXCEPTION(dynamic_cast<const MaximalCellSet*>(other) == 0,
-                     InternalError,
+                     std::logic_error,
                      "argument " << other->toXML() 
                      << " to MaximalCellSet::lessThan() should be "
                      "a MaximalCellSet pointer.");

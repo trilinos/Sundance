@@ -33,11 +33,12 @@
 #include "SundanceFunctionSupportResolver.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceMaximalCellFilter.hpp"
-#include "TSFProductVectorSpaceImpl.hpp"
+#include "PlayaDefaultBlockVectorSpaceDecl.hpp"
 #include "Teuchos_MPIContainerComm.hpp"
 
 using namespace Sundance;
 using namespace Teuchos;
+using Playa::blockSpace;
 
 const int* vecPtr(const Array<int>& x)
 {
@@ -299,7 +300,7 @@ void DiscreteSpace::initVectorSpace(
   const RCP<Array<int> >& isBCIndex, 
   bool partitionBCs)
 {
-  TEST_FOR_EXCEPTION(map_.get()==0, InternalError,
+  TEST_FOR_EXCEPTION(map_.get()==0, std::logic_error,
     "uninitialized map");
 
   int nDof = map_->numLocalDOFs();
@@ -335,7 +336,7 @@ void DiscreteSpace::initVectorSpace(
     VectorSpace<double> interiorSpace = vecType_.createSpace(nTotalInteriorDofs, nDof-nBCDofs,
       intDofPtr, mesh().comm());
 
-    vecSpace_ = productSpace<double>(interiorSpace, bcSpace);
+    vecSpace_ = blockSpace<double>(interiorSpace, bcSpace);
   }
   else
   {
@@ -350,11 +351,11 @@ void DiscreteSpace::initVectorSpace(
 
 void DiscreteSpace::initImporter()
 {
-  TEST_FOR_EXCEPTION(map_.get()==0, InternalError,
+  TEST_FOR_EXCEPTION(map_.get()==0, std::logic_error,
     "uninitialized map");
-  TEST_FOR_EXCEPTION(vecSpace_.ptr().get()==0, InternalError,
+  TEST_FOR_EXCEPTION(vecSpace_.ptr().get()==0, std::logic_error,
     "uninitialized vector space");
-  TEST_FOR_EXCEPTION(vecType_.ptr().get()==0, InternalError,
+  TEST_FOR_EXCEPTION(vecType_.ptr().get()==0, std::logic_error,
     "uninitialized vector type");
   
   RCP<Array<int> > ghostIndices = map_->ghostIndices();

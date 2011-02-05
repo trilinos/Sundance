@@ -34,7 +34,7 @@
 #include "NOX.H"
 #include "NOX_Common.H"
 #include "NOX_Utils.H"
-#include "NOX_TSF_Group.H"
+#include "NOX_Playa_Group.hpp"
 
 int main(int argc, char** argv)
 {

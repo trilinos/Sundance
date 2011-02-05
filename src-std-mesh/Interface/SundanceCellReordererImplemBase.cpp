@@ -30,7 +30,7 @@
 
 #include "SundanceCellReordererBase.hpp"
 #include "SundanceMeshBase.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 
 using namespace Sundance;
 using namespace Sundance;

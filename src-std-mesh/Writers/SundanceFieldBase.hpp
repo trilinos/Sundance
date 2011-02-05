@@ -32,7 +32,7 @@
 #define SUNDANCE_FIELDBASE_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceHandleable.hpp"
+#include "PlayaHandleable.hpp"
 #include "Teuchos_Array.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 #include "SundanceCellSet.hpp"
@@ -56,7 +56,7 @@ using Teuchos::RefCountPtr;
 /**
  *
  */
-class FieldBase : public Sundance::Handleable<FieldBase>
+class FieldBase : public Playa::Handleable<FieldBase>
 {
 public:
   /** */

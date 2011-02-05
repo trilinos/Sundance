@@ -21,7 +21,7 @@ CoordinateSystemBuilder::makeCoordinateSystem(const std::string& name)
   }
   else
   {
-    TEST_FOR_EXCEPTION(true, RuntimeError,
+    TEST_FOR_EXCEPTION(true, std::runtime_error,
       "coordinate system type=[" << name << "] not recognized");
   }
   

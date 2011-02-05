@@ -77,7 +77,7 @@ public:
 
 
   /** */
-  void setVerbosity(
+  void setVerb(
     int setupVerb,
     int integrationVerb,
     int transformVerb);

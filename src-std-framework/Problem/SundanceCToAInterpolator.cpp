@@ -30,7 +30,7 @@
 
 #include "SundanceCToAInterpolator.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceLagrange.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
 
@@ -42,7 +42,7 @@ using namespace Sundance;
 using namespace Sundance;
 using namespace Sundance;
 using namespace Teuchos;
-using namespace TSFExtended;
+using namespace Playa;
 
 
 static Time& particleInterpolationTimer() 
@@ -76,7 +76,7 @@ void CToAInterpolator::updateField(const Expr& field)
   int nCells = locator_.mesh().numCells(dim_);
 
   const DiscreteFunction* df = DiscreteFunction::discFunc(field);
-  TEST_FOR_EXCEPTION(df == 0, RuntimeError,
+  TEST_FOR_EXCEPTION(df == 0, std::runtime_error,
     "discrete function expected in "
     "CToAInterpolator::updateField()");
   
@@ -105,7 +105,7 @@ void CToAInterpolator::updateField(const Expr& field)
       {
         int dof = dofs0[(c*rangeDim_ + f)*nFacets_ + n];
         (*elemToVecValuesMap_)[(cellLID[c]*nFacets_ + n)*rangeDim_ + f]
-          = vec.getElement(dof);
+          = vec[dof];
       }
     }
   }
@@ -117,7 +117,7 @@ void CToAInterpolator::interpolate(const Teuchos::Array<double>& positions,
 {
   TimeMonitor timer(particleInterpolationTimer());
 
-  TEST_FOR_EXCEPTION(positions.size() % dim_ != 0, RuntimeError,
+  TEST_FOR_EXCEPTION(positions.size() % dim_ != 0, std::runtime_error,
     "vector of coordinates should by an integer multiple "
     "of the spatial dimension");
 
@@ -133,7 +133,7 @@ void CToAInterpolator::interpolate(const Teuchos::Array<double>& positions,
 
     int guess = locator_.guessCell(x);
 
-    TEST_FOR_EXCEPTION(guess < 0, RuntimeError, "particle position "
+    TEST_FOR_EXCEPTION(guess < 0, std::runtime_error, "particle position "
       << x << " out of search grid");
 
       

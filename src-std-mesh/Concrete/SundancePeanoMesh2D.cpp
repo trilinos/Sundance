@@ -130,7 +130,7 @@ void PeanoMesh2D::getJacobians(int cellDim, const Array<int>& cellLID,
 {
 	  //printf("cellDim:%d  _uniqueResolution:%f ",cellDim, _uniqueResolution);
 	  SUNDANCE_VERB_HIGH("getJacobians()");
-	  TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), InternalError,
+	  TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), std::logic_error,
 	    "cellDim=" << cellDim << " is not in expected range [0, " << spatialDim() << "]");
 	  int nCells = cellLID.size();
 	  int tmp , tmp_index , tmp_index1;
@@ -158,7 +158,7 @@ void PeanoMesh2D::getJacobians(int cellDim, const Array<int>& cellLID,
 		             *detJ = sqrt(pnt * pnt); // the length of the edge
 		        break;
 		        default:
-		          TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value "
+		          TEST_FOR_EXCEPTION(true, std::logic_error, "impossible switch value "
 		            "cellDim=" << cellDim << " in PeanoMesh2D::getJacobians()");
 		      }
 		    }
@@ -177,7 +177,7 @@ void PeanoMesh2D::getJacobians(int cellDim, const Array<int>& cellLID,
 		          J[3] = _peanoMesh->returnResolution(1); // the Jacobi of the quad,
 		        break;
 		        default:
-		          TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value "
+		          TEST_FOR_EXCEPTION(true, std::logic_error, "impossible switch value "
 		            "cellDim=" << cellDim
 		            << " in SundancePeano2D::getJacobians()");
 		      }
@@ -187,7 +187,7 @@ void PeanoMesh2D::getJacobians(int cellDim, const Array<int>& cellLID,
 
 void PeanoMesh2D::getCellDiameters(int cellDim, const Array<int>& cellLID,
                               Array<double>& cellDiameters) const {
-	 TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), InternalError,
+	 TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), std::logic_error,
 	    "cellDim=" << cellDim << " is not in expected range [0, " << spatialDim() << "]");
 	 SUNDANCE_VERB_HIGH("getCellDiameters()");
 	  cellDiameters.resize(cellLID.size());
@@ -215,7 +215,7 @@ void PeanoMesh2D::getCellDiameters(int cellDim, const Array<int>& cellLID,
 		    	 cellDiameters[i] = sqrt(pnt * pnt); // the length of the edge
 	        break;
 	        default:
-	          TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value "
+	          TEST_FOR_EXCEPTION(true, std::logic_error, "impossible switch value "
 	            "cellDim=" << cellDim << " in PeanoMesh2D::getCellDiameters()");
 	      }
 	    }
@@ -231,7 +231,7 @@ void PeanoMesh2D::getCellDiameters(int cellDim, const Array<int>& cellLID,
 	          cellDiameters[i] = (_peanoMesh->returnResolution(0)+_peanoMesh->returnResolution(1))/2.0;
 	        break;
 	        default:
-	          TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value "
+	          TEST_FOR_EXCEPTION(true, std::logic_error, "impossible switch value "
 	            "cellDim=" << cellDim
 	            << " in PeanoMesh2D::getCellDiameters()");
 	      }
@@ -244,7 +244,7 @@ void PeanoMesh2D::pushForward(int cellDim, const Array<int>& cellLID,
                          Array<Point>& physQuadPts) const {
 
 	  //printf("PeanoMesh2D::pushForward cellDim:%d\n",cellDim);
-	  TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), InternalError,
+	  TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), std::logic_error,
 	    "cellDim=" << cellDim
 	    << " is not in expected range [0, " << spatialDim()
 	    << "]");
@@ -280,7 +280,7 @@ void PeanoMesh2D::pushForward(int cellDim, const Array<int>& cellLID,
 		         }
 	      break;}
 	      default:
-	        TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value "
+	        TEST_FOR_EXCEPTION(true, std::logic_error, "impossible switch value "
 	          "in PeanoMesh2D::getJacobians()");
 	    }
 	  }
@@ -357,7 +357,7 @@ int PeanoMesh2D::maxCofacetLID(int cellDim, int cellLID,
 
 void PeanoMesh2D::getMaxCofacetLIDs(const Array<int>& cellLIDs,
   MaximalCofacetBatch& cofacets) const {
-    TEST_FOR_EXCEPTION(true, InternalError," PeanoMesh2D::getMaxCofacetLIDs() not implemented yet");
+    TEST_FOR_EXCEPTION(true, std::logic_error," PeanoMesh2D::getMaxCofacetLIDs() not implemented yet");
 	//TODO: Implement this, uses only in ExodusWriter::writeMesh
 }
 

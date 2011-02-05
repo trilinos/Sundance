@@ -31,7 +31,7 @@
 #ifndef SUNDANCEPARAMETRIZEDCURVE_H_
 #define SUNDANCEPARAMETRIZEDCURVE_H_
 
-#include "SundanceHandle.hpp"
+#include "PlayaHandle.hpp"
 #include "SundanceDummyParametrizedCurve.hpp"
 #include "SundanceCurveBase.hpp"
 
@@ -53,7 +53,7 @@ namespace Sundance
  * But this might be used for other purposes as well.
  *
  */
-class ParametrizedCurve : public Sundance::Handle<CurveBase> {
+class ParametrizedCurve : public Playa::Handle<CurveBase> {
 public:
 
 	/* */
@@ -63,7 +63,7 @@ public:
 	ParametrizedCurve();
 
     /** Construct from a raw pointer to a ParametrizedCurve type subtype */
-	ParametrizedCurve(Sundance::Handleable<CurveBase>* rawPtr);
+	ParametrizedCurve(Playa::Handleable<CurveBase>* rawPtr);
 
     /** Construct from a smart pointer to a ParametrizedCurve type subtype */
 	ParametrizedCurve(const RCP<CurveBase>& smartPtr);

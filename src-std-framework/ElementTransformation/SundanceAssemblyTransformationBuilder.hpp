@@ -58,7 +58,7 @@ namespace Sundance {
     int verb() const {return verb_;}
 
     /** set verbosity level */
-    void setVerbosity(int verb) {verb_=verb;}
+    void setVerb(int verb) {verb_=verb;}
 
   private:
 

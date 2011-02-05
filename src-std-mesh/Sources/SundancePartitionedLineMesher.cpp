@@ -98,7 +98,7 @@ Mesh PartitionedLineMesher::fillMesh() const
       reportFailure(comm());
       SUNDANCE_TRACE_MSG(e0, "while meshing a line");
     }
-  TEST_FOR_EXCEPTION(checkForFailures(comm()), RuntimeError, 
+  TEST_FOR_EXCEPTION(checkForFailures(comm()), std::runtime_error, 
                      "off-proc error detected on proc=" << myRank()
                      << " while meshing line");
   return mesh;

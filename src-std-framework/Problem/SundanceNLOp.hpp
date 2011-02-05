@@ -36,10 +36,10 @@
 #include "SundanceExpr.hpp"
 #include "SundanceDiscreteFunction.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
-#include "TSFNonlinearOperatorBase.hpp"
-#include "TSFLinearOperatorDecl.hpp"
-#include "TSFVectorDecl.hpp"
-#include "TSFVectorType.hpp"
+#include "PlayaNonlinearOperatorBase.hpp"
+#include "PlayaLinearOperatorDecl.hpp"
+#include "PlayaVectorDecl.hpp"
+#include "PlayaVectorType.hpp"
 
 namespace Sundance
 {
@@ -54,7 +54,7 @@ class Assembler;
  */
 class NLOp 
   : public ObjectWithClassVerbosity<NLOp>,
-    public TSFExtended::NonlinearOperatorBase<double>
+    public Playa::NonlinearOperatorBase<double>
 {
 public:
   /** Empty ctor */
@@ -64,7 +64,7 @@ public:
    * and a vector type */
   NLOp(const Mesh& mesh, const Expr& eqn, const Expr& bc,
     const Expr& test, const Expr& unk, const Expr& u0, 
-    const TSFExtended::VectorType<double>& vecType,
+    const Playa::VectorType<double>& vecType,
     bool partitionBCs = false);
 
   /** Construct with a mesh, equation set, bcs, test and unknown funcs,
@@ -72,7 +72,7 @@ public:
   NLOp(const Mesh& mesh, const Expr& eqn, const Expr& bc,
     const Expr& test, const Expr& unk, const Expr& u0, 
     const Expr& params, const Expr& paramVals,  
-    const TSFExtended::VectorType<double>& vecType,
+    const Playa::VectorType<double>& vecType,
     bool partitionBCs = false);
 
 
@@ -95,13 +95,13 @@ public:
   Expr getU0() const {return u0_;}
 
   /** Compute the residual at the current eval point */
-  TSFExtended::Vector<double> computeFunctionValue() const ;
+  Playa::Vector<double> computeFunctionValue() const ;
       
   /** Write the residual into the object provided */
   void computeFunctionValue(Vector<double>& resid) const ;
 
   /** Get an initial guess */
-  TSFExtended::Vector<double> getInitialGuess() const ;
+  Playa::Vector<double> getInitialGuess() const ;
 
   /** Create the Jacobian object, but don't fill it in. */
   LinearOperator<double> allocateJacobian() const ;
@@ -111,7 +111,7 @@ public:
 
 
   /* Handle boilerplate */
-  GET_RCP(TSFExtended::NonlinearOperatorBase<double>);
+  GET_RCP(Playa::NonlinearOperatorBase<double>);
 
 private:
       
@@ -119,7 +119,7 @@ private:
   RCP<Assembler> assembler_;
 
   /** */
-  mutable TSFExtended::LinearOperator<double> J_;
+  mutable Playa::LinearOperator<double> J_;
 
   /** */
   Expr u0_;

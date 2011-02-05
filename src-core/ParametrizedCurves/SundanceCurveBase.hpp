@@ -34,7 +34,7 @@
 #include "SundanceExpr.hpp"
 #include "SundancePoint.hpp"
 #include "SundanceDefs.hpp"
-#include "SundanceHandleable.hpp"
+#include "PlayaHandleable.hpp"
 
 namespace Sundance
 {
@@ -51,7 +51,7 @@ namespace Sundance
  * Adaptive Cell Integration.
  */
 
-class CurveBase : public Sundance::Handleable<CurveBase>
+class CurveBase : public Playa::Handleable<CurveBase>
 {
 public:
 
@@ -151,14 +151,14 @@ public:
 	 * @param mesh
 	 * @param resolution , the global resolution */
 	virtual const RCP<CurveBase> getPolygon(const Mesh& mesh , double resolution) const {
-		TEST_FOR_EXCEPTION( true , RuntimeError, " getPolygon() method is not overwritten ");
+		TEST_FOR_EXCEPTION( true , std::runtime_error, " getPolygon() method is not overwritten ");
 		return rcp((CurveBase*)0);
 	}
 
 	/** Writes the geometry into a VTK file for visualization purposes
 	 * @param filename */
 	virtual void writeToVTK(const std::string& filename) const {
-		TEST_FOR_EXCEPTION( true , RuntimeError, " writeToVTK() method is not overwritten ");
+		TEST_FOR_EXCEPTION( true , std::runtime_error, " writeToVTK() method is not overwritten ");
 	}
 
 protected:

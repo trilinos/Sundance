@@ -161,7 +161,7 @@ HNMesh3D::HNMesh3D(int dim, const MPIComm& comm ,
 	    const MeshEntityOrder& order)
 : MeshBase(dim, comm , order), _comm(comm)
 {
-	setVerbosity(0);
+	setVerb(0);
 
 	// get the number of processors
 	nrProc_ = MPIComm::world().getNProc();
@@ -233,7 +233,7 @@ void HNMesh3D::getJacobians(int cellDim, const Array<int>& cellLID,
 
 	  SUNDANCE_MSG3(verb(),"HNMesh3D::getJacobians  cellDim:"<<cellDim<<" _x:"<<_ofs_x<<" _y:"<<_ofs_y<<" _z:"<<_ofs_z);
 	  SUNDANCE_VERB_HIGH("getJacobians()");
-	  TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), InternalError,
+	  TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), std::logic_error,
 	    "cellDim=" << cellDim << " is not in expected range [0, " << spatialDim() << "]");
 	  int nCells = cellLID.size();
 	  int LID;
@@ -265,7 +265,7 @@ void HNMesh3D::getJacobians(int cellDim, const Array<int>& cellLID,
 		          *detJ = sqrt(directedArea * directedArea); // the area of the face
 		        break;}
 		        default:
-		          TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value "  "cellDim=" << cellDim << " in HNMesh3D::getJacobians()");
+		          TEST_FOR_EXCEPTION(true, std::logic_error, "impossible switch value "  "cellDim=" << cellDim << " in HNMesh3D::getJacobians()");
 		      }
 		    }
 	  }else{ // they request the complete Jacoby matrix for this bunch of elements
@@ -291,7 +291,7 @@ void HNMesh3D::getJacobians(int cellDim, const Array<int>& cellLID,
 			      //SUNDANCE_MSG3(verb() , "HNMesh3D::getJacobians P4:" << points_[cellsPoints_[LID][4]] );
 		        break;}
 		        default:
-		          TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value " "cellDim=" << cellDim << " in HNMesh3D::getJacobians()");
+		          TEST_FOR_EXCEPTION(true, std::logic_error, "impossible switch value " "cellDim=" << cellDim << " in HNMesh3D::getJacobians()");
 		      }
 		    }
 	  }
@@ -300,7 +300,7 @@ void HNMesh3D::getJacobians(int cellDim, const Array<int>& cellLID,
 void HNMesh3D::getCellDiameters(int cellDim, const Array<int>& cellLID,
                               Array<double>& cellDiameters) const {
 
-	 TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), InternalError,
+	 TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), std::logic_error,
 	    "cellDim=" << cellDim << " is not in expected range [0, " << spatialDim() << "]");
 	 SUNDANCE_VERB_HIGH("getCellDiameters()");
 	  cellDiameters.resize(cellLID.size());
@@ -327,7 +327,7 @@ void HNMesh3D::getCellDiameters(int cellDim, const Array<int>& cellLID,
 			      cellDiameters[i] = sqrt(pnt * pnt); // the diameter of the face
 	        break;
 	        default:
-	          TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value "  "cellDim=" << cellDim << " in HNMesh3D::getCellDiameters()");
+	          TEST_FOR_EXCEPTION(true, std::logic_error, "impossible switch value "  "cellDim=" << cellDim << " in HNMesh3D::getCellDiameters()");
 	      }
 	    }
 	  }
@@ -344,7 +344,7 @@ void HNMesh3D::getCellDiameters(int cellDim, const Array<int>& cellLID,
 	          cellDiameters[i] = sqrt(pnt * pnt);
 	        break;
 	        default:
-	          TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value "
+	          TEST_FOR_EXCEPTION(true, std::logic_error, "impossible switch value "
 	           "cellDim=" << cellDim  << " in HNMesh3D::getCellDiameters()");
 	      }
 	    }
@@ -356,7 +356,7 @@ void HNMesh3D::pushForward(int cellDim, const Array<int>& cellLID,
                          Array<Point>& physQuadPts) const {
 
 	  SUNDANCE_MSG3(verb(),"HNMesh3D::pushForward cellDim:"<<cellDim);
-	  TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), InternalError,
+	  TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), std::logic_error,
 	    "cellDim=" << cellDim << " is not in expected range [0, " << spatialDim() << "]");
 
 	  int nQuad = refQuadPts.size();
@@ -399,7 +399,7 @@ void HNMesh3D::pushForward(int cellDim, const Array<int>& cellLID,
 		         }
 	      break;}
 	      default:
-	        TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value " "in HNMesh3D::getJacobians()");
+	        TEST_FOR_EXCEPTION(true, std::logic_error, "impossible switch value " "in HNMesh3D::getJacobians()");
 	    }
 	  }
 }
@@ -636,14 +636,14 @@ int HNMesh3D::maxCofacetLID(int cellDim, int cellLID,
 void HNMesh3D::getCofacets(int cellDim, int cellLID,
                  int cofacetDim, Array<int>& cofacetLIDs) const {
 	// Nothing to do
-    TEST_FOR_EXCEPTION(true, InternalError," HNMesh3D::getCofacets() not implemented");
+    TEST_FOR_EXCEPTION(true, std::logic_error," HNMesh3D::getCofacets() not implemented");
 }
 
 
 void HNMesh3D::getMaxCofacetLIDs(const Array<int>& cellLIDs,
   MaximalCofacetBatch& cofacets) const {
 	// nothing to do here
-    TEST_FOR_EXCEPTION(true, InternalError," HNMesh3D::getMaxCofacetLIDs() not implemented");
+    TEST_FOR_EXCEPTION(true, std::logic_error," HNMesh3D::getMaxCofacetLIDs() not implemented");
 }
 
 
@@ -725,7 +725,7 @@ CellType HNMesh3D::cellType(int cellDim) const  {
 
 int HNMesh3D::label(int cellDim, int cellLID) const {
    // not used
-   TEST_FOR_EXCEPTION(true, InternalError," HNMesh3D::label() not implemented yet");
+   TEST_FOR_EXCEPTION(true, std::logic_error," HNMesh3D::label() not implemented yet");
    return 0;
 }
 
@@ -733,24 +733,24 @@ int HNMesh3D::label(int cellDim, int cellLID) const {
 void HNMesh3D::getLabels(int cellDim, const Array<int>& cellLID,
 		Array<int>& labels) const {
    // not used
-   TEST_FOR_EXCEPTION(true, InternalError," HNMesh3D::getLabels() not implemented yet");
+   TEST_FOR_EXCEPTION(true, std::logic_error," HNMesh3D::getLabels() not implemented yet");
 }
 
 Set<int> HNMesh3D::getAllLabelsForDimension(int cellDim) const {
    Set<int>                 rtn;
    // not used
-   TEST_FOR_EXCEPTION(true, InternalError," HNMesh3D::getAllLabelsForDimension() not implemented yet");
+   TEST_FOR_EXCEPTION(true, std::logic_error," HNMesh3D::getAllLabelsForDimension() not implemented yet");
    return rtn;
 }
 
 void HNMesh3D::getLIDsForLabel(int cellDim, int label, Array<int>& cellLIDs) const {
     // not used
-	TEST_FOR_EXCEPTION(true, InternalError," HNMesh3D::getLIDsForLabel() not implemented yet");
+	TEST_FOR_EXCEPTION(true, std::logic_error," HNMesh3D::getLIDsForLabel() not implemented yet");
 }
 
 void HNMesh3D::setLabel(int cellDim, int cellLID, int label) {
    // not used
-   TEST_FOR_EXCEPTION(true, InternalError," HNMesh3D::setLabel() not implemented yet");
+   TEST_FOR_EXCEPTION(true, std::logic_error," HNMesh3D::setLabel() not implemented yet");
 }
 
 
@@ -852,7 +852,7 @@ void HNMesh3D::addVertex(int vertexLID , int ownerProc , bool isHanging ,
 		 double coordx , double coordy , double coordz , const Array<int> &maxCoF){
   // add only when the LID is new
   if (points_.size() <= vertexLID){
-	 TEST_FOR_EXCEPTION(vertexLID != nrElem_[0] , InternalError ,"HNMesh3D::addVertex " <<
+	 TEST_FOR_EXCEPTION(vertexLID != nrElem_[0] , std::logic_error ,"HNMesh3D::addVertex " <<
 			 " vertexLID:" << vertexLID << " nrElem_[0]:" << nrElem_[0] );
      Point pt(coordx, coordy, coordz );
      points_.append( pt );
@@ -871,7 +871,7 @@ void HNMesh3D::addEdge(int edgeLID , int ownerProc , bool isHanging , int edgeOr
 	  // add only when the edgeLID is new
 	  SUNDANCE_MSG3(verb() , "HNMesh3D -- addEdge: " << edgeLID << " nrElem_[1]: " << nrElem_[1] << " edgePoints_.size():" << edgePoints_.size() );
 	  if (edgePoints_.size() <= edgeLID ){
-		 TEST_FOR_EXCEPTION(edgeLID != nrElem_[1], InternalError, "HNMesh3D::addEdge edgeLID != nrElem_[1]");
+		 TEST_FOR_EXCEPTION(edgeLID != nrElem_[1], std::logic_error, "HNMesh3D::addEdge edgeLID != nrElem_[1]");
 		 edgePoints_.append( vertexLIDs );
 		 edgeOrientation_.append( (short int)edgeOrientation );
 		 edgeMaxCoF_.append( maxCoF );
@@ -890,7 +890,7 @@ void HNMesh3D::addFace(int faceLID , int ownerProc , bool isHanging , int faceOr
 
 	  // add only when the edgeLID is new
 	  if (facePoints_.size() <= faceLID ){
-		 TEST_FOR_EXCEPTION(faceLID != nrElem_[2], InternalError, "HNMesh3D::addFace faceLID != nrElem_[2]");
+		 TEST_FOR_EXCEPTION(faceLID != nrElem_[2], std::logic_error, "HNMesh3D::addFace faceLID != nrElem_[2]");
 		 facePoints_.append( vertexLIDs );
 		 faceEdges_.append( edgeLIDs );
 		 faceOrientation_.append( (short int)faceOrientation );
@@ -912,7 +912,7 @@ void HNMesh3D::addCell(int cellLID , int ownerProc ,
 {
 	  // add only when the edgeLID is new
 	  if (cellsPoints_.size() <= cellLID ) {
-		 TEST_FOR_EXCEPTION(cellLID != nrElem_[3], InternalError, "HNMesh3D::cellLID cellLID != nrElem_[3]");
+		 TEST_FOR_EXCEPTION(cellLID != nrElem_[3], std::logic_error, "HNMesh3D::cellLID cellLID != nrElem_[3]");
 		 cellsFaces_.append( faceLIDs );
 		 cellsEdges_.append( edgeLIDs );
 		 cellsPoints_.append( vertexLIDs );
@@ -965,7 +965,7 @@ void HNMesh3D::createMesh(
 			          const MeshDomainDef& meshDomain
 ){
 
-	setVerbosity(0);
+	setVerb(0);
 
 	// initialize object fields
 	_pos_x = position_x; _pos_y = position_y; _pos_z = position_z;
@@ -1045,7 +1045,7 @@ void HNMesh3D::createCoarseMesh(){
 
 	SUNDANCE_MSG3(verb() , "HNMesh3D::createMesh nrCoarseCell:" << nrCoarseCell << " nrCoarsePoints:" << nrCoarsePoints
 			          << " nrCoarseEdge:" << nrCoarseEdge <<  " nrCoarseFace:" << nrCoarseFace << " nrProc_:" << nrProc_ << " myRank_:" << myRank_);
-	TEST_FOR_EXCEPTION( nrCoarseCell < nrProc_ , InternalError," HNMesh3D::createMesh nrCoarseCell < nrProc_ ");
+	TEST_FOR_EXCEPTION( nrCoarseCell < nrProc_ , std::logic_error," HNMesh3D::createMesh nrCoarseCell < nrProc_ ");
 	// now always divide as a flow channel , no resolution driven division
 
     // calculate total load and load per coarse cell

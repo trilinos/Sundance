@@ -19,7 +19,7 @@ using namespace Sundance;
 using namespace Sundance;
 using namespace Sundance;
 using namespace Teuchos;
-using namespace TSFExtended;
+using namespace Playa;
 
 
 static Time& totalTimer() 

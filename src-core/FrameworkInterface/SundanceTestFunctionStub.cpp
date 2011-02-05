@@ -65,7 +65,7 @@ TestFunctionStub::TestFunctionStub(const std::string& name,
   }
   else 
   {
-    TEST_FOR_EXCEPTION(true, RuntimeError, "tensor order = " << tensorOrder
+    TEST_FOR_EXCEPTION(true, std::runtime_error, "tensor order = " << tensorOrder
       << " not supported");
   }
 }
@@ -111,7 +111,7 @@ TestFunctionStub::TestFunctionStub(const std::string& name,
   }
   else 
   {
-    TEST_FOR_EXCEPTION(true, RuntimeError, "tensor order = " << tensorOrder
+    TEST_FOR_EXCEPTION(true, std::runtime_error, "tensor order = " << tensorOrder
       << " not supported");
   }
 }

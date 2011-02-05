@@ -29,14 +29,14 @@
 /* @HEADER@ */
 
 #include "SundanceFieldWriter.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
 using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
+using Playa::Handle;
+using Playa::Handleable;
 
 
 

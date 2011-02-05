@@ -45,7 +45,7 @@
 #include "SundanceEvalManager.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceExpr.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceADCoord.hpp"
 #include "SundanceADDerivative.hpp"
 #include "SundanceObjectWithVerbosity.hpp"

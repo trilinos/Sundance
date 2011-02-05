@@ -30,7 +30,7 @@
 
 #include "SundanceFuncWithBasis.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceExpr.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
 #include "SundanceUnknownFuncElement.hpp"
@@ -48,7 +48,7 @@ std::string describeFunction(const Expr& f)
   if (f.size() == 1)
   {
     const FuncElementBase* fe = dynamic_cast<const FuncElementBase*>(f[0].ptr().get());
-    TEST_FOR_EXCEPTION(fe==0, RuntimeError, "expected a FuncElementBase, "
+    TEST_FOR_EXCEPTION(fe==0, std::runtime_error, "expected a FuncElementBase, "
       "found " << typeid(*fe).name());
     
     const UnknownFuncElement* u = dynamic_cast<const UnknownFuncElement*>(f[0].ptr().get());
@@ -72,7 +72,7 @@ std::string describeFunction(const Expr& f)
     }
     else
     {
-      TEST_FOR_EXCEPTION(true, RuntimeError, "unrecognized function " 
+      TEST_FOR_EXCEPTION(true, std::runtime_error, "unrecognized function " 
         << f[0]);
     }
 

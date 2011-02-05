@@ -87,7 +87,7 @@ MultiSet<FunctionIdentifier> MultipleDeriv::funcIDs() const
     {
       rtn.put(i->fid());
     }
-    TEST_FOR_EXCEPTION(!i->isFunctionalDeriv(), RuntimeError,
+    TEST_FOR_EXCEPTION(!i->isFunctionalDeriv(), std::runtime_error,
       "MultipleDeriv::funcIDs() found spatial deriv");
   }
   return rtn;
@@ -103,7 +103,7 @@ MultiSet<int> MultipleDeriv::dofIDs() const
       int f = i->dofID();
       rtn.put(f);
     }
-    TEST_FOR_EXCEPTION(!i->isFunctionalDeriv(), RuntimeError,
+    TEST_FOR_EXCEPTION(!i->isFunctionalDeriv(), std::runtime_error,
       "MultipleDeriv::sharedFuncIDs() found spatial deriv");
   }
   return rtn;
@@ -227,7 +227,7 @@ void MultipleDeriv
 
 Array<int> MultipleDeriv::bitsOfAnInteger(int x, int n)
 {
-  TEST_FOR_EXCEPTION(x >= pow2(n), InternalError,
+  TEST_FOR_EXCEPTION(x >= pow2(n), std::logic_error,
     "Invalid input to MultipleDeriv::bitsOfX");
                      
   Array<int> rtn(n);
@@ -291,7 +291,7 @@ Set<MultipleDeriv> Xx(const MultiIndex& x)
 {
   Set<MultipleDeriv> rtn;
 
-  TEST_FOR_EXCEPTION(x.order() < 0 || x.order() > 1, InternalError,
+  TEST_FOR_EXCEPTION(x.order() < 0 || x.order() > 1, std::logic_error,
     "invalid multiindex " << x << " in this context");
 
   MultipleDeriv xmd = makeMultiDeriv(coordDeriv(x.firstOrderDirection()));
@@ -304,13 +304,13 @@ Set<MultipleDeriv> applyZx(const Set<MultipleDeriv>& W,
 {
   Set<MultipleDeriv> rtn;
 
-  TEST_FOR_EXCEPTION(x.order() < 0 || x.order() > 1, InternalError,
+  TEST_FOR_EXCEPTION(x.order() < 0 || x.order() > 1, std::logic_error,
     "invalid multiindex " << x << " in this context");
 
   for (Set<MultipleDeriv>::const_iterator i=W.begin(); i!=W.end(); i++)
   {
     const MultipleDeriv& md = *i;
-    TEST_FOR_EXCEPTION(md.order() != 1, InternalError,
+    TEST_FOR_EXCEPTION(md.order() != 1, std::logic_error,
       "Only first-order multiple functional derivatives "
       "should appear in this function. The derivative "
       << md << " is not first-order.");
@@ -321,12 +321,12 @@ Set<MultipleDeriv> applyZx(const Set<MultipleDeriv>& W,
     {
       /* */
       TEST_FOR_EXCEPTION(!d.canBeDifferentiated(),
-        InternalError, "function signature " << d << " cannot be "
+        std::logic_error, "function signature " << d << " cannot be "
         "differentiated further spatially");
       /* accept a functional derivative if the associated function 
        * is not identically zero */
       const SymbolicFuncElement* sfe = d.symbFuncElem();
-      TEST_FOR_EXCEPTION(sfe==0, InternalError, 
+      TEST_FOR_EXCEPTION(sfe==0, std::logic_error, 
         "can't cast function in "
         << d << " to a SymbolicFuncElement");
       if (sfe && !sfe->evalPtIsZero()) rtn.put(md);

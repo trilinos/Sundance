@@ -41,6 +41,8 @@
 
 using namespace Sundance;
 using namespace Teuchos;
+using Playa::Handle;
+using Playa::Handleable;
 
 
 
@@ -107,7 +109,7 @@ BasisFamily BasisFamily::getBasis(const RCP<const CommonFuncDataStub>& funcData)
       return d->discreteSpace().basis()[0];
     }
 
-  TEST_FOR_EXCEPTION(u==0 && t==0 && d==0, RuntimeError,
+  TEST_FOR_EXCEPTION(u==0 && t==0 && d==0, std::runtime_error,
 		     "BasisFamily::getBasis() argument is not a recognized "
 		     "type of function data");
   return BasisFamily();

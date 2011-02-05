@@ -33,9 +33,9 @@
 
 #include "SundanceUnknownFuncElement.hpp"
 #include "SundanceEvalManager.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceSet.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceOut.hpp"
 
 
@@ -97,7 +97,7 @@ void ChainRuleEvaluator::addVarArgDeriv(const MultiSet<int>& df, int index)
 
 int ChainRuleEvaluator::constArgDerivIndex(const MultiSet<int>& df) const
 {
-  TEST_FOR_EXCEPTION(!constArgDerivMap_.containsKey(df), InternalError,
+  TEST_FOR_EXCEPTION(!constArgDerivMap_.containsKey(df), std::logic_error,
     "argument derivative " << df << " not found in constant "
     "argument derivative map");
 
@@ -106,7 +106,7 @@ int ChainRuleEvaluator::constArgDerivIndex(const MultiSet<int>& df) const
 
 int ChainRuleEvaluator::varArgDerivIndex(const MultiSet<int>& df) const
 {
-  TEST_FOR_EXCEPTION(!varArgDerivMap_.containsKey(df), InternalError,
+  TEST_FOR_EXCEPTION(!varArgDerivMap_.containsKey(df), std::logic_error,
     "argument derivative " << df << " not found in variable "
     "argument derivative map");
 
@@ -127,7 +127,7 @@ const Array<Array<int> >& ChainRuleEvaluator::nComps(int N, int n) const
 
 double ChainRuleEvaluator::fact(int n) const
 {
-  TEST_FOR_EXCEPTION(n<0, InternalError, "negative argument " << n << " to factorial");
+  TEST_FOR_EXCEPTION(n<0, std::logic_error, "negative argument " << n << " to factorial");
   if (n==0 || n==1) return 1.0;
   return n*fact(n-1);
 }
@@ -208,7 +208,7 @@ int ChainRuleEvaluator::derivComboMultiplicity(const MultiSet<MultipleDeriv>& b)
   int totOrder = dTot.order();
 
   /* eliminate 4th order or higher */
-  TEST_FOR_EXCEPTION(totOrder > 3, InternalError,
+  TEST_FOR_EXCEPTION(totOrder > 3, std::logic_error,
     "deriv order " << totOrder << " not supported");
 
   if (b.size()==1) return 1;  /* handles case with a single multiple deriv */
@@ -224,7 +224,7 @@ int ChainRuleEvaluator::derivComboMultiplicity(const MultiSet<MultipleDeriv>& b)
    * (a,ba) with multiplicity 2, or
    * (b,aa) with multiplicity 1.
    */
-  TEST_FOR_EXCEPTION(derivArrays.size() != 2, InternalError,
+  TEST_FOR_EXCEPTION(derivArrays.size() != 2, std::logic_error,
     "unexpected size=" << derivArrays.size());
 
   if (allDerivsAreIdentical) return 3;
@@ -399,7 +399,7 @@ void ChainRuleEvaluator::init(const ExprWithChildren* expr,
         sum->addTerm(argDerivIndex, argDerivIsConstant, pSum);
       }
     }
-    TEST_FOR_EXCEPTION(sum->numTerms()==0, InternalError,
+    TEST_FOR_EXCEPTION(sum->numTerms()==0, std::logic_error,
       "Empty sum in chain rule expansion for derivative "
       << *md);
     expansions_.append(sum);

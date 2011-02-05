@@ -35,7 +35,7 @@
 #include "SundanceExprBase.hpp"
 #include "SundanceFunctionIdentifier.hpp"
 #include "SundanceMap.hpp"
-#include "SundanceHandle.hpp"
+#include "PlayaHandle.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 #include <complex>
@@ -192,7 +192,7 @@ using namespace Sundance;
  * Cell diameter expressions are scalar valued.
  * </ul>
  */
-class Expr : public Sundance::Handle<ExprBase>
+class Expr : public Playa::Handle<ExprBase>
 {
 public:
   /* boilerplate handle ctors */

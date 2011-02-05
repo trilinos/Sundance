@@ -29,13 +29,13 @@
 /* @HEADER@ */
 
 #include "SundanceLinearSolveDriver.hpp"
-#include "TSFLinearSolverDecl.hpp"
+#include "PlayaLinearSolverDecl.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
-#include "TSFLinearSolverImpl.hpp"
+#include "PlayaLinearSolverImpl.hpp"
 #endif
 
 
@@ -49,7 +49,7 @@ using namespace Sundance;
 using namespace Sundance;
 using namespace Sundance;
 using namespace Teuchos;
-using namespace TSFExtended;
+using namespace Playa;
 using namespace std;
 
 
@@ -117,7 +117,7 @@ LinearSolveDriver::solve(const LinearSolver<double>& solver,
       
       /* If solve errors are fatal, throw an exception */
       TEST_FOR_EXCEPTION(solveFailureIsFatal(),
-        RuntimeError, TEUCHOS_OSTRINGSTREAM_GET_C_STR(ss));
+        std::runtime_error, TEUCHOS_OSTRINGSTREAM_GET_C_STR(ss));
 
       /* otherwise, return the state information */
       return state;

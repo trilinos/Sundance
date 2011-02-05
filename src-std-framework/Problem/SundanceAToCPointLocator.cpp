@@ -30,7 +30,7 @@
 
 #include "SundanceAToCPointLocator.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceGeomUtils.hpp"
 #include "Teuchos_ScalarTraits.hpp"
 #include <queue>
@@ -240,7 +240,7 @@ bool AToCPointLocator::cellContainsPoint(int cellLID,
     }
   else
     {
-      TEST_FOR_EXCEPTION(dim_<=0 || dim_>3, RuntimeError,
+      TEST_FOR_EXCEPTION(dim_<=0 || dim_>3, std::runtime_error,
                          "invalid point dimension " << dim_);
       return false; // -Wall
     }
@@ -313,7 +313,7 @@ bool AToCPointLocator::cellContainsPoint(int cellLID,
     }
   else
     {
-      TEST_FOR_EXCEPTION(dim_<=0 || dim_>3, RuntimeError,
+      TEST_FOR_EXCEPTION(dim_<=0 || dim_>3, std::runtime_error,
                          "invalid point dimension " << dim_);
       return false; // -Wall
     }

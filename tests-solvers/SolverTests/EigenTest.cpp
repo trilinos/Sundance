@@ -1,7 +1,7 @@
 //@HEADER
 // ***********************************************************************
 // 
-//           TSFExtended: Trilinos Solver Framework Extended
+//           Playa: Trilinos Solver Framework Extended
 //                 Copyright (2004) Sandia Corporation
 // 
 // Under terms of Contract DE-AC04-94AL85000, there is a non-exclusive
@@ -31,28 +31,28 @@
 #include "BelosLinearProblem.hpp"
 #include "BelosThyraAdapter.hpp"
 #include "Teuchos_GlobalMPISession.hpp"
-#include "TSFPreconditioner.hpp"
-#include "TSFPreconditionerFactory.hpp"
-#include "TSFParameterListPreconditionerFactory.hpp"
-#include "TSFLoadableMatrix.hpp"
-#include "TSFVectorType.hpp"
-#include "TSFSimpleDiagonalOpImpl.hpp"
-#include "TSFSimpleIdentityOpImpl.hpp"
-#include "TSFVectorOpsImpl.hpp"
-#include "TSFEpetraVectorType.hpp"
+#include "PlayaPreconditioner.hpp"
+#include "PlayaPreconditionerFactory.hpp"
+#include "PlayaParameterListPreconditionerFactory.hpp"
+#include "PlayaLoadableMatrix.hpp"
+#include "PlayaVectorType.hpp"
+#include "PlayaSimpleDiagonalOpImpl.hpp"
+#include "PlayaSimpleIdentityOpImpl.hpp"
+#include "PlayaVectorOpsImpl.hpp"
+#include "PlayaEpetraVectorType.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_MPIComm.hpp"
-#include "TSFLinearSolverDecl.hpp"
-#include "TSFAztecSolver.hpp"
-#include "TSFAnasaziEigensolverDecl.hpp"
-#include "TSFAnasaziAdapter.hpp"
-#include "TSFEigensolver.hpp"
-#include "TSFMatrixLaplacian1D.hpp"
-#include "TSFLinearSolverBuilder.hpp"
-#include "TSFInverseOperatorDecl.hpp"
+#include "PlayaLinearSolverDecl.hpp"
+#include "PlayaAztecSolver.hpp"
+#include "PlayaAnasaziEigensolverDecl.hpp"
+#include "PlayaAnasaziAdapter.hpp"
+#include "PlayaEigensolver.hpp"
+#include "PlayaMatrixLaplacian1D.hpp"
+#include "PlayaLinearSolverBuilder.hpp"
+#include "PlayaInverseOperatorDecl.hpp"
 #include "SundancePathUtils.hpp"
 #include "Teuchos_ParameterXMLFileReader.hpp"
-#include "TSFLinearCombinationImpl.hpp"
+#include "PlayaLinearCombinationImpl.hpp"
 #include "AnasaziMVOPTester.hpp"
 #include "AnasaziBasicOutputManager.hpp"
 #include "AnasaziTypes.hpp"
@@ -60,16 +60,16 @@
 #include "AnasaziOperator.hpp"
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
-#include "TSFLinearOperatorImpl.hpp"
-#include "TSFLinearSolverImpl.hpp"
-#include "TSFInverseOperatorImpl.hpp"
-#include "TSFAnasaziEigensolverImpl.hpp"
+#include "PlayaLinearOperatorImpl.hpp"
+#include "PlayaLinearSolverImpl.hpp"
+#include "PlayaInverseOperatorImpl.hpp"
+#include "PlayaAnasaziEigensolverImpl.hpp"
 
 #endif
 
 using namespace Teuchos;
-using namespace TSFExtended;
-using namespace TSFExtendedOps;
+using namespace Playa;
+using namespace PlayaOps;
 
 
 int main(int argc, char *argv[]) 
@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
     LinearOperator<double> M;
 
     Teuchos::RCP<Anasazi::OutputManager<double> > MyOM = Teuchos::rcp( new Anasazi::BasicOutputManager<double>() );
-    MyOM->setVerbosity(Anasazi::Warnings);
+    MyOM->setVerb(Anasazi::Warnings);
 
     int nv = 1;
     RCP<const Array<Vector<double> > > initMV = rcp(new Array<Vector<double> >(nv));

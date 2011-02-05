@@ -33,7 +33,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceAssemblyKernelBase.hpp"
-#include "TSFLoadableVector.hpp"
+#include "PlayaLoadableVector.hpp"
 #include "SundanceMapBundle.hpp"
 
 namespace Sundance

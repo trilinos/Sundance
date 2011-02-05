@@ -9,7 +9,7 @@
 #define SUNDANCEREFINEMENTBASE_HPP_
 
 #include "SundanceDefs.hpp"
-#include "SundanceHandleable.hpp"
+#include "PlayaHandleable.hpp"
 #include "SundancePoint.hpp"
 
 namespace Sundance {
@@ -20,7 +20,7 @@ using namespace Teuchos;
 
 #define REFINE_MESH_(name, code) \
   class name : public RefinementBase, \
-               public Sundance::Handleable<RefinementBase> \
+               public Playa::Handleable<RefinementBase> \
   { \
   public:\
     name() : RefinementBase(){;}            \
@@ -37,7 +37,7 @@ using namespace Teuchos;
 /** define the predicate also with estimation */
 #define REFINE_MESH_ESTIMATE_(name, code , codeEst ) \
   class name : public RefinementBase, \
-               public Sundance::Handleable<RefinementBase> \
+               public Playa::Handleable<RefinementBase> \
   { \
   public:\
     name() : RefinementBase(){;}            \

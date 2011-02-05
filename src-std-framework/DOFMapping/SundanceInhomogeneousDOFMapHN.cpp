@@ -34,7 +34,7 @@
 #include "SundanceMaximalCellFilter.hpp"
 #include "Teuchos_MPIContainerComm.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
@@ -175,7 +175,7 @@ InhomogeneousDOFMapHN::InhomogeneousDOFMapHN(const Mesh& mesh,
 
   nPoints_ = mesh.numCells(0);
   // this must be satisfied
-  //TEST_FOR_EXCEPTION( nrAllFuncs_ != nBasis , RuntimeError,
+  //TEST_FOR_EXCEPTION( nrAllFuncs_ != nBasis , std::runtime_error,
   //   " nrAllFuncs_ != nBasis , nrAllFuncs_=" <<  nrAllFuncs_ << " , nBasis = " << nBasis );
   if ( nrAllFuncs_ < nBasis) nrAllFuncs_ = nBasis;
 

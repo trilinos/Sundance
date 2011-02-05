@@ -35,9 +35,9 @@
 #include "SundanceDefs.hpp"
 #include "SundanceMesh.hpp"
 #include "SundanceMeshType.hpp"
-#include "SundanceHandleable.hpp"
+#include "PlayaHandleable.hpp"
 #include "Teuchos_Describable.hpp"
-#include "SundancePrintable.hpp"
+#include "PlayaPrintable.hpp"
 #include "SundanceNoncopyable.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
 #include "SundanceIncrementallyCreatableMesh.hpp"
@@ -76,8 +76,8 @@ namespace Sundance
  * provide more informative descriptive output than the std::string
  * <tt>"MeshSourceBase[unknown subtype]".</tt>
  */
-class MeshSourceBase : public Sundance::Handleable<MeshSourceBase>,
-                       public Sundance::Printable,
+class MeshSourceBase : public Playa::Handleable<MeshSourceBase>,
+                       public Playa::Printable,
                        public Teuchos::Describable,
                        public Noncopyable,
                        public ObjectWithClassVerbosity<MeshSourceBase>

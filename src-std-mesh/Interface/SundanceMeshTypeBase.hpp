@@ -33,9 +33,9 @@
 
 
 #include "SundanceDefs.hpp"
-#include "SundanceHandleable.hpp"
+#include "PlayaHandleable.hpp"
 #include "Teuchos_Describable.hpp"
-#include "SundancePrintable.hpp"
+#include "PlayaPrintable.hpp"
 #include "SundanceNoncopyable.hpp"
 #include "SundanceMeshBase.hpp"
 
@@ -47,8 +47,8 @@ using namespace Teuchos;
  * MeshTypeBase is a factory class for empty meshes, allowing generic
  * mesh sources to build a mesh of user-specified type. 
  */
-class MeshTypeBase : public Sundance::Handleable<MeshTypeBase>,
-                     public Sundance::Printable,
+class MeshTypeBase : public Playa::Handleable<MeshTypeBase>,
+                     public Playa::Printable,
                      public Teuchos::Describable,
                      public Noncopyable
 {

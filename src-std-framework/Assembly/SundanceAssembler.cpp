@@ -31,7 +31,7 @@
 #include "SundanceAssembler.hpp"
 #include "SundanceDOFMapBuilder.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceCellFilter.hpp"
 #include "SundanceCellSet.hpp"
 #include "SundanceTrivialGrouper.hpp"
@@ -44,8 +44,8 @@
 #include "SundanceEvalManager.hpp"
 #include "SundanceStdFwkEvalMediator.hpp"
 #include "SundanceEvaluatableExpr.hpp"
-#include "TSFLoadableVector.hpp"
-#include "TSFLoadableMatrix.hpp"
+#include "PlayaLoadableVector.hpp"
+#include "PlayaLoadableMatrix.hpp"
 #include "SundanceQuadratureEvalMediator.hpp"
 #include "SundanceCurveEvalMediator.hpp"
 #include "SundanceEvaluator.hpp"
@@ -53,11 +53,9 @@
 #include "Teuchos_TimeMonitor.hpp"
 #include "Epetra_HashTable.h"
 #include "SundanceIntHashSet.hpp"
-#include "TSFProductVectorSpaceDecl.hpp"
-#include "TSFLoadableBlockVector.hpp"
-#include "TSFPartitionedMatrixFactory.hpp"
-#include "TSFBlockOperatorBaseDecl.hpp"
-#include "TSFSimpleBlockOpDecl.hpp"
+#include "PlayaDefaultBlockVectorSpaceDecl.hpp"
+#include "PlayaBlockOperatorBaseDecl.hpp"
+#include "PlayaSimpleBlockOpDecl.hpp"
 #include "SundanceAssemblyKernelBase.hpp"
 #include "SundanceVectorAssemblyKernel.hpp"
 #include "SundanceMatrixVectorAssemblyKernel.hpp"
@@ -65,14 +63,14 @@
 #include "SundanceFunctionalGradientAssemblyKernel.hpp"
 #include "SundanceAssemblyTransformationBuilder.hpp"
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
-#include "TSFLinearOperatorImpl.hpp"
-#include "TSFSimpleBlockOpImpl.hpp"
+#include "PlayaLinearOperatorImpl.hpp"
+#include "PlayaSimpleBlockOpImpl.hpp"
 #endif
 
 
 
 using namespace Teuchos;
-using namespace TSFExtended;
+using namespace Playa;
 using std::max;
 using std::min;
 
@@ -162,8 +160,7 @@ Assembler
     rowVecType_(rowVectorType),
     colVecType_(colVectorType),
     testIDToBlockMap_(),
-    unkIDToBlockMap_(),
-    converter_(eqn->numUnkBlocks())
+    unkIDToBlockMap_()
 {
   TimeMonitor timer(assemblerCtorTimer());
   init(mesh, eqn);
@@ -203,8 +200,7 @@ Assembler
     colVecType_(),
     testIDToBlockMap_(),
     unkIDToBlockMap_(),
-    fixedParamIDToVectorNumber_(),
-    converter_(eqn->numUnkBlocks())
+    fixedParamIDToVectorNumber_()
 {
   TimeMonitor timer(assemblerCtorTimer());
   init(mesh, eqn);
@@ -258,16 +254,7 @@ void Assembler::init(const Mesh& mesh, const RCP<EquationSet>& eqn)
       externalRowSpace_[b] = rcp(
         new DiscreteSpace(mesh, testBasisArray(mapBuilder.fsr())[b], 
           rowMap_[b], rowVecType_[b]));
-      if (partitionBCs_)
-      {
-        privateRowSpace_[b] = rcp(
-          new DiscreteSpace(mesh, testBasisArray(mapBuilder.fsr())[b], 
-            rowMap_[b], isBCRow_[b], rowVecType_[b]));
-      }
-      else
-      {
-        privateRowSpace_[b] = externalRowSpace_[b];
-      }
+      privateRowSpace_[b] = externalRowSpace_[b];
       SUNDANCE_MSG2(verb, tab2 << "block " << b << ": done forming row space");
     }
   }
@@ -285,20 +272,7 @@ void Assembler::init(const Mesh& mesh, const RCP<EquationSet>& eqn)
       externalColSpace_[b] 
         = rcp(new DiscreteSpace(mesh, unkBasisArray(mapBuilder.fsr())[b], 
             colMap_[b], colVecType_[b]));
-      if (partitionBCs_)
-      {
-        privateColSpace_[b] 
-          = rcp(new DiscreteSpace(mesh, unkBasisArray(mapBuilder.fsr())[b], 
-              colMap_[b], isBCCol_[b], colVecType_[b]));
-        converter_[b] 
-          = rcp(new PartitionedToMonolithicConverter(
-                  privateColSpace_[b]->vecSpace(), 
-                  isBCCol_[b], externalColSpace_[b]->vecSpace()));
-      }
-      else
-      {
-        privateColSpace_[b] = externalColSpace_[b];
-      }
+      privateColSpace_[b] = externalColSpace_[b];
       SUNDANCE_MSG2(verb, tab2 << "block " << b << ": done forming col space");
     }
 
@@ -470,10 +444,10 @@ void Assembler::init(const Mesh& mesh, const RCP<EquationSet>& eqn)
         /* We're now ready to create integration groups for doing the 
          * integrals needed in this computation for the present RQC. */
         Array<RCP<IntegralGroup> > groups;
-        grouper->setVerbosity(integralCtorVerb, integrationVerb, integralTransformVerb);
+        grouper->setVerb(integralCtorVerb, integrationVerb, integralTransformVerb);
         grouper->findGroups(*eqn, maxCellType, mesh.spatialDim(),
           cellType, cellDim, quad, sparsity, isInternalBdry, groups , rqc.paramCurve() , mesh_ );
-        grouper->setVerbosity(0,0,0);
+        grouper->setVerb(0,0,0);
         groups_[compType].append(groups);
 
         /* Record whether or not integrations need to be done by reference
@@ -490,7 +464,7 @@ void Assembler::init(const Mesh& mesh, const RCP<EquationSet>& eqn)
     
     /* If this RQC has never been used, we've made a mistake */
     /* Actually, no! Some terms might be unused in reduced-space methods */
-//    TEST_FOR_EXCEPTION(!rqcUsed, InternalError, "rqc=" << rqc 
+//    TEST_FOR_EXCEPTION(!rqcUsed, std::logic_error, "rqc=" << rqc 
 //      << " never used for any computation???");
 
     if (rqcUsed)
@@ -624,10 +598,10 @@ void Assembler::init(const Mesh& mesh, const RCP<EquationSet>& eqn)
         SUNDANCE_MSG3(rqcVerb, tab2 << "sparsity pattern " << *sparsity);
 
         Array<RCP<IntegralGroup> > groups;
-        grouper->setVerbosity(integralCtorVerb, integrationVerb, integralTransformVerb);
+        grouper->setVerb(integralCtorVerb, integrationVerb, integralTransformVerb);
         grouper->findGroups(*eqn, maxCellType, mesh.spatialDim(),
           cellType, cellDim, quad, sparsity, isInternalBdry, groups , rqc.paramCurve() , mesh_ );
-        grouper->setVerbosity(0,0,0);
+        grouper->setVerb(0,0,0);
         groups_[compType].append(groups);
         IntegrationCellSpecifier cellSpec 
           = whetherToUseCofacets(groups, ee, 
@@ -639,7 +613,7 @@ void Assembler::init(const Mesh& mesh, const RCP<EquationSet>& eqn)
       }
 /* Turn this test off, because some terms might be unused in reduced-space
  * methods */
-//      TEST_FOR_EXCEPTION(!rqcUsed, InternalError, "BC rqc=" << rqc 
+//      TEST_FOR_EXCEPTION(!rqcUsed, std::logic_error, "BC rqc=" << rqc 
 //        << " never used for any computation???");
       if (rqcUsed)
       {
@@ -772,7 +746,7 @@ void Assembler::configureVector(Array<Vector<double> >& b) const
    * the spaces for each block */
   if (eqn_->numVarBlocks() > 1)
   {
-    rowSpace = TSFExtended::productSpace(vs);
+    rowSpace = Playa::blockSpace(vs);
   }
   else /* Otherwise we have a single, monolithic vector space */
   {
@@ -802,10 +776,10 @@ void Assembler::configureVector(Array<Vector<double> >& b) const
       /* nothing to do here except check that the vector is loadable */
       if (!partitionBCs_)
       {
-        TSFExtended::LoadableVector<double>* lv 
-          = dynamic_cast<TSFExtended::LoadableVector<double>* >(b[i].ptr().get());
+        Playa::LoadableVector<double>* lv 
+          = dynamic_cast<Playa::LoadableVector<double>* >(b[i].ptr().get());
         
-        TEST_FOR_EXCEPTION(lv == 0, RuntimeError,
+        TEST_FOR_EXCEPTION(lv == 0, std::runtime_error,
           "vector is not loadable in Assembler::configureVector()");
       }
       else
@@ -827,10 +801,10 @@ void Assembler::configureVectorBlock(int br, Vector<double>& b) const
   
   if (!partitionBCs_)
   {
-    TSFExtended::LoadableVector<double>* lv 
-      = dynamic_cast<TSFExtended::LoadableVector<double>* >(b.ptr().get());
+    Playa::LoadableVector<double>* lv 
+      = dynamic_cast<Playa::LoadableVector<double>* >(b.ptr().get());
     
-    TEST_FOR_EXCEPTION(lv == 0, RuntimeError,
+    TEST_FOR_EXCEPTION(lv == 0, std::runtime_error,
       "vector block is not loadable "
       "in Assembler::configureVectorBlock()");
   }
@@ -901,16 +875,7 @@ void Assembler::configureMatrixBlock(int br, int bc,
 
   RCP<MatrixFactory<double> > matFactory ;
 
-  if (partitionBCs_)
-  {
-    matFactory = rcp(new PartitionedMatrixFactory(colSpace, lowestCol_[bc],
-        isBCCol_[bc], remoteBCCols_[bc], colVecType_[bc], 
-        rowSpace, lowestRow_[br], isBCRow_[br], rowVecType_[br]));
-  }
-  else
-  {
-    matFactory = rowVecType_[br].createMatrixFactory(colSpace, rowSpace);
-  }
+  matFactory = rowVecType_[br].createMatrixFactory(colSpace, rowSpace);
 
   IncrementallyConfigurableMatrixFactory* icmf 
     = dynamic_cast<IncrementallyConfigurableMatrixFactory*>(matFactory.get());
@@ -918,7 +883,7 @@ void Assembler::configureMatrixBlock(int br, int bc,
   CollectivelyConfigurableMatrixFactory* ccmf 
     = dynamic_cast<CollectivelyConfigurableMatrixFactory*>(matFactory.get());
 
-  TEST_FOR_EXCEPTION(ccmf==0 && icmf==0, RuntimeError,
+  TEST_FOR_EXCEPTION(ccmf==0 && icmf==0, std::runtime_error,
     "Neither incremental nor collective matrix structuring "
     "appears to be available");
 
@@ -956,7 +921,7 @@ void Assembler::configureMatrixBlock(int br, int bc,
   }
 }
 
-TSFExtended::LinearOperator<double> Assembler::allocateMatrix() const
+Playa::LinearOperator<double> Assembler::allocateMatrix() const
 {
   LinearOperator<double> A;
   Array<Vector<double> > b;
@@ -1119,7 +1084,7 @@ void Assembler::assemblyLoop(const ComputationType& compType,
     }
     Tabs tab01;
 
-    kernel->setVerbosity(fillVerb);
+    kernel->setVerb(fillVerb);
     
     /* Deciding whether we should skip this RQC in the current computation 
      * type. For example, a certain boundary surface might appear in the
@@ -1143,7 +1108,7 @@ void Assembler::assemblyLoop(const ComputationType& compType,
      * results, access to the evaluation mediator, and other administrative tasks. 
      */
     evalMgr_->setMediator(mediators_[r]);
-    mediators_[r]->setVerbosity(evalMedVerb, dfEvalVerb);
+    mediators_[r]->setVerb(evalMedVerb, dfEvalVerb);
 
     /* Tell the manager which CellFilter and QuadratureFamily we're currently working with. 
      * This is simply forwarded to the mediator, which needs to know the number
@@ -1248,7 +1213,7 @@ void Assembler::assemblyLoop(const ComputationType& compType,
       workSetCounter++;
 
       /* set the verbosity for the evaluation mediator */
-      evalMgr_->setVerbosity(evalVerb);
+      evalMgr_->setVerb(evalVerb);
 
       /* Register the workset with the mediator. Internally, the mediator
        * will look up the cell Jacobians and facet indices needed for this calculation. It 
@@ -1309,7 +1274,7 @@ void Assembler::assemblyLoop(const ComputationType& compType,
           << rqc_[r]);
         SUNDANCE_MSG1(10, tabX1 << "While evaluating expr="
           << evalExprs[r]->toString());
-        throw (RuntimeError(exc.what()));
+        throw (std::runtime_error(exc.what()));
       }
 
       /* Optionally, print the evaluation results */
@@ -1374,7 +1339,7 @@ void Assembler::assemblyLoop(const ComputationType& compType,
     }
     SUNDANCE_MSG2(rqcVerb, tab0 << "----- done looping over worksets");
     /* reset the kernel verbosity to the default */
-    kernel->setVerbosity(oldKernelVerb);
+    kernel->setVerb(oldKernelVerb);
     SUNDANCE_MSG1(verb, tab0 << "----- done rqc");
   }
   SUNDANCE_MSG1(verb, tab << "----- done looping over rqcs");
@@ -1403,7 +1368,7 @@ void Assembler::assemble(LinearOperator<double>& A,
   SUNDANCE_BANNER1(verb, tab, "Assembling matrix and vector");
 
   TEST_FOR_EXCEPTION(!contexts_.containsKey(MatrixAndVector),
-    RuntimeError,
+    std::runtime_error,
     "Assembler::assemble(A, b) called for an assembler that "
     "does not support matrix/vector assembly");
 
@@ -1443,7 +1408,7 @@ void Assembler::assembleSensitivities(LinearOperator<double>& A,
   SUNDANCE_BANNER1(verb, tab, "Assembling matrix and sensitivity vector");
 
   TEST_FOR_EXCEPTION(!contexts_.containsKey(Sensitivities),
-    RuntimeError,
+    std::runtime_error,
     "Assembler::assembleSensitivities(A, b) called for an assembler that "
     "does not support sensitivity assembly");
 
@@ -1479,7 +1444,7 @@ void Assembler::assemble(Array<Vector<double> >& mv) const
 
   /* Throw an exception if we don't know how to compute a vector */
   TEST_FOR_EXCEPTION(!contexts_.containsKey(VectorOnly),
-    RuntimeError,
+    std::runtime_error,
     "Assembler::assemble(b) called for an assembler that "
     "does not support vector-only assembly");
 
@@ -1510,7 +1475,7 @@ void Assembler::evaluate(double& value, Array<Vector<double> >& gradient) const
   SUNDANCE_BANNER1(verb, tab, "Computing functional and gradient");
 
   TEST_FOR_EXCEPTION(!contexts_.containsKey(FunctionalAndGradient),
-    RuntimeError,
+    std::runtime_error,
     "Assembler::evaluate(f,df) called for an assembler that "
     "does not support value/gradient assembly");
 
@@ -1545,7 +1510,7 @@ void Assembler::evaluate(double& value) const
   SUNDANCE_BANNER1(verb, tab, "Computing functional");
 
   TEST_FOR_EXCEPTION(!contexts_.containsKey(FunctionalOnly),
-    RuntimeError,
+    std::runtime_error,
     "Assembler::evaluate(f) called for an assembler that "
     "does not support functional evaluation");
 
@@ -1636,10 +1601,10 @@ void Assembler::getGraph(int br, int bc,
           int t = p.first();
           int u = p.second();
 
-          TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), InternalError,
+          TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), std::logic_error,
             "Test function ID " << t << " does not appear "
             "in equation set");
-          TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), InternalError,
+          TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), std::logic_error,
             "Unk function ID " << u << " does not appear "
             "in equation set");
 
@@ -1660,10 +1625,10 @@ void Assembler::getGraph(int br, int bc,
           if (eqn_->blockForVarID(t) != br) continue;
           if (eqn_->blockForUnkID(u) != bc) continue;
 
-          TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), InternalError,
+          TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), std::logic_error,
             "Test function ID " << t << " does not appear "
             "in equation set");
-          TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), InternalError,
+          TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), std::logic_error,
             "Unk function ID " << u << " does not appear "
             "in equation set");
           bcUnksForTestsSet[eqn_->reducedVarID(t)].put(eqn_->reducedUnkID(u));
@@ -1899,10 +1864,10 @@ void Assembler
         int t = p.first();
         int u = p.second();
 
-        TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), InternalError,
+        TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), std::logic_error,
           "Test function ID " << t << " does not appear "
           "in equation set");
-        TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), InternalError,
+        TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), std::logic_error,
           "Unk function ID " << u << " does not appear "
           "in equation set");
 
@@ -1920,10 +1885,10 @@ void Assembler
         const OrderedPair<int, int>& p = *i;
         int t = p.first();
         int u = p.second();
-        TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), InternalError,
+        TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), std::logic_error,
           "Test function ID " << t << " does not appear "
           "in equation set");
-        TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), InternalError,
+        TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), std::logic_error,
           "Unk function ID " << u << " does not appear "
           "in equation set");
 
@@ -2106,10 +2071,10 @@ Array<Array<int> > Assembler::findNonzeroBlocks() const
         int t = p.first();
         int u = p.second();
 
-        TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), InternalError,
+        TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), std::logic_error,
           "Test function ID " << t << " does not appear "
           "in equation set");
-        TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), InternalError,
+        TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), std::logic_error,
           "Unk function ID " << u << " does not appear "
           "in equation set");
 
@@ -2126,10 +2091,10 @@ Array<Array<int> > Assembler::findNonzeroBlocks() const
         const OrderedPair<int, int>& p = *i;
         int t = p.first();
         int u = p.second();
-        TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), InternalError,
+        TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), std::logic_error,
           "Test function ID " << t << " does not appear "
           "in equation set");
-        TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), InternalError,
+        TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), std::logic_error,
           "Unk function ID " << u << " does not appear "
           "in equation set");
         int br = eqn_->blockForVarID(t);
@@ -2155,7 +2120,7 @@ VectorSpace<double> Assembler::solnVecSpace() const
   {
     return rtn[0];
   }
-  return productSpace(rtn);
+  return blockSpace(rtn);
 }
 
 
@@ -2172,48 +2137,7 @@ VectorSpace<double> Assembler::rowVecSpace() const
   {
     return rtn[0];
   }
-  return productSpace(rtn);
-}
-
-
-Vector<double> Assembler
-::convertToMonolithicVector(const Array<Vector<double> >& internalBlock,
-  const Array<Vector<double> >& bcBlock) const
-{
-
-  Array<VectorSpace<double> > spaces(bcBlock.size());
-  Array<Vector<double> > v(bcBlock.size());
-
-  SUNDANCE_CHECK_ARRAY_SIZE_MATCH(internalBlock, bcBlock);
-  SUNDANCE_CHECK_ARRAY_SIZE_MATCH(internalBlock, privateColSpace_);
-
-  for (int i=0; i<internalBlock.size(); i++)
-  {
-    VectorSpace<double> partSpace = privateColSpace_[i]->vecSpace();
-    Vector<double> in = partSpace.createMember();
-    in.setBlock(0, internalBlock[i]);
-    in.setBlock(1, bcBlock[i]);
-    Vector<double> out = externalColSpace_[i]->vecSpace().createMember();
-    spaces[i] = externalColSpace_[i]->vecSpace();
-    converter_[i]->convert(in, out);
-    v[i] = out;
-  }
-
-  if (spaces.size() > 1) 
-  {
-    VectorSpace<double> rtnSpace = productSpace(spaces);
-    Vector<double> rtn = rtnSpace.createMember();
-    for (int i=0; i<spaces.size(); i++)
-    {
-      rtn.setBlock(i, v[i]);
-    }
-    return rtn;
-  }
-  else
-  {
-    return v[0];
-  }
-  
+  return blockSpace(rtn);
 }
 
 

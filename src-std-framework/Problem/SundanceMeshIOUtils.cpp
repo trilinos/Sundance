@@ -41,7 +41,7 @@ Expr readNodalFields(const MeshSource& mesher, const Mesh& mesh,
       /* look up the dof for the f-th function on this node */
       dofMap->getDOFsForCell(0, i, f, dofs);
       int dof = dofs[0];
-      vec.setElement(dof, funcVals[f][i]);
+      loadable(vec)->setElement(dof, funcVals[f][i]);
     }
   }
   
@@ -112,7 +112,7 @@ Expr readSerialGridField(const std::string& gridFile,
       /* look up the dof for the f-th function on this node */
       dofMap->getDOFsForCell(0, i, f, dofs);
       int dof = dofs[0];
-      vec.setElement(dof, funcVals[f][i]);
+      loadable(vec)->setElement(dof, funcVals[f][i]);
     }
   }
   
@@ -213,7 +213,7 @@ void serialPartition(
   /* This should only be run on a single-process communicator. If run in 
    * parallel, this function should be called only by the "MPI_COMM_SELF" 
    * communicator of a single processor. */
-  TEST_FOR_EXCEPTION(mesher.comm().getNProc() > 1, RuntimeError,
+  TEST_FOR_EXCEPTION(mesher.comm().getNProc() > 1, std::runtime_error,
     "serialPartition() should only be called from a "
     "single-process communicator");
 

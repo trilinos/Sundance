@@ -29,7 +29,7 @@
 /* @HEADER@ */
 
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "Teuchos_Array.hpp"
 
 using namespace Sundance;

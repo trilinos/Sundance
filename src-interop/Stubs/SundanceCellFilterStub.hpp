@@ -35,8 +35,8 @@
 #include "SundanceDefs.hpp"
 #include "SundanceObjectWithInstanceID.hpp"
 #include "SundanceNoncopyable.hpp"
-#include "SundanceHandleable.hpp"
-#include "SundancePrintable.hpp"
+#include "PlayaHandleable.hpp"
+#include "PlayaPrintable.hpp"
 #include "Teuchos_Describable.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
 #include "Teuchos_XMLObject.hpp"
@@ -54,8 +54,8 @@ using namespace Teuchos;
  *
  *  
  */
-class CellFilterStub : public Sundance::Handleable<CellFilterStub>,
-                       public Printable,
+class CellFilterStub : public Playa::Handleable<CellFilterStub>,
+                       public Playa::Printable,
                        public Teuchos::Describable,
                        public Noncopyable,
                        public ObjectWithInstanceID<CellFilterStub>,

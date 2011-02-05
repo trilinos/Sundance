@@ -1,7 +1,7 @@
 //@HEADER
 // ***********************************************************************
 // 
-//           TSFExtended: Trilinos Solver Framework Extended
+//           Playa: Trilinos Solver Framework Extended
 //                 Copyright (2004) Sandia Corporation
 // 
 // Under terms of Contract DE-AC04-94AL85000, there is a non-exclusive
@@ -29,33 +29,33 @@
 
 #include <cstdlib>
 #include "Teuchos_GlobalMPISession.hpp"
-#include "TSFLoadableMatrix.hpp"
-#include "TSFEpetraVectorType.hpp"
-#include "TSFEpetraVectorSpace.hpp"
+#include "PlayaLoadableMatrix.hpp"
+#include "PlayaEpetraVectorType.hpp"
+#include "PlayaEpetraVectorSpace.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_MPIComm.hpp"
-#include "TSFEpetraMatrix.hpp"
-#include "TSFMatrixLaplacian1D.hpp"
-#include "TSFRandomSparseMatrixBuilderDecl.hpp"
-#include "TSFRandomBlockMatrixBuilderDecl.hpp"
-#include "TSFCompoundTester.hpp"
+#include "PlayaEpetraMatrix.hpp"
+#include "PlayaMatrixLaplacian1D.hpp"
+#include "PlayaRandomSparseMatrixBuilderDecl.hpp"
+#include "PlayaRandomBlockMatrixBuilderDecl.hpp"
+#include "PlayaCompoundTester.hpp"
 #include "SundanceOut.hpp"
-#include "TSFProductVectorSpaceDecl.hpp"
-#include "TSFLinearCombinationImpl.hpp"
+#include "PlayaBlockVectorSpaceDecl.hpp"
+#include "PlayaLinearCombinationImpl.hpp"
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
-#include "TSFLinearOperatorImpl.hpp"
-#include "TSFLinearCombinationImpl.hpp"
-#include "TSFProductVectorSpaceImpl.hpp"
-#include "TSFRandomBlockMatrixBuilderImpl.hpp"
+#include "PlayaLinearOperatorImpl.hpp"
+#include "PlayaLinearCombinationImpl.hpp"
+#include "PlayaBlockVectorSpaceImpl.hpp"
+#include "PlayaRandomBlockMatrixBuilderImpl.hpp"
 #endif
 
 
 
 using namespace Teuchos;
 using namespace Sundance;
-using namespace TSFExtended;
-using namespace TSFExtendedOps;
+using namespace Playa;
+using namespace PlayaOps;
 using Thyra::TestSpecifier;
 using std::endl;
 
@@ -88,8 +88,8 @@ int main(int argc, char *argv[])
                                                              rangeBlockSizes[i]);
         }
       
-      VectorSpace<double> domain = productSpace(domainBlocks);
-      VectorSpace<double> range = productSpace(rangeBlocks);
+      VectorSpace<double> domain = blockSpace(domainBlocks);
+      VectorSpace<double> range = blockSpace(rangeBlocks);
 
       double blockDensity = 0.75;
       double onProcDensity = 0.5;

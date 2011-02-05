@@ -31,7 +31,7 @@
 #include "SundanceDeriv.hpp"
 
 
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceParameter.hpp"
 #include "SundanceUnknownFuncElement.hpp"
 #include "SundanceSymbolicFuncElement.hpp"
@@ -68,7 +68,7 @@ Deriv::Deriv(
     symbFuncElem_(func),
     symbFunc_(0), coordDerivDir_(-1)
 {
-  TEST_FOR_EXCEPTION(func==0, InternalError, 
+  TEST_FOR_EXCEPTION(func==0, std::logic_error, 
     "null function given to Deriv ctor");
   fid_ = func->fid();
   myAlgSpec_ = derivAlgSpec(fid_.algSpec(), d);
@@ -84,7 +84,7 @@ Deriv::Deriv(
     fid_(), sds_(d),
     symbFuncElem_(0), symbFunc_(func), coordDerivDir_(-1)
 {
-  TEST_FOR_EXCEPTION(func==0, InternalError, 
+  TEST_FOR_EXCEPTION(func==0, std::logic_error, 
     "null function given to Deriv ctor");
   fid_ = func->fid();
   myAlgSpec_ = derivAlgSpec(fid_.algSpec(), d);
@@ -236,7 +236,7 @@ RCP<const CommonFuncDataStub> Deriv::data() const
 {
   assertType(FunctionalDT);
   TEST_FOR_EXCEPTION(symbFuncElem_==0 && symbFunc_==0, 
-    InternalError,
+    std::logic_error,
     "Deriv::data() called, but deriv=" << *this << " does not contain a "
     "valid function");
   if (symbFuncElem_) return symbFuncElem_->commonData();
@@ -259,9 +259,9 @@ const SpatialDerivSpecifier& Deriv::opOnFunc() const
 Deriv Deriv::derivWrtMultiIndex(const MultiIndex& mi) const
 {
   assertType(FunctionalDT);
-  TEST_FOR_EXCEPTION(mi.order()>0 && sds_.isDivergence(), InternalError,
+  TEST_FOR_EXCEPTION(mi.order()>0 && sds_.isDivergence(), std::logic_error,
     "cannot take spatial derivative of an atomic divergence operation");
-  TEST_FOR_EXCEPTION(mi.order()>0 && isParameter(), InternalError,
+  TEST_FOR_EXCEPTION(mi.order()>0 && isParameter(), std::logic_error,
     "cannot take spatial derivative of a parameter");
 
   SpatialDerivSpecifier d = sds_.derivWrtMultiIndex(mi);
@@ -275,7 +275,7 @@ Deriv Deriv::derivWrtMultiIndex(const MultiIndex& mi) const
     return Deriv(symbFunc_, d);
   }
   TEST_FOR_EXCEPTION(symbFuncElem_==0 && symbFunc_==0, 
-    InternalError,
+    std::logic_error,
     "attempt to differentiate a null operative function");
   return *this; // -Wall
 }

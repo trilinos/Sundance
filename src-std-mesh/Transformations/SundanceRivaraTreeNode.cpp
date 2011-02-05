@@ -1,5 +1,5 @@
 #include "SundanceRivaraTreeNode.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 
 using namespace Sundance::Rivara;
 using namespace Sundance;

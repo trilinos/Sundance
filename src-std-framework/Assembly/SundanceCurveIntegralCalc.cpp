@@ -7,7 +7,7 @@
 
 #include "SundanceCurveIntegralCalc.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceCellJacobianBatch.hpp"
 
 using namespace Sundance;
@@ -92,7 +92,7 @@ void CurveIntegralCalc::getCurveQuadPoints_line(
 		    	// loop over each edge and detect intersection point
 		    	// there can be only one
 		    	TEST_FOR_EXCEPTION( cellPoints.size() != 4 ,
-		    			RuntimeError ," CurveIntegralCalc::getCurveQuadPoints , QuadCell must have 4 points" );
+		    			std::runtime_error ," CurveIntegralCalc::getCurveQuadPoints , QuadCell must have 4 points" );
 				SUNDANCE_MSG3(verb, tabs << "CurveIntegralCalc::getCurveQuadPoints_line, on QuadCell")
 		    	Array<Point> result(0);
 		    	int edegIndex[4][2] = { {0,1} , {0,2} , {1,3} , {2,3} };
@@ -111,14 +111,14 @@ void CurveIntegralCalc::getCurveQuadPoints_line(
 							<< " , start:" << startPoint << ", end:"<< endPoint);
 					// if we have more than one intersection point then just ignore that edge
 					TEST_FOR_EXCEPTION( nrPoints > 1 ,
-							RuntimeError , " CurveIntegralCalc::getCurveQuadPoints , QuadCell one edge " << jj << " , can have only one intersection point" );
+							std::runtime_error , " CurveIntegralCalc::getCurveQuadPoints , QuadCell one edge " << jj << " , can have only one intersection point" );
 		    	}
 		    	// test if we have too much intersection points
-		    	TEST_FOR_EXCEPTION( total_points > 2 ,RuntimeError , " CurveIntegralCalc::getCurveQuadPoints total_points > 2 : " << total_points );
+		    	TEST_FOR_EXCEPTION( total_points > 2 ,std::runtime_error , " CurveIntegralCalc::getCurveQuadPoints total_points > 2 : " << total_points );
 				SUNDANCE_MSG3(verb, tabs << "CurveIntegralCalc::getCurveQuadPoints_line, end finding intersection points")
 		    } break;
 		    case TriangleCell:{
-		    	TEST_FOR_EXCEPTION( cellPoints.size() != 3 , RuntimeError , " CurveIntegralCalc::getCurveQuadPoints , TriangleCell must have 3 points" );
+		    	TEST_FOR_EXCEPTION( cellPoints.size() != 3 , std::runtime_error , " CurveIntegralCalc::getCurveQuadPoints , TriangleCell must have 3 points" );
 		    	Array<Point> result;
 		    	int edegIndex[3][2] = { {0,1} , {0,2} , {1,2} };
 
@@ -134,17 +134,17 @@ void CurveIntegralCalc::getCurveQuadPoints_line(
 			    	}
 			    	// if we have more than one intersection point then just ignore that edge
 					TEST_FOR_EXCEPTION( nrPoints > 1 ,
-							RuntimeError , " CurveIntegralCalc::getCurveQuadPoints , TriangleCell one edge " << jj << " , can have only one intersection point" );
+							std::runtime_error , " CurveIntegralCalc::getCurveQuadPoints , TriangleCell one edge " << jj << " , can have only one intersection point" );
 		    	}
 		    	// test if we have too much intersection points
-		    	TEST_FOR_EXCEPTION( total_points > 2 ,RuntimeError , " CurveIntegralCalc::getCurveQuadPoints total_points > 2 : " << total_points );
+		    	TEST_FOR_EXCEPTION( total_points > 2 ,std::runtime_error , " CurveIntegralCalc::getCurveQuadPoints total_points > 2 : " << total_points );
 		    } break;
 		    default : {
-		    	TEST_FOR_EXCEPTION( true , RuntimeError , "CurveIntegralCalc::getCurveQuadPoints , Unknown Cell in 2D" );
+		    	TEST_FOR_EXCEPTION( true , std::runtime_error , "CurveIntegralCalc::getCurveQuadPoints , Unknown Cell in 2D" );
 		    }
 		  }
 		  // test for to many intersection points
-		  TEST_FOR_EXCEPTION( total_points > 2 ,RuntimeError , " CurveIntegralCalc::getCurveQuadPoints , no much intersection points: " << total_points);
+		  TEST_FOR_EXCEPTION( total_points > 2 ,std::runtime_error , " CurveIntegralCalc::getCurveQuadPoints , no much intersection points: " << total_points);
 
 		  // -> having the intersection points now we have to determine the:
 		  // quad points and the gradients at the points(which norm will be in the integration)
@@ -264,7 +264,7 @@ void CurveIntegralCalc::getCurveQuadPoints_line(
 			    	}
 					SUNDANCE_MSG3(verb, tabs << "ind:" << jj << ", nr Int points :" << nrPoints );
 					TEST_FOR_EXCEPTION( nrPoints > 1 ,
-							RuntimeError , " CurveIntegralCalc::getCurveQuadPoints , QuadCell one edge " << jj << " , can have only one intersection point" );
+							std::runtime_error , " CurveIntegralCalc::getCurveQuadPoints , QuadCell one edge " << jj << " , can have only one intersection point" );
 		    	} // getting intersection points
 
 
@@ -312,11 +312,11 @@ void CurveIntegralCalc::getCurveQuadPoints_line(
 		    				}else{
 		    					firstPI = edgePointI[faceEdges[jj][ii]];
 		    				}
-		    				TEST_FOR_EXCEPTION( nrIpointPerFace > 2 , RuntimeError,"getCurveQuadPoints , nrIpointPerFace > 2 , " << nrIpointPerFace );
+		    				TEST_FOR_EXCEPTION( nrIpointPerFace > 2 , std::runtime_error,"getCurveQuadPoints , nrIpointPerFace > 2 , " << nrIpointPerFace );
 		    				nrIpointPerFace++;
 		    			}
 		    		}
-		    		TEST_FOR_EXCEPTION( nrIpointPerFace == 1 , RuntimeError,"getCurveQuadPoints , nrIpointPerFace == 1 , " << nrIpointPerFace );
+		    		TEST_FOR_EXCEPTION( nrIpointPerFace == 1 , std::runtime_error,"getCurveQuadPoints , nrIpointPerFace == 1 , " << nrIpointPerFace );
 		    		// Found the first neighboring point of "minIndex"
 		    		if (( nrIpointPerFace > 1) && ((minIndex == firstPI) || (minIndex == secondPI) )){
 			    			SUNDANCE_MSG3(verb, tabs << " Found  starting line:" << firstPI << " -> " << secondPI);
@@ -330,7 +330,7 @@ void CurveIntegralCalc::getCurveQuadPoints_line(
 			    			break;
 		    		}
 		    	}
-		        TEST_FOR_EXCEPTION( intPointProc < 0 , RuntimeError,"getCurveQuadPoints , intPointProc < 0 , " << intPointProc );
+		        TEST_FOR_EXCEPTION( intPointProc < 0 , std::runtime_error,"getCurveQuadPoints , intPointProc < 0 , " << intPointProc );
 		    	// store this as act. point and get the next one(which is not neighbor to "minIndex") which is not the one which we already had
 		        // here we create all triangles, by traversing the polygon in one direction, so that the mapping will be continous
 		        for (int pI = 0 ; pI < nrTriangles; pI++)
@@ -349,11 +349,11 @@ void CurveIntegralCalc::getCurveQuadPoints_line(
 			    				}else{
 			    					firstPI = edgePointI[faceEdges[jj][ii]];
 			    				}
-			    				TEST_FOR_EXCEPTION( nrIpointPerFace > 2 , RuntimeError,"getCurveQuadPoints , nrIpointPerFace > 2 , " << nrIpointPerFace );
+			    				TEST_FOR_EXCEPTION( nrIpointPerFace > 2 , std::runtime_error,"getCurveQuadPoints , nrIpointPerFace > 2 , " << nrIpointPerFace );
 			    				nrIpointPerFace++;
 			    			}
 			    		}
-			    		TEST_FOR_EXCEPTION( nrIpointPerFace == 1 , RuntimeError,"getCurveQuadPoints , nrIpointPerFace == 1 , " << nrIpointPerFace );
+			    		TEST_FOR_EXCEPTION( nrIpointPerFace == 1 , std::runtime_error,"getCurveQuadPoints , nrIpointPerFace == 1 , " << nrIpointPerFace );
 			    		// condition to find the neighbor of "intPointProc" but not the one which has been already found
 			    		if (( nrIpointPerFace > 1) && ((intPointProc == firstPI) || (intPointProc == secondPI))
 			    				&& ((intPointProc_lastNeigh != firstPI) && (intPointProc_lastNeigh != secondPI)))
@@ -403,7 +403,7 @@ void CurveIntegralCalc::getCurveQuadPoints_line(
 		    				longEdI2 = ii;
 		    				break;
 		    			}
-		    		TEST_FOR_EXCEPTION( (longEdI1 < 0)||(longEdI2 < 0), RuntimeError," (longEdI1 < 0)||(longEdI2 < 0):" << longEdI1 << "," <<longEdI2);
+		    		TEST_FOR_EXCEPTION( (longEdI1 < 0)||(longEdI2 < 0), std::runtime_error," (longEdI1 < 0)||(longEdI2 < 0):" << longEdI1 << "," <<longEdI2);
 
 		    		//add the middle point
 		    		edgeIntersectPoint.resize(t_inters_points+1);
@@ -484,11 +484,11 @@ void CurveIntegralCalc::getCurveQuadPoints_line(
 		    } // ----------- end brick cell --------------
 		    case TetCell:{
 		    	// todo: later when this will be needed
-		    	TEST_FOR_EXCEPTION( true, RuntimeError,"CurveIntagralCalc::getCurveQuadPoints , not implemented for " << maxCellType );
+		    	TEST_FOR_EXCEPTION( true, std::runtime_error,"CurveIntagralCalc::getCurveQuadPoints , not implemented for " << maxCellType );
 		    	break;
 		    }
 		    default:{
-		    	TEST_FOR_EXCEPTION( true, RuntimeError,"CurveIntagralCalc::getCurveQuadPoints , not implemented for " << maxCellType );
+		    	TEST_FOR_EXCEPTION( true, std::runtime_error,"CurveIntagralCalc::getCurveQuadPoints , not implemented for " << maxCellType );
 		    }
 		  }
 		  SUNDANCE_MSG3(verb, tabs << " END CurveIntagralCalc::getCurveQuadPoints");
@@ -498,7 +498,7 @@ void CurveIntegralCalc::getCurveQuadPoints_line(
 
 	  default: {
         // throw exception
-		TEST_FOR_EXCEPTION( true, RuntimeError,"CurveIntagralCalc::getCurveQuadPoints , curve dimension must be 1 or two ");
+		TEST_FOR_EXCEPTION( true, std::runtime_error,"CurveIntagralCalc::getCurveQuadPoints , curve dimension must be 1 or two ");
 	  }
 	}
 }
@@ -558,7 +558,7 @@ void CurveIntegralCalc::get3DRealCoordsOnSurf(const Point &refP ,
 			break;
 		}
 		default:{
-			TEST_FOR_EXCEPTION( true, RuntimeError,"get3DRealCoordsOnSurf , too many triangles " << nrTriag);
+			TEST_FOR_EXCEPTION( true, std::runtime_error,"get3DRealCoordsOnSurf , too many triangles " << nrTriag);
 		}
 	}
 	// get the three points of the triangle
@@ -621,7 +621,7 @@ void CurveIntegralCalc::getCurveQuadPoints_polyline(
 		    case QuadCell:{
 				SUNDANCE_MSG3(verb, tabs << "CurveIntegralCalc::getCurveQuadPoints_polyline, on QuadCell")
 		    	TEST_FOR_EXCEPTION( cellPoints.size() != 4 ,
-		    			RuntimeError ,"CurveIntegralCalc::getCurveQuadPoints_polyline, QuadCell must consist of 4 points" );
+		    			std::runtime_error ,"CurveIntegralCalc::getCurveQuadPoints_polyline, QuadCell must consist of 4 points" );
 
 		    	// Loop over each edge and detect intersection points
 				Array<Point> result;
@@ -653,17 +653,17 @@ void CurveIntegralCalc::getCurveQuadPoints_polyline(
 			    	}
 					SUNDANCE_MSG3(verb, tabs << "Edge index: " << jj << ", Nr intersections: " << nIntEdge[jj])
 					TEST_FOR_EXCEPTION( nIntEdge[jj] > 1 ,
-							RuntimeError , " CurveIntegralCalc::getCurveQuadPoints_polyline, QuadCell: Edge " << jj << " , cannot handle too many intersection points" );
+							std::runtime_error , " CurveIntegralCalc::getCurveQuadPoints_polyline, QuadCell: Edge " << jj << " , cannot handle too many intersection points" );
 		    	}
 
 		    	// Test for too many intersection points
-		    	TEST_FOR_EXCEPTION( total_points > 2 ,RuntimeError , " CurveIntegralCalc::getCurveQuadPoints_polyline total_points > 2 : " << total_points );
+		    	TEST_FOR_EXCEPTION( total_points > 2 ,std::runtime_error , " CurveIntegralCalc::getCurveQuadPoints_polyline total_points > 2 : " << total_points );
 				SUNDANCE_MSG3(verb, tabs << "CurveIntegralCalc::getCurveQuadPoints_polyline: Finding intersection points finished: start point "
 						<< startPoint << " end point " << endPoint)
 		    } break;
 
 		    default : {
-		    	TEST_FOR_EXCEPTION( true , RuntimeError , "CurveIntegralCalc::getCurveQuadPoints_polyline , Unhandled 2D cell" );
+		    	TEST_FOR_EXCEPTION( true , std::runtime_error , "CurveIntegralCalc::getCurveQuadPoints_polyline , Unhandled 2D cell" );
 		    }
 		  }
 
@@ -706,15 +706,15 @@ void CurveIntegralCalc::getCurveQuadPoints_polyline(
 			  if ( nCuts > 0 ) {
 				  curvePoints[ii] = curvePts[0];
 
-				  TEST_FOR_EXCEPTION( nCuts > 1, RuntimeError, "CurveIntegralCalc::getCurveQuadPoints_polyline: Too many intersections along search line");
+				  TEST_FOR_EXCEPTION( nCuts > 1, std::runtime_error, "CurveIntegralCalc::getCurveQuadPoints_polyline: Too many intersections along search line");
 				  SUNDANCE_MSG3(verb, tabs << "CurveIntegralCalc::getCurveQuadPoints_polyline: Quad point " << ii << " is to the left: " << curvePoints[ii])
 			  }
 			  else {
 				  Point normEndPoint = pivotPoint - 2*norm_vec;
 				  paramCurve.returnIntersectPoints(pivotPoint, normEndPoint, nCuts, curvePts);
 
-				  TEST_FOR_EXCEPTION( nCuts == 0, RuntimeError, "CurveIntegralCalc::getCurveQuadPoints_polyline: No intersections along search line");
-				  TEST_FOR_EXCEPTION( nCuts > 1, RuntimeError, "CurveIntegralCalc::getCurveQuadPoints_polyline: Too many intersections along search line");
+				  TEST_FOR_EXCEPTION( nCuts == 0, std::runtime_error, "CurveIntegralCalc::getCurveQuadPoints_polyline: No intersections along search line");
+				  TEST_FOR_EXCEPTION( nCuts > 1, std::runtime_error, "CurveIntegralCalc::getCurveQuadPoints_polyline: Too many intersections along search line");
 				  SUNDANCE_MSG3(verb, tabs << "CurveIntegralCalc::getCurveQuadPoints_polyline: Quad point " << ii << " is to the right: " << curvePoints[ii])
 				  curvePoints[ii] = curvePts[0];
 			  }
@@ -793,7 +793,7 @@ void CurveIntegralCalc::getCurveQuadPoints_polyline(
 
 		  // here we consider a simple surface, as it is in bilinear interpolation
 
-		  TEST_FOR_EXCEPTION( true, RuntimeError,"CurveIntagralCalc::getCurveQuadPoints_polyline , surface integral not implemented yet ");
+		  TEST_FOR_EXCEPTION( true, std::runtime_error,"CurveIntagralCalc::getCurveQuadPoints_polyline , surface integral not implemented yet ");
 
 	  } break;
 
@@ -801,7 +801,7 @@ void CurveIntegralCalc::getCurveQuadPoints_polyline(
 
 	  default: {
         // throw exception
-		TEST_FOR_EXCEPTION( true, RuntimeError,"CurveIntagralCalc::getCurveQuadPoints_polyline , curve dimension must be 1 or two ");
+		TEST_FOR_EXCEPTION( true, std::runtime_error,"CurveIntagralCalc::getCurveQuadPoints_polyline , curve dimension must be 1 or two ");
 	  }
 	}
 }

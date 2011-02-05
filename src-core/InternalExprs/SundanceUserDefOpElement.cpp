@@ -31,7 +31,7 @@
 #include "SundanceUserDefOpElement.hpp"
 #include "SundanceUserDefOp.hpp"
 #include "SundanceUserDefOpEvaluator.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceOut.hpp"
 
 using namespace Sundance;
@@ -83,7 +83,7 @@ void UserDefOpElement::getArgDerivIndices(const Array<int>& orders,
     }
     else
     {
-      TEST_FOR_EXCEPTION(order > functorElement()->maxOrder() || order < 0, RuntimeError,
+      TEST_FOR_EXCEPTION(order > functorElement()->maxOrder() || order < 0, std::runtime_error,
         "order " << order << " not supported by functor " 
         << functorElement()->masterName());
     }
@@ -120,7 +120,7 @@ Evaluator* UserDefOpElement::createEvaluator(const EvaluatableExpr* expr,
   const EvalContext& context) const
 {
   const UserDefOpElement* me = dynamic_cast<const UserDefOpElement*>(expr);
-  TEST_FOR_EXCEPTION(me == 0, InternalError,
+  TEST_FOR_EXCEPTION(me == 0, std::logic_error,
     "cast failed in UserDefOpElement::createEvaluator()");
   return new UserDefOpEvaluator(me, getCommonEvaluator(context),
     context);

@@ -30,7 +30,7 @@
 
 #include "SundanceLagrange.hpp"
 #include "SundanceADReal.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceSpatialDerivSpecifier.hpp"
 #include "SundancePoint.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
@@ -45,7 +45,7 @@ using namespace Teuchos;
 Lagrange::Lagrange(int order)
   : order_(order) , doFInfromationCalculated_(false)
 {
-TEST_FOR_EXCEPTION(order < 0, RuntimeError,
+TEST_FOR_EXCEPTION(order < 0, std::runtime_error,
                      "invalid polynomial order=" << order
                      << " in Lagrange ctor");
 }
@@ -137,29 +137,29 @@ int Lagrange::nReferenceDOFsWithoutFacets(
     case TriangleCell:
       if (order_ < 3) return 0;
       if (order_ == 3) return 1;
-      TEST_FOR_EXCEPTION(order_>3, RuntimeError, 
+      TEST_FOR_EXCEPTION(order_>3, std::runtime_error, 
         "Lagrange order > 3 not implemented "
         "for triangle cells");
       return 0;
     case QuadCell:
       if (order_==1) return 0;
       if (order_==2) return 1;
-      TEST_FOR_EXCEPTION(order_>2, RuntimeError, 
+      TEST_FOR_EXCEPTION(order_>2, std::runtime_error, 
         "Lagrange order > 2 not implemented "
         "for quad cells");
     case TetCell:
       if (order_<=2) return 0;
-      TEST_FOR_EXCEPTION(order_>2, RuntimeError, 
+      TEST_FOR_EXCEPTION(order_>2, std::runtime_error, 
         "Lagrange order > 2 not implemented "
         "for tet cells");
     case BrickCell:
       if (order_<=1) return 0;
       if (order_==2) return 1;
-      TEST_FOR_EXCEPTION(order_>2, RuntimeError, 
+      TEST_FOR_EXCEPTION(order_>2, std::runtime_error, 
         "Lagrange order > 2 not implemented "
         "for brick cells");
     default:
-      TEST_FOR_EXCEPTION(true, RuntimeError, "Cell type "
+      TEST_FOR_EXCEPTION(true, std::runtime_error, "Cell type "
         << cellType << " not implemented in Lagrange basis");
       return -1; // -Wall
   }
@@ -281,7 +281,7 @@ void Lagrange::getReferenceDOFs(
          return;
       }
     default:
-      TEST_FOR_EXCEPTION(true, RuntimeError, "Cell type "
+      TEST_FOR_EXCEPTION(true, std::runtime_error, "Cell type "
                          << cellType << " not implemented in Lagrange basis");
     }
 }
@@ -305,7 +305,7 @@ void Lagrange::refEval(
   int verbosity) const
 {
   TEST_FOR_EXCEPTION(!(sds.isPartial() || sds.isIdentity()), 
-    RuntimeError,
+    std::runtime_error,
     "cannot evaluate spatial derivative " << sds << " on Lagrange basis");
   const MultiIndex& deriv = sds.mi();
   typedef Array<double> Adouble;
@@ -348,7 +348,7 @@ void Lagrange::refEval(
           }
       return;
     default:
-      TEST_FOR_EXCEPTION(true, RuntimeError,
+      TEST_FOR_EXCEPTION(true, std::runtime_error,
                          "Lagrange::refEval() unimplemented for cell type "
                          << cellType);
 
@@ -952,7 +952,7 @@ void Lagrange::getConstrainsForHNDoF(
 	const SpatialDerivSpecifier      deriv;
 	int                              index = 0;
 
-	//setVerbosity(6);
+	//setVerb(6);
 
 	localDoFs.resize(0);
 	coefs.resize(0);

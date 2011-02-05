@@ -34,7 +34,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceMeshSourceBase.hpp"
 
-#include "SundanceHandle.hpp"
+#include "PlayaHandle.hpp"
 
 namespace Sundance
 {
@@ -54,14 +54,14 @@ namespace Sundance
    * MeshSource meshSrc = new TriangleMeshReader("meshFile", meshType, MPIComm::world());
    * \endcode
    */
-  class MeshSource : public Sundance::Handle<MeshSourceBase>
+  class MeshSource : public Playa::Handle<MeshSourceBase>
   {
   public:
     /** Construct an empty mesh source object */
     MeshSource();
 
     /** Construct from a raw pointer to a mesh source subtype */
-    MeshSource(Sundance::Handleable<MeshSourceBase>* rawPtr);
+    MeshSource(Playa::Handleable<MeshSourceBase>* rawPtr);
 
     /** Construct from a smart pointer to a mesh source subtype */
     MeshSource(const RCP<MeshSourceBase>& smartPtr);

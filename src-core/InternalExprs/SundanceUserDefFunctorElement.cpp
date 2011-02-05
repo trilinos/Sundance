@@ -29,7 +29,7 @@
 /* @HEADER@ */
 
 #include "SundanceUserDefFunctorElement.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceOut.hpp"
 
 using namespace Sundance;

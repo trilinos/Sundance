@@ -1,5 +1,5 @@
 #include "SundanceTetQuadrature.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceOut.hpp"
 
 using namespace Sundance;

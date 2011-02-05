@@ -39,8 +39,8 @@
 #include "Teuchos_RefCountPtr.hpp"
 #include "SundanceMesh.hpp"
 #include "SundanceNoncopyable.hpp"
-#include "SundanceHandleable.hpp"
-#include "SundanceHandle.hpp"
+#include "PlayaHandleable.hpp"
+#include "PlayaHandle.hpp"
 
 namespace Sundance
 {
@@ -53,9 +53,9 @@ using namespace Teuchos;
  * @see CellFilter
  **/
 class CellSetBase : public ObjectWithClassVerbosity<CellSetBase>,
-                    public Sundance::Printable,
+                    public Playa::Printable,
                     public Noncopyable,
-                    public Sundance::Handleable<CellSetBase>
+                    public Playa::Handleable<CellSetBase>
 {
 public:
   /** Construct, initializing to an empty set */

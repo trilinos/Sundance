@@ -304,7 +304,7 @@ Array<Mesh> SerialPartitionerBase::makeMeshParts(const Mesh& mesh, int np,
       int newLID = rtn[p].addElement(newGID, vertGIDs, elemOwnerProc, 1);
       oldElemLIDToNewLIDMap.put(oldLID, newLID);
 
-//      TEST_FOR_EXCEPTION(unusedVertGID.size() != 0, InternalError,
+//      TEST_FOR_EXCEPTION(unusedVertGID.size() != 0, std::logic_error,
 //        "unused vertices=" << unusedVertGID);
     }
 
@@ -372,7 +372,7 @@ Array<Mesh> SerialPartitionerBase::makeMeshParts(const Mesh& mesh, int np,
                   break;
                 }
               }
-              TEST_FOR_EXCEPTION(facetIndex==-1, InternalError,
+              TEST_FOR_EXCEPTION(facetIndex==-1, std::logic_error,
                 "couldn't match new " << d << "-cell in submesh to old " << d
                 << "cell. This should never happen");
 

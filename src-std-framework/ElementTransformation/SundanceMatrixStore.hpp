@@ -9,7 +9,7 @@
 #define SUNDANCEMATRIXSTORE_HPP_
 
 #include "SundanceDefs.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 
 namespace Sundance {
 

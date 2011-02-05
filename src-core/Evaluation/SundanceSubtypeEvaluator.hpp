@@ -53,7 +53,7 @@ public:
       expr_(expr), 
       sparsity_(expr_->sparsitySuperset(context))
     {
-      this->setVerbosity(Evaluator::classVerbosity());
+      this->setVerb(Evaluator::classVerbosity());
     }
 
   /** */

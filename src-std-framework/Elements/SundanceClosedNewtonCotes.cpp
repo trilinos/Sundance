@@ -38,7 +38,7 @@ using namespace Teuchos;
 ClosedNewtonCotes::ClosedNewtonCotes(int order)
   : QuadratureFamilyBase(order)
 {
-  TEST_FOR_EXCEPTION(!(order==2 || order==3), RuntimeError, "order " 
+  TEST_FOR_EXCEPTION(!(order==2 || order==3), std::runtime_error, "order " 
     << order << " not supported by ClosedNewtonCotes");
 }
 

@@ -32,7 +32,7 @@
 #define SUNDANCE_STDMATHFUNCTORS_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceUnaryFunctor.hpp"
 #ifdef _MSC_VER
 # include "winmath.h"

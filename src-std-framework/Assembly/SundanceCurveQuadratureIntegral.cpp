@@ -34,7 +34,7 @@
 #include "SundanceGaussianQuadrature.hpp"
 #include "SundanceSpatialDerivSpecifier.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
 using namespace Sundance;
@@ -81,7 +81,7 @@ CurveQuadratureIntegral::CurveQuadratureIntegral(
 {
   Tabs tab0(0);
   
-  TEST_FOR_EXCEPTION( cellType != mesh.cellType(mesh.spatialDim()) , RuntimeError, " CurveQuadratureIntegral::CurveQuadratureIntegral , only on MAXcell!!");
+  TEST_FOR_EXCEPTION( cellType != mesh.cellType(mesh.spatialDim()) , std::runtime_error, " CurveQuadratureIntegral::CurveQuadratureIntegral , only on MAXcell!!");
 
   SUNDANCE_MSG1(setupVerb(), tab0 << "CurveQuadratureIntegral ctor for 0-form");
   if (setupVerb()) describe(Out::os());
@@ -125,7 +125,7 @@ CurveQuadratureIntegral::CurveQuadratureIntegral(
 {
   Tabs tab0(0);
   
-  TEST_FOR_EXCEPTION( cellType != mesh.cellType(mesh.spatialDim()) , RuntimeError, " CurveQuadratureIntegral::CurveQuadratureIntegral , only on MAXcell!!");
+  TEST_FOR_EXCEPTION( cellType != mesh.cellType(mesh.spatialDim()) , std::runtime_error, " CurveQuadratureIntegral::CurveQuadratureIntegral , only on MAXcell!!");
 
   SUNDANCE_MSG1(setupVerb(), tab0 << "CurveQuadratureIntegral ctor for 1-form");
   if (setupVerb()) describe(Out::os());
@@ -174,7 +174,7 @@ CurveQuadratureIntegral::CurveQuadratureIntegral(
 {
   Tabs tab0(0);
 
-  TEST_FOR_EXCEPTION( cellType != mesh.cellType(mesh.spatialDim()) , RuntimeError, " CurveQuadratureIntegral::CurveQuadratureIntegral , only on MAXcell!!");
+  TEST_FOR_EXCEPTION( cellType != mesh.cellType(mesh.spatialDim()) , std::runtime_error, " CurveQuadratureIntegral::CurveQuadratureIntegral , only on MAXcell!!");
   
   SUNDANCE_MSG1(setupVerb(), tab0 << "CurveQuadratureIntegral ctor for 2-form");
   if (setupVerb()) describe(Out::os());
@@ -340,7 +340,7 @@ void CurveQuadratureIntegral
   Tabs tabs;
   SUNDANCE_MSG1(integrationVerb(), tabs << "doing zero form by quadrature");
 
-  TEST_FOR_EXCEPTION(order() != 0, InternalError,
+  TEST_FOR_EXCEPTION(order() != 0, std::logic_error,
     "CurveQuadratureIntegral::transformZeroForm() called "
     "for form of order " << order());
 
@@ -394,7 +394,7 @@ void CurveQuadratureIntegral::transformOneForm(const CellJacobianBatch& JTrans,
 {
   TimeMonitor timer(maxCellQuadratureTimer());
   Tabs tabs;
-  TEST_FOR_EXCEPTION(order() != 1, InternalError,
+  TEST_FOR_EXCEPTION(order() != 1, std::logic_error,
     "CurveQuadratureIntegral::transformOneForm() called for form "
     "of order " << order());
   SUNDANCE_MSG2(integrationVerb(), tabs << "doing one form by quadrature");
@@ -491,7 +491,7 @@ void CurveQuadratureIntegral::transformTwoForm(const CellJacobianBatch& JTrans,
 {
   TimeMonitor timer(maxCellQuadratureTimer());
   Tabs tabs;
-  TEST_FOR_EXCEPTION(order() != 2, InternalError,
+  TEST_FOR_EXCEPTION(order() != 2, std::logic_error,
     "CurveQuadratureIntegral::transformTwoForm() called for form "
     "of order " << order());
   SUNDANCE_MSG2(integrationVerb(), tabs << "doing one form by quadrature");

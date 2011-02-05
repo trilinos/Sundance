@@ -38,7 +38,7 @@
 #include "SundanceParameter.hpp"
 #include "SundanceZeroExpr.hpp"
 #include "SundanceSet.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceOut.hpp"
 
 using namespace Sundance;
@@ -71,7 +71,7 @@ SymbolicFuncElementEvaluator
   const ZeroExpr* z 
     = dynamic_cast<const ZeroExpr*>(expr->evalPt());
   
-  TEST_FOR_EXCEPTION(z==0 && df_==0, InternalError,
+  TEST_FOR_EXCEPTION(z==0 && df_==0, std::logic_error,
                      "SymbolicFuncElementEvaluator ctor detected an "
                      "evaluation point=" << expr->toString()
                      << " that is neither zero nor a discrete "
@@ -97,12 +97,12 @@ SymbolicFuncElementEvaluator
       if (this->sparsity()->isSpatialDeriv(i))
         {
           /* evaluate the spatial deriv applied to the evaluation point */
-          TEST_FOR_EXCEPTION(z != 0, InternalError,
+          TEST_FOR_EXCEPTION(z != 0, std::logic_error,
                              "SymbolicFuncElementEvaluator ctor detected a "
                              "spatial derivative of a zero function. All "
                              "such expressions should have been "
                              "automatically eliminated by this point.");
-          TEST_FOR_EXCEPTION(p_ != 0, InternalError,
+          TEST_FOR_EXCEPTION(p_ != 0, std::logic_error,
                              "SymbolicFuncElementEvaluator ctor detected a "
                              "spatial derivative of a constant parameter. All "
                              "such expressions should have been "
@@ -119,7 +119,7 @@ SymbolicFuncElementEvaluator
       else
         {
           TEST_FOR_EXCEPTION(this->sparsity()->deriv(i).order() > 1,
-                             InternalError,
+                             std::logic_error,
                              "SymbolicFuncElementEvaluator ctor detected a "
                              "nonzero functional derivative of order greater "
                              "than one. All such derivs should have been "
@@ -130,7 +130,7 @@ SymbolicFuncElementEvaluator
 
           if (this->sparsity()->deriv(i).order()==0)
             {
-              TEST_FOR_EXCEPTION(z != 0, InternalError,
+              TEST_FOR_EXCEPTION(z != 0, std::logic_error,
                              "SymbolicFuncElementEvaluator ctor detected a "
                              "zero-order derivative of a zero function. All "
                              "such expressions should have been "
@@ -200,7 +200,7 @@ void SymbolicFuncElementEvaluator
         {
           vectorResults[i] = mgr.popVector();
           TEST_FOR_EXCEPTION(!vectorResults[i]->isValid(), 
-                             InternalError,
+                             std::logic_error,
                              "invalid evaluation vector allocated in "
                              "SymbolicFuncElementEvaluator::internalEval()");
           vectorResults[i]->setString(stringReps_[i]);

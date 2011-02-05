@@ -1,5 +1,5 @@
 #include "SundanceADReal.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 
 
 using namespace Sundance;
@@ -75,7 +75,7 @@ ADReal& ADReal::operator*=(const ADReal& other)
 
 ADReal& ADReal::operator/=(const ADReal& other) 
 {
-  TEST_FOR_EXCEPTION(other.value_ == 0.0, RuntimeError,
+  TEST_FOR_EXCEPTION(other.value_ == 0.0, std::runtime_error,
                      "ADReal::operator/=() division by zero");
 
 	gradient_ = (gradient_/other.value_ 
@@ -117,7 +117,7 @@ ADReal& ADReal::operator*=(const double& other)
 
 ADReal& ADReal::operator/=(const double& other) 
 {
-  TEST_FOR_EXCEPTION(other == 0.0, RuntimeError,
+  TEST_FOR_EXCEPTION(other == 0.0, std::runtime_error,
                      "ADReal::operator/=() division by zero");
 
   addFlops(2 + gradient_.dim());
@@ -183,7 +183,7 @@ ADReal operator/(const double& scalar, const ADReal& a)
 
 void ADReal::reciprocate() 
 {
-	TEST_FOR_EXCEPTION(value_==0.0, RuntimeError,
+	TEST_FOR_EXCEPTION(value_==0.0, std::runtime_error,
                      "div by 0 in ADReal::reciprocate()");
 
   addFlops(1 + gradient_.dim());

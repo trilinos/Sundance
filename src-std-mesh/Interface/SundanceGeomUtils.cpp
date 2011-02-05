@@ -88,7 +88,7 @@ namespace Sundance
       }
     else
       {
-        TEST_FOR_EXCEPTION(cellDim<=0 || cellDim>3, RuntimeError,
+        TEST_FOR_EXCEPTION(cellDim<=0 || cellDim>3, std::runtime_error,
                            "invalid point dimension " << cellDim);
         return false; // -Wall
       }
@@ -189,7 +189,7 @@ namespace Sundance
       }
     else
       {
-        TEST_FOR_EXCEPTION(cellDim != 2, RuntimeError,
+        TEST_FOR_EXCEPTION(cellDim != 2, std::runtime_error,
                            "invalid point dimension " << cellDim);
         return Point(); // -Wall
       }

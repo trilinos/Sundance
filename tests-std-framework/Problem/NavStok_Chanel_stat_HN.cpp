@@ -132,7 +132,7 @@ int main(int argc, char** argv)
 	//+ Integral(left + right, q*(-1.0), quad4 );
  
 
-      // Create a TSF NonlinearOperator object 
+      // Create a Playa NonlinearOperator object 
       NonlinearProblem prob(mesh, eqn+eqnp, bc, List(v, q),
                                List(u, p), up, vecType );
 

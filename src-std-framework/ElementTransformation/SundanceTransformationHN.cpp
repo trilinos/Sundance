@@ -7,7 +7,7 @@
 
 #include "SundanceTransformationHN.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 
 using std::ios_base;
 using std::setw;

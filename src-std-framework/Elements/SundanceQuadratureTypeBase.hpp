@@ -36,7 +36,7 @@
 #include "Teuchos_Array.hpp"
 #include "SundanceCellType.hpp"
 #include "SundanceQuadratureFamily.hpp"
-#include "SundanceHandleable.hpp"
+#include "PlayaHandleable.hpp"
 #include "Teuchos_XMLObject.hpp"
 
 
@@ -48,7 +48,7 @@ using namespace Teuchos;
  * QuadratureTypeBase 
  */
 class QuadratureTypeBase 
-  : public Sundance::Handleable<QuadratureTypeBase>
+  : public Playa::Handleable<QuadratureTypeBase>
 {
 public:
   /** */

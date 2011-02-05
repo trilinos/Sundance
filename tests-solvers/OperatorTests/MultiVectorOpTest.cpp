@@ -1,7 +1,7 @@
 //@HEADER
 // ***********************************************************************
 // 
-//           TSFExtended: Trilinos Solver Framework Extended
+//           Playa: Trilinos Solver Framework Extended
 //                 Copyright (2004) Sandia Corporation
 // 
 // Under terms of Contract DE-AC04-94AL85000, there is a non-exclusive
@@ -29,30 +29,30 @@
 
 #include <cstdlib>
 #include "Teuchos_GlobalMPISession.hpp"
-#include "TSFGlobalAnd.hpp"
-#include "TSFVectorDecl.hpp"
-#include "TSFLinearCombinationImpl.hpp"
-#include "TSFVectorType.hpp"
-#include "TSFVectorOpsDecl.hpp"
-#include "TSFEpetraVectorType.hpp"
-#include "TSFSerialVectorType.hpp"
+#include "PlayaGlobalAnd.hpp"
+#include "PlayaVectorDecl.hpp"
+#include "PlayaLinearCombinationImpl.hpp"
+#include "PlayaVectorType.hpp"
+#include "PlayaVectorOpsDecl.hpp"
+#include "PlayaEpetraVectorType.hpp"
+#include "PlayaSerialVectorType.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_MPIComm.hpp"
 #include "Thyra_TestSpecifier.hpp"
 #include "Thyra_DefaultSpmdVectorSpace.hpp"
-#include "TSFLinearOperatorDecl.hpp"
-#include "TSFMultiVectorOperatorDecl.hpp"
+#include "PlayaLinearOperatorDecl.hpp"
+#include "PlayaMultiVectorOperatorDecl.hpp"
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
-#include "TSFLinearOperatorImpl.hpp"
-#include "TSFVectorImpl.hpp"
-#include "TSFVectorOpsImpl.hpp"
-#include "TSFMultiVectorOperatorImpl.hpp"
+#include "PlayaLinearOperatorImpl.hpp"
+#include "PlayaVectorImpl.hpp"
+#include "PlayaVectorOpsImpl.hpp"
+#include "PlayaMultiVectorOperatorImpl.hpp"
 #endif
 
 
-using namespace TSFExtended;
-using namespace TSFExtendedOps;
+using namespace Playa;
+using namespace PlayaOps;
 using Thyra::TestSpecifier;
 
 int main(int argc, char *argv[]) 

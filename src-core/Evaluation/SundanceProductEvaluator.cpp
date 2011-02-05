@@ -32,7 +32,7 @@
 #include "SundanceEvalManager.hpp"
 #include "SundanceProductExpr.hpp"
 
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceOut.hpp"
 
 using namespace Sundance;
@@ -406,7 +406,7 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
     }
   catch(std::exception& e)
     {
-      TEST_FOR_EXCEPTION(true, RuntimeError, 
+      TEST_FOR_EXCEPTION(true, std::runtime_error, 
                          "exception detected in ProductEvaluator: expr="
                          << expr->toString() << std::endl
                         << "exception=" << e.what());

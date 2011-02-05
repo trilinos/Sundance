@@ -32,8 +32,8 @@
 #define SUNDANCE_SPECTRALBASIS_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceHandle.hpp"
-#include "SundanceHandleable.hpp"
+#include "PlayaHandle.hpp"
+#include "PlayaHandleable.hpp"
 #include "Teuchos_Array.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 #include "SundanceSpectralBasisBase.hpp"
@@ -43,8 +43,13 @@
 
 namespace Sundance
 {
+using Playa::Handle;
+using Playa::Handleable;
+
+
+
 /** Doxygen doc for SpectralBasis */
-class SpectralBasis : public Sundance::Handle<SpectralBasisBase>
+class SpectralBasis : public Playa::Handle<SpectralBasisBase>
 {
 public:
 

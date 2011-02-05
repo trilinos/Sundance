@@ -31,7 +31,7 @@
 #include "SundanceNullEvaluator.hpp"
 #include "SundanceEvalManager.hpp"
 #include "SundanceSet.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceOut.hpp"
 
 using namespace Sundance;

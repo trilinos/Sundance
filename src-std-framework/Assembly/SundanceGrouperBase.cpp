@@ -30,7 +30,7 @@
 
 #include "SundanceGrouperBase.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceFuncWithBasis.hpp"
 #include "SundanceBasisFamily.hpp"
 #include "SundanceQuadratureFamily.hpp"
@@ -52,7 +52,7 @@ using namespace Teuchos;
 
 
 
-void GrouperBase::setVerbosity(
+void GrouperBase::setVerb(
   int setupVerb,
   int integrationVerb,
   int transformVerb)
@@ -84,7 +84,7 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
 
   if (functionalDeriv.size()==0) return;
 
-  TEST_FOR_EXCEPTION(functionalDeriv.size() > 2, InternalError,
+  TEST_FOR_EXCEPTION(functionalDeriv.size() > 2, std::logic_error,
     "GrouperBase::extractWeakForm detected a functional "
     "derivative of order > 2: " 
     << functionalDeriv.toString());
@@ -102,7 +102,7 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
     Tabs tab;
     const Deriv& d = *iter;
       
-    TEST_FOR_EXCEPTION(!d.isFunctionalDeriv(), InternalError,
+    TEST_FOR_EXCEPTION(!d.isFunctionalDeriv(), std::logic_error,
       "GrouperBase::extractWeakForm "
       "detected a non-functional derivative: "
       << functionalDeriv.toString());
@@ -111,7 +111,7 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
       
     const SymbolicFuncElement* s = d.symbFuncElem();
 
-    TEST_FOR_EXCEPTION(s==0, InternalError, 
+    TEST_FOR_EXCEPTION(s==0, std::logic_error, 
       "GrouperBase::extractWeakForm failed to cast "
       "function to SymbolicFuncElement");
       
@@ -121,7 +121,7 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
 
     if (!foundVar && eqn.hasVarID(dofID))
     {
-      TEST_FOR_EXCEPTION(d.isParameter(), InternalError,
+      TEST_FOR_EXCEPTION(d.isParameter(), std::logic_error,
         "Parameter not expected here");
       foundVar = true;
       reducedVarID = eqn.reducedVarID(dofID);
@@ -137,7 +137,7 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
       const TestFuncElement* t
         = dynamic_cast<const TestFuncElement*>(s);
 
-      TEST_FOR_EXCEPTION(u==0 && t==0, InternalError, 
+      TEST_FOR_EXCEPTION(u==0 && t==0, std::logic_error, 
         "GrouperBase::extractWeakForm could not cast "
         "variational function to either an "
         "UnknownFuncElement or a TestFuncElement");
@@ -161,7 +161,7 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
     {
       const UnknownParameterElement* upe
         = dynamic_cast<const UnknownParameterElement*>(s);
-      TEST_FOR_EXCEPTION(upe==0, InternalError, 
+      TEST_FOR_EXCEPTION(upe==0, std::logic_error, 
         "GrouperBase::extractWeakForm could not cast "
         "unknown parameter to UnknownParameterElement");
       hasParam = true;
@@ -170,11 +170,11 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
     }
     else
     {
-      TEST_FOR_EXCEPTION(d.isParameter(), InternalError,
+      TEST_FOR_EXCEPTION(d.isParameter(), std::logic_error,
         "Parameter not expected here");
       const UnknownFuncElement* u
         = dynamic_cast<const UnknownFuncElement*>(s);
-      TEST_FOR_EXCEPTION(u==0, InternalError, 
+      TEST_FOR_EXCEPTION(u==0, std::logic_error, 
         "GrouperBase::extractWeakForm could not cast "
         "unknown function to UnknownFuncElement");
       foundUnk = true;

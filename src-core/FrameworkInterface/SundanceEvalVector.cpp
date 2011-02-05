@@ -30,8 +30,8 @@
 
 #include "SundanceEvalVector.hpp"
 #include "SundanceTempStack.hpp"
-#include "SundanceExceptions.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaExceptions.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceOut.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
@@ -727,7 +727,7 @@ void EvalVector::applyUnaryOperator(const UnaryFunctor* func,
 
   int order = opDerivs.size()-1;
 
-  TEST_FOR_EXCEPTION(order < 0 || order > 2, RuntimeError,
+  TEST_FOR_EXCEPTION(order < 0 || order > 2, std::runtime_error,
                      "illegal order=" << order << " in "
                      "EvalVector::applyUnaryOperator()");
 
@@ -782,7 +782,7 @@ void EvalVector::applyUnaryOperator(const UnaryFunctor* func,
 
 void EvalVector::print(std::ostream& os) const 
 {
-  TEST_FOR_EXCEPTION(shadowOps() && str_.size()==0, RuntimeError, "empty eval vector result string!");
+  TEST_FOR_EXCEPTION(shadowOps() && str_.size()==0, std::runtime_error, "empty eval vector result string!");
   os << str_;
 
   if (data_->size() > 0)

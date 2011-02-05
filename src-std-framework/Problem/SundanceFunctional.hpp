@@ -36,10 +36,10 @@
 #include "SundanceVectorCalculus.hpp"
 #include "SundanceNonlinearProblem.hpp"
 #include "SundanceFunctionalEvaluator.hpp"
-#include "TSFNonlinearOperator.hpp"
-#include "TSFLinearSolverDecl.hpp"
-#include "TSFVectorDecl.hpp"
-#include "TSFVectorType.hpp"
+#include "PlayaNonlinearOperator.hpp"
+#include "PlayaLinearSolverDecl.hpp"
+#include "PlayaVectorDecl.hpp"
+#include "PlayaVectorType.hpp"
 
 namespace Sundance
 {
@@ -59,14 +59,14 @@ public:
   Functional(
     const Mesh& mesh, 
     const Expr& integral, 
-    const TSFExtended::VectorType<double>& vecType);
+    const Playa::VectorType<double>& vecType);
 
   /** */
   Functional(
     const Mesh& mesh, 
     const Expr& integral, 
     const Expr& essentialBC,
-    const TSFExtended::VectorType<double>& vecType);
+    const Playa::VectorType<double>& vecType);
 
   /** */
   LinearProblem linearVariationalProb(const Expr& var,
@@ -108,7 +108,7 @@ private:
 
   Expr bc_;
 
-  TSFExtended::VectorType<double> vecType_;
+  Playa::VectorType<double> vecType_;
     
 };
 

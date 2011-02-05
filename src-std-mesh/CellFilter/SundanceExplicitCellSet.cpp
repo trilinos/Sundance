@@ -29,7 +29,7 @@
 /* @HEADER@ */
 
 #include "SundanceExplicitCellSet.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 
 using namespace Sundance;
 using namespace Sundance;

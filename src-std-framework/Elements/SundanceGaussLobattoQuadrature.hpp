@@ -9,7 +9,7 @@
 #define SUNDANCEGAUSSLOBATTOQUADRATURE_HPP_
 
 #include "SundanceDefs.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceQuadratureFamilyBase.hpp"
 
 namespace Sundance {

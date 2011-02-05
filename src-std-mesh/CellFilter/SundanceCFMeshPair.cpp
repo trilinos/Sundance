@@ -29,7 +29,7 @@
 /* @HEADER@ */
 
 #include "SundanceCFMeshPair.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceExplicitCellSet.hpp"
 #include "SundanceBinaryCellFilter.hpp"
 #include "SundanceSubsetCellFilter.hpp"
@@ -78,7 +78,7 @@ bool CFMeshPair::operator<(const CFMeshPair& other) const
   if (other.isEmpty()) return false;
 
   TEST_FOR_EXCEPTION(mesh_.id() != other.mesh_.id(),
-                     RuntimeError,
+                     std::runtime_error,
                      "mismatched meshes!");
 
   return cellSet_ < other.cellSet_;
@@ -98,7 +98,7 @@ CFMeshPair CFMeshPair::setMinus(const CFMeshPair& other) const
   if (other.isEmpty()) return *this;
 
   TEST_FOR_EXCEPTION(mesh().id() != other.mesh().id(),
-                     RuntimeError,
+                     std::runtime_error,
                      "mismatched meshes!");
 
   CellFilter diff = filter() - other.filter();
@@ -110,7 +110,7 @@ CFMeshPair CFMeshPair::intersection(const CFMeshPair& other) const
   if (isEmpty() || other.isEmpty()) return CFMeshPair();
 
   TEST_FOR_EXCEPTION(mesh().id() != other.mesh().id(),
-                     RuntimeError,
+                     std::runtime_error,
                      "mismatched meshes!");
 
   CellFilter inter = filter().intersection(other.filter());

@@ -37,7 +37,7 @@
 #include "SundanceIncrementallyCreatableMesh.hpp"
 #include "SundanceIdentityReorderer.hpp"
 #include "SundanceCellReorderer.hpp"
-#include "SundanceHandle.hpp"
+#include "PlayaHandle.hpp"
 
 namespace Sundance
 {
@@ -49,7 +49,7 @@ using namespace Teuchos;
  * The Mesh class is a handle to a MeshBase, which is an abstract interface
  * for meshes. 
  */
-class Mesh : public Sundance::Handle<MeshBase>
+class Mesh : public Playa::Handle<MeshBase>
 {
 public:
 

@@ -1,6 +1,6 @@
 #include "PySundanceNOXSolverHandle.hpp"
 
-using namespace TSFExtended;
+using namespace Playa;
 using namespace Teuchos;
 
 NOXSolverHandle::NOXSolverHandle()

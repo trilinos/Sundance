@@ -33,7 +33,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceNLOp.hpp"
-#include "TSFNOXSolver.H"
+#include "PlayaNOXSolver.hpp"
 
 namespace Sundance
 {
@@ -54,14 +54,14 @@ public:
    * and a vector type */
   NonlinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
     const Expr& test, const Expr& unk, const Expr& u0, 
-    const TSFExtended::VectorType<double>& vecType);
+    const Playa::VectorType<double>& vecType);
 
   /** Construct with a mesh, equation set, bcs, test and unknown funcs,
    * parameters, and a vector type */
   NonlinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
     const Expr& test, const Expr& unk, const Expr& u0, 
     const Expr& params, const Expr& paramVals,  
-    const TSFExtended::VectorType<double>& vecType);
+    const Playa::VectorType<double>& vecType);
 
 
   /** */
@@ -92,7 +92,7 @@ public:
     {op_->computeJacobianAndFunction(J, resid);}
 
   /** Compute the residual at the current eval point */
-  TSFExtended::Vector<double> computeFunctionValue() const 
+  Playa::Vector<double> computeFunctionValue() const 
     {return op_->computeFunctionValue();}
       
   /** Write the residual into the object provided */
@@ -100,7 +100,7 @@ public:
     {op_->computeFunctionValue(resid);}
       
   /** Get an initial guess */
-  TSFExtended::Vector<double> getInitialGuess() const 
+  Playa::Vector<double> getInitialGuess() const 
     {return op_->getInitialGuess();}
       
   /** Create the Jacobian object, but don't fill it in. */

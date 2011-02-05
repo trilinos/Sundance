@@ -53,10 +53,10 @@ FunctionIdentifier::FunctionIdentifier(
   dofID_ = parent->dofID();
 
   /* check for various stupid cases that should never happen */
-  TEST_FOR_EXCEPTION(!parent->algSpec_.isVector(), InternalError,
+  TEST_FOR_EXCEPTION(!parent->algSpec_.isVector(), std::logic_error,
     "attempted to form a function ID for a component of a non-vector object:"
     "parent=" << parent->toString() << " component spec=" << algSpec);
-  TEST_FOR_EXCEPTION(algSpec.isVector() || algSpec.isScalar(), RuntimeError,
+  TEST_FOR_EXCEPTION(algSpec.isVector() || algSpec.isScalar(), std::runtime_error,
     "attempted to define a vector or scalar as a component of another object."
     "parent=" <<  parent->toString() << " component spec=" << algSpec);
 }
@@ -65,7 +65,7 @@ FunctionIdentifier::FunctionIdentifier(
 
 int FunctionIdentifier::componentIndex() const 
 {
-  TEST_FOR_EXCEPTION(!(algSpec_.isCoordinateComponent() || algSpec_.isScalar()), InternalError,
+  TEST_FOR_EXCEPTION(!(algSpec_.isCoordinateComponent() || algSpec_.isScalar()), std::logic_error,
     "attempted to find component index for a FID that is not a "
     "scalar or a coordinate component of a vector");
   if (algSpec_.isScalar()) return 0;
@@ -81,7 +81,7 @@ string FunctionIdentifier::toString() const
 
 FunctionIdentifier FunctionIdentifier::createNormal() const
 {
-  TEST_FOR_EXCEPTION(!isVector(), InternalError,
+  TEST_FOR_EXCEPTION(!isVector(), std::logic_error,
     "attempted to find normal component of a FID that is not a vector");
 
   return FunctionIdentifier(this, normalAlgebraSpec());
@@ -96,7 +96,7 @@ bool FunctionIdentifier::operator<(const FunctionIdentifier& other) const
 
 FunctionIdentifier FunctionIdentifier::createComponent(int d) const
 {
-  TEST_FOR_EXCEPTION(!isVector(), InternalError,
+  TEST_FOR_EXCEPTION(!isVector(), std::logic_error,
     "attempted to find component of a FID that is not a vector");
 
   return FunctionIdentifier(this, coordAlgebraSpec(d));

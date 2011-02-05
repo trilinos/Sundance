@@ -30,7 +30,7 @@
 
 #include "SundanceDOFMapBuilder.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceBasisFamily.hpp"
 #include "SundanceLagrange.hpp"
 #include "SundanceMixedDOFMap.hpp"
@@ -128,7 +128,7 @@ RCP<DOFMapBase> DOFMapBuilder::makeMap(const Mesh& mesh,
   }
   else if (hasCellBasis(basis) && hasCommonDomain(filters))
   {
-    TEST_FOR_EXCEPTION(filters[0].size() != 1, RuntimeError,
+    TEST_FOR_EXCEPTION(filters[0].size() != 1, std::runtime_error,
       "only a single domain expected in construction of an element "
       "DOF map");
     rtn = rcp(new PartialElementDOFMap(mesh, *filters[0].begin(), basis.size(), verb_));

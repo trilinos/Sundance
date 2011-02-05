@@ -38,7 +38,7 @@ using namespace Teuchos;
 bool LabelCellPredicate::lessThan(const CellPredicateBase* other) const
 {
   TEST_FOR_EXCEPTION(dynamic_cast<const LabelCellPredicate*>(other) == 0,
-                     InternalError,
+                     std::logic_error,
                      "argument " << other->toXML() 
                      << " to LabelCellPredicate::lessThan() should be "
                      "a LabelCellPredicate pointer.");

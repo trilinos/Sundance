@@ -1,7 +1,7 @@
 //@HEADER
 // ***********************************************************************
 // 
-//           TSFExtended: Trilinos Solver Framework Extended
+//           Playa: Trilinos Solver Framework Extended
 //                 Copyright (2004) Sandia Corporation
 // 
 // Under terms of Contract DE-AC04-94AL85000, there is a non-exclusive
@@ -27,34 +27,34 @@
 //@HEADER
 
 #include "Teuchos_GlobalMPISession.hpp"
-#include "TSFVectorDecl.hpp"
-#include "TSFInverseOperatorDecl.hpp"
-#include "TSFLoadableMatrix.hpp"
-#include "TSFGlobalAnd.hpp"
-#include "TSFVectorType.hpp"
-#include "TSFEpetraVectorType.hpp"
-#include "TSFSerialVectorType.hpp"
+#include "PlayaVectorDecl.hpp"
+#include "PlayaInverseOperatorDecl.hpp"
+#include "PlayaLoadableMatrix.hpp"
+#include "PlayaGlobalAnd.hpp"
+#include "PlayaVectorType.hpp"
+#include "PlayaEpetraVectorType.hpp"
+#include "PlayaSerialVectorType.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_MPIComm.hpp"
-#include "TSFLinearSolverDecl.hpp"
-#include "TSFLinearSolverBuilder.hpp"
-#include "TSFDenseLUSolver.hpp"
-#include "TSFMatrixLaplacian1D.hpp"
-#include "TSFLinearSolverBuilder.hpp"
+#include "PlayaLinearSolverDecl.hpp"
+#include "PlayaLinearSolverBuilder.hpp"
+#include "PlayaDenseLUSolver.hpp"
+#include "PlayaMatrixLaplacian1D.hpp"
+#include "PlayaLinearSolverBuilder.hpp"
 #include "SundancePathUtils.hpp"
 #include "Teuchos_ParameterXMLFileReader.hpp"
-#include "TSFLinearCombinationImpl.hpp"
+#include "PlayaLinearCombinationImpl.hpp"
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
-#include "TSFLinearOperatorImpl.hpp"
-#include "TSFLinearSolverImpl.hpp"
-#include "TSFInverseOperatorImpl.hpp"
+#include "PlayaLinearOperatorImpl.hpp"
+#include "PlayaLinearSolverImpl.hpp"
+#include "PlayaInverseOperatorImpl.hpp"
 #endif
 
 
 using namespace Teuchos;
-using namespace TSFExtended;
-using namespace TSFExtendedOps;
+using namespace Playa;
+using namespace PlayaOps;
 
 
 bool runit(const VectorType<double>& vecType,

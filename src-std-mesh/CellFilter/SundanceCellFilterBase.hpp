@@ -36,8 +36,8 @@
 #include "SundanceCellFilter.hpp"
 #include "SundanceCellSet.hpp"
 #include "SundanceMap.hpp"
-#include "SundanceHandleable.hpp"
-#include "SundancePrintable.hpp"
+#include "PlayaHandleable.hpp"
+#include "PlayaPrintable.hpp"
 #include "Teuchos_Describable.hpp"
 
 namespace Sundance

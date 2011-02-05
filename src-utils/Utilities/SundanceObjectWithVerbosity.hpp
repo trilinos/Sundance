@@ -5,19 +5,17 @@
 #define SUNDANCE_OBJECTWITHVERBOSITY_H
 
 #include "SundanceDefs.hpp"
-#include "Teuchos_ParameterList.hpp"
-#include "Teuchos_RefCountPtr.hpp"
+#include "PlayaObjectWithVerbosity.hpp"
 #include "SundanceParamUtils.hpp"
-#include "Teuchos_RefCountPtr.hpp"
-#include "Teuchos_FancyOStream.hpp"
-
+#include "Teuchos_ParameterList.hpp"
 
 namespace Sundance
 {
-using Teuchos::RefCountPtr;
+
+using Teuchos::ParameterList;
+using Teuchos::RCP;
 using Teuchos::rcp;
 using Teuchos::FancyOStream;
-using Teuchos::ParameterList;
 using Teuchos::ParameterEntry;
 
 
@@ -32,44 +30,6 @@ public:
     {return X::defaultVerbParams();}
 };
 
-
-/** 
- * Abstract interface for getting/setting verbosity levels.
- */
-class ObjectWithVerbosityBase
-{
-public:
-  /** */
-  virtual ~ObjectWithVerbosityBase(){}
-
-  /** */
-  virtual int verb() const = 0 ;
-
-  /** */
-  virtual void setVerbosity(int verb) = 0 ;
-};
-
-
-/** 
- * Simple implementation of ObjectWithVerbosityBase interface
- */
-class DefaultObjectWithVerbosity : public ObjectWithVerbosityBase
-{
-public:
-  /** */
-  DefaultObjectWithVerbosity(int verb=0) : verb_(verb) {}
-
-  /** */
-  virtual ~DefaultObjectWithVerbosity(){}
-
-  /** */
-  virtual int verb() const {return verb_;}
-
-  /** */
-  virtual void setVerbosity(int verb) {verb_ = verb;}
-private:
-  int verb_;
-};
 
 
 /**
@@ -105,12 +65,12 @@ private:
  * 
  */
 template <class X>
-class ObjectWithClassVerbosity : public DefaultObjectWithVerbosity
+class ObjectWithClassVerbosity : public Playa::ObjectWithVerbosity
 {
 public:
   /** \deprecated Construct, starting silent */
   ObjectWithClassVerbosity(int verb=classVerbosity())
-    : DefaultObjectWithVerbosity(verb) {;}
+    : Playa::ObjectWithVerbosity(verb) {;}
 
   /** \deprecated Writeable access to the default verbosity for the class */
   static int& classVerbosity() 
@@ -143,7 +103,7 @@ public:
   /** Construct with a parameter list controlling the verbosity settings */
   ParameterControlledObjectWithVerbosity(const std::string& objName, const ParameterList& p)
     : ObjectWithClassVerbosity<X>(),
-    verbControlParams_() 
+      verbControlParams_() 
     {
       RCP<ParameterList> defaults = VerbosityTraits<X>::defaultVerbParams();
       TEST_FOR_EXCEPTION(defaults->name() != objName, std::runtime_error,

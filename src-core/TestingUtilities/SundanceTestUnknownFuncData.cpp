@@ -32,8 +32,8 @@
 #include "SundanceTestDiscreteFunction.hpp"
 #include "SundanceTestUnknownFuncData.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaTabs.hpp"
+#include "PlayaExceptions.hpp"
 
 using namespace Sundance;
 using namespace Sundance;

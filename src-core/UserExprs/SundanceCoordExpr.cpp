@@ -48,7 +48,7 @@ CoordExpr::CoordExpr(int dir, const std::string& name)
 bool CoordExpr::lessThan(const ScalarExpr* other) const
 {
   const CoordExpr* c = dynamic_cast<const CoordExpr*>(other);
-  TEST_FOR_EXCEPTION(c==0, InternalError, "cast should never fail at this point");
+  TEST_FOR_EXCEPTION(c==0, std::logic_error, "cast should never fail at this point");
   return dir() < c->dir();
 }
 
@@ -72,7 +72,7 @@ string CoordExpr::coordName(int dir, const std::string& name)
     case 2:
       return "z";
     default:
-      TEST_FOR_EXCEPTION(true, RuntimeError,
+      TEST_FOR_EXCEPTION(true, std::runtime_error,
                          "CoordExpr::coordName direction out of range [0,2]");
       return "error";
     }

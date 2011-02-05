@@ -30,13 +30,12 @@
 
 
 #include "SundanceQuadratureFamily.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 
 using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
+using Playa::Handle;
+using Playa::Handleable;
 using std::ios_base;
 using std::setw;
 using std::endl;
@@ -56,7 +55,7 @@ void QuadratureFamily::getPoints(const CellType& cellType,
   const QuadratureFamilyBase* q 
     = dynamic_cast<const QuadratureFamilyBase*>(ptr().get());
   
-  TEST_FOR_EXCEPTION(q==0, InternalError, 
+  TEST_FOR_EXCEPTION(q==0, std::logic_error, 
                      "QuadratureFamilyStub pointer" << toXML().toString() 
                      << " could not be cast to a QuadratureFamilyBase ptr");
                      
@@ -77,7 +76,7 @@ void QuadratureFamily::getAdaptedWeights(const CellType& cellType ,
   const QuadratureFamilyBase* q
    = dynamic_cast<const QuadratureFamilyBase*>(ptr().get());
 
-  TEST_FOR_EXCEPTION(q==0, InternalError,
+  TEST_FOR_EXCEPTION(q==0, std::logic_error,
                      "QuadratureFamilyStub pointer" << toXML().toString()
                       << " could not be cast to a QuadratureFamilyBase ptr");
 
@@ -122,7 +121,7 @@ void QuadratureFamily::getFacetPoints(const CellType& cellType,
       getBrickFacetQuad(facetDim, facetIndex, quadPoints, quadWeights);
       break;
     default:
-      TEST_FOR_EXCEPTION(true, RuntimeError,
+      TEST_FOR_EXCEPTION(true, std::runtime_error,
                          "getFacetPoints() not implemented for cell type "
                          << cellType);
     }
@@ -134,10 +133,10 @@ void QuadratureFamily::getLineFacetQuad(int facetDim,
                                         Array<Point>& quadPoints,
                                         Array<double>& quadWeights) const
 {
-  TEST_FOR_EXCEPTION(facetDim > 0, RuntimeError,
+  TEST_FOR_EXCEPTION(facetDim > 0, std::runtime_error,
                      "Invalid facet dimension " << facetDim 
                      << " in getLineFacetQuad()");
-  TEST_FOR_EXCEPTION(facetIndex < 0 || facetIndex > 1, RuntimeError,
+  TEST_FOR_EXCEPTION(facetIndex < 0 || facetIndex > 1, std::runtime_error,
                      "Invalid facet index " << facetIndex  
                      << " in getLineFacetQuad()");
 
@@ -155,10 +154,10 @@ void QuadratureFamily::getTriangleFacetQuad(int facetDim,
                                             Array<Point>& quadPoints,
                                             Array<double>& quadWeights) const
 {
-  TEST_FOR_EXCEPTION(facetDim > 1, RuntimeError,
+  TEST_FOR_EXCEPTION(facetDim > 1, std::runtime_error,
                      "Invalid facet dimension " << facetDim 
                      << " in getTriangleFacetQuad()");
-  TEST_FOR_EXCEPTION(facetIndex < 0 || facetIndex > 2, RuntimeError,
+  TEST_FOR_EXCEPTION(facetIndex < 0 || facetIndex > 2, std::runtime_error,
                      "Invalid facet index " << facetIndex  
                      << " in getTriangleFacetQuad()");
   if (facetDim==1)
@@ -203,11 +202,11 @@ void QuadratureFamily::getQuadFacetQuad(int facetDim,
                            Array<Point>& quadPoints,
                            Array<double>& quadWeights) const {
 
-	  TEST_FOR_EXCEPTION(facetDim > 1, RuntimeError,
+	  TEST_FOR_EXCEPTION(facetDim > 1, std::runtime_error,
 	                     "Invalid facet dimension " << facetDim
 	                     << " in getQuadFacetQuad()");
 
-	  TEST_FOR_EXCEPTION(facetIndex < 0 || facetIndex > 3, RuntimeError,
+	  TEST_FOR_EXCEPTION(facetIndex < 0 || facetIndex > 3, std::runtime_error,
 	                     "Invalid facet index " << facetIndex
 	                     << " in getQuadFacetQuad()");
 	  if (facetDim==1)
@@ -258,10 +257,10 @@ void QuadratureFamily::getTetFacetQuad(int facetDim,
                                        Array<Point>& quadPoints,
                                        Array<double>& quadWeights) const
 {
-  TEST_FOR_EXCEPTION(facetDim > 2, RuntimeError,
+  TEST_FOR_EXCEPTION(facetDim > 2, std::runtime_error,
                      "Invalid facet dimension " << facetDim 
                      << " in getTetFacetQuad()");
-  TEST_FOR_EXCEPTION(facetIndex < 0 || facetIndex > 4, RuntimeError,
+  TEST_FOR_EXCEPTION(facetIndex < 0 || facetIndex > 4, std::runtime_error,
                      "Invalid facet index " << facetIndex  
                      << " in getTetFacetQuad()");
   if (facetDim==2)
@@ -327,12 +326,12 @@ void QuadratureFamily::getBrickFacetQuad(int facetDim,
                                        Array<Point>& quadPoints,
                                        Array<double>& quadWeights) const
 {
-  TEST_FOR_EXCEPTION(facetDim > 2, RuntimeError,
+  TEST_FOR_EXCEPTION(facetDim > 2, std::runtime_error,
                      "Invalid facet dimension " << facetDim
                      << " in getBrickFacetQuad()");
   if (facetDim==2)
     {
-	  TEST_FOR_EXCEPTION(facetIndex < 0 || facetIndex > 5, RuntimeError,
+	  TEST_FOR_EXCEPTION(facetIndex < 0 || facetIndex > 5, std::runtime_error,
 	                      "Invalid facet index " << facetIndex
 	                      << " in getBrickFacetQuad()");
       Array<Point> facetPts;
@@ -377,7 +376,7 @@ void QuadratureFamily::getBrickFacetQuad(int facetDim,
     }
   else if (facetDim==1)
      {
-	  TEST_FOR_EXCEPTION(facetIndex < 0 || facetIndex > 11, RuntimeError,
+	  TEST_FOR_EXCEPTION(facetIndex < 0 || facetIndex > 11, std::runtime_error,
 	                      "Invalid facet index " << facetIndex
 	                      << " in getBrickFacetQuad()");
       Array<Point> facetPts;

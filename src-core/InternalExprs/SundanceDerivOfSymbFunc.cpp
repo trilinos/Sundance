@@ -33,7 +33,7 @@
 #include "SundanceTestFuncElement.hpp"
 
 #include "SundanceCoordExpr.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceOut.hpp"
 
 using namespace Sundance;
@@ -49,7 +49,7 @@ DerivOfSymbFunc::DerivOfSymbFunc(const MultiIndex& op,
 {
   const SymbolicFuncElement* f 
     = dynamic_cast<const SymbolicFuncElement*>(evaluatableArg());
-  TEST_FOR_EXCEPTION(f==0, InternalError, "argument to DerivOfSymbFunc ctor "
+  TEST_FOR_EXCEPTION(f==0, std::logic_error, "argument to DerivOfSymbFunc ctor "
                      "is not a symbolic function");
   argFid_ = f->fid();
 }
@@ -59,7 +59,7 @@ Deriv DerivOfSymbFunc::representMeAsFunctionalDeriv() const
 {
   const SymbolicFuncElement* f 
     = dynamic_cast<const SymbolicFuncElement*>(evaluatableArg());
-  TEST_FOR_EXCEPTION(f==0, InternalError, "DerivOfSymbFunc::"
+  TEST_FOR_EXCEPTION(f==0, std::logic_error, "DerivOfSymbFunc::"
                      "representMeAsFunctionalDeriv(), 'this' pointer "
                      "is not a symbolic function");
   return Deriv(f, SpatialDerivSpecifier(mi()));
@@ -75,7 +75,7 @@ Evaluator* DerivOfSymbFunc::createEvaluator(const EvaluatableExpr* expr,
 bool DerivOfSymbFunc::lessThan(const ScalarExpr* other) const
 {
   const DerivOfSymbFunc* d = dynamic_cast<const DerivOfSymbFunc*>(other);
-  TEST_FOR_EXCEPTION(d==0, InternalError, "cast should never fail at this point");
+  TEST_FOR_EXCEPTION(d==0, std::logic_error, "cast should never fail at this point");
   
   if (argFid_ < d->argFid_) return true;
   if (d->argFid_ < argFid_) return false;

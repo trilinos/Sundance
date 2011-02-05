@@ -31,7 +31,7 @@
 #include "Sundance.hpp"
 
 //
-// Send a TSFExtended::LinearOperator<double> to a file!
+// Send a Playa::LinearOperator<double> to a file!
 //
 
 

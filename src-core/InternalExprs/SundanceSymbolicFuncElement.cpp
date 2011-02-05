@@ -35,7 +35,7 @@
 #include "SundanceZeroExpr.hpp"
 
 #include "SundanceDerivSet.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 
 
 using namespace Sundance;
@@ -196,7 +196,7 @@ RCP<Array<Set<MultipleDeriv> > > SymbolicFuncElement
 
 bool SymbolicFuncElement::evalPtIsZero() const
 {
-  TEST_FOR_EXCEPTION(evalPt_.get()==0, InternalError,
+  TEST_FOR_EXCEPTION(evalPt_.get()==0, std::logic_error,
                      "null evaluation point in SymbolicFuncElement::evalPtIsZero()");
   bool isZero = 0 != dynamic_cast<const ZeroExpr*>(evalPt());
   bool isTest = 0 != dynamic_cast<const TestFuncElement*>(this);
@@ -223,7 +223,7 @@ bool SymbolicFuncElement::isIndependentOf(const Expr& u) const
   {
     const ExprBase* p = uf[i].ptr().get();
     const SymbolicFuncElement* f = dynamic_cast<const SymbolicFuncElement*>(p);
-    TEST_FOR_EXCEPTION(f==0, InternalError, "expected a list of functions, "
+    TEST_FOR_EXCEPTION(f==0, std::logic_error, "expected a list of functions, "
       " got " << u);
     if (fid().dofID() == f->fid().dofID()) return false;
   }
@@ -238,7 +238,7 @@ bool SymbolicFuncElement::isLinearForm(const Expr& u) const
   {
     const ExprBase* p = uf[i].ptr().get();
     const SymbolicFuncElement* f = dynamic_cast<const SymbolicFuncElement*>(p);
-    TEST_FOR_EXCEPTION(f==0, InternalError, "expected a list of functions, "
+    TEST_FOR_EXCEPTION(f==0, std::logic_error, "expected a list of functions, "
       " got " << u);
     if (fid().dofID() == f->fid().dofID()) return true;
   }

@@ -29,9 +29,9 @@
 /* @HEADER@ */
 
 #include "SundanceVerboseFieldWriter.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 
 
 using namespace Sundance;

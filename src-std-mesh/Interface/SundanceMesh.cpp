@@ -29,19 +29,19 @@
 /* @HEADER@ */
 
 #include "SundanceMesh.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceVerboseFieldWriter.hpp"
 #include "SundanceFieldWriter.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceSet.hpp"
 #include "SundanceMap.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "Teuchos_MPIContainerComm.hpp"
 
-using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
 using namespace Sundance;
+using Playa::Handle;
+using Playa::Handleable;
 
 
 
@@ -49,7 +49,7 @@ IncrementallyCreatableMesh* Mesh::creatableMesh()
 {
   IncrementallyCreatableMesh* mci 
     = dynamic_cast<IncrementallyCreatableMesh*>(ptr().get());
-  TEST_FOR_EXCEPTION(mci==0, RuntimeError, 
+  TEST_FOR_EXCEPTION(mci==0, std::runtime_error, 
                      "Mesh::creatableMesh() could not convert mesh to "
                      "a type deriving from IncrementallyCreatableMesh");
 
@@ -102,7 +102,7 @@ bool Mesh::checkConsistency(std::ostream& os) const
 
 bool Mesh::checkCellConsistency(std::ostream& os, int dim) const
 {
-  TEST_FOR_EXCEPTION(dim==0, RuntimeError,
+  TEST_FOR_EXCEPTION(dim==0, std::runtime_error,
                      "Mesh::checkCellConsistency called for d=0. "
                      "checkVertexConsistency() should be called instead");
 

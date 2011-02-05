@@ -30,7 +30,7 @@
 
 #include "SundanceDiscreteFunctionData.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceMaximalCellFilter.hpp"
 #include "SundanceCellFilter.hpp"
 #include "SundanceCellSet.hpp"
@@ -38,7 +38,7 @@
 
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
-#include "TSFVectorImpl.hpp"
+#include "PlayaVectorImpl.hpp"
 #endif
 
 
@@ -78,10 +78,10 @@ DiscreteFunctionData::DiscreteFunctionData(const DiscreteSpace& space,
 
 const DiscreteFunctionData* DiscreteFunctionData::getData(const DiscreteFuncElement* dfe)
 {
-  TEST_FOR_EXCEPTION(dfe==0, RuntimeError, "null argument to DiscreteFunctionData::getData()");
+  TEST_FOR_EXCEPTION(dfe==0, std::runtime_error, "null argument to DiscreteFunctionData::getData()");
   RCP<const DiscreteFunctionData> rtn 
     = rcp_dynamic_cast<const DiscreteFunctionData>(dfe->commonData());
-  TEST_FOR_EXCEPTION(rtn.get()==0, RuntimeError, 
+  TEST_FOR_EXCEPTION(rtn.get()==0, std::runtime_error, 
     "cast to DiscreteFunctionData* failed for "
     "discrete function element " << dfe->toXML());
   return rtn.get();

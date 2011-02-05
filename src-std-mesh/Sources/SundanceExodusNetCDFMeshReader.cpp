@@ -1,6 +1,6 @@
 #include "SundanceExodusNetCDFMeshReader.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 
 using namespace Sundance;
 using namespace Sundance;
@@ -14,14 +14,14 @@ ExodusNetCDFMeshReader::ExodusNetCDFMeshReader(const std::string& fname,
                                                const MPIComm& comm)
   : MeshReaderBase(fname, meshType, comm)
 {
-  TEST_FOR_EXCEPTION(nProc() > 1, RuntimeError,
+  TEST_FOR_EXCEPTION(nProc() > 1, std::runtime_error,
                      "ExodusNetCDFMeshReader not useable with parallel meshes");
 }
 
 ExodusNetCDFMeshReader::ExodusNetCDFMeshReader(const ParameterList& params)
   : MeshReaderBase(params)
 {
-  TEST_FOR_EXCEPTION(nProc() > 1, RuntimeError,
+  TEST_FOR_EXCEPTION(nProc() > 1, std::runtime_error,
                      "ExodusNetCDFMeshReader not useable with parallel meshes");
 }
 
@@ -40,7 +40,7 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
   /* read the header line */
   getNextLine(*is, line, tokens, '#');
 
-  TEST_FOR_EXCEPTION(tokens[0] != "netcdf", RuntimeError,
+  TEST_FOR_EXCEPTION(tokens[0] != "netcdf", std::runtime_error,
                      "ExodusNetCDF reader expected to find [netcdf] as first "
                      "token, found " << tokens[0]);
 
@@ -48,7 +48,7 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
   getNextLine(*is, line, tokens, '#');
 
 
-  TEST_FOR_EXCEPTION(tokens[0] != "dimensions:", RuntimeError,
+  TEST_FOR_EXCEPTION(tokens[0] != "dimensions:", std::runtime_error,
                      "ExodusNetCDF reader expected to find [dimension:] as first "
                      "token, found " << tokens[0]);
   
@@ -69,11 +69,11 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
       if (tokens[0] == "variables:") break;
       std::string keyword = tokens[0];
       std::string equals = tokens[1];
-      TEST_FOR_EXCEPTION(equals!="=", RuntimeError, "ExodusNetCDF reader "
+      TEST_FOR_EXCEPTION(equals!="=", std::runtime_error, "ExodusNetCDF reader "
                          "expected [=] as second token, found "
                          << equals);
 
-      TEST_FOR_EXCEPTION(tokens.size() < 4, RuntimeError,
+      TEST_FOR_EXCEPTION(tokens.size() < 4, std::runtime_error,
                          "ExodusNetCDF reader found a dimension line with "
                          "fewer than 4 tokens");
 
@@ -377,18 +377,18 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
   mesh = createMesh(dimension);
 
   /* do some consistency checks */
-  TEST_FOR_EXCEPTION(dimension * nNodes != coords.size(), RuntimeError,
+  TEST_FOR_EXCEPTION(dimension * nNodes != coords.size(), std::runtime_error,
                      "bad coordinate array in exodus reader");
 
   for (int b=0; b<nElemBlocks; b++)
     {
-      TEST_FOR_EXCEPTION(blockSizes[b]*nodesPerElem[b] != connect[b].size(), RuntimeError,
+      TEST_FOR_EXCEPTION(blockSizes[b]*nodesPerElem[b] != connect[b].size(), std::runtime_error,
                          "bad connectivity array for block " << b << " in exodus reader");
     }
 
   for (int s=0; s<nSideSets; s++)
     {
-      TEST_FOR_EXCEPTION(sideSetElems[s].size() != sideSetFacets[s].size(), RuntimeError,
+      TEST_FOR_EXCEPTION(sideSetElems[s].size() != sideSetFacets[s].size(), std::runtime_error,
                          "inconsistent side set specification for ss=" << s 
                          << " in exodus reader ");
     }

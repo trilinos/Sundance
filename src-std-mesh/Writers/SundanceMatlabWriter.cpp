@@ -29,9 +29,9 @@
 /* @HEADER@ */
 
 #include "SundanceMatlabWriter.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "Teuchos_XMLObject.hpp"
 #include <iomanip>
 

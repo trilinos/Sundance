@@ -292,7 +292,7 @@ bool MultiplyConstants::doTransform(const RCP<ScalarExpr>& left,
         {
           const ConstantExpr* cl = dynamic_cast<const ConstantExpr*>(left.get());
           const ConstantExpr* cr = dynamic_cast<const ConstantExpr*>(right.get());
-          TEST_FOR_EXCEPTION(cl==0 || cr==0, InternalError,
+          TEST_FOR_EXCEPTION(cl==0 || cr==0, std::logic_error,
                              "MultiplyConstants::doTransform() logic error: "
                              "L and R identified as immutable, but could "
                              "not be cast to ConstantExprs");
@@ -484,7 +484,7 @@ bool RearrangeRightProductWithConstant::doTransform(const RCP<ScalarExpr>& left,
    * right operand, because its constants should have been rotated
    * left. Do a paranoia check to be safe */
   TEST_FOR_EXCEPTION(pRight != 0 && pRight->rightScalar()->isConstant(),
-                     InternalError,
+                     std::logic_error,
                      "unexpected case in "
                      "RearrangeRightProductWithConstant::doTransform: "
                      "the right operand "
@@ -551,7 +551,7 @@ bool RearrangeLeftProductWithConstant::doTransform(const RCP<ScalarExpr>& left,
       /* Paranoid check to make sure we don't have the case
        * (u*alpha)*right */
       TEST_FOR_EXCEPTION(pLeft != 0 && pLeft->rightScalar()->isConstant(),
-                         InternalError,
+                         std::logic_error,
                          "RearrangeLeftProductWithConstant::doTransform: "
                          "the right operand "
                          << pLeft->right() 
@@ -602,7 +602,7 @@ bool TakeConstantUnderIntegralSign::doTransform(const RCP<ScalarExpr>& left,
   const SumOfIntegrals* sRight 
     = dynamic_cast<const SumOfIntegrals*>(right.get());
 
-  TEST_FOR_EXCEPTION(sLeft != 0 && sRight != 0, InternalError,
+  TEST_FOR_EXCEPTION(sLeft != 0 && sRight != 0, std::logic_error,
                      "Product of integrals detected: left=" 
                      << left->toString() << " right=" << right->toString());
 
@@ -613,7 +613,7 @@ bool TakeConstantUnderIntegralSign::doTransform(const RCP<ScalarExpr>& left,
           SumOfIntegrals* l = new SumOfIntegrals(*sLeft);
           const SpatiallyConstantExpr* cRight 
             = dynamic_cast<const SpatiallyConstantExpr*>(right.get());
-          TEST_FOR_EXCEPTION(cRight == 0, InternalError,
+          TEST_FOR_EXCEPTION(cRight == 0, std::logic_error,
                              "Attempting to multiply non-constant expression "
                              << right->toString() << " with an integral");
           l->multiplyByConstant(cRight);
@@ -627,7 +627,7 @@ bool TakeConstantUnderIntegralSign::doTransform(const RCP<ScalarExpr>& left,
           SumOfIntegrals* r = new SumOfIntegrals(*sRight);
           const SpatiallyConstantExpr* cLeft
             = dynamic_cast<const SpatiallyConstantExpr*>(left.get());
-          TEST_FOR_EXCEPTION(cLeft == 0, InternalError,
+          TEST_FOR_EXCEPTION(cLeft == 0, std::logic_error,
                              "Attempting to multiply non-constant expression "
                              << left->toString() << " with an integral");
           r->multiplyByConstant(cLeft);

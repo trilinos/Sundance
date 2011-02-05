@@ -32,7 +32,7 @@
 
 
 #include "SundanceDerivSet.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 
 
 using namespace Sundance;
@@ -123,7 +123,7 @@ Evaluator* UnknownParameterElement
 const Parameter* UnknownParameterElement::parameterValue() const 
 {
   const Parameter* p = dynamic_cast<const Parameter*>(evalPt());
-  TEST_FOR_EXCEPTION(p==0, InternalError, 
+  TEST_FOR_EXCEPTION(p==0, std::logic_error, 
     "UnknownParameter evalPt() is not a Parameter");
   return p;
 }
@@ -131,7 +131,7 @@ const Parameter* UnknownParameterElement::parameterValue() const
 Parameter* UnknownParameterElement::parameterValue()  
 {
   Parameter* p = dynamic_cast<Parameter*>(evalPt());
-  TEST_FOR_EXCEPTION(p==0, InternalError, 
+  TEST_FOR_EXCEPTION(p==0, std::logic_error, 
     "UnknownParameter evalPt() is not a Parameter");
   return p;
 }
@@ -145,7 +145,7 @@ bool UnknownParameterElement::lessThan(const ScalarExpr* other) const
 
   if (name() < p->name()) return true;
 
-  TEST_FOR_EXCEPTION(name()==p->name() && this == p, RuntimeError,
+  TEST_FOR_EXCEPTION(name()==p->name() && this == p, std::runtime_error,
     "detected two different parameters with the same name");
   return false;
 }

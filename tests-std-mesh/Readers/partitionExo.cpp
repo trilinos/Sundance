@@ -57,7 +57,7 @@ int main(int argc, char** argv)
       = clp.parse(argc, (char**) argv);
 
     TEST_FOR_EXCEPTION(rtn != CommandLineProcessor::PARSE_SUCCESSFUL,
-      RuntimeError,
+      std::runtime_error,
       "Command-line parsing failed");
 
     if (help)

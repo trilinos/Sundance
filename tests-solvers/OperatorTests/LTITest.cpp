@@ -1,7 +1,7 @@
 //@HEADER
 // ***********************************************************************
 // 
-//           TSFExtended: Trilinos Solver Framework Extended
+//           Playa: Trilinos Solver Framework Extended
 //                 Copyright (2004) Sandia Corporation
 // 
 // Under terms of Contract DE-AC04-94AL85000, there is a non-exclusive
@@ -29,26 +29,26 @@
 
 #include <cstdlib>
 #include "Teuchos_GlobalMPISession.hpp"
-#include "TSFVectorDecl.hpp"
-#include "TSFDefaultLTIProblemFactory.hpp"
-#include "TSFCommonOperatorsDecl.hpp"
-#include "TSFLinearCombinationDecl.hpp"
-#include "TSFEpetraVectorType.hpp"
-#include "TSFRandomSparseMatrix.hpp"
-#include "TSFProductVectorSpaceDecl.hpp"
+#include "PlayaVectorDecl.hpp"
+#include "PlayaDefaultLTIProblemFactory.hpp"
+#include "PlayaCommonOperatorsDecl.hpp"
+#include "PlayaLinearCombinationDecl.hpp"
+#include "PlayaEpetraVectorType.hpp"
+#include "PlayaRandomSparseMatrix.hpp"
+#include "PlayaBlockVectorSpaceDecl.hpp"
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
-#include "TSFLinearOperatorImpl.hpp"
-#include "TSFLinearSolverImpl.hpp"
-#include "TSFLinearCombinationImpl.hpp"
-#include "TSFCommonOperatorsDecl.hpp"
+#include "PlayaLinearOperatorImpl.hpp"
+#include "PlayaLinearSolverImpl.hpp"
+#include "PlayaLinearCombinationImpl.hpp"
+#include "PlayaCommonOperatorsDecl.hpp"
 #endif
 
 
 STREAM_OUT(Vector<double>)
 //using namespace Teuchos;
-  using namespace TSFExtended;
-using namespace TSFExtendedOps;
+  using namespace Playa;
+using namespace PlayaOps;
 
 int main(int argc, char *argv[]) 
 {

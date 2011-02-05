@@ -36,10 +36,10 @@
 #include "SundanceExpr.hpp"
 #include "SundanceBlock.hpp"
 #include "SundanceDiscreteFunction.hpp"
-#include "TSFLinearOperatorDecl.hpp"
-#include "TSFVectorDecl.hpp"
-#include "TSFVectorType.hpp"
-#include "TSFSolverState.hpp"
+#include "PlayaLinearOperatorDecl.hpp"
+#include "PlayaVectorDecl.hpp"
+#include "PlayaVectorType.hpp"
+#include "PlayaSolverState.hpp"
 
 namespace Sundance
 {

@@ -32,7 +32,7 @@
 #include "SundanceEvaluatableExpr.hpp"
 
 #include "SundanceEvalVector.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceOut.hpp"
 
 

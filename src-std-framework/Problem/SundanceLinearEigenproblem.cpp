@@ -30,7 +30,7 @@
 
 #include "SundanceLinearEigenproblem.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceTestFunction.hpp"
 #include "SundanceUnknownFunction.hpp"
 #include "SundanceEssentialBC.hpp"
@@ -43,17 +43,17 @@
 #include "SundanceMaximalCellFilter.hpp"
 #include "SundanceGaussianQuadrature.hpp"
 
-#include "TSFLinearCombinationDecl.hpp"
-#include "TSFLinearCombinationImpl.hpp"
-#include "TSFLinearOperatorDecl.hpp"
-#include "TSFVectorDecl.hpp"
-#include "TSFSimpleDiagonalOpDecl.hpp"
+#include "PlayaLinearCombinationDecl.hpp"
+#include "PlayaLinearCombinationImpl.hpp"
+#include "PlayaLinearOperatorDecl.hpp"
+#include "PlayaVectorDecl.hpp"
+#include "PlayaSimpleDiagonalOpDecl.hpp"
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
-#include "TSFVectorImpl.hpp"
-#include "TSFLinearCombinationImpl.hpp"
-#include "TSFLinearOperatorImpl.hpp"
-#include "TSFSimpleDiagonalOpImpl.hpp"
+#include "PlayaVectorImpl.hpp"
+#include "PlayaLinearCombinationImpl.hpp"
+#include "PlayaLinearOperatorImpl.hpp"
+#include "PlayaSimpleDiagonalOpImpl.hpp"
 #endif
 
 using namespace Sundance;
@@ -61,8 +61,8 @@ using namespace Sundance;
 using namespace Sundance;
 using namespace Sundance;
 using namespace Teuchos;
-using namespace TSFExtended;
-using namespace TSFExtendedOps;
+using namespace Playa;
+using namespace PlayaOps;
 
 static Time& normalizationTimer() 
 {

@@ -497,6 +497,10 @@ Vector<Scalar>& Vector<Scalar>::update(const Scalar& alpha,
 template <class Scalar> inline 
 Vector<Scalar>& Vector<Scalar>::acceptCopyOf(const Vector<Scalar>& x)
 {
+  if (this->ptr().get()==0 || !this->space().isCompatible(x.space()) )
+  {
+    this->ptr() = x.space().createMember().ptr();
+  }
   return acceptUnaryFunctor(IdentityFunctor<Scalar>(), x);
 }
 

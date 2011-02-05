@@ -36,9 +36,9 @@
 #include "SundanceBasisDOFTopologyBase.hpp"
 #include "SundanceTensorBasisBase.hpp"
 #include "SundanceBasisReferenceEvaluationBase.hpp"
-#include "SundanceHandleable.hpp"
+#include "PlayaHandleable.hpp"
 #include "SundanceMesh.hpp"
-#include "SundancePrintable.hpp"
+#include "PlayaPrintable.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
 #include "SundanceTypeUtils.hpp"
 #include "Teuchos_XMLObject.hpp"
@@ -52,8 +52,8 @@ using namespace Teuchos;
  *
  */
 class BasisFamilyBase
-  : public Sundance::Handleable<BasisFamilyBase>,
-    public Sundance::Printable,
+  : public Playa::Handleable<BasisFamilyBase>,
+    public Playa::Printable,
     public ObjectWithClassVerbosity<BasisFamilyBase>,
     public BasisDOFTopologyBase,
     public TensorBasisBase,

@@ -30,7 +30,7 @@
 
 #include "SundanceElementIntegral.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
 using namespace Sundance;
@@ -245,7 +245,7 @@ ElementIntegral::ElementIntegral(int spatialDim,
 }
 
 
-void ElementIntegral::setVerbosity(
+void ElementIntegral::setVerb(
   int integrationVerb,
   int transformVerb)
 {
@@ -291,12 +291,12 @@ void ElementIntegral::describe(std::ostream& os) const
 void ElementIntegral::assertBilinearForm() const 
 {
   TEST_FOR_EXCEPTION(testDerivOrder() < 0 || testDerivOrder() > 1,
-    InternalError,
+    std::logic_error,
     "Test function derivative order=" << testDerivOrder()
     << " must be 0 or 1");
   
   TEST_FOR_EXCEPTION(unkDerivOrder() < 0 || unkDerivOrder() > 1,
-    InternalError,
+    std::logic_error,
     "Unknown function derivative order=" << unkDerivOrder()
     << " must be 0 or 1");
 }
@@ -304,7 +304,7 @@ void ElementIntegral::assertBilinearForm() const
 void ElementIntegral::assertLinearForm() const 
 {
   TEST_FOR_EXCEPTION(testDerivOrder() < 0 || testDerivOrder() > 1,
-    InternalError,
+    std::logic_error,
     "Test function derivative order=" << testDerivOrder()
     << " must be 0 or 1");
 }

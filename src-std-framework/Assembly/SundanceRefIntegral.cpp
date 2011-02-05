@@ -34,7 +34,7 @@
 #include "SundanceQuadratureType.hpp"
 #include "SundanceSpatialDerivSpecifier.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
 using namespace Sundance;
@@ -438,7 +438,7 @@ void RefIntegral::transformZeroForm(const CellJacobianBatch& JVol,
 {
   TimeMonitor timer(refIntegrationTimer());
 
-  TEST_FOR_EXCEPTION(order() != 0, InternalError,
+  TEST_FOR_EXCEPTION(order() != 0, std::logic_error,
     "RefIntegral::transformZeroForm() called "
     "for form of order " << order());
 
@@ -495,7 +495,7 @@ void RefIntegral::transformZeroForm(const CellJacobianBatch& JVol,
   else
   {
     TEST_FOR_EXCEPTION( (int) isLocalFlag.size() != JVol.numCells(),
-      RuntimeError,
+      std::runtime_error,
       "mismatch between isLocalFlag.size()=" 
       << isLocalFlag.size()
       << " and JVol.numCells()=" << JVol.numCells());
@@ -553,7 +553,7 @@ void RefIntegral::transformOneForm(const CellJacobianBatch& JTrans,
   RCP<Array<double> >& A) const
 {
   TimeMonitor timer(refIntegrationTimer());
-  TEST_FOR_EXCEPTION(order() != 1, InternalError,
+  TEST_FOR_EXCEPTION(order() != 1, std::logic_error,
     "RefIntegral::transformOneForm() called for form "
     "of order " << order());
   Tabs tabs;  
@@ -764,7 +764,7 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& JTrans,
   RCP<Array<double> >& A) const
 {
   TimeMonitor timer(refIntegrationTimer());
-  TEST_FOR_EXCEPTION(order() != 2, InternalError,
+  TEST_FOR_EXCEPTION(order() != 2, std::logic_error,
     "RefIntegral::transformTwoForm() called for form "
     "of order " << order());
   

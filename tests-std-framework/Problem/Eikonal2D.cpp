@@ -34,7 +34,7 @@
 #include "NOX.H"
 #include "NOX_Common.H"
 #include "NOX_Utils.H"
-#include "NOX_TSF_Group.H"
+#include "NOX_Playa_Group.hpp"
 
 
 #ifdef Trilinos_DATA_DIR
@@ -127,7 +127,7 @@ int main(int argc, char** argv)
       /* Define the Dirichlet BC */
       Expr bc = EssentialBC(bdry, v*u, quad4);
 
-      /* Create a TSF NonlinearOperator object */
+      /* Create a Playa NonlinearOperator object */
       NonlinearProblem nlp(mesh, eqn, bc, v, u, u0, vecType);
 
 

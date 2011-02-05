@@ -33,7 +33,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceFieldWriterBase.hpp"
-#include "SundanceHandle.hpp"
+#include "PlayaHandle.hpp"
 
 namespace Sundance
 {
@@ -56,7 +56,7 @@ namespace Sundance
    * writer.write();
    * \endcode
    */
-  class FieldWriter : public Sundance::Handle<FieldWriterBase>
+  class FieldWriter : public Playa::Handle<FieldWriterBase>
   {
   public:
     /* Boilerplate handle ctors */
@@ -67,7 +67,7 @@ namespace Sundance
 
     /** add a field, tagging it with the given std::string as a name */
     void addField(const std::string& name, 
-                  const Handle<FieldBase>& field) ;
+      const Playa::Handle<FieldBase>& field) ;
 
     /** set the numerical value to be written at cells on which
      * a field is undefined. Default value is 0.0. */

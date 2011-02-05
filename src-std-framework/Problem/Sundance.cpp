@@ -59,7 +59,7 @@
 #endif
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
-#include "TSFLinearOperatorImpl.hpp"
+#include "PlayaLinearOperatorImpl.hpp"
 #endif
 
 namespace Sundance
@@ -188,7 +188,7 @@ int SundanceGlobal::init(int* argc, char*** argv)
       = clp().parse(*argc, (char**) *argv);
 
     TEST_FOR_EXCEPTION(rtn != CommandLineProcessor::PARSE_SUCCESSFUL,
-      RuntimeError,
+      std::runtime_error,
       "Command-line parsing failed");
 
 

@@ -38,7 +38,7 @@
 #include "SundanceCellFilterStub.hpp"
 #include "SundancePositionalCellPredicate.hpp"
 #include "SundanceOrderedHandle.hpp"
-#include "SundanceHandle.hpp"
+#include "PlayaHandle.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 
 namespace Sundance

@@ -43,7 +43,7 @@ Derivative::Derivative(int direction)
 bool Derivative::lessThan(const ScalarExpr* other) const
 {
   const Derivative* d = dynamic_cast<const Derivative*>(other);
-  TEST_FOR_EXCEPTION(d==0, InternalError, "cast should never fail at this point");
+  TEST_FOR_EXCEPTION(d==0, std::logic_error, "cast should never fail at this point");
   return multiIndex() < d->multiIndex();
 }
 

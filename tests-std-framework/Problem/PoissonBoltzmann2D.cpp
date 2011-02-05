@@ -105,7 +105,7 @@ int main(int argc, char** argv)
       Expr u0 = new DiscreteFunction(discSpace, 1.0, "u0");
 
 
-      /* Create a TSF NonlinearOperator object */
+      /* Create a Playa NonlinearOperator object */
       NonlinearOperator<double> F 
         = new NonlinearProblem(mesh, eqn, bc, v, u, u0, vecType);
       

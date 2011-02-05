@@ -32,7 +32,7 @@
 #include "SundanceEvalManager.hpp"
 #include "SundanceSpatiallyConstantExpr.hpp"
 #include "SundanceSet.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceOut.hpp"
 
 using namespace Sundance;
@@ -57,7 +57,7 @@ ConstantEvaluator::ConstantEvaluator(const SpatiallyConstantExpr* expr,
    * There's nothing to do in this ctor other than running some sanity checks.
    */
 
-  TEST_FOR_EXCEPTION(this->sparsity()->numDerivs() > 1, InternalError,
+  TEST_FOR_EXCEPTION(this->sparsity()->numDerivs() > 1, std::logic_error,
                      "ConstantEvaluator ctor found a sparsity table "
                      "without more than one entry. The bad sparsity table is "
                      << *(this->sparsity)());
@@ -66,7 +66,7 @@ ConstantEvaluator::ConstantEvaluator(const SpatiallyConstantExpr* expr,
     {
       const MultipleDeriv& d = this->sparsity()->deriv(0);
 
-      TEST_FOR_EXCEPTION(d.order() != 0, InternalError,
+      TEST_FOR_EXCEPTION(d.order() != 0, std::logic_error,
                          "ConstantEvaluator ctor found a nonzero derivative "
                          "of order greater than zero. The bad sparsity "
                          "table is " << *(this->sparsity)());

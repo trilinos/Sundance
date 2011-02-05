@@ -34,7 +34,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceCellReordererBase.hpp"
-#include "SundanceHandle.hpp"
+#include "PlayaHandle.hpp"
 
 
 namespace Sundance
@@ -55,7 +55,7 @@ class Mesh;
  * \endcode
  */
 class CellReorderer
-  : public Sundance::Handle<CellReordererFactoryBase>
+  : public Playa::Handle<CellReordererFactoryBase>
 {
 public:
   HANDLE_CTORS(CellReorderer, CellReordererFactoryBase);

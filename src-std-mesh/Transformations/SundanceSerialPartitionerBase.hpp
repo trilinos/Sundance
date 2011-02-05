@@ -35,7 +35,7 @@
 #include "SundanceMap.hpp"
 #include "SundanceMesh.hpp"
 #include "SundanceMeshType.hpp"
-#include "SundanceHandle.hpp"
+#include "PlayaHandle.hpp"
 
 namespace Sundance
 {

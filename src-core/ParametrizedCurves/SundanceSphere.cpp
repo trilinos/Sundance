@@ -52,7 +52,7 @@ Expr Sphere::getParams() const
 
 double Sphere::curveEquation(const Point& evalPoint) const
 {
-	TEST_FOR_EXCEPTION(evalPoint.dim() != 3, RuntimeError,
+	TEST_FOR_EXCEPTION(evalPoint.dim() != 3, std::runtime_error,
 			"Sphere::curveEquation() evaluation point dimension must be 3");
 
 	Point center( _centerx , _centery , _centerz );

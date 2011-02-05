@@ -29,9 +29,9 @@
 /* @HEADER@ */
 
 #include "SundanceL2Projector.hpp"
-#include "TSFAztecSolver.hpp"
+#include "PlayaAztecSolver.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 
 #include "SundanceDerivative.hpp"
 #include "SundanceTestFunction.hpp"
@@ -44,12 +44,8 @@
 #include "SundanceMaximalCellFilter.hpp"
 
 using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
-using namespace TSFExtended;
-using namespace Thyra;
+using namespace Playa;
 
 
 L2Projector::L2Projector(const DiscreteSpace& space, 
@@ -126,11 +122,11 @@ void L2Projector::init(const DiscreteSpace& space,
   const LinearSolver<double>& solver)
 {
   TEST_FOR_EXCEPTION(space.basis().size() != expr.size(),
-                     RuntimeError,
+                     std::runtime_error,
                      "mismatched vector structure between basis and expr");
   
   TEST_FOR_EXCEPTION(space.basis().size() == 0,
-                     RuntimeError,
+                     std::runtime_error,
                      "Empty basis?");
   
   Expr v = new TestFunction(space.basis()[0], "dummy_v[0]");

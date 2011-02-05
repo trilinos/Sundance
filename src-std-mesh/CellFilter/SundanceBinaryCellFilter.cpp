@@ -29,9 +29,9 @@
 /* @HEADER@ */
 
 #include "SundanceBinaryCellFilter.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceOrderedTuple.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceOut.hpp"
 
 using namespace Sundance;
@@ -65,7 +65,7 @@ int BinaryCellFilter::dimension(const Mesh& mesh) const
   int d1 = left_.dimension(mesh);
   int d2 = right_.dimension(mesh);
 
-  TEST_FOR_EXCEPTION(d1 != d2, RuntimeError,
+  TEST_FOR_EXCEPTION(d1 != d2, std::runtime_error,
                      "BinaryCellFilter::dimension() mismatched dimensions. "
                      "Left filter has dimension d1=" << d1 << " but "
                      "right filter has dimension d2=" << d2);
@@ -97,7 +97,7 @@ CellSet BinaryCellFilter::internalGetCells(const Mesh& mesh) const
     case Difference:
       return L.setDifference(R);
     }
-  TEST_FOR_EXCEPTION(true, RuntimeError, "unknown cell filter op type" << op_ 
+  TEST_FOR_EXCEPTION(true, std::runtime_error, "unknown cell filter op type" << op_ 
                      << " in BinaryCellFilter::internalGetCells()");
   return L; // -Wall
 }
@@ -113,7 +113,7 @@ string BinaryCellFilter::opName() const
     case Difference:
       return "DifferenceCellFilter";
     }
-  TEST_FOR_EXCEPTION(true, RuntimeError, "unknown cell filter op type" << op_ 
+  TEST_FOR_EXCEPTION(true, std::runtime_error, "unknown cell filter op type" << op_ 
                      << " in BinaryCellFilter::opName()");
   return "UnionCellFilter";//-Wall
 }
@@ -132,7 +132,7 @@ bool BinaryCellFilter::lessThan(const CellFilterStub* other) const
     = dynamic_cast<const BinaryCellFilter*>(other);
 
   TEST_FOR_EXCEPTION(B==0,
-                     InternalError,
+                     std::logic_error,
                      "argument " << other->toXML() 
                      << " to BinaryCellFilter::lessThan() should be "
                      "a BinaryCellFilter pointer.");

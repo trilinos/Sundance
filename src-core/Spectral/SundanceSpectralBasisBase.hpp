@@ -34,7 +34,7 @@
 #include "SundanceDefs.hpp"
 #include "Teuchos_Array.hpp"
 #include "Teuchos_RefCountPtr.hpp"
-#include "SundanceHandleable.hpp"
+#include "PlayaHandleable.hpp"
 #include "SundanceMap.hpp"
 
 
@@ -43,7 +43,7 @@
 namespace Sundance
 {
   /** Base class for spectral bases. */
-  class SpectralBasisBase : public Sundance::Handleable<SpectralBasisBase>
+  class SpectralBasisBase : public Playa::Handleable<SpectralBasisBase>
   {
   public:
     /** Construct a basis */

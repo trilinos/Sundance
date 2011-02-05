@@ -32,7 +32,7 @@
 #define SUNDANCE_STDMATHOPS_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceExpr.hpp"
 #include "SundanceScalarExpr.hpp"
 #include "SundanceStdMathFunctors.hpp"
@@ -53,7 +53,7 @@ using namespace Teuchos;
 inline Expr opName(const Expr& expr) \
 {\
 RCP<ScalarExpr> arg = rcp_dynamic_cast<ScalarExpr>(expr[0].ptr());\
-    TEST_FOR_EXCEPTION(arg.get()==0, RuntimeError,\
+    TEST_FOR_EXCEPTION(arg.get()==0, std::runtime_error,\
                        "non-scalar argument in " #opName " function");\
     return new NonlinearUnaryOp(arg, rcp(new functorName()));\
 }
@@ -63,7 +63,7 @@ namespace Sundance
   inline Expr pow(const Expr& expr, const double& p)
   {
     RCP<ScalarExpr> arg = rcp_dynamic_cast<ScalarExpr>(expr[0].ptr());
-    TEST_FOR_EXCEPTION(arg.get()==0, RuntimeError,
+    TEST_FOR_EXCEPTION(arg.get()==0, std::runtime_error,
                        "non-scalar argument in pow function");
     return new NonlinearUnaryOp(arg, rcp(new PowerFunctor(p)));
   }

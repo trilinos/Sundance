@@ -51,7 +51,7 @@ using namespace Teuchos;
  * and NodalEvalMediator, which does evaluation at nodal points.  */
 
 class StdFwkEvalMediator : public AbstractEvalMediator,
-                           public Sundance::Printable
+                           public Playa::Printable
 {
 public:
   /** */

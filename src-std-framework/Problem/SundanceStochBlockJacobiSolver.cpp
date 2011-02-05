@@ -35,7 +35,7 @@ StochBlockJacobiSolver::solve(const Array<LinearOperator<double> >& KBlock,
   for (int i=0; i<P; i++)
   {
     TEST_FOR_EXCEPTION(fBlock[0].ptr().get()==0, 
-      RuntimeError, "empty RHS vector block i=[" << i << "]");
+      std::runtime_error, "empty RHS vector block i=[" << i << "]");
     uPrev[i] = fBlock[0].copy();
     uCur[i] = fBlock[0].copy();
     uPrev[i].zero();

@@ -100,7 +100,7 @@ const double* PeriodicMesh1D::nodePositionView(int i) const
 void PeriodicMesh1D::getJacobians(int cellDim, const Array<int>& cellLID,
     CellJacobianBatch& jBatch) const
 {
-  TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), InternalError,
+  TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), std::logic_error,
     "cellDim=" << cellDim 
     << " is not in expected range [0, " << spatialDim()
     << "]");

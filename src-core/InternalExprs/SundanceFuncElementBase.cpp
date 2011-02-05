@@ -57,7 +57,7 @@ std::ostream& FuncElementBase::toText(std::ostream& os, bool /* paren */) const
 bool FuncElementBase::lessThan(const ScalarExpr* other) const
 {
   const FuncElementBase* f = dynamic_cast<const FuncElementBase*>(other);
-  TEST_FOR_EXCEPTION(f==0, InternalError, "cast should never fail at this point");
+  TEST_FOR_EXCEPTION(f==0, std::logic_error, "cast should never fail at this point");
   
   return (fid() < f->fid());
 }

@@ -6,7 +6,7 @@
  */
 
 #include "SundanceGaussLobattoQuadrature.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 
 using namespace Sundance;
 
@@ -471,7 +471,7 @@ void GaussLobattoQuadrature::getAdaptedQuadWeights(int cellLID, const Mesh& mesh
 	int nr2DPoints = quadQuadPoints.size();
 
 	//those must be equal
-	TEST_FOR_EXCEPTION( quadPoints.size() != quadQuadPoints.size() , RuntimeError,
+	TEST_FOR_EXCEPTION( quadPoints.size() != quadQuadPoints.size() , std::runtime_error,
 			"quadPoints.size() != quadQuadPoints.size() , size1:" << quadPoints.size() << " , size2:" << quadQuadPoints.size());
 	for (int q = 0; q < nr2DPoints; q++) {
 		SUNDANCE_MSG3(verb_, " Quad point quadWeights["<<q<<"]="<<quadWeights[q]);
@@ -644,7 +644,7 @@ void GaussLobattoQuadrature::getAdaptedQuadWeights(int cellLID, const Mesh& mesh
 			    break;}
 			default:{
 				// throw error
-				TEST_FOR_EXCEPTION( true , RuntimeError , "Quad cell not integrable:" << intersectioncaseStack[listI]);
+				TEST_FOR_EXCEPTION( true , std::runtime_error , "Quad cell not integrable:" << intersectioncaseStack[listI]);
 			    break; }
 			}
 		}

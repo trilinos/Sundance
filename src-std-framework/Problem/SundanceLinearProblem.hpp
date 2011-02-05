@@ -55,7 +55,7 @@ public:
    * and a vector type. */
   LinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
     const Expr& test, const Expr& unk, 
-    const TSFExtended::VectorType<double>& vecType
+    const Playa::VectorType<double>& vecType
     );
     
   /** Construct with a mesh, equation set, bcs, and blocks of variables */
@@ -67,7 +67,7 @@ public:
   LinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
     const Expr& test, const Expr& unk, 
     const Expr& unkParams, const Expr& unkParamVals, 
-    const TSFExtended::VectorType<double>& vecType);
+    const Playa::VectorType<double>& vecType);
     
   /** Construct with a mesh, equation set, bcs, parameters, and blocks of
       variables */
@@ -114,12 +114,6 @@ public:
   /** Return the number of block cols in the problem  */
   int numBlockCols() const ;
 
-
-  /** Convert from a BC-partitioned solution vector to a 
-   * monolithic vector */
-  Vector<double> 
-  convertToMonolithicVector(const Array<Vector<double> >& internalBlock,
-    const Array<Vector<double> >& bcBlock) const ;
 
   /** */
   Expr formSolutionExpr(const Array<Vector<double> >& vec) const ;

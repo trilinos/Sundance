@@ -30,7 +30,7 @@
 
 #include "SundanceUnknownFunctionData.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 
 using namespace Sundance;
 using namespace Sundance;
@@ -44,11 +44,11 @@ using namespace Teuchos;
 const UnknownFunctionData* UnknownFunctionData
 ::getData(const UnknownFuncElement* dfe)
 {
-  TEST_FOR_EXCEPTION(dfe==0, RuntimeError, 
+  TEST_FOR_EXCEPTION(dfe==0, std::runtime_error, 
                      "null argument to UnknownFunctionData::getData()");
   RCP<const UnknownFunctionData> rtn 
     = rcp_dynamic_cast<const UnknownFunctionData>(dfe->commonData());
-  TEST_FOR_EXCEPTION(rtn.get()==0, RuntimeError, 
+  TEST_FOR_EXCEPTION(rtn.get()==0, std::runtime_error, 
                      "cast to UnknownFunctionData* failed for "
                      "discrete function element " << dfe->toXML());
   return rtn.get();

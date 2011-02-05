@@ -29,7 +29,7 @@
 /* @HEADER@ */
 
 #include "SundanceLabeledSubsetCellFilter.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 
 using namespace Sundance;
 using namespace Sundance;
@@ -55,7 +55,7 @@ bool LabeledSubsetCellFilter::lessThan(const CellFilterBase* other) const
     = dynamic_cast<const LabeledSubsetCellFilter*>(other);
 
   TEST_FOR_EXCEPTION(L==0,
-                     InternalError,
+                     std::logic_error,
                      "argument " << other->toXML() 
                      << " to LabeledSubsetCellFilter::lessThan() should be "
                      "a LabeledSubsetCellFilter pointer.");

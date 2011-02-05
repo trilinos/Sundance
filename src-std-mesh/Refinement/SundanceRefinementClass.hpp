@@ -9,13 +9,13 @@
 #define SUNDANCEREFINEMENTCLASS_HPP_
 
 #include "SundanceRefinementBase.hpp"
-#include "SundanceHandle.hpp"
+#include "PlayaHandle.hpp"
 
 namespace Sundance{
 
 using namespace Teuchos;
 
-class RefinementClass : public Sundance::Handle<RefinementBase> {
+class RefinementClass : public Playa::Handle<RefinementBase> {
 public:
 
 	/* Handle constructors */

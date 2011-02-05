@@ -39,8 +39,8 @@
 #include "SundanceBasicSimplicialMeshType.hpp"
 #include "SundancePartitionedLineMesher.hpp"
 #include "SundancePartitionedRectangleMesher.hpp"
-#include "TSFEpetraVectorType.hpp"
-#include "TSFLinearSolverBuilder.hpp"
+#include "PlayaEpetraVectorType.hpp"
+#include "PlayaLinearSolverBuilder.hpp"
 #include "SundanceGaussianQuadrature.hpp"
 #include "SundanceCoordExpr.hpp"
 #include "SundanceCellDiameterExpr.hpp"
@@ -162,7 +162,7 @@ Array<double> L2NormCalculator::computeNorms(
 
   Array<int> p = prob->pExpected();
   TEST_FOR_EXCEPTION(p.size() != errFunc.size(),
-    RuntimeError,
+    std::runtime_error,
     "size mismatch between array of expected orders (p=" << p << ") and "
     "array of solutions: " << errFunc.size());
  

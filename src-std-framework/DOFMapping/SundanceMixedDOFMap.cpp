@@ -34,7 +34,7 @@
 #include "SundanceMaximalCellFilter.hpp"
 #include "Teuchos_MPIContainerComm.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
@@ -956,5 +956,5 @@ void MixedDOFMap::checkTable() const
   int anyBad = bad;
   comm().allReduce((void*) &bad, (void*) &anyBad, 1, 
     MPIComm::INT, MPIComm::SUM);
-  TEST_FOR_EXCEPTION(anyBad > 0, RuntimeError, "invalid DOF map");
+  TEST_FOR_EXCEPTION(anyBad > 0, std::runtime_error, "invalid DOF map");
 }

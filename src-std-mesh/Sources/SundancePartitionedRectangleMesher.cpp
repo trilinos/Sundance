@@ -69,7 +69,7 @@ Mesh PartitionedRectangleMesher::fillMesh() const
   int np = nProc();
 	int rank = myRank();
 
-	TEST_FOR_EXCEPTION(npx_ * npy_ != np, RuntimeError,
+	TEST_FOR_EXCEPTION(npx_ * npy_ != np, std::runtime_error,
                      "PartitionedRectangleMesher::fillLocalMesh(): product "
                      "of npx=" << npx_ << " and npy=" << npy_
                      << " is not equal to np=" << np);

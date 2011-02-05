@@ -31,9 +31,9 @@
 #include "SundanceChainRuleSum.hpp"
 #include "SundanceEvalManager.hpp"
 #include "SundanceEvalVector.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceSet.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceOut.hpp"
 
 using namespace Sundance;
@@ -109,7 +109,7 @@ void ChainRuleSum
   for (int i=0; i<varArgDerivs.size(); i++)
     {
       int s = varArgDerivs[i]->length();
-      TEST_FOR_EXCEPTION(vecSize != -1 && s != vecSize, InternalError,
+      TEST_FOR_EXCEPTION(vecSize != -1 && s != vecSize, std::logic_error,
                          "inconsistent vector sizes " << vecSize
                          << " and " << s);
       vecSize = s;
@@ -119,7 +119,7 @@ void ChainRuleSum
       for (int j=0; j<vArgResults[i]->size(); j++)
         {
           int s = (*(vArgResults[i]))[j]->length();
-          TEST_FOR_EXCEPTION(vecSize != -1 && s != vecSize, InternalError,
+          TEST_FOR_EXCEPTION(vecSize != -1 && s != vecSize, std::logic_error,
                              "inconsistent vector sizes " << vecSize
                              << " and " << s);
           vecSize = s;

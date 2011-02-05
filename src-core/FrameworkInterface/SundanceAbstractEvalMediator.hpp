@@ -65,7 +65,7 @@ public:
   virtual ~AbstractEvalMediator(){;}
 
   /** */
-  void setVerbosity(int verb, int dfVerb) const 
+  void setVerb(int verb, int dfVerb) const 
     {verb_ = verb; dfVerb_=dfVerb;}
 
   /** */
@@ -98,7 +98,7 @@ public:
   virtual void evalCurveNormExpr(const CurveNormExpr* expr,
     RCP<EvalVector>& vec) const
     {
-	  TEST_FOR_EXCEPTION( true , RuntimeError,
+	  TEST_FOR_EXCEPTION( true , std::runtime_error,
 		" EvalMediator::evalCurveNormExpr , not possible with the current EvalMediator (only with CurveEvalMediator)");
     }
 

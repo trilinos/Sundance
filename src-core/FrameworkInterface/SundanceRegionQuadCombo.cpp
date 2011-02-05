@@ -28,7 +28,8 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
+#include "SundanceOut.hpp"
 #include "SundanceRegionQuadCombo.hpp"
 
 using namespace Sundance;

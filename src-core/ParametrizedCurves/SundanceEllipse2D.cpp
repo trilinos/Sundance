@@ -55,7 +55,7 @@ Expr Ellipse2D::getParams() const
 double Ellipse2D::curveEquation(const Point& evalPoint) const
 {
 	int verb = 0;
-	TEST_FOR_EXCEPTION(evalPoint.dim() != 2, RuntimeError,
+	TEST_FOR_EXCEPTION(evalPoint.dim() != 2, std::runtime_error,
 			"Ellipse2D::curveEquation() evaluation point dimension must be 2");
 
 	// calculate the distance compared to the middle point

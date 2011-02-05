@@ -9,8 +9,8 @@
 #define SUNDANCEDOMAINDEFINITION_HPP_
 
 #include "SundanceDefs.hpp"
-#include "SundanceHandleable.hpp"
-#include "SundanceHandle.hpp"
+#include "PlayaHandleable.hpp"
+#include "PlayaHandle.hpp"
 #include "SundancePoint.hpp"
 
 #include "SundanceParametrizedCurve.hpp"
@@ -22,7 +22,7 @@ using namespace Teuchos;
 /** define the predicate also with estimation */
 #define MESH_DOMAIN_(name, code) \
   class name : public MeshDomainBase, \
-               public Sundance::Handleable<MeshDomainBase> \
+               public Playa::Handleable<MeshDomainBase> \
   { \
   public:\
     name() : MeshDomainBase(){;}            \
@@ -55,7 +55,7 @@ public:
 
 /**  Class defines mesh domain based on parametrized curve */
 class CurveDomain : public MeshDomainBase ,
-                    public Sundance::Handleable<MeshDomainBase>{
+                    public Playa::Handleable<MeshDomainBase>{
 public:
 
 	/** Ctor with the 2 necessary input arguments */
@@ -86,7 +86,7 @@ private:
 
 // ---------------
 
-class MeshDomainDef : public Sundance::Handle<MeshDomainBase> {
+class MeshDomainDef : public Playa::Handle<MeshDomainBase> {
 public:
 
 	/* Handle constructors */

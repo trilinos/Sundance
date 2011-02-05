@@ -43,7 +43,7 @@ using namespace Teuchos;
      * FieldWriterBase is a base class for objects that write fields
      * and/or meshes to a stream. 
      */
-    class FieldWriterBase : public Sundance::Handleable<FieldWriterBase>,
+    class FieldWriterBase : public Playa::Handleable<FieldWriterBase>,
                             public ObjectWithClassVerbosity<FieldWriterBase>
     {
     public:

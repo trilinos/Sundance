@@ -33,7 +33,7 @@
 
 
 #include "SundanceDefs.hpp"
-#include "SundanceHandleable.hpp"
+#include "PlayaHandleable.hpp"
 #include "SundanceFieldBase.hpp"
 #include "SundanceDiscreteFunction.hpp"
 #include "SundanceDiscreteSpace.hpp"

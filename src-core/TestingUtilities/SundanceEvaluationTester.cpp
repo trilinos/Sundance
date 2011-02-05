@@ -33,8 +33,8 @@
 #include "SundanceOut.hpp"
 #include "SundanceExpr.hpp"
 #include "SundanceZeroExpr.hpp"
-#include "SundanceTabs.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaTabs.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
 #include "SundanceUnknownFuncElement.hpp"
 #include "SundanceMultiIndex.hpp"
@@ -62,7 +62,7 @@ EvaluationTester::EvaluationTester(const Expr& e, int maxDiffOrder)
     unkIDToDiscreteIDMap_(),
     maxDiffOrder_(maxDiffOrder)
 {
-  setVerbosity(classVerbosity());
+  setVerb(classVerbosity());
   Tabs tabs;
 
   SUNDANCE_VERB_LOW(tabs << "creating tester for expression " << e.toString());
@@ -129,7 +129,7 @@ EvaluationTester::EvaluationTester(const Expr& e, int maxDiffOrder)
     Tabs tabs1;
     const UnknownFuncElement* fe 
       = dynamic_cast<const UnknownFuncElement*>(unks[i].ptr().get());
-    TEST_FOR_EXCEPTION(fe==0, InternalError,
+    TEST_FOR_EXCEPTION(fe==0, std::logic_error,
       "unk " << unks[i] << " is not an UnknownFunction");
 
     RCP<const UnknownFuncDataStub> data 
@@ -138,14 +138,14 @@ EvaluationTester::EvaluationTester(const Expr& e, int maxDiffOrder)
     RCP<const TestUnknownFuncData> tufd  
       = rcp_dynamic_cast<const TestUnknownFuncData>(data);
 
-    TEST_FOR_EXCEPTION(tufd.get()==0, InternalError,
+    TEST_FOR_EXCEPTION(tufd.get()==0, std::logic_error,
       "unk " << unks[i] << " is not a TestUnknownFunction");
 
     Expr discFunc = tufd->createDiscreteFunction(fe->name());
 
     const DiscreteFuncElement* df 
       = dynamic_cast<const DiscreteFuncElement*>(discFunc[0].ptr().get());
-    TEST_FOR_EXCEPTION(df==0, InternalError,
+    TEST_FOR_EXCEPTION(df==0, std::logic_error,
       "df " << discFunc 
       << " is not a DiscreteFuncElement");
 
@@ -286,13 +286,13 @@ double EvaluationTester::evaluate() const
            iter=md.begin(); iter != md.end(); iter++)
     {
       const Deriv& d = *iter;
-      TEST_FOR_EXCEPTION(d.isCoordDeriv(), InternalError,
+      TEST_FOR_EXCEPTION(d.isCoordDeriv(), std::logic_error,
         "coordinate deriv found in TestEvalMediator::"
         "sumFunctionalChainRule");
       int uid = d.fid().dofID();
       SUNDANCE_VERB_EXTREME("deriv=" << d << " uid=" << uid);
       TEST_FOR_EXCEPTION(!unkIDToDiscreteIDMap_.containsKey(uid),
-        InternalError,
+        std::logic_error,
         "uid " << uid << " not found in map " 
         <<unkIDToDiscreteIDMap_ );
       int fid = unkIDToDiscreteIDMap_.get(uid);
@@ -390,13 +390,13 @@ double EvaluationTester::evaluate(Array<double>& firstDerivs) const
            iter=md.begin(); iter != md.end(); iter++)
     {
       const Deriv& d = *iter;
-      TEST_FOR_EXCEPTION(d.isCoordDeriv(), InternalError,
+      TEST_FOR_EXCEPTION(d.isCoordDeriv(), std::logic_error,
         "coordinate deriv found in TestEvalMediator::"
         "sumFunctionalChainRule");
       int uid = d.fid().dofID();
       SUNDANCE_VERB_EXTREME("deriv=" << d << " uid=" << uid);
       TEST_FOR_EXCEPTION(!unkIDToDiscreteIDMap_.containsKey(uid),
-        InternalError,
+        std::logic_error,
         "uid " << uid << " not found in map " 
         <<unkIDToDiscreteIDMap_ );
       int fid = unkIDToDiscreteIDMap_.get(uid);
@@ -509,13 +509,13 @@ double EvaluationTester::evaluate(Array<double>& firstDerivs,
            iter=md.begin(); iter != md.end(); iter++)
     {
       const Deriv& d = *iter;
-      TEST_FOR_EXCEPTION(d.isCoordDeriv(), InternalError,
+      TEST_FOR_EXCEPTION(d.isCoordDeriv(), std::logic_error,
         "coordinate deriv found in TestEvalMediator::"
         "sumFunctionalChainRule");
       int uid = d.fid().dofID();
       SUNDANCE_VERB_EXTREME("deriv=" << d << " uid=" << uid);
       TEST_FOR_EXCEPTION(!unkIDToDiscreteIDMap_.containsKey(uid),
-        InternalError,
+        std::logic_error,
         "uid " << uid << " not found in map " 
         <<unkIDToDiscreteIDMap_ );
       int fid = unkIDToDiscreteIDMap_.get(uid);

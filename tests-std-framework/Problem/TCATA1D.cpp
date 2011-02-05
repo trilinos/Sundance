@@ -37,7 +37,7 @@
 #include "NOX.H"
 #include "NOX_Common.H"
 #include "NOX_Utils.H"
-#include "NOX_TSF_Group.H"
+#include "NOX_Playa_Group.hpp"
 
 /** 
  * Solves the groundwater flow system in 1D using the NOX solver. 
@@ -127,7 +127,7 @@ int main(int argc, char** argv)
       Expr q0 = u0[1];
      
  
-/* Create a TSF NonlinearOperator object */
+/* Create a Playa NonlinearOperator object */
       std::cerr << "about to make nonlinear object" << std::endl;
       std::cerr.flush();
 
@@ -155,7 +155,7 @@ int main(int argc, char** argv)
 
       /* Now let's create a NOX solver */
 
-      NOX::TSF::Group grp(x0, F, linSolver);
+      NOX::Playa::Group grp(x0, F, linSolver);
 
       grp.verbosity() = VerbExtreme;
 

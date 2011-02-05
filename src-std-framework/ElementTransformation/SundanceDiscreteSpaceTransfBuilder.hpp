@@ -18,13 +18,13 @@
 #include "SundanceTransformationBase.hpp"
 #include "SundanceInequivalentElementTransformation.hpp"
 
-#include "TSFVectorType.hpp"
-#include "TSFVectorDecl.hpp"
+#include "PlayaVectorType.hpp"
+#include "PlayaVectorDecl.hpp"
 
 namespace Sundance {
 
   using namespace Teuchos;
-  using namespace TSFExtended;
+  using namespace Playa;
 
   /** This builds a transformation for one discrete space <br>
    *  The class also calls the transformation method of the created transformation object

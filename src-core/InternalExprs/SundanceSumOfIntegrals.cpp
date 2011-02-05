@@ -31,7 +31,7 @@
 #include "SundanceSumOfIntegrals.hpp"
 #include "SundanceSpatiallyConstantExpr.hpp"
 #include "SundanceSpectralPreprocessor.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 
 using namespace Sundance;
 using namespace Teuchos;
@@ -162,7 +162,7 @@ RCP<CellFilterStub> SumOfIntegrals::nullRegion() const
     }
   }
   
-  TEST_FOR_EXCEPTION(true, RuntimeError,
+  TEST_FOR_EXCEPTION(true, std::runtime_error,
                      "SumOfIntegrals::nullRegion() called on a sum "
                      "of integrals with no non-null regions");
 
@@ -281,7 +281,7 @@ XMLObject SumOfIntegrals::toXML() const
 bool SumOfIntegrals::lessThan(const ScalarExpr* other) const
 {
   const SumOfIntegrals* f = dynamic_cast<const SumOfIntegrals*>(other);
-  TEST_FOR_EXCEPTION(f==0, InternalError, "cast should never fail at this point");
+  TEST_FOR_EXCEPTION(f==0, std::logic_error, "cast should never fail at this point");
   
   return rqcToExprMap_ < f->rqcToExprMap_;
 }

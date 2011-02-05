@@ -34,7 +34,7 @@
 #include "SundanceUserDefOp.hpp"
 #include "SundanceUserDefOpElement.hpp"
 #include "SundanceSparsitySuperset.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceOut.hpp"
 
 using namespace Sundance;
@@ -86,7 +86,7 @@ UserDefOpCommonEvaluator
             }
         }
       /* Check to make sure a zeroth derivative has been found. */
-      TEST_FOR_EXCEPTION(argValueIndex_[i]==-1, RuntimeError,
+      TEST_FOR_EXCEPTION(argValueIndex_[i]==-1, std::runtime_error,
                          "no zeroth derivative found for argument #" << i
                          << " of " << expr->toString());
     }
@@ -106,7 +106,7 @@ void UserDefOpCommonEvaluator
   SUNDANCE_MSG3(mgr.verb(), tab0 << "num points = " << numPoints);
   SUNDANCE_MSG2(mgr.verb(), tab0 << "max diff order = " << maxOrder_);
 
-  TEST_FOR_EXCEPTION(numPoints==0, InternalError,
+  TEST_FOR_EXCEPTION(numPoints==0, std::logic_error,
                      "Empty vector detected in evalArgDerivs()"); 
 
   /* Get an array of pointers for the argument vectors.
@@ -138,7 +138,7 @@ void UserDefOpCommonEvaluator
     }
 
   /* Allocate vectors for the function values and derivatives */
-  TEST_FOR_EXCEPTION(maxOrder_ > 2, RuntimeError,
+  TEST_FOR_EXCEPTION(maxOrder_ > 2, std::runtime_error,
                      "Differentiation order " << maxOrder_ << ">2 not supported "
                      "for user-defined operators");
   int rangeDim = functor_->rangeDim();

@@ -31,7 +31,7 @@
 #include "SundanceExplicitFunctionalDerivativeElement.hpp"
 
 #include "SundanceEFDEEvaluator.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceOut.hpp"
 
 using namespace Sundance;
@@ -232,7 +232,7 @@ bool ExplicitFunctionalDerivativeElement
 {
   const ExplicitFunctionalDerivativeElement* e 
     = dynamic_cast<const ExplicitFunctionalDerivativeElement*>(other);
-  TEST_FOR_EXCEPTION(e==0, InternalError, "cast should never fail at this point");
+  TEST_FOR_EXCEPTION(e==0, std::logic_error, "cast should never fail at this point");
   
   if (fd_ < e->fd_) return true;
   if (e->fd_ < fd_) return false;

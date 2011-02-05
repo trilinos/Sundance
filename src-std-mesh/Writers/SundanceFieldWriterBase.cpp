@@ -29,9 +29,9 @@
 /* @HEADER@ */
 
 #include "SundanceFieldWriterBase.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 
 
 using namespace Sundance;
@@ -88,7 +88,7 @@ void FieldWriterBase::addMesh(const Mesh& mesh)
       meshID_ = mesh.id();
     }
                      
-  TEST_FOR_EXCEPTION(meshID_ != mesh.id(), RuntimeError,
+  TEST_FOR_EXCEPTION(meshID_ != mesh.id(), std::runtime_error,
                      "FieldWriterBase::setMesh(): inconsistent meshes: "
                      "existing mesh has meshID=" << meshID_ << ", newly "
                      "added mesh has meshID=" << mesh.id());
@@ -102,7 +102,7 @@ void FieldWriterBase::addField(const std::string& name,
 
   if (expr->numElems() > 1)
     {
-      //TEST_FOR_EXCEPTION(expr->numElems() > 1, RuntimeError,
+      //TEST_FOR_EXCEPTION(expr->numElems() > 1, std::runtime_error,
       //                   "FieldWriterBase::addField not ready for vector fields");
 
 	  std::cout << "WARNING! : expr->numElems() > 1 , FieldWriterBase::addField only VTK can plot vector field " << std::endl;

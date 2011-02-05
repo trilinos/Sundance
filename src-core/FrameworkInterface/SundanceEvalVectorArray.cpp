@@ -31,7 +31,7 @@
 
 #include "SundanceEvalVectorArray.hpp"
 #include "SundanceSparsitySuperset.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 
 using namespace Sundance;
 using namespace Sundance;
@@ -67,7 +67,7 @@ ostream& EvalVectorArray::print(std::ostream& os,
 {
   Tabs tab;
   TEST_FOR_EXCEPTION(derivs->numDerivs() != this->size(),
-                     InternalError,
+                     std::logic_error,
                      "mismatch between deriv set size=" << derivs->numDerivs()
                      << "and result vector size " << this->size()
                      << "in EvalVectorArray::print");

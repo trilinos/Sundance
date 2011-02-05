@@ -33,7 +33,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceQuadratureFamilyBase.hpp"
-#include "SundanceHandle.hpp"
+#include "PlayaHandle.hpp"
 
 namespace Sundance
 {
@@ -44,7 +44,7 @@ namespace Sundance
  * a GaussianQuadrature family will generate Gaussian
  * quadrature points on any cell type.
  */
-class QuadratureFamily : public Sundance::Handle<QuadratureFamilyStub>
+class QuadratureFamily : public Playa::Handle<QuadratureFamilyStub>
 {
 public:
   /* */

@@ -33,7 +33,7 @@
 #include "SundanceDiffOp.hpp"
 
 
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceUnknownFuncElement.hpp"
 #include "SundanceTestFuncElement.hpp"
@@ -146,7 +146,7 @@ DiffOpEvaluator
         SUNDANCE_MSG3(verb, tab2 << "getting coefficient of " << *j);
 
         int argIndex = argSparsitySuperset()->getIndex(*j);
-        TEST_FOR_EXCEPTION(argIndex==-1, RuntimeError,
+        TEST_FOR_EXCEPTION(argIndex==-1, std::runtime_error,
           "Derivative " << *j << " expected in argument "
           "but not found");
 
@@ -187,7 +187,7 @@ DiffOpEvaluator
 
           const UnknownFuncElement* u 
             = dynamic_cast<const UnknownFuncElement*>(f);
-          TEST_FOR_EXCEPTION(u==0, InternalError,
+          TEST_FOR_EXCEPTION(u==0, std::logic_error,
             "Non-unknown function detected where an unknown "
             "function was expected in "
             "DiffOpEvaluator ctor");
@@ -196,14 +196,14 @@ DiffOpEvaluator
           const EvaluatableExpr* evalPt = u->evalPt();
           const ZeroExpr* z = dynamic_cast<const ZeroExpr*>(evalPt);
           if (z != 0) continue;
-          TEST_FOR_EXCEPTION(z != 0, InternalError,
+          TEST_FOR_EXCEPTION(z != 0, std::logic_error,
             "DiffOpEvaluator detected identically zero "
             "function");
 
           const DiscreteFuncElement* df 
             = dynamic_cast<const DiscreteFuncElement*>(evalPt);
           
-          TEST_FOR_EXCEPTION(df==0, InternalError,
+          TEST_FOR_EXCEPTION(df==0, std::logic_error,
             "DiffOpEvaluator ctor: evaluation point of "
             "unknown function " << u->toString() 
             << " is not a discrete function");
@@ -214,12 +214,12 @@ DiffOpEvaluator
           const DiscreteFuncElementEvaluator* dfEval = uEval->dfEval();
 
 
-          TEST_FOR_EXCEPTION(dfEval==0, InternalError,
+          TEST_FOR_EXCEPTION(dfEval==0, std::logic_error,
             "DiffOpEvaluator ctor: evaluator for "
             "evaluation point is not a "
             "DiscreteFuncElementEvaluator");
 
-          TEST_FOR_EXCEPTION(!dfEval->hasMultiIndex(mi), InternalError,
+          TEST_FOR_EXCEPTION(!dfEval->hasMultiIndex(mi), std::logic_error,
             "DiffOpEvaluator ctor: evaluator for "
             "discrete function " << df->toString()
             << " does not know about multiindex "
@@ -258,7 +258,7 @@ DiffOpEvaluator
         }
         else
         {
-          TEST_FOR_EXCEPTION(true, InternalError,
+          TEST_FOR_EXCEPTION(true, std::logic_error,
             "DiffOpEvaluator has been asked to preprocess a Deriv that "
             "is not a simple partial derivative. The problem child is: "
             << lambda);
@@ -283,7 +283,7 @@ DiffOpEvaluator
              j=isolatedTerms.begin(); j != isolatedTerms.end(); j++)
       {
         int argIndex = argSparsitySuperset()->getIndex(*j);
-        TEST_FOR_EXCEPTION(argIndex==-1, RuntimeError,
+        TEST_FOR_EXCEPTION(argIndex==-1, std::runtime_error,
           "Derivative " << *j << " expected in argument "
           "but not found");
         const DerivState& argState = argSparsitySuperset()->state(argIndex);
@@ -615,7 +615,7 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
       SUNDANCE_MSG4(mgr.verb(), tab2 << "result is " << result->str());
     }
 
-    TEST_FOR_EXCEPTION(!vecHasBeenAllocated, InternalError,
+    TEST_FOR_EXCEPTION(!vecHasBeenAllocated, std::logic_error,
       "created empty vector in DiffOpEvaluator::internalEval");
     vectorResults[resultIndices_[i]] = result;
   }

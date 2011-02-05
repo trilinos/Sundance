@@ -74,7 +74,7 @@ double runRadDiff1D(int nx, double* hMean)
   Expr bc = EssentialBC(left, v*(u-1.0), quad)
     + EssentialBC(right, v*(u-2.0), quad); 
 
-  /* Create a TSF NonlinearOperator object */
+  /* Create a Playa NonlinearOperator object */
   NonlinearProblem prob(mesh, eqn, bc, v, u, u0, vecType);
 
   

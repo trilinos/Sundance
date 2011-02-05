@@ -31,9 +31,9 @@
 #include "SundanceSubtypeEvaluator.hpp"
 #include "SundanceEvalManager.hpp"
 #include "SundanceCellVectorExpr.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceSet.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceOut.hpp"
 
 using namespace Sundance;
@@ -60,7 +60,7 @@ CellVectorEvaluator::CellVectorEvaluator(const CellVectorExpr* expr,
   SUNDANCE_MSG2(verb, tabs << "return sparsity " 
     << std::endl << *(this->sparsity)());
 
-  TEST_FOR_EXCEPTION(this->sparsity()->numDerivs() >1 , InternalError,
+  TEST_FOR_EXCEPTION(this->sparsity()->numDerivs() >1 , std::logic_error,
     "CellVectorEvaluator ctor found a sparsity table "
     "with more than one entry. The bad sparsity table is "
     << *(this->sparsity)());
@@ -75,7 +75,7 @@ CellVectorEvaluator::CellVectorEvaluator(const CellVectorExpr* expr,
     const MultipleDeriv& d = this->sparsity()->deriv(i);
 
     /* for a zeroth-order derivative, evaluate the coord expr */
-    TEST_FOR_EXCEPTION(d.order() != 0, RuntimeError, 
+    TEST_FOR_EXCEPTION(d.order() != 0, std::runtime_error, 
       "Derivative " << d << " is not valid for "
       "CellVectorEvaluator");
     addVectorIndex(i, 0);

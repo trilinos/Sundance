@@ -1,5 +1,5 @@
 #include "SundanceMeshReaderBase.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundancePathUtils.hpp"
 #include "SundanceOut.hpp"
 
@@ -70,7 +70,7 @@ RCP<std::ifstream> MeshReaderBase::openFile(const std::string& fname,
   SUNDANCE_OUT(this->verb() > 2,
                "trying to open " << description << " file " << f);
 
-  TEST_FOR_EXCEPTION(rtn.get()==0 || *rtn==0, RuntimeError, 
+  TEST_FOR_EXCEPTION(rtn.get()==0 || *rtn==0, std::runtime_error, 
                      "MeshReaderBase::openFile() unable to open "
                      << description << " file " << f);
 

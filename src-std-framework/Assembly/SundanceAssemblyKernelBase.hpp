@@ -42,17 +42,15 @@
 #include "SundanceEvalManager.hpp"
 #include "SundanceStdFwkEvalMediator.hpp"
 #include "SundanceEvaluatableExpr.hpp"
-#include "TSFLoadableVector.hpp"
-#include "TSFLoadableMatrix.hpp"
-#include "TSFLinearOperatorDecl.hpp"
-#include "TSFVectorDecl.hpp"
-#include "TSFVectorType.hpp"
+#include "PlayaLoadableVector.hpp"
+#include "PlayaLoadableMatrix.hpp"
+#include "PlayaLinearOperatorDecl.hpp"
+#include "PlayaVectorDecl.hpp"
+#include "PlayaVectorType.hpp"
 #include "Teuchos_HashSet.hpp"
 #include "Teuchos_ParameterList.hpp"
-#include "TSFIncrementallyConfigurableMatrixFactory.hpp"
-#include "TSFCollectivelyConfigurableMatrixFactory.hpp"
-#include "TSFPartitionedMatrixFactory.hpp"
-#include "TSFPartitionedToMonolithicConverter.hpp"
+#include "PlayaIncrementallyConfigurableMatrixFactory.hpp"
+#include "PlayaCollectivelyConfigurableMatrixFactory.hpp"
 
 namespace Sundance
 {
@@ -125,7 +123,7 @@ public:
    * (This function needs to be virtual because certain subclasses need specialized
    * implementations that propagate verbosity to children 
   */
-  virtual void setVerbosity(int verb) {verb_=verb;}
+  virtual void setVerb(int verb) {verb_=verb;}
 
 private:
   int verb_;

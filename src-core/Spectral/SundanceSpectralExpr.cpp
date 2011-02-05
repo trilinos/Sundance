@@ -33,7 +33,7 @@
 #include "SundanceSpectralBasis.hpp"
 #include "SundanceScalarExpr.hpp"
 #include "SundanceComplexExpr.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "Teuchos_Array.hpp"
 
 using namespace Teuchos;
@@ -94,7 +94,7 @@ bool SpectralExpr::hasTestFunctions() const
   for (int i=1; i<coeffs_.size(); i++)
     {
       TEST_FOR_EXCEPTION(coeffs_[i].ptr()->hasTestFunctions() != rtn,
-                         InternalError,
+                         std::logic_error,
                          "expr " << toString() << " has a mix of test and "
                          "non-test coefficients");
     }
@@ -107,7 +107,7 @@ bool SpectralExpr::hasUnkFunctions() const
   for (int i=1; i<coeffs_.size(); i++)
     {
       TEST_FOR_EXCEPTION(coeffs_[i].ptr()->hasUnkFunctions() != rtn,
-                         InternalError,
+                         std::logic_error,
                          "expr " << toString() << " has a mix of unk and "
                          "non-unk coefficients");
     }
@@ -122,7 +122,7 @@ bool SpectralExpr::hasHungryDiffOp() const
       Expr im = coeffs_[i].imag();
       const ScalarExpr* sr = dynamic_cast<const ScalarExpr*>(re.ptr().get());
       const ScalarExpr* si = dynamic_cast<const ScalarExpr*>(im.ptr().get());
-      TEST_FOR_EXCEPTION(sr == 0 || si == 0, InternalError,
+      TEST_FOR_EXCEPTION(sr == 0 || si == 0, std::logic_error,
                          "spectral expr " << toString() << " contains a "
                          "non-scalar coefficient");
       if (sr->isHungryDiffOp() || si->isHungryDiffOp()) return true;
@@ -158,7 +158,7 @@ XMLObject SpectralExpr::toXML() const
 bool  SpectralExpr::lessThan(const ScalarExpr* other) const
 {
   const SpectralExpr* s = dynamic_cast<const SpectralExpr*>(other);
-  TEST_FOR_EXCEPTION(s==0, InternalError, "cast should never fail at this point");
+  TEST_FOR_EXCEPTION(s==0, std::logic_error, "cast should never fail at this point");
   if (coeffs_.size() < s->coeffs_.size()) return true;
   if (coeffs_.size() > s->coeffs_.size()) return false;
   for (int i=0; i<coeffs_.size(); i++)
@@ -177,7 +177,7 @@ namespace Sundance
   {
     const SpectralExpr* s 
       = dynamic_cast<const SpectralExpr*>(e[0].ptr().get());
-    TEST_FOR_EXCEPTION(s!=0, RuntimeError,
+    TEST_FOR_EXCEPTION(s!=0, std::runtime_error,
                        "getSpectralCoeff() called on non-spectral expr "
                        << e.toString());
     return s->getCoeff(i);
@@ -188,7 +188,7 @@ namespace Sundance
   {
     const SpectralExpr* s 
       = dynamic_cast<const SpectralExpr*>(e[0].ptr().get());
-    TEST_FOR_EXCEPTION(s!=0, RuntimeError,
+    TEST_FOR_EXCEPTION(s!=0, std::runtime_error,
                        "getSpectralBasis() called on non-spectral expr "
                        << e.toString());
     return s->getSpectralBasis();

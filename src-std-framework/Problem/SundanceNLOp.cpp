@@ -30,17 +30,17 @@
 
 #include "SundanceNLOp.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceAssembler.hpp"
 #include "SundanceDiscreteFunction.hpp"
 #include "SundanceEquationSet.hpp"
 #include "SundanceLinearSolveDriver.hpp"
-#include "TSFLinearSolverDecl.hpp"
+#include "PlayaLinearSolverDecl.hpp"
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
-#include "TSFLinearOperatorImpl.hpp"
-#include "TSFLinearSolverImpl.hpp"
-#include "TSFLinearCombinationImpl.hpp"
+#include "PlayaLinearOperatorImpl.hpp"
+#include "PlayaLinearSolverImpl.hpp"
+#include "PlayaLinearCombinationImpl.hpp"
 #endif
 
 using namespace Sundance;
@@ -52,7 +52,7 @@ using namespace Sundance;
 using namespace Sundance;
 using namespace Teuchos;
 using namespace std;
-using namespace TSFExtended;
+using namespace Playa;
 
 
 static Time& nlpCtorTimer() 
@@ -107,7 +107,7 @@ NLOp::NLOp(const Mesh& mesh,
 
   discreteU0_ = dynamic_cast<DiscreteFunction*>(u0_.ptr().get());
 
-  TEST_FOR_EXCEPTION(discreteU0_==0, RuntimeError,
+  TEST_FOR_EXCEPTION(discreteU0_==0, std::runtime_error,
     "null discrete function pointer in "
     "NLOp ctor");
 
@@ -154,7 +154,7 @@ NLOp::NLOp(const Mesh& mesh,
 
   discreteU0_ = dynamic_cast<DiscreteFunction*>(u0_.ptr().get());
 
-  TEST_FOR_EXCEPTION(discreteU0_==0, RuntimeError,
+  TEST_FOR_EXCEPTION(discreteU0_==0, std::runtime_error,
     "null discrete function pointer in "
     "NLOp ctor");
 
@@ -177,7 +177,7 @@ NLOp::NLOp(const RCP<Assembler>& assembler,
   TimeMonitor timer(nlpCtorTimer());
   discreteU0_ = dynamic_cast<DiscreteFunction*>(u0_.ptr().get());
 
-  TEST_FOR_EXCEPTION(discreteU0_==0, RuntimeError,
+  TEST_FOR_EXCEPTION(discreteU0_==0, std::runtime_error,
     "null discrete function pointer in "
     "NLOp ctor");
 
@@ -187,9 +187,9 @@ NLOp::NLOp(const RCP<Assembler>& assembler,
   setDomainAndRange(domain, range);
 }
 
-TSFExtended::Vector<double> NLOp::getInitialGuess() const 
+Playa::Vector<double> NLOp::getInitialGuess() const 
 {
-  TEST_FOR_EXCEPTION(discreteU0_==0, RuntimeError,
+  TEST_FOR_EXCEPTION(discreteU0_==0, std::runtime_error,
     "null discrete function pointer in "
     "NLOp::getInitialGuess()");
   
@@ -219,11 +219,11 @@ computeJacobianAndFunction(Vector<double>& functionValue) const
   /* Set the vector underlying the discrete 
    * function to the evaluation point*/
 
-  TEST_FOR_EXCEPTION(discreteU0_==0, RuntimeError,
+  TEST_FOR_EXCEPTION(discreteU0_==0, std::runtime_error,
     "null discrete function pointer in "
     "NLOp::jacobian()");
 
-  TEST_FOR_EXCEPTION(currentEvalPt().ptr().get()==0, RuntimeError,
+  TEST_FOR_EXCEPTION(currentEvalPt().ptr().get()==0, std::runtime_error,
     "null evaluation point in "
     "NLOp::jacobian()");
 
@@ -244,19 +244,19 @@ computeJacobianAndFunction(LinearOperator<double>& J,
   /* Set the vector underlying the discrete 
    * function to the evaluation point*/
 
-  TEST_FOR_EXCEPTION(discreteU0_==0, RuntimeError,
+  TEST_FOR_EXCEPTION(discreteU0_==0, std::runtime_error,
     "null discrete function pointer in "
     "NLOp::jacobian()");
 
-  TEST_FOR_EXCEPTION(currentEvalPt().ptr().get()==0, RuntimeError,
+  TEST_FOR_EXCEPTION(currentEvalPt().ptr().get()==0, std::runtime_error,
     "null evaluation point in "
     "NLOp::jacobian()");
 
-  TEST_FOR_EXCEPTION(J.ptr().get()==0, RuntimeError,
+  TEST_FOR_EXCEPTION(J.ptr().get()==0, std::runtime_error,
     "null Jacobian pointer in "
     "NLOp::jacobian()");
 
-  TEST_FOR_EXCEPTION(resid.ptr().get()==0, RuntimeError,
+  TEST_FOR_EXCEPTION(resid.ptr().get()==0, std::runtime_error,
     "null residual pointer in "
     "NLOp::jacobian()");
 
@@ -280,17 +280,18 @@ Vector<double> NLOp::computeFunctionValue() const
   /* Set the vector underlying the discrete 
    * function to the evaluation point*/
 
-  TEST_FOR_EXCEPTION(discreteU0_==0, RuntimeError,
+  TEST_FOR_EXCEPTION(discreteU0_==0, std::runtime_error,
     "null discrete function pointer in "
     "NLOp::computeFunctionValue()");
 
-  TEST_FOR_EXCEPTION(currentEvalPt().ptr().get()==0, RuntimeError,
+  TEST_FOR_EXCEPTION(currentEvalPt().ptr().get()==0, std::runtime_error,
     "null evaluation point in "
     "NLOp::computeFunctionValue()");
 
   discreteU0_->setVector(currentEvalPt());
 
-  Vector<double> rtn = createMember(range());
+  VectorSpace<double> spc = range();
+  Vector<double> rtn = spc.createMember();
 
   Array<Vector<double> > mv(1);
   mv[0] = rtn;
@@ -309,15 +310,15 @@ void NLOp::computeFunctionValue(Vector<double>& resid) const
   /* Set the vector underlying the discrete 
    * function to the evaluation point*/
 
-  TEST_FOR_EXCEPTION(discreteU0_==0, RuntimeError,
+  TEST_FOR_EXCEPTION(discreteU0_==0, std::runtime_error,
     "null discrete function pointer in "
     "NLOp::computeFunctionValue()");
 
-  TEST_FOR_EXCEPTION(currentEvalPt().ptr().get()==0, RuntimeError,
+  TEST_FOR_EXCEPTION(currentEvalPt().ptr().get()==0, std::runtime_error,
     "null evaluation point in "
     "NLOp::computeFunctionValue()");
 
-  TEST_FOR_EXCEPTION(resid.ptr().get()==0, RuntimeError,
+  TEST_FOR_EXCEPTION(resid.ptr().get()==0, std::runtime_error,
     "null residual pointer in "
     "NLOp::computeFunctionValue()");
 
@@ -340,19 +341,19 @@ computeSensitivities(const LinearSolver<double>& solver) const
   /* Set the vector underlying the discrete 
    * function to the evaluation point*/
 
-  TEST_FOR_EXCEPTION(discreteU0_==0, RuntimeError,
+  TEST_FOR_EXCEPTION(discreteU0_==0, std::runtime_error,
     "null discrete function pointer in "
     "NLOp::computeSensitivities()");
 
-  TEST_FOR_EXCEPTION(currentEvalPt().ptr().get()==0, RuntimeError,
+  TEST_FOR_EXCEPTION(currentEvalPt().ptr().get()==0, std::runtime_error,
     "null evaluation point in "
     "NLOp::computeSensitivities()");
 
-  TEST_FOR_EXCEPTION(J_.ptr().get()==0, RuntimeError,
+  TEST_FOR_EXCEPTION(J_.ptr().get()==0, std::runtime_error,
     "null Jacobian pointer in "
     "NLOp::computeSensitivities()");
 
-  TEST_FOR_EXCEPTION(params_.ptr().get()==0, RuntimeError,
+  TEST_FOR_EXCEPTION(params_.ptr().get()==0, std::runtime_error,
     "null parameters in NLOp::computeSensitivities()");
 
 

@@ -30,9 +30,9 @@
 
 #include "SundanceEFDEEvaluator.hpp"
 #include "SundanceEvalManager.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceSet.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceOut.hpp"
 
 using namespace Sundance;
@@ -96,12 +96,12 @@ EFDEEvaluator::EFDEEvaluator(
       int argIndex = argSparsitySuperset()->getIndex(dArg);
 
       
-      TEST_FOR_EXCEPTION(argIndex==-1, RuntimeError,
+      TEST_FOR_EXCEPTION(argIndex==-1, std::runtime_error,
         "Derivative " << dArg << " expected in argument but not found");
 
       
       const DerivState& argState = argSparsitySuperset()->state(argIndex);
-      TEST_FOR_EXCEPTION(argState != myState, InternalError, 
+      TEST_FOR_EXCEPTION(argState != myState, std::logic_error, 
         "mismatched states");
 
       if (argState==ConstantDeriv)

@@ -30,13 +30,13 @@
 
 #include "Sundance.hpp"
 #include "SundanceEvaluator.hpp"
-#include "NOX_TSF_StatusTestBuilder.H"
+#include "NOX_Playa_StatusTestBuilder.hpp"
 
-#include "TSFNOXSolver.H"
+#include "PlayaNOXSolver.hpp"
 #include "NOX.H"
 #include "NOX_Common.H"
 #include "NOX_Utils.H"
-#include "NOX_TSF_Group.H"
+#include "NOX_Playa_Group.hpp"
 
 /** 
  * Solves the Poisson equation in 2D using the NOX solver. 
@@ -93,7 +93,7 @@ int main(int argc, char** argv)
       Expr u0 = new DiscreteFunction(discSpace, 1.0, "u0");
 
 
-      /* Create a TSF NonlinearOperator object */
+      /* Create a Playa NonlinearOperator object */
       NonlinearProblem prob(mesh, eqn, bc, v, u, u0, vecType);
       
 

@@ -29,8 +29,8 @@
 /* @HEADER@ */
 
 #include "SundanceMapStructure.hpp"
-#include "SundanceTabs.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaTabs.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceBasisDOFTopologyBase.hpp"
 #include "SundanceOut.hpp"
 
@@ -75,7 +75,7 @@ void MapStructure::init(int nTotalFuncs,
   chunkForFuncID_.resize(nTotalFuncs);
   indexForFuncID_.resize(nTotalFuncs);
 
-  TEST_FOR_EXCEPTION(bases.size() != funcs.size(), InternalError,
+  TEST_FOR_EXCEPTION(bases.size() != funcs.size(), std::logic_error,
                      "mismatched number of basis chunks=" << bases.size()
                      << " and number of function chunks=" << funcs.size());
 
@@ -90,7 +90,7 @@ void MapStructure::init(int nTotalFuncs,
       for (int f=0; f<funcs_[b].size(); f++)
         {
           int fid = funcs_[b][f];
-          TEST_FOR_EXCEPTION(fid >= nTotalFuncs, InternalError,
+          TEST_FOR_EXCEPTION(fid >= nTotalFuncs, std::logic_error,
                              "bad funcID=" << fid 
                              << ". nTotalFuncs=" << nTotalFuncs);
           indexForFuncID_[fid] = f;
@@ -102,7 +102,7 @@ void MapStructure::init(int nTotalFuncs,
 int MapStructure::chunkForFuncID(int funcID) const 
 {
   int rtn = chunkForFuncID_[funcID];
-  TEST_FOR_EXCEPTION(rtn < 0, InternalError,
+  TEST_FOR_EXCEPTION(rtn < 0, std::logic_error,
                      "funcID=" << funcID << " not defined in map chunk."
                      " The functions defined there are " 
                      << funcs_ << ". The most likely cause of this error is "
@@ -114,7 +114,7 @@ int MapStructure::chunkForFuncID(int funcID) const
 int MapStructure::indexForFuncID(int funcID) const 
 {
   int rtn = indexForFuncID_[funcID];
-  TEST_FOR_EXCEPTION(rtn < 0, InternalError,
+  TEST_FOR_EXCEPTION(rtn < 0, std::logic_error,
                      "funcID=" << funcID << " not defined in map chunk."
                      " The functions defined there are " 
                      << funcs_ << ". The most likely cause of this error is "

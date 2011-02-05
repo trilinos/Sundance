@@ -29,7 +29,7 @@
 /* @HEADER@ */
 
 #include "SundanceFieldBase.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceCellFilter.hpp"
 #include "SundanceMaximalCellFilter.hpp"
 #include "SundanceMesh.hpp"

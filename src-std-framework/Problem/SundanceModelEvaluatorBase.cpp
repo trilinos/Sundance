@@ -32,7 +32,7 @@
 
 
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceModelEvaluatorBase.hpp"
 
 #ifdef HAVE_SUNDANCE_MOOCHO
@@ -122,26 +122,26 @@ void SundanceModelEvaluator
   if (MPIComm::world().getRank()==0) SUNDANCE_VERB_MEDIUM(tabs << 
                        "------------------calling eval model -----------------------");
   /* read input args. The const casts are needed until ConstVector is ready */
-  TSFExtended::Vector<double> x = rcp_const_cast<VectorBase<double> >(inArgs.get_x());
+  Playa::Vector<double> x = rcp_const_cast<VectorBase<double> >(inArgs.get_x());
 
-  TSFExtended::Vector<double> p = rcp_const_cast<VectorBase<double> >(inArgs.get_p(0));
+  Playa::Vector<double> p = rcp_const_cast<VectorBase<double> >(inArgs.get_p(0));
 
 
   /* Get objects into which the output value will be written */
 
   /* constraint residual */
-  TSFExtended::Vector<double> f = outArgs.get_f();
+  Playa::Vector<double> f = outArgs.get_f();
 
   /* objective function value */
-  TSFExtended::Vector<double> g = outArgs.get_g(0);
+  Playa::Vector<double> g = outArgs.get_g(0);
 
   /* df/dx */
-  TSFExtended::LinearOperator<double> df_dx = 
+  Playa::LinearOperator<double> df_dx = 
     rcp_dynamic_cast<LinearOpBase<double> >(outArgs.get_W_op());
   
   if (outArgs.get_W_op().get()!=0) 
     {
-      TEST_FOR_EXCEPTION(df_dx.ptr().get()==0, RuntimeError,  
+      TEST_FOR_EXCEPTION(df_dx.ptr().get()==0, std::runtime_error,  
                          "W_op is non-null but could not be cast to "
                          "a SingleScalarTypeOpBase<double>");
     }
@@ -186,7 +186,7 @@ void SundanceModelEvaluator
 
   if (outArgs.get_W_op().get()!=0) 
     {
-      TEST_FOR_EXCEPTION(df_dx.ptr().get()==0, RuntimeError,  
+      TEST_FOR_EXCEPTION(df_dx.ptr().get()==0, std::runtime_error,  
                          "W_op is non-null but could not be cast to a "
                          "SingleScalarTypeOpBase<double>");
     }

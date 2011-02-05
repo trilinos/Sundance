@@ -1,7 +1,7 @@
 //@HEADER
 // ***********************************************************************
 // 
-//           TSFExtended: Trilinos Solver Framework Extended
+//           Playa: Trilinos Solver Framework Extended
 //                 Copyright (2004) Sandia Corporation
 // 
 // Under terms of Contract DE-AC04-94AL85000, there is a non-exclusive
@@ -27,15 +27,15 @@
 //@HEADER
 
 #include "Teuchos_GlobalMPISession.hpp"
-#include "TSFGlobalAnd.hpp"
-#include "TSFVectorDecl.hpp"
-#include "TSFVectorType.hpp"
-#include "TSFVectorSpaceDecl.hpp"
-#include "TSFEpetraVectorType.hpp"
-#include "TSFSerialVectorType.hpp"
+#include "PlayaGlobalAnd.hpp"
+#include "PlayaVectorDecl.hpp"
+#include "PlayaVectorType.hpp"
+#include "PlayaVectorSpaceDecl.hpp"
+#include "PlayaEpetraVectorType.hpp"
+#include "PlayaSerialVectorType.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_MPIComm.hpp"
-#include "TSFVectorTester.hpp"
+#include "PlayaVectorTester.hpp"
 
 
 #ifdef _MSC_VER
@@ -43,8 +43,8 @@
 #endif
 
 using namespace Teuchos;
-using namespace TSFExtended;
-using namespace TSFExtendedOps;
+using namespace Playa;
+using namespace PlayaOps;
 
 
 bool runTest(int nProc, int rank, const VectorType<double>& vecType)

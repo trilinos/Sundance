@@ -101,7 +101,7 @@ public:
     const Array<Set<int> >& requiredFunc);
 
   /** */
-  void setVerbosity(int v) const {verb_ = v;}
+  void setVerb(int v) const {verb_ = v;}
 
 private:
 

@@ -33,7 +33,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceMeshTransformationBase.hpp"
-#include "SundanceHandle.hpp"
+#include "PlayaHandle.hpp"
 
 namespace Sundance
 {
@@ -57,14 +57,14 @@ namespace Sundance
    * Mesh mesh3D = extruder.apply(mesh2D);
    * \endcode
    */
-  class MeshTransformation : public Sundance::Handle<MeshTransformationBase>
+  class MeshTransformation : public Playa::Handle<MeshTransformationBase>
   {
   public:
     /** Construct an empty mesh filter object */
     MeshTransformation();
 
     /** Construct from a raw pointer to a mesh filter subtype */
-    MeshTransformation(Sundance::Handleable<MeshTransformationBase>* rawPtr);
+    MeshTransformation(Playa::Handleable<MeshTransformationBase>* rawPtr);
 
     /** Construct from a smart pointer to a mesh filter subtype */
     MeshTransformation(const RCP<MeshTransformationBase>& smartPtr);

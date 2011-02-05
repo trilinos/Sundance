@@ -1,7 +1,7 @@
 //@HEADER
 // ***********************************************************************
 // 
-//           TSFExtended: Trilinos Solver Framework Extended
+//           Playa: Trilinos Solver Framework Extended
 //                 Copyright (2004) Sandia Corporation
 // 
 // Under terms of Contract DE-AC04-94AL85000, there is a non-exclusive
@@ -29,30 +29,30 @@
 
 #include <cstdlib>
 #include "Teuchos_GlobalMPISession.hpp"
-#include "TSFSerialVectorType.hpp"
-#include "TSFDenseSerialMatrix.hpp"
-#include "TSFVectorType.hpp"
-#include "TSFVectorOpsDecl.hpp"
-#include "TSFSimpleDiagonalOpDecl.hpp"
-#include "TSFSimpleComposedOpDecl.hpp"
-#include "TSFLinearCombinationImpl.hpp"
+#include "PlayaSerialVectorType.hpp"
+#include "PlayaDenseSerialMatrix.hpp"
+#include "PlayaVectorType.hpp"
+#include "PlayaVectorOpsDecl.hpp"
+#include "PlayaSimpleDiagonalOpDecl.hpp"
+#include "PlayaSimpleComposedOpDecl.hpp"
+#include "PlayaLinearCombinationImpl.hpp"
 #include "SundanceOut.hpp"
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
-#include "TSFLinearOperatorImpl.hpp"
-#include "TSFVectorOpsImpl.hpp"
-#include "TSFVectorImpl.hpp"
-#include "TSFLinearOperatorImpl.hpp"
-#include "TSFSimpleDiagonalOpImpl.hpp"
-#include "TSFSimpleComposedOpImpl.hpp"
+#include "PlayaLinearOperatorImpl.hpp"
+#include "PlayaVectorOpsImpl.hpp"
+#include "PlayaVectorImpl.hpp"
+#include "PlayaLinearOperatorImpl.hpp"
+#include "PlayaSimpleDiagonalOpImpl.hpp"
+#include "PlayaSimpleComposedOpImpl.hpp"
 #endif
 
 
 
 using namespace Teuchos;
 using namespace Sundance;
-using namespace TSFExtended;
-using namespace TSFExtendedOps;
+using namespace Playa;
+using namespace PlayaOps;
 using std::endl;
 
 int main(int argc, char *argv[]) 
@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
       APtr->setRow(4, tuple(13.0, 14.0,  15.0));
 
       Out::os() << "A = " << std::endl;
-      A.setVerbosity(10);
+      A.setVerb(10);
       Out::os() << A << std::endl;
 
       LinearOperator<double> U;
@@ -93,14 +93,14 @@ int main(int argc, char *argv[])
       denseSVD(A, U, sigma, Vt);
 
       Out::os() << "U = " << std::endl;
-      U.setVerbosity(10);
+      U.setVerb(10);
       Out::os() << U << std::endl;
 
       Out::os() << "sigma = " << std::endl;
       Out::os() << sigma << std::endl; 
 
       Out::os() << "Vt = " << std::endl;
-      Vt.setVerbosity(10);
+      Vt.setVerb(10);
       Out::os() << Vt << std::endl;
 
       int nSamples = 10;
@@ -112,9 +112,9 @@ int main(int argc, char *argv[])
         Vector<double> x = domain.createMember();
         randomize(x);
         
-        U.setVerbosity(0);
-        Vt.setVerbosity(0);
-        A.setVerbosity(0);
+        U.setVerb(0);
+        Vt.setVerb(0);
+        A.setVerb(0);
         
         LinearOperator<double> Sigma = diagonalOperator(sigma);
         

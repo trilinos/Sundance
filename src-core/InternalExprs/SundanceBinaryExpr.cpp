@@ -48,7 +48,7 @@ BinaryExpr::BinaryExpr(const RCP<ScalarExpr>& left,
 bool BinaryExpr::lessThan(const ScalarExpr* other) const
 {
   const BinaryExpr* b = dynamic_cast<const BinaryExpr*>(other);
-  TEST_FOR_EXCEPTION(b==0, InternalError, "cast should never fail at this point");
+  TEST_FOR_EXCEPTION(b==0, std::logic_error, "cast should never fail at this point");
   
   if (sign_ < b->sign_) return true;
   if (sign_ > b->sign_) return false;

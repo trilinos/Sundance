@@ -1,5 +1,5 @@
 #include "SundanceExtrusionMeshTransformation.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceOut.hpp"
 
 using namespace Sundance;
@@ -12,7 +12,7 @@ using namespace Sundance;
 
 Mesh ExtrusionMeshTransformation::apply(const Mesh& inputMesh) const
 {
-  TEST_FOR_EXCEPTION(inputMesh.spatialDim() != 2, RuntimeError,
+  TEST_FOR_EXCEPTION(inputMesh.spatialDim() != 2, std::runtime_error,
                      "ExtrusionMeshTransformation::applyLocal() given mesh with "
                      "dimension " << inputMesh.spatialDim() << ". The "
                      "extrusion filter expects a 2D mesh as input");
@@ -54,7 +54,7 @@ Mesh ExtrusionMeshTransformation::apply(const Mesh& inputMesh) const
   int tetCount = 0;
 
   TEST_FOR_EXCEPTION(inputMesh.cellType(2) != TriangleCell,
-                     RuntimeError,
+                     std::runtime_error,
                      "ExtrusionMeshTransformation::applyLocal() detected a "
                      "non-triangular mesh");
 	for (int i=0; i<nTri; i++)

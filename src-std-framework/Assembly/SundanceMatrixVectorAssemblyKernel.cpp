@@ -29,21 +29,21 @@
 /* @HEADER@ */
 
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceMatrixVectorAssemblyKernel.hpp"
-#include "TSFSimpleZeroOpDecl.hpp"
+#include "PlayaSimpleZeroOpDecl.hpp"
 
 
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
-#include "TSFSimpleZeroOpImpl.hpp"
+#include "PlayaSimpleZeroOpImpl.hpp"
 #endif
 
 using namespace Sundance;
 using namespace Sundance;
 using namespace Sundance;
 using namespace Teuchos;
-using namespace TSFExtended;
+using namespace Playa;
 using std::setw;
 using std::setprecision;
 using std::ios_base;
@@ -84,8 +84,8 @@ void MatrixVectorAssemblyKernel::init(
         = dynamic_cast<const SimpleZeroOp<double>*>(matBlock.ptr().get());
       if (zp) continue;
       mat_[br][bc] 
-        = dynamic_cast<TSFExtended::LoadableMatrix<double>* >(matBlock.ptr().get());
-      TEST_FOR_EXCEPTION(mat_[br][bc]==0, RuntimeError,
+        = dynamic_cast<Playa::LoadableMatrix<double>* >(matBlock.ptr().get());
+      TEST_FOR_EXCEPTION(mat_[br][bc]==0, std::runtime_error,
         "matrix block (" << br << ", " << bc 
         << ") is not loadable in Assembler::assemble()");
       mat_[br][bc]->zero();

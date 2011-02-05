@@ -32,13 +32,13 @@
 
 
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
-#include "TSFNOXSolver.H"
+#include "PlayaTabs.hpp"
+#include "PlayaNOXSolver.H"
 #include "SundanceNLPModelEvaluator.hpp"
 
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
-#include "TSFVectorImpl.hpp"
+#include "PlayaVectorImpl.hpp"
 #endif
 
 #ifdef HAVE_SUNDANCE_MOOCHO 
@@ -116,14 +116,14 @@ void SundanceNLPModelEvaluator::internalEvalModel(const Vector<double>& stateVec
 {
   Tabs tabs;
 
-  TEST_FOR_EXCEPTION(params.ptr().get()==0, RuntimeError,
+  TEST_FOR_EXCEPTION(params.ptr().get()==0, std::runtime_error,
                      "null params vector!");
   TEST_FOR_EXCEPTION( (int) paramExpr_.size() != params.space().dim(),
-                      RuntimeError,
+                      std::runtime_error,
                       "Mismatch between input parameter vector space and "
                       "symbolic parameter object size");
 
-  TEST_FOR_EXCEPTION(stateVec.ptr().get()==0, RuntimeError,
+  TEST_FOR_EXCEPTION(stateVec.ptr().get()==0, std::runtime_error,
                      "null state vector!");
 
 
@@ -240,9 +240,9 @@ Expr SundanceNLPModelEvaluator
 ::solveForward(const ParameterList& fwdParams) const
 {
 
-  RCP<TSFExtended::NonlinearOperatorBase<double> > p 
+  RCP<Playa::NonlinearOperatorBase<double> > p 
     = rcp(&prob_, false);
-  TSFExtended::NonlinearOperator<double> prob = p;
+  Playa::NonlinearOperator<double> prob = p;
 
 
   /* set up the nonlinear solver */
@@ -255,7 +255,7 @@ Expr SundanceNLPModelEvaluator
       numContSteps = getParameter<int>(nonlinParams, "Number of Continuation Steps");
     }
 
-  TSFExtended::NOXSolver solver(nonlinParams, prob);
+  Playa::NOXSolver solver(nonlinParams, prob);
 
 
   /* set the design parameters as given in the the XML input */

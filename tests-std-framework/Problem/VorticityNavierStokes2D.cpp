@@ -31,7 +31,7 @@
 #include "Sundance.hpp"
 #include "SundanceEvaluator.hpp"
 
-#include "TSFNOXSolver.H"
+#include "PlayaNOXSolver.hpp"
 
 using Sundance::List;
 /** 
@@ -116,7 +116,7 @@ int main(int argc, char** argv)
       DiscreteSpace discSpace(mesh, Sundance::List(L1, L1), vecType);
       Expr u0 = new DiscreteFunction(discSpace, 0.0, "u0");
 
-      /* Create a TSF NonlinearOperator object */
+      /* Create a Playa NonlinearOperator object */
       NonlinearProblem prob(mesh, eqn, bc, List(vPsi, vOmega),
         List(psi, omega), u0, vecType);
 

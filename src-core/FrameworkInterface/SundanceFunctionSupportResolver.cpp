@@ -29,7 +29,7 @@
 /* @HEADER@ */
 
 #include "SundanceFunctionSupportResolver.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceSumOfBCs.hpp"
 #include "SundanceRegionQuadCombo.hpp"
 #include "SundanceOut.hpp"
@@ -37,7 +37,7 @@
 #include "SundanceSpectralExpr.hpp"
 #include "SundanceUnknownParameterElement.hpp"
 #include "SundanceTestFuncElement.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 
 using namespace Sundance;
 using namespace Sundance;
@@ -95,10 +95,10 @@ FunctionSupportResolver::FunctionSupportResolver(
   /* begin with a sanity check to ensure that the input equation set 
    * exists and is integral form */
 
-  TEST_FOR_EXCEPTION(eqns.ptr().get()==0, RuntimeError,
+  TEST_FOR_EXCEPTION(eqns.ptr().get()==0, std::runtime_error,
     "FunctionSupportResolver ctor detected empty equation set input");
 
-  TEST_FOR_EXCEPTION(integralSum_==0, RuntimeError,
+  TEST_FOR_EXCEPTION(integralSum_==0, std::runtime_error,
     "FunctionSupportResolver ctor detected an input equation set that "
     "is not in integral form");
 
@@ -106,7 +106,7 @@ FunctionSupportResolver::FunctionSupportResolver(
   if (bcs.ptr().get() != 0)
   {
     bcSum_ = dynamic_cast<const SumOfBCs*>(bcs.ptr().get());
-    TEST_FOR_EXCEPTION(bcSum_==0, RuntimeError,
+    TEST_FOR_EXCEPTION(bcSum_==0, std::runtime_error,
       "FunctionSupport ctor detected an input Essential "
       "BC that is not an EssentialBC object. "
       "Object is " << bcs);
@@ -149,12 +149,12 @@ FunctionSupportResolver::FunctionSupportResolver(
       const TestFuncElement* t 
         = dynamic_cast<const TestFuncElement*>(vars[b][i].ptr().get());
       TEST_FOR_EXCEPTION(t == 0 && varsAreTestFunctions==true,
-        RuntimeError,
+        std::runtime_error,
         "variational function list " << vars
         << " contains a mix of test and "
         "non-test functions");
       TEST_FOR_EXCEPTION(t != 0 && i>0 && varsAreTestFunctions==false,
-        RuntimeError,
+        std::runtime_error,
         "variational function list " << vars
         << " contains a mix of test and "
         "non-test functions");
@@ -164,12 +164,12 @@ FunctionSupportResolver::FunctionSupportResolver(
 
   TEST_FOR_EXCEPTION(varsAreTestFunctions == true
     && isVariationalProblem_,
-    RuntimeError,
+    std::runtime_error,
     "test functions given to a variational equation set");
 
   TEST_FOR_EXCEPTION(varsAreTestFunctions == false
     && !isVariationalProblem_,
-    RuntimeError,
+    std::runtime_error,
     "variational functions are unknowns, but equation "
     "set is not variational");
 
@@ -232,7 +232,7 @@ FunctionSupportResolver::FunctionSupportResolver(
     {
       const UnknownFuncElement* u 
         = dynamic_cast<const UnknownFuncElement*>(unks[b][i].ptr().get());
-      TEST_FOR_EXCEPTION(u==0, RuntimeError, 
+      TEST_FOR_EXCEPTION(u==0, std::runtime_error, 
         "EquationSet ctor input unk function "
         << unks[b][i] 
         << " does not appear to be a unk function");
@@ -258,7 +258,7 @@ FunctionSupportResolver::FunctionSupportResolver(
   {
     const UnknownParameterElement* u 
       = dynamic_cast<const UnknownParameterElement*>(unkParams[i].ptr().get());
-    TEST_FOR_EXCEPTION(u==0, RuntimeError, 
+    TEST_FOR_EXCEPTION(u==0, std::runtime_error, 
       "EquationSet ctor input unk parameter "
       << unkParams[i] 
       << " does not appear to be a unk parameter");
@@ -278,7 +278,7 @@ FunctionSupportResolver::FunctionSupportResolver(
   {
     const UnknownParameterElement* u 
       = dynamic_cast<const UnknownParameterElement*>(fixedParams[i].ptr().get());
-    TEST_FOR_EXCEPTION(u==0, RuntimeError, 
+    TEST_FOR_EXCEPTION(u==0, std::runtime_error, 
       "EquationSet ctor input fixed parameter "
       << fixedParams[i] 
       << " does not appear to be a fixed parameter");
@@ -494,7 +494,7 @@ Expr FunctionSupportResolver::flattenSpectral(const Expr& expr) const
 
 int FunctionSupportResolver::reducedVarID(int varID) const 
 {
-  TEST_FOR_EXCEPTION(!hasVarID(varID), RuntimeError, 
+  TEST_FOR_EXCEPTION(!hasVarID(varID), std::runtime_error, 
     "varID " << varID << " not found in equation set");
 
   int b = blockForVarID(varID);
@@ -503,7 +503,7 @@ int FunctionSupportResolver::reducedVarID(int varID) const
 
 int FunctionSupportResolver::reducedUnkID(int unkID) const 
 {
-  TEST_FOR_EXCEPTION(!hasUnkID(unkID), RuntimeError, 
+  TEST_FOR_EXCEPTION(!hasUnkID(unkID), std::runtime_error, 
     "unkID " << unkID << " not found in equation set");
 
   int b = blockForUnkID(unkID);
@@ -513,7 +513,7 @@ int FunctionSupportResolver::reducedUnkID(int unkID) const
 
 int FunctionSupportResolver::reducedUnkParamID(int unkID) const 
 {
-  TEST_FOR_EXCEPTION(!hasUnkParamID(unkID), RuntimeError, 
+  TEST_FOR_EXCEPTION(!hasUnkParamID(unkID), std::runtime_error, 
     "unkParamID " << unkID << " not found in equation set");
 
   return unkParamIDToReducedUnkParamIDMap_.get(unkID);
@@ -521,7 +521,7 @@ int FunctionSupportResolver::reducedUnkParamID(int unkID) const
 
 int FunctionSupportResolver::reducedFixedParamID(int parID) const 
 {
-  TEST_FOR_EXCEPTION(!hasFixedParamID(parID), RuntimeError, 
+  TEST_FOR_EXCEPTION(!hasFixedParamID(parID), std::runtime_error, 
     "fixedParamID " << parID << " not found in equation set");
 
   return fixedParamIDToReducedFixedParamIDMap_.get(parID);
@@ -529,7 +529,7 @@ int FunctionSupportResolver::reducedFixedParamID(int parID) const
 
 int FunctionSupportResolver::blockForVarID(int varID) const 
 {
-  TEST_FOR_EXCEPTION(!varIDToBlockMap_.containsKey(varID), RuntimeError,
+  TEST_FOR_EXCEPTION(!varIDToBlockMap_.containsKey(varID), std::runtime_error,
     "key " << varID << " not found in map "
     << varIDToBlockMap_);
   return varIDToBlockMap_.get(varID);
@@ -537,7 +537,7 @@ int FunctionSupportResolver::blockForVarID(int varID) const
 
 int FunctionSupportResolver::blockForUnkID(int unkID) const 
 {
-  TEST_FOR_EXCEPTION(!unkIDToBlockMap_.containsKey(unkID), RuntimeError,
+  TEST_FOR_EXCEPTION(!unkIDToBlockMap_.containsKey(unkID), std::runtime_error,
     "key " << unkID << " not found in map "
     << unkIDToBlockMap_);
   return unkIDToBlockMap_.get(unkID);
@@ -545,7 +545,7 @@ int FunctionSupportResolver::blockForUnkID(int unkID) const
 
 const Set<OrderedHandle<CellFilterStub> >&  FunctionSupportResolver::regionsForTestFunc(int testID) const
 {
-  TEST_FOR_EXCEPTION(!testToRegionsMap_.containsKey(testID), RuntimeError,
+  TEST_FOR_EXCEPTION(!testToRegionsMap_.containsKey(testID), std::runtime_error,
     "key " << testID << " not found in map "
     << testToRegionsMap_);
   return testToRegionsMap_.get(testID);
@@ -553,7 +553,7 @@ const Set<OrderedHandle<CellFilterStub> >&  FunctionSupportResolver::regionsForT
 
 const Set<OrderedHandle<CellFilterStub> >&  FunctionSupportResolver::regionsForUnkFunc(int unkID) const
 {
-  TEST_FOR_EXCEPTION(!unkToRegionsMap_.containsKey(unkID), RuntimeError,
+  TEST_FOR_EXCEPTION(!unkToRegionsMap_.containsKey(unkID), std::runtime_error,
     "key " << unkID << " not found in map "
     << testToRegionsMap_);
   return unkToRegionsMap_.get(unkID);
@@ -561,7 +561,7 @@ const Set<OrderedHandle<CellFilterStub> >&  FunctionSupportResolver::regionsForU
 
 int FunctionSupportResolver::indexForRegion(const OrderedHandle<CellFilterStub>& region) const
 {
-  TEST_FOR_EXCEPTION(!regionToIndexMap_.containsKey(region), RuntimeError,
+  TEST_FOR_EXCEPTION(!regionToIndexMap_.containsKey(region), std::runtime_error,
     "key " << region << " not found in map "
     << regionToIndexMap_);
   return regionToIndexMap_.get(region);
@@ -590,7 +590,7 @@ RCP<const CommonFuncDataStub> getSharedFunctionData(const FuncElementBase* f)
     return rcp_dynamic_cast<const CommonFuncDataStub>(t->commonData());
   }
   
-  TEST_FOR_EXCEPTION( true, InternalError, 
+  TEST_FOR_EXCEPTION( true, std::logic_error, 
     "unrecognized function type: " << typeid(*f).name());
   return u->commonData(); // -Wall, will never be called;
 }

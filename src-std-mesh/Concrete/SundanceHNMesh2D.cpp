@@ -63,7 +63,7 @@ HNMesh2D::HNMesh2D(int dim, const MPIComm& comm ,
 	    const MeshEntityOrder& order)
 : MeshBase(dim, comm , order),_dimension(dim), _comm(comm)
 {
-	setVerbosity(0);
+	setVerb(0);
 	// get the number of processors
 	nrProc_ = MPIComm::world().getNProc();
 	myRank_ = MPIComm::world().getRank();
@@ -130,7 +130,7 @@ void HNMesh2D::getJacobians(int cellDim, const Array<int>& cellLID,
 {
 	  SUNDANCE_MSG3(verb(),"HNMesh2D::getJacobians  cellDim:"<<cellDim<<" _x:"<<_ofs_x<<" _y:"<<_ofs_y);
 	  SUNDANCE_VERB_HIGH("getJacobians()");
-	  TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), InternalError,
+	  TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), std::logic_error,
 	    "cellDim=" << cellDim << " is not in expected range [0, " << spatialDim() << "]");
 	  int nCells = cellLID.size();
 	  int LID;
@@ -151,7 +151,7 @@ void HNMesh2D::getJacobians(int cellDim, const Array<int>& cellLID,
 		          *detJ = sqrt(pnt * pnt); // the length of the edge
 		        break;
 		        default:
-		          TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value "  "cellDim=" << cellDim << " in HNMesh2D::getJacobians()");
+		          TEST_FOR_EXCEPTION(true, std::logic_error, "impossible switch value "  "cellDim=" << cellDim << " in HNMesh2D::getJacobians()");
 		      }
 		    }
 	  }else{ // they request the complete Jacoby matrix for this bunch of elements
@@ -172,7 +172,7 @@ void HNMesh2D::getJacobians(int cellDim, const Array<int>& cellLID,
 			      SUNDANCE_MSG3(verb() , "HNMesh2D::getJacobians X:" << J[0] << " Y:" << J[3] );
 		        break;
 		        default:
-		          TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value " "cellDim=" << cellDim << " in HNMesh2D::getJacobians()");
+		          TEST_FOR_EXCEPTION(true, std::logic_error, "impossible switch value " "cellDim=" << cellDim << " in HNMesh2D::getJacobians()");
 		      }
 		    }
 	  }
@@ -180,7 +180,7 @@ void HNMesh2D::getJacobians(int cellDim, const Array<int>& cellLID,
 
 void HNMesh2D::getCellDiameters(int cellDim, const Array<int>& cellLID,
                               Array<double>& cellDiameters) const {
-	 TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), InternalError,
+	 TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), std::logic_error,
 	    "cellDim=" << cellDim << " is not in expected range [0, " << spatialDim() << "]");
 	 SUNDANCE_VERB_HIGH("getCellDiameters()");
 	  cellDiameters.resize(cellLID.size());
@@ -202,7 +202,7 @@ void HNMesh2D::getCellDiameters(int cellDim, const Array<int>& cellLID,
 			      cellDiameters[i] = sqrt(pnt * pnt); // the length of the edge
 	        break;
 	        default:
-	          TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value "  "cellDim=" << cellDim << " in HNMesh2D::getCellDiameters()");
+	          TEST_FOR_EXCEPTION(true, std::logic_error, "impossible switch value "  "cellDim=" << cellDim << " in HNMesh2D::getCellDiameters()");
 	      }
 	    }
 	  }
@@ -219,7 +219,7 @@ void HNMesh2D::getCellDiameters(int cellDim, const Array<int>& cellLID,
 	          cellDiameters[i] = sqrt(pnt * pnt);
 	        break;
 	        default:
-	          TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value "
+	          TEST_FOR_EXCEPTION(true, std::logic_error, "impossible switch value "
 	           "cellDim=" << cellDim  << " in HNMesh2D::getCellDiameters()");
 	      }
 	    }
@@ -231,7 +231,7 @@ void HNMesh2D::pushForward(int cellDim, const Array<int>& cellLID,
                          Array<Point>& physQuadPts) const {
 
 	  SUNDANCE_MSG3(verb(),"HNMesh2D::pushForward cellDim:"<<cellDim);
-	  TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), InternalError,
+	  TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), std::logic_error,
 	    "cellDim=" << cellDim << " is not in expected range [0, " << spatialDim() << "]");
 
 	  int nQuad = refQuadPts.size();
@@ -265,7 +265,7 @@ void HNMesh2D::pushForward(int cellDim, const Array<int>& cellLID,
 		         }
 	      break;}
 	      default:
-	        TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value " "in HNMesh2D::getJacobians()");
+	        TEST_FOR_EXCEPTION(true, std::logic_error, "impossible switch value " "in HNMesh2D::getJacobians()");
 	    }
 	  }
 }
@@ -451,14 +451,14 @@ int HNMesh2D::maxCofacetLID(int cellDim, int cellLID,
 void HNMesh2D::getCofacets(int cellDim, int cellLID,
                  int cofacetDim, Array<int>& cofacetLIDs) const {
 	// Nothing to do
-    TEST_FOR_EXCEPTION(true, InternalError," HNMesh2D::getCofacets() not implemented");
+    TEST_FOR_EXCEPTION(true, std::logic_error," HNMesh2D::getCofacets() not implemented");
 }
 
 
 void HNMesh2D::getMaxCofacetLIDs(const Array<int>& cellLIDs,
   MaximalCofacetBatch& cofacets) const {
 	// nothing to do here
-    TEST_FOR_EXCEPTION(true, InternalError," HNMesh2D::getMaxCofacetLIDs() not implemented");
+    TEST_FOR_EXCEPTION(true, std::logic_error," HNMesh2D::getMaxCofacetLIDs() not implemented");
 }
 
 
@@ -529,7 +529,7 @@ CellType HNMesh2D::cellType(int cellDim) const  {
 
 int HNMesh2D::label(int cellDim, int cellLID) const {
    // not used
-   TEST_FOR_EXCEPTION(true, InternalError," HNMesh2D::label() not implemented yet");
+   TEST_FOR_EXCEPTION(true, std::logic_error," HNMesh2D::label() not implemented yet");
    return 0;
 }
 
@@ -537,24 +537,24 @@ int HNMesh2D::label(int cellDim, int cellLID) const {
 void HNMesh2D::getLabels(int cellDim, const Array<int>& cellLID,
 		Array<int>& labels) const {
    // not used
-   TEST_FOR_EXCEPTION(true, InternalError," HNMesh2D::getLabels() not implemented yet");
+   TEST_FOR_EXCEPTION(true, std::logic_error," HNMesh2D::getLabels() not implemented yet");
 }
 
 Set<int> HNMesh2D::getAllLabelsForDimension(int cellDim) const {
    Set<int>                 rtn;
    // not used
-   TEST_FOR_EXCEPTION(true, InternalError," HNMesh2D::getAllLabelsForDimension() not implemented yet");
+   TEST_FOR_EXCEPTION(true, std::logic_error," HNMesh2D::getAllLabelsForDimension() not implemented yet");
    return rtn;
 }
 
 void HNMesh2D::getLIDsForLabel(int cellDim, int label, Array<int>& cellLIDs) const {
     // not used
-	TEST_FOR_EXCEPTION(true, InternalError," HNMesh2D::getLIDsForLabel() not implemented yet");
+	TEST_FOR_EXCEPTION(true, std::logic_error," HNMesh2D::getLIDsForLabel() not implemented yet");
 }
 
 void HNMesh2D::setLabel(int cellDim, int cellLID, int label) {
    // not used
-   TEST_FOR_EXCEPTION(true, InternalError," HNMesh2D::setLabel() not implemented yet");
+   TEST_FOR_EXCEPTION(true, std::logic_error," HNMesh2D::setLabel() not implemented yet");
 }
 
 
@@ -638,7 +638,7 @@ void HNMesh2D::addVertex(int vertexLID , int ownerProc , bool isHanging ,
   // add only when the LID is new
   // WE ASSUME THAT THE "vertexLID" will come in increasing manner
   if (points_.size() <= vertexLID){
-	 TEST_FOR_EXCEPTION(vertexLID != nrElem_[0] , InternalError ,"HNMesh2D::addVertex " <<
+	 TEST_FOR_EXCEPTION(vertexLID != nrElem_[0] , std::logic_error ,"HNMesh2D::addVertex " <<
 			 " vertexLID:" << vertexLID << " nrElem_[0]:" << nrElem_[0] );
      Point pt(coordx,coordy);
      points_.append( pt );
@@ -657,7 +657,7 @@ void HNMesh2D::addEdge(int edgeLID , int ownerProc , bool isHanging , int edgeVe
 		               const Array<int> &vertexLIDs , const Array<int> &maxCoF){
 	  // add only when the edgeLID is new
 	  if (edgePoints_.size() <= edgeLID ){
-		 TEST_FOR_EXCEPTION(edgeLID != nrElem_[1], InternalError, "HNMesh2D::addEdge edgeLID != nrElem_[1]");
+		 TEST_FOR_EXCEPTION(edgeLID != nrElem_[1], std::logic_error, "HNMesh2D::addEdge edgeLID != nrElem_[1]");
 		 edgePoints_.append( vertexLIDs );
 		 edgeVertex_.append( edgeVertex );
 		 edgeMaxCoF_.append( maxCoF );
@@ -678,7 +678,7 @@ void HNMesh2D::addCell(int cellLID , int ownerProc ,
 		               const Array<int> &edgeLIDs , const Array<int> &vertexLIDs){
 	  // add only when the edgeLID is new
 	  if (cellsPoints_.size() <= cellLID ) {
-		 TEST_FOR_EXCEPTION(cellLID != nrElem_[2], InternalError, "HNMesh2D::cellLID cellLID != nrElem_[2]");
+		 TEST_FOR_EXCEPTION(cellLID != nrElem_[2], std::logic_error, "HNMesh2D::cellLID cellLID != nrElem_[2]");
 		 cellsPoints_.append( vertexLIDs );
 		 cellsEdges_.append( edgeLIDs );
 	     indexInParent_.append( indexInParent );
@@ -718,7 +718,7 @@ void HNMesh2D::createMesh(
 			          const MeshDomainDef& meshDomain
 ){
 
-	setVerbosity(0);
+	setVerb(0);
 
 	// initialize object fields
 	_pos_x = position_x; _pos_y = position_y;
@@ -761,7 +761,7 @@ void HNMesh2D::createCoarseMesh(){
 
 	SUNDANCE_MSG3(verb() , "HNMesh2D::createMesh nrCoarseCell:" << nrCoarseCell << " nrCoarsePoints:" << nrCoarsePoints
 			          << " nrCoarseEdge:" << nrCoarseEdge << " nrProc_:" << nrProc_ << " myRank_:" << myRank_);
-	TEST_FOR_EXCEPTION( nrCoarseCell < nrProc_ , InternalError," HNMesh2D::createMesh nrCoarseCell < nrProc_ ");
+	TEST_FOR_EXCEPTION( nrCoarseCell < nrProc_ , std::logic_error," HNMesh2D::createMesh nrCoarseCell < nrProc_ ");
 	// now always divide as a flow channel , no resolution driven division
 
     // calculate total load and load per coarse cell

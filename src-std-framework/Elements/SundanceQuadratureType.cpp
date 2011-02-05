@@ -29,20 +29,18 @@
 /* @HEADER@ */
 
 #include "SundanceQuadratureType.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 
 using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
+using Playa::Handle;
+using Playa::Handleable;
 
 int QuadratureType::findValidOrder(const CellType& cellType, int requestedOrder) const 
 {
   TEST_FOR_EXCEPTION(hasLimitedOrder(cellType) 
                      && requestedOrder > maxOrder(cellType),
-                     RuntimeError,
+                     std::runtime_error,
                      "order=" << requestedOrder << " not available on cell type "
                      << cellType);
 
@@ -54,7 +52,7 @@ int QuadratureType::findValidOrder(const CellType& cellType, int requestedOrder)
     {
       if (supports(cellType, r)) return r; 
     }
-  TEST_FOR_EXCEPTION(true, RuntimeError, "Could not find valid quadrature order "
+  TEST_FOR_EXCEPTION(true, std::runtime_error, "Could not find valid quadrature order "
                      "greater than " << requestedOrder << " for cell type "
                      << cellType);
   return -1; // -Wall

@@ -29,7 +29,7 @@
 /* @HEADER@ */
 
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceMapBundle.hpp"
 #include "SundanceDOFMapBase.hpp"
 #include "SundanceStdFwkEvalMediator.hpp"
@@ -63,7 +63,7 @@ MapBundle::MapBundle(
 int MapBundle::nCells() const 
 {
   TEST_FOR_EXCEPTION(localDOFMap_->isUnused() 
-    && cofacetLocalDOFMap_->isUnused(), RuntimeError,
+    && cofacetLocalDOFMap_->isUnused(), std::runtime_error,
     "no local DOF maps defined in call to MapBundle::nCells()");
 
   
@@ -78,7 +78,7 @@ int MapBundle::nCells() const
   else
   {
     TEST_FOR_EXCEPTION(localDOFMap_->nCells() != cofacetLocalDOFMap_->nCells(),
-      RuntimeError,
+      std::runtime_error,
       "mismatched cell counts in MapBundle::nCells()");
     return cofacetLocalDOFMap_->nCells();
   }
@@ -97,14 +97,14 @@ const RCP<LocalDOFMap>& MapBundle::chooseMap(
   if (useCofacets)
   {
     TEST_FOR_EXCEPTION(cofacetLocalDOFMap_->isUnused(block),
-      RuntimeError,
+      std::runtime_error,
       "request for unavailable cofacet-based local map for block = " << block);
     return cofacetLocalDOFMap_;
   }
   else
   {
     TEST_FOR_EXCEPTION(localDOFMap_->isUnused(block),
-      RuntimeError,
+      std::runtime_error,
       "request for unavailable local map for block = " << block);
     return localDOFMap_;
   }
@@ -125,8 +125,8 @@ void MapBundle::buildLocalDOFMaps(
 
   localDOFMap_->markAsUnused();
   cofacetLocalDOFMap_->markAsUnused();
-  localDOFMap_->setVerbosity(verbosity);
-  cofacetLocalDOFMap_->setVerbosity(verbosity);
+  localDOFMap_->setVerb(verbosity);
+  cofacetLocalDOFMap_->setVerb(verbosity);
 
   int maxCellDim = mediator->maxCellDim();
   int cellDim = mediator->cellDim();

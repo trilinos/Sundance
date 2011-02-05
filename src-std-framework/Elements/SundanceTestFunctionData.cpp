@@ -30,8 +30,8 @@
 
 #include "SundanceTestFunctionData.hpp"
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaTabs.hpp"
+#include "PlayaExceptions.hpp"
 
 using namespace Sundance;
 using namespace Sundance;
@@ -43,11 +43,11 @@ using namespace Teuchos;
 
 const TestFunctionData* TestFunctionData::getData(const TestFuncElement* dfe)
 {
-  TEST_FOR_EXCEPTION(dfe==0, RuntimeError, 
+  TEST_FOR_EXCEPTION(dfe==0, std::runtime_error, 
                      "null argument to UnknownFunctionData::getData()");
   RCP<const TestFunctionData> rtn 
     = rcp_dynamic_cast<const TestFunctionData>(dfe->commonData());
-  TEST_FOR_EXCEPTION(rtn.get()==0, RuntimeError, 
+  TEST_FOR_EXCEPTION(rtn.get()==0, std::runtime_error, 
                      "cast to TestFunctionData* failed for "
                      "discrete function element " << dfe->toXML());
   return rtn.get();

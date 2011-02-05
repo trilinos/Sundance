@@ -29,11 +29,10 @@
 /* @HEADER@ */
 
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceVectorFillingAssemblyKernel.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_TimeMonitor.hpp"
-#include "TSFLoadableBlockVector.hpp"
 
 
 
@@ -41,7 +40,7 @@ using namespace Sundance;
 using namespace Sundance;
 using namespace Sundance;
 using namespace Teuchos;
-using namespace TSFExtended;
+using namespace Playa;
 using std::setw;
 using std::endl;
       
@@ -79,24 +78,10 @@ VectorFillingAssemblyKernel::VectorFillingAssemblyKernel(
       Tabs tab1;
       SUNDANCE_MSG1(verb(), tab1 << "getting vector for block b=" 
         << block << " of " << numBlocks);
-      Vector<double> vecBlock; 
-      if (partitionBCs && numBlocks == 1)
-      {
-        Tabs tab2;
-        SUNDANCE_MSG1(verb(), tab2 << "making loadable block vector");
-        vecBlock = b[i];
-        int lowestRow = mapBundle_.lowestLocalIndex(block) ;
-        int highestRow = lowestRow + mapBundle_.dofMap(block)->numLocalDOFs();
-        vec_[i][block] = 
-          rcp(new LoadableBlockVector(vecBlock, lowestRow,
-              highestRow, mapBundle_.isBCIndex(block)));
-      }
-      else
-      {
-        vecBlock = b[i].getBlock(block);
-        vec_[i][block] = rcp_dynamic_cast<LoadableVector<double> >(vecBlock.ptr());
-      }
-      TEST_FOR_EXCEPTION(vec_[i][block].get()==0, RuntimeError,
+      Vector<double> vecBlock = b[i].getBlock(block);
+      vec_[i][block] = rcp_dynamic_cast<LoadableVector<double> >(vecBlock.ptr());
+
+      TEST_FOR_EXCEPTION(vec_[i][block].get()==0, std::runtime_error,
         "vector block " << block << " is not loadable");
       vecBlock.zero();
     }
@@ -170,7 +155,7 @@ void VectorFillingAssemblyKernel::insertLocalVectorBatch(
 
     /* At this point, we can start to load the elements */
     int r=0;
-    RCP<TSFExtended::LoadableVector<double> > vecBlock 
+    RCP<Playa::LoadableVector<double> > vecBlock 
       = vec_[mvIndices[i]][block];
 
     FancyOStream& os = Out::os();

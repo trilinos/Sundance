@@ -32,7 +32,7 @@
 #include "SundanceEvalManager.hpp"
 #include "SundanceUnaryMinus.hpp"
 
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceOut.hpp"
 
 using namespace Sundance;
@@ -73,7 +73,7 @@ UnaryMinusEvaluator
     }
   catch(std::exception& e)
     {
-      TEST_FOR_EXCEPTION(true, RuntimeError, 
+      TEST_FOR_EXCEPTION(true, std::runtime_error, 
                          "exception detected in UnaryMinusEvaluator: expr="
                          << expr->toString() << std::endl
                          << "exception=" << e.what());

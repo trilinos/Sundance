@@ -40,13 +40,8 @@
 
 namespace Sundance
 {
-  using namespace Sundance;
-  using namespace Sundance;
-  using namespace Sundance;
-  using namespace Sundance;
-  using namespace Sundance;
   using namespace Teuchos;
-  using namespace Thyra;
+  using namespace Playa;
 
   /**
    * AToCDensitySampler samples a distribution of particles to compute a

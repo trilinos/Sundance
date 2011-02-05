@@ -160,22 +160,22 @@
 
 
 /* Solvers & stuff */
-#include "TSFVectorType.hpp"
-#include "TSFEpetraVectorType.hpp"
-#include "TSFEpetraMatrixMatrixProduct.hpp"
-#include "TSFEpetraMatrixMatrixSum.hpp"
-#include "TSFEpetraMatrixOps.hpp"
-#include "TSFBICGSTABSolverDecl.hpp"
-#include "TSFAztecSolver.hpp"
-#include "TSFLinearSolverImpl.hpp"
-#include "TSFLinearCombinationImpl.hpp"
-#include "TSFLinearSolverBuilder.hpp"
-#include "TSFMLOperator.hpp"
-#include "TSFParameterListPreconditionerFactory.hpp"
+#include "PlayaVectorType.hpp"
+#include "PlayaEpetraVectorType.hpp"
+#include "PlayaEpetraMatrixMatrixProduct.hpp"
+#include "PlayaEpetraMatrixMatrixSum.hpp"
+#include "PlayaEpetraMatrixOps.hpp"
+#include "PlayaBICGSTABSolverDecl.hpp"
+#include "PlayaAztecSolver.hpp"
+#include "PlayaLinearSolverImpl.hpp"
+#include "PlayaLinearCombinationImpl.hpp"
+#include "PlayaLinearSolverBuilder.hpp"
+#include "PlayaMLOperator.hpp"
+#include "PlayaParameterListPreconditionerFactory.hpp"
 #include "SundancePCDPreconditioner.hpp"
-#include "TSFEpetraMatrixMatrixProduct.hpp"
-#include "TSFEpetraMatrixMatrixSum.hpp"
-#include "TSFEpetraMatrixOps.hpp"
+#include "PlayaEpetraMatrixMatrixProduct.hpp"
+#include "PlayaEpetraMatrixMatrixSum.hpp"
+#include "PlayaEpetraMatrixOps.hpp"
 
 
 
@@ -183,11 +183,11 @@
 #include "NOX.H"
 #include "NOX_Common.H"
 #include "NOX_Utils.H"
-#include "TSFNOXSolver.H"
+#include "PlayaNOXSolver.hpp"
 
 /* Eigensolvers */
-#include "TSFAnasaziEigensolverDecl.hpp"
-#include "TSFEigensolver.hpp"
+#include "PlayaAnasaziEigensolverDecl.hpp"
+#include "PlayaEigensolver.hpp"
 
 
 /* Atomistic/continuum */
@@ -202,8 +202,8 @@
 namespace Sundance
 {
 
-using namespace TSFExtendedOps;
-using namespace TSFExtended;
+using namespace PlayaOps;
+using namespace Playa;
 using namespace Teuchos;
 using Sundance::List;
 

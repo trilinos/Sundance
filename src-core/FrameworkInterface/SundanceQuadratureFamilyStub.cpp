@@ -29,7 +29,7 @@
 /* @HEADER@ */
 
 #include "SundanceQuadratureFamilyStub.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceOut.hpp"
 
 
@@ -41,7 +41,7 @@ using namespace Teuchos;
 QuadratureFamilyStub::QuadratureFamilyStub(int order)
 : order_(order)
 {
-  TEST_FOR_EXCEPTION(order <= 0, RuntimeError,
+  TEST_FOR_EXCEPTION(order <= 0, std::runtime_error,
                      "invalid quadrature order=" << order
                      << " in QuadratureFamilyStub ctor");
 }

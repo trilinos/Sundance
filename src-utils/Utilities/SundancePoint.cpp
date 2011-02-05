@@ -7,7 +7,7 @@ using namespace Sundance;
 
 void Point::boundsCheck(int i) const
 {
-  TEST_FOR_EXCEPTION(i < 0 || i>=dim_, RuntimeError,
+  TEST_FOR_EXCEPTION(i < 0 || i>=dim_, std::runtime_error,
                      "Point::boundsCheck() dim:" << dim_ << " , i:" << i);
 }
 

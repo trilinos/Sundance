@@ -31,6 +31,8 @@
 #include "SundanceParametrizedCurve.hpp"
 
 using namespace Sundance;
+using Playa::Handle;
+using Playa::Handleable;
 
 const ParametrizedCurve ParametrizedCurve::handle_ = new DummyParametrizedCurve();
 

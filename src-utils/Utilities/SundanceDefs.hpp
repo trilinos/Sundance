@@ -49,7 +49,7 @@ namespace Sundance
   typedef Teuchos::Ordinal OrdType; 
 }
 
-namespace TSFExtended 
+namespace Playa 
 {
   typedef Sundance::OrdType OrdType; 
 }

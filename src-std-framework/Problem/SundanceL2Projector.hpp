@@ -38,20 +38,15 @@
 #include "SundanceDiscreteSpace.hpp"
 #include "SundanceLinearProblem.hpp"
 #include "SundanceCoordinateSystem.hpp"
-#include "TSFLinearOperatorDecl.hpp"
-#include "TSFLinearSolverDecl.hpp"
-#include "TSFVectorDecl.hpp"
-#include "TSFVectorType.hpp"
+#include "PlayaLinearOperatorDecl.hpp"
+#include "PlayaLinearSolverDecl.hpp"
+#include "PlayaVectorDecl.hpp"
+#include "PlayaVectorType.hpp"
 
 namespace Sundance
 {
-  using namespace Sundance;
-  using namespace Sundance;
-  using namespace Sundance;
-  using namespace Sundance;
-  using namespace Sundance;
+  using namespace Playa;
   using namespace Teuchos;
-  using namespace Thyra;
 
   /**
    * L2Projector projects an expression onto a DiscreteSpace. 

@@ -66,7 +66,7 @@ void FileIOChacoPartitioner::runChaco(int np) const
        << np << "\n1\nn" << std::endl;
 
   int status = system("chaco < chacoInput");
-  TEST_FOR_EXCEPTION(status < 0, RuntimeError, "error detected in system call to run chaco");
+  TEST_FOR_EXCEPTION(status < 0, std::runtime_error, "error detected in system call to run chaco");
 }
 
 bool FileIOChacoPartitioner::isEmptyLine(const std::string& x) const 

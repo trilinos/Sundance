@@ -35,8 +35,8 @@
 #include "SundanceDefs.hpp"
 #include "SundanceNoncopyable.hpp"
 #include "SundanceCellReordererImplemBase.hpp"
-#include "SundanceHandleable.hpp"
-#include "SundancePrintable.hpp"
+#include "PlayaHandleable.hpp"
+#include "PlayaPrintable.hpp"
 #include "Teuchos_Describable.hpp"
 
 namespace Sundance
@@ -47,9 +47,9 @@ using namespace Teuchos;
  * Factory class to instantiate cell reorderers for specific meshes
  */
 class CellReordererFactoryBase 
-  : public Sundance::Handleable<CellReordererFactoryBase>, 
+  : public Playa::Handleable<CellReordererFactoryBase>, 
     public Noncopyable,
-    public Sundance::Printable,
+    public Playa::Printable,
     public Teuchos::Describable
 {
 public:

@@ -32,7 +32,7 @@
 #define SUNDANCE_TYPEUTILS_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 
 namespace Sundance
 {

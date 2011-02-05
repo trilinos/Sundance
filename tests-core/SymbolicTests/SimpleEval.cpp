@@ -59,7 +59,7 @@ void doit(const Expr& e,
     = rcp(new StringEvalMediator());
 
   mgr.setMediator(mediator);
-  mgr.setVerbosity(5);
+  mgr.setVerb(5);
 
   Expr params;
   Expr fixed;

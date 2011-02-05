@@ -31,7 +31,7 @@
 #include "SundanceUserDefFunctor.hpp"
 #include "SundanceEvalManager.hpp"
 #include "SundanceEvalVector.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceOut.hpp"
 
 using namespace Sundance;
@@ -73,13 +73,13 @@ UserDefFunctor::UserDefFunctor(const std::string& name,
 
 void UserDefFunctor::eval0(const Array<double>& in, double* out) const
 {
-  TEST_FOR_EXCEPTION(true, RuntimeError,
+  TEST_FOR_EXCEPTION(true, std::runtime_error,
                      "eval0() function not supported for functor " << name_);
 }
 
 void UserDefFunctor::eval1(const Array<double>& in, double* out, double* outDerivs) const
 {
-  TEST_FOR_EXCEPTION(true, RuntimeError,
+  TEST_FOR_EXCEPTION(true, std::runtime_error,
                      "eval1() function not supported for functor " << name_);
 }
 

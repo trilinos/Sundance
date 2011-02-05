@@ -53,7 +53,7 @@ Expr Box2D::getParams() const
 double Box2D::curveEquation(const Point& evalPoint) const
 {
 	int verb = 0;
-	TEST_FOR_EXCEPTION(evalPoint.dim() != 2, RuntimeError,
+	TEST_FOR_EXCEPTION(evalPoint.dim() != 2, std::runtime_error,
 			"Box2D::curveEquation() evaluation point dimension must be 2");
 
 	// calculate the distance compared to the middle point
@@ -89,7 +89,7 @@ void Box2D::returnIntersectPoints(const Point& start, const Point& end, int& nrP
     int verb = 0;
     double num_zero = 1e-9;
     // first implementation
-	//TEST_FOR_EXCEPTION( true , RuntimeError, "Box2D::returnIntersect() not implemented yet");
+	//TEST_FOR_EXCEPTION( true , std::runtime_error, "Box2D::returnIntersect() not implemented yet");
     nrPoints = 0;
 	// calc cut in X direction
 	if ( fabs(start[0] - end[0]) < num_zero ){

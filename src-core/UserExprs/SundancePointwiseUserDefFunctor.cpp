@@ -29,7 +29,7 @@
 /* @HEADER@ */
 
 #include "SundancePointwiseUserDefFunctor.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceOut.hpp"
 
 using namespace Sundance;
@@ -49,7 +49,7 @@ void PointwiseUserDefFunctor0::evaluationCallback(int nPoints, int maxDiffOrder,
                                     const double** in,
                                     double** out) const 
 {
-  TEST_FOR_EXCEPTION(maxDiffOrder > 0, RuntimeError,
+  TEST_FOR_EXCEPTION(maxDiffOrder > 0, std::runtime_error,
                      "diff order = " << maxDiffOrder 
                      << " not supported for functor "
                      << name());
@@ -80,7 +80,7 @@ void PointwiseUserDefFunctor1::evaluationCallback(int nPoints, int maxDiffOrder,
                                     const double** in,
                                     double** out) const 
 {
-  TEST_FOR_EXCEPTION(maxDiffOrder > 1, RuntimeError,
+  TEST_FOR_EXCEPTION(maxDiffOrder > 1, std::runtime_error,
                      "diff order = " << maxDiffOrder 
                      << " not supported for functor "
                      << name());
@@ -129,7 +129,7 @@ void PointwiseUserDefFunctor2::evaluationCallback(int nPoints, int maxDiffOrder,
                                                   const double** in,
                                                   double** out) const 
 {
-  TEST_FOR_EXCEPTION(maxDiffOrder > 2 || maxDiffOrder < 0, RuntimeError,
+  TEST_FOR_EXCEPTION(maxDiffOrder > 2 || maxDiffOrder < 0, std::runtime_error,
                      "diff order = " << maxDiffOrder 
                      << " not supported for functor "
                      << name());

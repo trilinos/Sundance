@@ -29,7 +29,7 @@
 /* @HEADER@ */
 
 #include "SundanceMap.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceOrderedTuple.hpp"
 #include "SundanceNodalDOFMap.hpp"

@@ -30,7 +30,7 @@
 
 #include "SundanceCubicHermite.hpp"
 #include "SundanceADReal.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "SundanceSpatialDerivSpecifier.hpp"
 #include "SundancePoint.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
@@ -197,7 +197,7 @@ void CubicHermite::getReferenceDOFs(
     }
     break;
     default:
-      TEST_FOR_EXCEPTION(true, RuntimeError, "Cell type "
+      TEST_FOR_EXCEPTION(true, std::runtime_error, "Cell type "
         << cellType << " not implemented in CubicHermite basis");
   }
 }
@@ -211,7 +211,7 @@ void CubicHermite::refEval(
   int verbosity) const
 {
   TEST_FOR_EXCEPTION(!(sds.isPartial() || sds.isIdentity()), 
-    RuntimeError,
+    std::runtime_error,
     "cannot evaluate spatial derivative " << sds << " on CubicHermite basis");
   const MultiIndex& deriv = sds.mi();
   typedef Array<double> Adouble;
@@ -236,7 +236,7 @@ void CubicHermite::refEval(
       }
       return;
     default:
-      TEST_FOR_EXCEPTION(true, RuntimeError,
+      TEST_FOR_EXCEPTION(true, std::runtime_error,
         "CubicHermite::refEval() unimplemented for cell type "
         << cellType);
 

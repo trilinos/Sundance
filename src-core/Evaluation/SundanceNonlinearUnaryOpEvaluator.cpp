@@ -31,7 +31,7 @@
 #include "SundanceNonlinearUnaryOpEvaluator.hpp"
 #include "SundanceEvalManager.hpp"
 
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceNonlinearUnaryOp.hpp"
 
@@ -89,7 +89,7 @@ NonlinearUnaryOpEvaluator
   /* Find the index of the argument value (zeroth-order deriv) in the 
    * vector of derivatives of the argument */
   MultipleDeriv d0;
-  TEST_FOR_EXCEPTION(!sArg->containsDeriv(d0), InternalError,
+  TEST_FOR_EXCEPTION(!sArg->containsDeriv(d0), std::logic_error,
                      "NonlinearUnaryOpEvaluator::ctor did not find zeroth-order "
                      "derivative of argument");
   int d0Index = sArg->getIndex(d0);

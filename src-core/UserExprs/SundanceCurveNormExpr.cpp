@@ -47,7 +47,7 @@ CurveNormExpr::CurveNormExpr(int dir, const std::string& name)
 bool CurveNormExpr::lessThan(const ScalarExpr* other) const
 {
   const CurveNormExpr* c = dynamic_cast<const CurveNormExpr*>(other);
-  TEST_FOR_EXCEPTION(c==0, InternalError, "cast should never fail at this point");
+  TEST_FOR_EXCEPTION(c==0, std::logic_error, "cast should never fail at this point");
   return dir() < c->dir();
 }
 
@@ -71,7 +71,7 @@ string CurveNormExpr::coordName(int dir, const std::string& name)
     case 2:
       return "nz";
     default:
-      TEST_FOR_EXCEPTION(true, RuntimeError,
+      TEST_FOR_EXCEPTION(true, std::runtime_error,
                          "CurveNormExpr::coordName direction out of range [0,2]");
       return "error";
     }

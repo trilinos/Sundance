@@ -30,10 +30,10 @@
 
 #include "SundanceMeshBase.hpp"
 #include "SundanceMesh.hpp"
-#include "SundanceExceptions.hpp"
+#include "PlayaExceptions.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_TimeMonitor.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 
 using namespace Sundance;
 using namespace Sundance;
@@ -85,7 +85,7 @@ void MeshBase::outwardNormals(
   {
     int f=-1;
     TEST_FOR_EXCEPTION(numMaxCofacets(D-1, cellLIDs[c]) > 1, 
-      RuntimeError,
+      std::runtime_error,
       "cell #" << cellLIDs[c] << " is not a boundary cell");
     int maxLID = maxCofacetLID(D-1, cellLIDs[c], 0, f);
     Point cInterior = centroid(D, maxLID);

@@ -41,10 +41,7 @@ APPEND_SET(HEADERS
   Utilities/SundanceDebug.hpp
   Utilities/SundanceDefs.hpp
   Utilities/SundanceEnumTypeField.hpp
-  Utilities/SundanceExceptions.hpp
   Utilities/SundanceFunctorDomain.hpp
-  Utilities/SundanceHandle.hpp
-  Utilities/SundanceHandleable.hpp
   Utilities/SundanceIntHashSet.hpp
   Utilities/SundanceMap.hpp
   Utilities/SundanceMultiSet.hpp
@@ -58,10 +55,8 @@ APPEND_SET(HEADERS
   Utilities/SundanceParamUtils.hpp
   Utilities/SundancePathUtils.hpp
   Utilities/SundancePoint.hpp
-  Utilities/SundancePrintable.hpp
   Utilities/SundanceSet.hpp
   Utilities/SundanceStdMathFunctors.hpp
-  Utilities/SundanceTabs.hpp
   Utilities/SundanceTypeUtils.hpp
   Utilities/SundanceUnaryFunctor.hpp
   Utilities/SundanceVersionString.hpp
@@ -73,15 +68,12 @@ APPEND_SET(SOURCES
   Utilities/SundanceADReal.cpp
   Utilities/SundanceCollectiveExceptionCheck.cpp
   Utilities/SundanceCombinatorialUtils.cpp
-  Utilities/SundanceExceptions.cpp
   Utilities/SundanceFunctorDomain.cpp
   Utilities/SundanceIntHashSet.cpp
-  Utilities/SundanceOut.cpp
   Utilities/SundanceParamUtils.cpp
   Utilities/SundancePathUtils.cpp
   Utilities/SundancePoint.cpp
   Utilities/SundanceStdMathFunctors.cpp
-  Utilities/SundanceTabs.cpp
   Utilities/SundanceUnaryFunctor.cpp
   Utilities/SundanceVertexSort.cpp
   Utilities/SundanceWatchFlag.cpp
@@ -99,4 +91,5 @@ PACKAGE_ADD_LIBRARY(
   sundanceUtils
   HEADERS ${HEADERS}
   SOURCES ${SOURCES}
+  DEPLIBS playa
   )

@@ -29,7 +29,7 @@
 /* @HEADER@ */
 
 #include "SundanceOut.hpp"
-#include "SundanceTabs.hpp"
+#include "PlayaTabs.hpp"
 #include "SundanceDOFMapBase.hpp"
 #include "SundanceLocalDOFMap.hpp"
 
@@ -58,7 +58,7 @@ LocalDOFMap::LocalDOFMap(int numBlocks, int verb)
 
 int LocalDOFMap::nCells() const 
 {
-  TEST_FOR_EXCEPTION(!hasCells(), RuntimeError,
+  TEST_FOR_EXCEPTION(!hasCells(), std::runtime_error,
     "cells not valid when LocalDOFMap::nCells() called");
   return cellLID_->size();
 }
@@ -84,7 +84,7 @@ bool  LocalDOFMap::isUnused() const
 
 void LocalDOFMap::verifyValidBlock(int b) const 
 {
-  TEST_FOR_EXCEPTION(b < 0 || b>=numBlocks(), RuntimeError,
+  TEST_FOR_EXCEPTION(b < 0 || b>=numBlocks(), std::runtime_error,
     "block index " << b << " out of range [0," << numBlocks() << ")");
 }
 

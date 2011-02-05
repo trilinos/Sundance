@@ -136,7 +136,7 @@ SpatialDerivSpecifier SpatialDerivSpecifier::derivWrtMultiIndex(const MultiIndex
   }
   else
   {
-    TEST_FOR_EXCEPTION(true, InternalError, "cannot take an arbitrary "
+    TEST_FOR_EXCEPTION(true, std::logic_error, "cannot take an arbitrary "
       "spatial derivative of SDS=" << *this);
     return *this; // -Wall
   }

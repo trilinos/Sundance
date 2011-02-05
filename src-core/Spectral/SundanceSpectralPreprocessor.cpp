@@ -142,7 +142,7 @@ Expr SpectralPreprocessor::projectSpectral(
     }
     else
     {
-      TEST_FOR_EXCEPTION(specs.size() > 2, RuntimeError,
+      TEST_FOR_EXCEPTION(specs.size() > 2, std::runtime_error,
         "not ready to work with more than two spectral unks");
     }
   }
@@ -162,7 +162,7 @@ void SpectralPreprocessor::parseProduct(const Array<Expr>& factors,
     const Expr& f = factors[i];
     if (isSpectralTest(f)) 
     {
-      TEST_FOR_EXCEPTION(hasTest, RuntimeError,
+      TEST_FOR_EXCEPTION(hasTest, std::runtime_error,
         "multiple test functions detected in product=" << factors);
       test = f;
       hasTest = true;
@@ -214,7 +214,7 @@ void SpectralPreprocessor::expandSpectral(const Expr& e,
   
   const NonlinearUnaryOp* nl 
     = dynamic_cast<const NonlinearUnaryOp*>(e.ptr().get());
-  TEST_FOR_EXCEPTION(nl!=0, RuntimeError,
+  TEST_FOR_EXCEPTION(nl!=0, std::runtime_error,
     "expandSpectral() called on a nonlinear unary operator");
 
   const SumExpr* sum 
