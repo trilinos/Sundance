@@ -5,7 +5,7 @@ INCLUDE(PackageLibraryMacros)
 # A) Package-specific configuration options
 #
 
-PACKAGE_CONFIGURE_FILE(TSF_config.h)
+
 
 #
 # B) Define the header and source files (and directories)

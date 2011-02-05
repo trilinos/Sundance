@@ -1,6 +1,0 @@
-
-ADD_SUBDIRECTORY(VectorTests)
-
-ADD_SUBDIRECTORY(OperatorTests)
-
-ADD_SUBDIRECTORY(SolverTests)
