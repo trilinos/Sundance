@@ -391,6 +391,7 @@ INPUT                  = ../doc/Doxygen/index.dox \
                          ../src-solvers/Vectors \
                          ../src-solvers/Testing \
                          ../src-solvers/Adapters \
+			 ../Playa/src \
                          ../tests-std-framework/Problem/LPTests1D.cpp \
                          ../examples-tutorial
 

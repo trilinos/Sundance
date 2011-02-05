@@ -50,20 +50,20 @@ EpetraVector
 
 
 
-double& EpetraVector::operator[](OrdType globalIndex) 
+double& EpetraVector::operator[](int globalIndex) 
 {
   const Epetra_BlockMap& myMap = epetraVec()->Map();
   return (*epetraVec())[myMap.LID(globalIndex)];
 }
 
-void EpetraVector::setElement(OrdType index, const double& value)
+void EpetraVector::setElement(int index, const double& value)
 {
   int loc_index[1] = { index };
   epetraVec()->ReplaceGlobalValues(1, const_cast<double*>(&value), 
     loc_index);
 }
 
-void EpetraVector::addToElement(OrdType index, const double& value)
+void EpetraVector::addToElement(int index, const double& value)
 {
 //  cout << "adding (" << index << ", " << value << ")" << std::endl;
   int loc_index[1] = { index };
@@ -71,13 +71,13 @@ void EpetraVector::addToElement(OrdType index, const double& value)
     loc_index);
 }
 
-const double& EpetraVector::getElement(OrdType index) const 
+const double& EpetraVector::getElement(int index) const 
 {
   const Epetra_BlockMap& myMap = epetraVec()->Map();
   return (*epetraVec())[myMap.LID(index)];
 }
 
-void EpetraVector::getElements(const OrdType* globalIndices, int numElems,
+void EpetraVector::getElements(const int* globalIndices, int numElems,
   Teuchos::Array<double>& elems) const
 {
   elems.resize(numElems);

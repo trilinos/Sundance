@@ -39,7 +39,7 @@ public:
   //@{
 
   /** */
-  OrdType dim() const {return globalDim_;}
+  int dim() const {return globalDim_;}
   
   /** */
   int numLocalElements() const {return numLocalElements_;}
@@ -71,11 +71,11 @@ private:
 
   MPIComm comm_;
 
-  OrdType globalDim_;
+  int globalDim_;
 
-  OrdType baseGlobalNaturalIndex_;
+  int baseGlobalNaturalIndex_;
 
-  OrdType numLocalElements_;
+  int numLocalElements_;
 };
   
 }

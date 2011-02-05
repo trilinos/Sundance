@@ -44,11 +44,11 @@ public:
   /** \name Access to local elements */
   //@{
   /** read the element at the given local index */
-  virtual const double& operator[](OrdType localIndex) const 
+  virtual const double& operator[](int localIndex) const 
     {return dataPtr()[localIndex];}
 
   /** writable access to the element at the given local index */
-  virtual double& operator[](OrdType localIndex) 
+  virtual double& operator[](int localIndex) 
     {return dataPtr()[localIndex];}
   //@}
 

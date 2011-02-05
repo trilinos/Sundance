@@ -29,12 +29,12 @@ SerialVector::SerialVector(const VectorSpace<double>& vs)
 }
 
 
-void SerialVector::setElement(OrdType index, const double& value)
+void SerialVector::setElement(int index, const double& value)
 {
   data_[index] = value;
 }
 
-void SerialVector::addToElement(OrdType index, const double& value)
+void SerialVector::addToElement(int index, const double& value)
 {
   data_[index] += value;
 }
@@ -76,7 +76,7 @@ void SerialVector::finalizeAssembly()
   // no-op
 }
 
-void SerialVector::getElements(const OrdType* globalIndices, OrdType numElems,
+void SerialVector::getElements(const int* globalIndices, int numElems,
   Array<double>& elems) const
 {
   elems.resize(numElems);

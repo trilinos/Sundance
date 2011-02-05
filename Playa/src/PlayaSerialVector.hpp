@@ -39,10 +39,10 @@ public:
   /** \name LoadableVector interface */
   //@{
   /** set a single element */
-  void setElement(OrdType globalIndex, const double& value);
+  void setElement(int globalIndex, const double& value);
 
   /** add to a single element */
-  void addToElement(OrdType globalIndex, const double& value);
+  void addToElement(int globalIndex, const double& value);
 
   /** set a group of elements */
   void setElements(int numElems, const int* globalIndices, 
@@ -68,7 +68,7 @@ public:
   /** \name Access through global indices */
   //@{
   /** get the batch of elements at the given global indices */
-  void getElements(const OrdType* globalIndices, OrdType numElems,
+  void getElements(const int* globalIndices, int numElems,
     Array<double>& elems) const ;
   //@}
 

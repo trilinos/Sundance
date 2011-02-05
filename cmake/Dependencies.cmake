@@ -1,6 +1,6 @@
 SET(LIB_REQUIRED_DEP_PACKAGES
-  Teuchos Epetra EpetraExt Thyra Amesos AztecOO Ifpack ML Anasazi Belos Stratimikos NOX Intrepid)
-SET(LIB_OPTIONAL_DEP_PACKAGES Trios MOOCHO Stokhos)
+  Teuchos Epetra EpetraExt Amesos AztecOO Ifpack ML Anasazi Belos NOX Intrepid)
+SET(LIB_OPTIONAL_DEP_PACKAGES Trios Stokhos)
 
 SET(TEST_REQUIRED_DEP_PACKAGES)
 SET(TEST_OPTIONAL_DEP_PACKAGES)

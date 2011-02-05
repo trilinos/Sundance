@@ -50,7 +50,7 @@ void DenseSerialMatrix::apply(
   const SerialVector* rvIn = SerialVector::getConcrete(in);
   SerialVector* rvOut = SerialVector::getConcrete(out);
 
-  Teuchos::BLAS<OrdType, double> blas;
+  Teuchos::BLAS<int, double> blas;
   int lda = numRows();
   blas.GEMV(transApplyType, numRows(), numCols(), 1.0, dataPtr(), 
     lda, rvIn->dataPtr(), 1, 1.0, rvOut->dataPtr(), 1);

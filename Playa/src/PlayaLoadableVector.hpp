@@ -41,20 +41,20 @@ public:
   virtual ~LoadableVector() {;}
 
   /** set a single element at the given global index */
-  virtual void setElement(OrdType globalIndex, const Scalar& value) = 0 ;
+  virtual void setElement(int globalIndex, const Scalar& value) = 0 ;
 
   /** add to the existing value of 
    * a single element at the given global index */
-  virtual void addToElement(OrdType globalIndex, const Scalar& value) = 0 ;
+  virtual void addToElement(int globalIndex, const Scalar& value) = 0 ;
 
   /** set a group of elements */
-  virtual void setElements(OrdType numElems, 
-    const OrdType* globalIndices, 
+  virtual void setElements(int numElems, 
+    const int* globalIndices, 
     const Scalar* values) ;
 
   /** add to a group of elements */
-  virtual void addToElements(OrdType numElems, 
-    const OrdType* globalIndices, 
+  virtual void addToElements(int numElems, 
+    const int* globalIndices, 
     const Scalar* values);
 
   /** Do whatever finalization steps are needed by the implementation,
@@ -67,8 +67,8 @@ public:
  * setElement(). If at all possible, this should be overridden
  * with a method specialized to the underlying type.  */
 template <class Scalar> 
-inline void LoadableVector<Scalar>::setElements(OrdType numElems, 
-  const OrdType* globalIndices, 
+inline void LoadableVector<Scalar>::setElements(int numElems, 
+  const int* globalIndices, 
   const Scalar* values)
 {
   for (int i=0; i<numElems; i++)
@@ -81,11 +81,11 @@ inline void LoadableVector<Scalar>::setElements(OrdType numElems,
  * addToElement(). If at all possible, this should be overridden
  * with a method specialized to the underlying type.  */
 template <class Scalar> 
-inline void LoadableVector<Scalar>::addToElements(OrdType numElems, 
-  const OrdType* globalIndices, 
+inline void LoadableVector<Scalar>::addToElements(int numElems, 
+  const int* globalIndices, 
   const Scalar* values)
 {
-  for (OrdType i=0; i<numElems; i++)
+  for (int i=0; i<numElems; i++)
   {
     addToElement(globalIndices[i], values[i]);
   }

@@ -15,12 +15,9 @@
 #include "PlayaConfig.h"
 
 
-namespace Teuchos {}
 
-namespace Playa
-{
-  typedef Teuchos::Ordinal OrdType; 
-}
+
+
 
 
 

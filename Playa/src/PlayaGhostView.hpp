@@ -26,14 +26,14 @@ namespace Playa
     
     /** Indicate whether the value at the given global index is accessible
      * in this view. */
-    virtual bool isAccessible(OrdType globalIndex) const = 0 ;
+    virtual bool isAccessible(int globalIndex) const = 0 ;
 
     
     /** */
-    virtual const double& getElement(OrdType globalIndex) const = 0 ;
+    virtual const double& getElement(int globalIndex) const = 0 ;
     
     /** */
-    virtual void getElements(const OrdType* globalIndices, int numElems,
+    virtual void getElements(const int* globalIndices, int numElems,
       Teuchos::Array<double>& elems) const = 0 ;
     
     /**  */

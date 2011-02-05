@@ -33,14 +33,14 @@ public:
   virtual ~EpetraGhostView(){;}
 
   /** Indicate whether the given global index is accessible in this view */
-  bool isAccessible(OrdType globalIndex) const 
+  bool isAccessible(int globalIndex) const 
     {return ghostView_->Map().MyGID(globalIndex);}
 
   /** get the element at the given global index */
-  const double& getElement(OrdType globalIndex) const ;
+  const double& getElement(int globalIndex) const ;
 
   /** get the batch of elements at the given global indices */
-  void getElements(const OrdType* globalIndices, int numElems,
+  void getElements(const int* globalIndices, int numElems,
     Array<double>& elems) const ;
 
   /** */
