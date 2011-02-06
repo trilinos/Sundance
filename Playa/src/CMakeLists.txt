@@ -47,6 +47,7 @@ APPEND_SET(HEADERS
   PlayaBICGSTABSolverImpl.hpp
   PlayaBlockIteratorDecl.hpp
   PlayaBlockIteratorImpl.hpp
+  PlayaBlockOperatorBaseDecl.hpp
   PlayaBlockTriangularSolverDecl.hpp
   PlayaBlockTriangularSolver.hpp
   PlayaBlockTriangularSolverImpl.hpp
@@ -117,6 +118,8 @@ APPEND_SET(HEADERS
   PlayaMLOperator.hpp
   PlayaMultiVectorOperatorDecl.hpp
   PlayaMultiVectorOperatorImpl.hpp
+  PlayaNonlinearOperator.hpp
+  PlayaNonlinearOperatorBase.hpp
   PlayaNonlinearSolverBase.hpp
   PlayaNOXSolver.hpp
   PlayaObjectWithVerbosity.hpp
