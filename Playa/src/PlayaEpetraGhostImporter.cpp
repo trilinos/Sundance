@@ -73,7 +73,6 @@ void EpetraGhostImporter
 
   const Epetra_Vector& xVec = EpetraVector::getConcrete(x);
 
-  Out::os() << tab << "EpGI importing" << std::endl;
   /* Do the import */
   epgv->import(*importer_, xVec);
 }
