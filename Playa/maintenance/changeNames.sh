@@ -12,9 +12,12 @@ sed -i 's/SundanceHandle.hpp/PlayaHandle.hpp/g' $f
 sed -i 's/SundancePrintable.hpp/PlayaPrintable.hpp/g' $f
 sed -i 's/TSFExtended/Playa/g' $f
 sed -i 's/setVerbosity/setVerb/g' $f
+sed -i 's/NOX::TSF/NOX::NOXPlaya/g' $f
 sed -i 's/TSF/Playa/g' $f
 sed -i 's/ProductVector/BlockVector/g' $f
 sed -i 's/productSpace/blockSpace/g' $f
+sed -i 's/BlockVectorSpaceDecl.hpp/DefaultBlockVectorSpaceDecl.hpp/g' $f
+sed -i 's/BlockVectorSpaceImpl.hpp/DefaultBlockVectorSpaceImpl.hpp/g' $f
 sed -i 's/lowestLocallyOwnedIndex/baseGlobalNaturalIndex/g' $f
 sed -i 's/RuntimeError/std::runtime_error/g' $f
 sed -i 's/InternalError/std::logic_error/g' $f
