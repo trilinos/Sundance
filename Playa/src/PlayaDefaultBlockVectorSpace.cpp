@@ -16,6 +16,9 @@ namespace Playa
 
 
 template VectorSpace<double> blockSpace(
+  const VectorSpace<double>& v1);
+
+template VectorSpace<double> blockSpace(
   const VectorSpace<double>& v1,
   const VectorSpace<double>& v2);
 

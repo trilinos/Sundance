@@ -32,6 +32,7 @@
 
 
 %include "std_string.i"
+
 namespace Sundance
 {
   bool passFailTest(double err, double tol);
@@ -62,7 +63,7 @@ namespace Sundance
 
 %include CellFilter.i
 
-%include TSF.i
+%include Playa.i
 
 %include Quadrature.i
 

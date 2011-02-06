@@ -54,6 +54,11 @@ private:
 /** \relates VectorSpace */
 template <class Scalar> 
 VectorSpace<Scalar> blockSpace(
+  const VectorSpace<Scalar>& v1);
+
+/** \relates VectorSpace */
+template <class Scalar> 
+VectorSpace<Scalar> blockSpace(
   const VectorSpace<Scalar>& v1,
   const VectorSpace<Scalar>& v2);
 

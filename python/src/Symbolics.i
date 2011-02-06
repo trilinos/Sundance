@@ -15,7 +15,7 @@
 #include "SundanceParameter.hpp"
 #include "SundanceFunctionalEvaluator.hpp"
 #include "SundanceStdMathOps.hpp"
-#include "TSFVectorImpl.hpp"
+#include "PlayaVectorImpl.hpp"
   %}
 
 
@@ -247,7 +247,7 @@ namespace Sundance
     }
 
     /* get the vector underlying a discrete function */
-    TSFExtended::Vector<double> getVector() const 
+    Playa::Vector<double> getVector() const 
     {
       /* cast to a discrete function. The validity of the cast
        * is checked within discFunc(). */
@@ -256,7 +256,7 @@ namespace Sundance
     }
 
     /* get the vector underlying a discrete function */
-    void setVector(const TSFExtended::Vector<double>& vec) 
+    void setVector(const Playa::Vector<double>& vec) 
     {
       /* cast to a discrete function. The validity of the cast
        * is checked within discFunc(). */

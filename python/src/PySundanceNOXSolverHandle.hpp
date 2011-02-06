@@ -1,7 +1,7 @@
 #ifndef PYSUNDANCENOXSOLVERHANDLE_H
 #define PYSUNDANCENOXSOLVERHANDLE_H
 
-#include "PlayaNOXSolver.H"
+#include "PlayaNOXSolver.hpp"
 
 
 namespace Playa

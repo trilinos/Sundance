@@ -245,7 +245,7 @@ void FIATScalarAdapter::refEval(
 // 			cout << "making points" << std::endl;
     // This is the list of points converted into a Python list
     PyObject *py_list_of_points = PyList_New(pts.size());
-    TEST_FOR_EXCEPTION( !py_list_of_points , RuntimeError, 
+    TEST_FOR_EXCEPTION( !py_list_of_points , std::runtime_error, 
       "Unable to create list" );
     to_decref.push( py_list_of_points );
     for (int i=0;i<pts.size();i++) {
@@ -253,15 +253,15 @@ void FIATScalarAdapter::refEval(
       // Sundance (0,1)-based coordinates to FIAT (-1,1)-based 
       // coordinates
       PyObject *py_pt_cur = PyTuple_New( spatialDim );
-      TEST_FOR_EXCEPTION( !py_pt_cur , RuntimeError ,
+      TEST_FOR_EXCEPTION( !py_pt_cur , std::runtime_error ,
         "Unable to create tuple" );
       for (int j=0;j<cellDim;j++) {
         double coord_cur = 2.0 * ( pts[i][j] - 0.5 );
         PyObject *py_coord = PyFloat_FromDouble( coord_cur );
-        TEST_FOR_EXCEPTION( !py_coord , RuntimeError ,
+        TEST_FOR_EXCEPTION( !py_coord , std::runtime_error ,
           "Unable to create PyFloat" );
         int msg = PyTuple_SetItem( py_pt_cur , j , py_coord );
-        TEST_FOR_EXCEPTION( msg==-1 , RuntimeError ,
+        TEST_FOR_EXCEPTION( msg==-1 , std::runtime_error ,
           "Unable to set tuple item" );
         // PyTuple_SetItem steals a reference to py_coord;
         // not added to the decref stack
@@ -269,7 +269,7 @@ void FIATScalarAdapter::refEval(
       for (int j=cellDim;j<spatialDim;j++) {
         PyObject *py_coord = PyFloat_FromDouble( -1.0 );
         int msg = PyTuple_SetItem( py_pt_cur , j , py_coord );
-        TEST_FOR_EXCEPTION( msg==-1 , RuntimeError ,
+        TEST_FOR_EXCEPTION( msg==-1 , std::runtime_error ,
           "Unable to set tuple item" );
         // PyTuple_SetItem steals a reference to py_coord;
         // not added to the decref stack
@@ -277,7 +277,7 @@ void FIATScalarAdapter::refEval(
 //				cout << "putting into list" << std::endl;
       int msg = PyList_SetItem( py_list_of_points , i , py_pt_cur );
       // reference to py_pt_cur stolen
-      TEST_FOR_EXCEPTION( msg==-1 , RuntimeError ,
+      TEST_FOR_EXCEPTION( msg==-1 , std::runtime_error ,
         "Unable to set tuple item" );
 //				cout << "done putting into list" << std::endl;
     }
@@ -288,7 +288,7 @@ void FIATScalarAdapter::refEval(
     PyObject *py_basis = bases_[spatialDim-1];
     PyObject *py_function_space = 
       PyObject_CallMethod( py_basis , "function_space" , NULL );
-    TEST_FOR_EXCEPTION( !py_function_space , RuntimeError, 
+    TEST_FOR_EXCEPTION( !py_function_space , std::runtime_error, 
       "Could not extract function space" );
     to_decref.push( py_function_space );
 
@@ -296,28 +296,28 @@ void FIATScalarAdapter::refEval(
 
     // convert the multiindex from Sundance into a Python tuple
     PyObject *py_alpha = PyTuple_New( spatialDim );
-    TEST_FOR_EXCEPTION( !py_alpha , RuntimeError, 
+    TEST_FOR_EXCEPTION( !py_alpha , std::runtime_error, 
       "Unable to create new tuple" );
     to_decref.push( py_alpha );
     for (int i=0;i<spatialDim;i++) {
       PyObject *py_alpha_i = PyInt_FromLong( (long) deriv[i] );
-      TEST_FOR_EXCEPTION( !py_alpha_i , RuntimeError,
+      TEST_FOR_EXCEPTION( !py_alpha_i , std::runtime_error,
         "Unable to create PyInt" );
       int msg = PyTuple_SetItem( py_alpha , i , py_alpha_i );
       // reference to py_alpha_i stolen
-      TEST_FOR_EXCEPTION( msg==-1 , RuntimeError ,
+      TEST_FOR_EXCEPTION( msg==-1 , std::runtime_error ,
         "Unable to set tuple item" );
     }
 
     TEST_FOR_EXCEPTION( !PyObject_HasAttrString( py_function_space ,
         "multi_deriv_all" ) ,
-      RuntimeError , "???" );
+      std::runtime_error , "???" );
 
     // Get the set of all partial derivatives
     PyObject *py_deriv_space =
       PyObject_CallMethod( py_function_space , "multi_deriv_all" , 
         "(O)" , py_alpha );
-    TEST_FOR_EXCEPTION( !py_deriv_space , RuntimeError ,
+    TEST_FOR_EXCEPTION( !py_deriv_space , std::runtime_error ,
       "Unable to take derivatives" );
     to_decref.push( py_deriv_space );
 
@@ -331,7 +331,7 @@ void FIATScalarAdapter::refEval(
     PyObject *py_tabulation =
       PyObject_CallMethod( py_deriv_space , "tabulate" ,
         "(O)" , py_list_of_points );
-    TEST_FOR_EXCEPTION( !py_tabulation , RuntimeError ,
+    TEST_FOR_EXCEPTION( !py_tabulation , std::runtime_error ,
       "Unable to tabulate derivatives" );
     to_decref.push( py_tabulation );
 

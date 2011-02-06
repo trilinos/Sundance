@@ -19,7 +19,7 @@ PySundanceCellPredicate::PySundanceCellPredicate(PyObject* functor)
     } 
   else
     {
-      TEST_FOR_EXCEPTION(true, RuntimeError,
+      TEST_FOR_EXCEPTION(true, std::runtime_error,
                          "PySundanceCellPredicate bound to a Python object "
                          "without a method called evalOp().");
     }
@@ -41,7 +41,7 @@ PySundanceCellPredicate::~PySundanceCellPredicate() {
 
 bool PySundanceCellPredicate::operator()(const Point& x) const 
 {
-  TEST_FOR_EXCEPTION(evalOpCallback_.get()==0, RuntimeError,
+  TEST_FOR_EXCEPTION(evalOpCallback_.get()==0, std::runtime_error,
                      "null pointer to python evalOp() method");
 
   PyObject * arglist;
@@ -59,7 +59,7 @@ bool PySundanceCellPredicate::operator()(const Point& x) const
       arglist = Py_BuildValue("(ddd)", x[0], x[1], x[2]);
       break;
     default:
-      TEST_FOR_EXCEPTION(true, RuntimeError,
+      TEST_FOR_EXCEPTION(true, std::runtime_error,
                          "point dimension = " << x << " not supported");
     }
   result = PyEval_CallObject(evalOpCallback_->getFunction(), arglist);
@@ -93,7 +93,7 @@ string PySundanceCellPredicate::description() const
   if (0 == result) 
     {
       PyErr_Print();
-      TEST_FOR_EXCEPTION(true, RuntimeError, "zero result from python callback");
+      TEST_FOR_EXCEPTION(true, std::runtime_error, "zero result from python callback");
     }
   
   Py_DECREF(result); // All done with returned result object

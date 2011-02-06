@@ -6,49 +6,49 @@
 
   // Sundance includes
 #include "SundanceDefs.hpp"
-#include "TSFVectorType.hpp"
-#include "TSFVectorSpaceDecl.hpp"
-#include "TSFVectorDecl.hpp"
-#include "TSFEpetraVectorType.hpp"
-#include "TSFLinearOperatorDecl.hpp"
-#include "TSFSimpleAddedOpDecl.hpp"
-#include "TSFSimpleComposedOpDecl.hpp"
-#include "TSFSimpleBlockOpDecl.hpp"
-#include "TSFSimpleScaledOpDecl.hpp"
-#include "TSFSimpleZeroOpDecl.hpp"
-#include "TSFSimpleIdentityOpDecl.hpp"
-#include "TSFLinearSolverDecl.hpp"
-#include "TSFPreconditionerFactory.hpp"
-#include "TSFPreconditioner.hpp"
-#include "TSFGenericLeftPreconditioner.hpp"
-#include "TSFGenericRightPreconditioner.hpp"
-#include "TSFProductVectorSpaceDecl.hpp"
-#include "TSFGMRESSolver.hpp"
-#include "TSFBICGSTABSolverDecl.hpp"
-#include "TSFNOXSolver.H"
-#include "TSFLinearSolverBuilder.hpp"
-#include "TSFLinearCombinationDecl.hpp"
+#include "PlayaVectorType.hpp"
+#include "PlayaVectorSpaceDecl.hpp"
+#include "PlayaVectorDecl.hpp"
+#include "PlayaEpetraVectorType.hpp"
+#include "PlayaLinearOperatorDecl.hpp"
+#include "PlayaSimpleAddedOpDecl.hpp"
+#include "PlayaSimpleComposedOpDecl.hpp"
+#include "PlayaSimpleBlockOpDecl.hpp"
+#include "PlayaSimpleScaledOpDecl.hpp"
+#include "PlayaSimpleZeroOpDecl.hpp"
+#include "PlayaSimpleIdentityOpDecl.hpp"
+#include "PlayaLinearSolverDecl.hpp"
+#include "PlayaPreconditionerFactory.hpp"
+#include "PlayaPreconditioner.hpp"
+#include "PlayaGenericLeftPreconditioner.hpp"
+#include "PlayaGenericRightPreconditioner.hpp"
+#include "PlayaBlockVectorSpaceDecl.hpp"
+#include "PlayaDefaultBlockVectorSpaceDecl.hpp"
+#include "PlayaBICGSTABSolverDecl.hpp"
+#include "PlayaNOXSolver.hpp"
+#include "PlayaLinearSolverBuilder.hpp"
+#include "PlayaLinearCombinationDecl.hpp"
 #include "Teuchos_ParameterXMLFileReader.hpp"
 #include "PyTeuchos_Utils.hpp"
 //#include "PySundanceNOXSolverHandle.hpp"
 #include "PySundanceLinearSolver.hpp"
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
-#include "TSFVectorSpaceImpl.hpp"
-#include "TSFVectorImpl.hpp"
-#include "TSFBICGSTABSolverImpl.hpp"
-#include "TSFLinearOperatorImpl.hpp"
-#include "TSFLinearSolverImpl.hpp"
-#include "TSFProductVectorSpaceImpl.hpp"
-#include "TSFSimpleBlockOpImpl.hpp"
-#include "TSFSimpleZeroOpImpl.hpp"
-#include "TSFSimpleIdentityOpImpl.hpp"
-#include "TSFSimpleAddedOpImpl.hpp"
-#include "TSFSimpleComposedOpImpl.hpp"
-#include "TSFSimpleScaledOpImpl.hpp"
+#include "PlayaVectorSpaceImpl.hpp"
+#include "PlayaVectorImpl.hpp"
+#include "PlayaBICGSTABSolverImpl.hpp"
+#include "PlayaLinearOperatorImpl.hpp"
+#include "PlayaLinearSolverImpl.hpp"
+#include "PlayaDefaultBlockVectorSpaceImpl.hpp"
+#include "PlayaSimpleBlockOpImpl.hpp"
+#include "PlayaSimpleZeroOpImpl.hpp"
+#include "PlayaSimpleIdentityOpImpl.hpp"
+#include "PlayaSimpleAddedOpImpl.hpp"
+#include "PlayaSimpleComposedOpImpl.hpp"
+#include "PlayaSimpleScaledOpImpl.hpp"
 #endif
 
-#include "TSFHack.hpp"
+#include "PlayaHack.hpp"
 
   %}
 
@@ -76,7 +76,7 @@
 
 
 /* --------- vector space ------------ */
-namespace TSFExtended
+namespace Playa
 {
   template <class Scalar> class Vector;
   template <class Scalar>
@@ -92,15 +92,13 @@ namespace TSFExtended
 }
 
 /* --------- vector ------------ */
-namespace TSFExtended
+namespace Playa
 {
   template <class Scalar> class Vector
   {
   public:
     Vector();
     ~Vector();
-
-    void setElement(int globalIndex, const Scalar& x); 
 
     VectorSpace<Scalar> space() const ;
 
@@ -128,15 +126,7 @@ namespace TSFExtended
 
     Scalar max() const;
 
-    Scalar max(int& index)const;
-
-    Scalar max(const Scalar& bound, int& index) const;
-
     Scalar min()const;
-
-    Scalar min(int& index)const;
-
-    Scalar min(const Scalar& bound, int& index) const;
 
     Vector<Scalar> getBlock(int i) const  ;
 
@@ -190,14 +180,14 @@ namespace TSFExtended
       }
 
       
-      Scalar __getitem__(int globalIndex) const 
+      Scalar __getitem__(int localIndex) const 
       {
-        return self->getElement(globalIndex);
+        return self->operator[](localIndex);
       }
       
-      void __setitem__(int globalIndex, const Scalar& value)
+      void __setitem__(int localIndex, const Scalar& value)
       {
-        return self->setElement(globalIndex, value);
+        self->operator[](localIndex) = value;
       }
     }
   };
@@ -207,7 +197,7 @@ namespace TSFExtended
 }
 
 /* --------- vector space ------------ */
-namespace TSFExtended
+namespace Playa
 {
   template <class Scalar>
   class VectorSpace
@@ -250,34 +240,34 @@ namespace TSFExtended
 
 %inline %{
   /* Create block vector space */
-  TSFExtended::VectorSpace<double> 
-    makeBlockVectorSpace(TSFExtended::VectorSpace<double> vs)
+  Playa::VectorSpace<double> 
+    makeBlockVectorSpace(Playa::VectorSpace<double> vs)
   {
-    return TSFExtended::productSpace(vs);
+    return Playa::blockSpace(vs);
   }
 
   /* Create block vector space */
-  TSFExtended::VectorSpace<double> 
-    makeBlockVectorSpace(TSFExtended::VectorSpace<double> vs1,
-                         TSFExtended::VectorSpace<double> vs2)
+  Playa::VectorSpace<double> 
+    makeBlockVectorSpace(Playa::VectorSpace<double> vs1,
+                         Playa::VectorSpace<double> vs2)
   {
-    return TSFExtended::productSpace(vs1, vs2);
+    return Playa::blockSpace(vs1, vs2);
   }
 
   /* Create block vector space */
-  TSFExtended::VectorSpace<double> 
-    makeBlockVectorSpace(TSFExtended::VectorSpace<double> vs1,
-                         TSFExtended::VectorSpace<double> vs2,
-                         TSFExtended::VectorSpace<double> vs3)
+  Playa::VectorSpace<double> 
+    makeBlockVectorSpace(Playa::VectorSpace<double> vs1,
+                         Playa::VectorSpace<double> vs2,
+                         Playa::VectorSpace<double> vs3)
   {
-    return TSFExtended::productSpace(vs1, vs2, vs3);
+    return Playa::blockSpace(vs1, vs2, vs3);
   }
 
   %}
 
 
 /* --------- vector type ------------ */
-namespace TSFExtended
+namespace Playa
 {
   template <class Scalar>
   class VectorType
@@ -314,7 +304,7 @@ namespace TSFExtended
 
 
 /* --------- vector type ------------ */
-namespace TSFExtended
+namespace Playa
 {
   enum SolverStatusCode {SolveCrashed, SolveFailedToConverge, SolveConverged};
   
@@ -362,15 +352,15 @@ namespace TSFExtended
 
 %inline %{
   /* Create an epetra vector type */
-  TSFExtended::VectorType<double> makeEpetraVectorType()
+  Playa::VectorType<double> makeEpetraVectorType()
   {
-    return TSFExtended::VectorType<double>(new TSFExtended::EpetraVectorType());
+    return Playa::VectorType<double>(new Playa::EpetraVectorType());
   }
   %}
 
 
 /* --------- linear operator ------------ */
-namespace TSFExtended
+namespace Playa
 {
   template <class Scalar>
   class LinearOperator
@@ -463,9 +453,9 @@ namespace TSFExtended
 
 %inline %{
   /* Create block operator */
-  TSFExtended::LinearOperator<double> 
-    BlockOperator(const TSFExtended::VectorSpace<double>& domain,
-      const TSFExtended::VectorSpace<double>& range)
+  Playa::LinearOperator<double> 
+    BlockOperator(const Playa::VectorSpace<double>& domain,
+      const Playa::VectorSpace<double>& range)
   {
     return makeBlockOperator(domain, range);
   }
@@ -478,8 +468,8 @@ namespace TSFExtended
 
 %inline %{
   /* Create block operator */
-  TSFExtended::LinearOperator<double> 
-    makeIdentityOperator(const TSFExtended::VectorSpace<double>& space)
+  Playa::LinearOperator<double> 
+    makeIdentityOperator(const Playa::VectorSpace<double>& space)
   {
     return identityOperator(space);
   }
@@ -490,9 +480,9 @@ namespace TSFExtended
 
 %inline %{
   /* Create block operator */
-  TSFExtended::LinearOperator<double> 
-    makeZeroOperator(const TSFExtended::VectorSpace<double>& domain,
-      const TSFExtended::VectorSpace<double>& range)
+  Playa::LinearOperator<double> 
+    makeZeroOperator(const Playa::VectorSpace<double>& domain,
+      const Playa::VectorSpace<double>& range)
   {
     return zeroOperator(domain, range);
   }
@@ -501,7 +491,7 @@ namespace TSFExtended
 
 
 /* --------- linear solver ------------ */
-namespace TSFExtended
+namespace Playa
 {
   template <class Scalar>
   class LinearSolver
@@ -543,35 +533,22 @@ namespace TSFExtended
 
 
 %rename(BICGSTABSolver) makeBICGSTABSolver;
-%rename(GMRESSolver) makeGMRESSolver;
+
+
 
 %inline %{
-  TSFExtended::LinearSolver<double> makeGMRESSolver(const Teuchos::ParameterList& params)
+  Playa::LinearSolver<double> makeBICGSTABSolver(const Teuchos::ParameterList& params)
   {
-    return LinearSolver<double>(new TSFExtended::GMRESSolver<double>(params));
+    return LinearSolver<double>(new Playa::BICGSTABSolver<double>(params));
   }
   %}
 
-%inline %{
-  TSFExtended::LinearSolver<double> makeBICGSTABSolver(const Teuchos::ParameterList& params)
-  {
-    return LinearSolver<double>(new TSFExtended::BICGSTABSolver<double>(params));
-  }
-  %}
 
 %inline %{
-  TSFExtended::LinearSolver<double> makeGMRESSolver(const Teuchos::ParameterList& params,
-                                                    const TSFExtended::PreconditionerFactory<double>& precond)
+  Playa::LinearSolver<double> makeBICGSTABSolver(const Teuchos::ParameterList& params,
+                                                    const Playa::PreconditionerFactory<double>& precond)
   {
-    return LinearSolver<double>(new TSFExtended::GMRESSolver<double>(params, precond));
-  }
-  %}
-
-%inline %{
-  TSFExtended::LinearSolver<double> makeBICGSTABSolver(const Teuchos::ParameterList& params,
-                                                    const TSFExtended::PreconditionerFactory<double>& precond)
-  {
-    return LinearSolver<double>(new TSFExtended::BICGSTABSolver<double>(params, precond));
+    return LinearSolver<double>(new Playa::BICGSTABSolver<double>(params, precond));
   }
   %}
 
@@ -580,24 +557,24 @@ namespace TSFExtended
 
 %inline %{
   /* Read a linear solver from an XML file */
-  TSFExtended::LinearSolver<double> readSolver(const std::string& filename)
+  Playa::LinearSolver<double> readSolver(const std::string& filename)
   {
     Teuchos::ParameterXMLFileReader reader(filename);
     Teuchos::ParameterList solverParams = reader.getParameters();
-    TSFExtended::LinearSolver<double> solver 
-      = TSFExtended::LinearSolverBuilder::createSolver(solverParams);
+    Playa::LinearSolver<double> solver 
+      = Playa::LinearSolverBuilder::createSolver(solverParams);
     return solver;
   }
   %}
 
 %inline %{
   /* Read a linear solver from a parameter list */
-  TSFExtended::LinearSolver<double> buildSolver(const Teuchos::ParameterList& params)
+  Playa::LinearSolver<double> buildSolver(const Teuchos::ParameterList& params)
   {
-    TSFExtended::LinearSolver<double> solver ;
+    Playa::LinearSolver<double> solver ;
     try
       {
-        solver = TSFExtended::LinearSolverBuilder::createSolver(params);
+        solver = Playa::LinearSolverBuilder::createSolver(params);
       }
     catch(std::exception& e)
       {
@@ -611,7 +588,7 @@ namespace TSFExtended
 
 
 /* --------- preconditioner ------------ */
-namespace TSFExtended
+namespace Playa
 {
   template <class Scalar>
   class Preconditioner
@@ -661,7 +638,7 @@ namespace TSFExtended
 
 
 /* --------- preconditioner factory ------------ */
-namespace TSFExtended
+namespace Playa
 {
   template <class Scalar>
   class PreconditionerFactory
@@ -692,10 +669,10 @@ namespace TSFExtended
 %rename(ILUKPreconditionerFactory) makeILUKPreconditionerFactory;
 %inline %{
   /* Create ILUK preconditioner factory  */
-  TSFExtended::PreconditionerFactory<double> 
+  Playa::PreconditionerFactory<double> 
     makeILUKPreconditionerFactory(const Teuchos::ParameterList& params)
   {
-    return TSFExtended::PreconditionerFactory<double>(new TSFExtended::ILUKPreconditionerFactory<double>(params));
+    return Playa::PreconditionerFactory<double>(new Playa::ILUKPreconditionerFactory<double>(params));
   }
   %}
 
@@ -703,10 +680,10 @@ namespace TSFExtended
 
 %inline %{
   /* Create generic left preconditioner  */
-  TSFExtended::Preconditioner<double> 
-    makeGenericLeftPreconditioner(const TSFExtended::LinearOperator<double>& left)
+  Playa::Preconditioner<double> 
+    makeGenericLeftPreconditioner(const Playa::LinearOperator<double>& left)
   {
-    return TSFExtended::Preconditioner<double>(new TSFExtended::GenericLeftPreconditioner<double>(left));
+    return Playa::Preconditioner<double>(new Playa::GenericLeftPreconditioner<double>(left));
   }
   %}
 
@@ -714,10 +691,10 @@ namespace TSFExtended
 
 %inline %{
   /* Create generic left preconditioner  */
-  TSFExtended::Preconditioner<double> 
-    makeGenericRightPreconditioner(const TSFExtended::LinearOperator<double>& op)
+  Playa::Preconditioner<double> 
+    makeGenericRightPreconditioner(const Playa::LinearOperator<double>& op)
   {
-    return TSFExtended::Preconditioner<double>(new TSFExtended::GenericRightPreconditioner<double>(op));
+    return Playa::Preconditioner<double>(new Playa::GenericRightPreconditioner<double>(op));
   }
   %}
 
@@ -726,7 +703,7 @@ namespace TSFExtended
 
 
 /* --------- nonlinear operator ------------ */
-namespace TSFExtended
+namespace Playa
 {
   template <class Scalar>
   class NonlinearOperator
@@ -761,7 +738,7 @@ namespace NOX
 }
 
 
-namespace TSFExtended
+namespace Playa
 {
 class NOXSolver 
 {
@@ -801,13 +778,13 @@ public:
 
 %inline %{
   /* Create a nonlinear solver from a Python dictionary */
-  TSFExtended::NOXSolver makeNOXSolver(PyObject* dict)
+  Playa::NOXSolver makeNOXSolver(PyObject* dict)
   {
     Teuchos::ParameterList params = dict2ParameterList(dict);
     return NOXSolver(params);
   }
   /* Create a nonlinear solver from a Python dictionary */
-  TSFExtended::NOXSolver makeNOXSolver(const Teuchos::ParameterList& params)
+  Playa::NOXSolver makeNOXSolver(const Teuchos::ParameterList& params)
   {
     return NOXSolver(params);
   }
@@ -817,7 +794,7 @@ public:
 
 
 %inline %{
-  namespace TSFExtended
+  namespace Playa
   {
     SolverState<double> 
     PySundanceLinearSolver_solve(const PySundanceLinearSolver* solver,
@@ -825,22 +802,22 @@ public:
                                  const Vector<double>& rhs,
                                  Vector<double>& soln)
     {
-      swig_type_info* opType = SWIG_TypeQuery("TSFExtended::LinearOperator<double>*");
+      swig_type_info* opType = SWIG_TypeQuery("Playa::LinearOperator<double>*");
       TEST_FOR_EXCEPTION(opType==0, runtime_error,
                          "swig could not find a match for type name "
-                         "[TSFExtended::LinearOperator<double>]");
+                         "[Playa::LinearOperator<double>]");
 
 
-      swig_type_info* vecType = SWIG_TypeQuery("TSFExtended::Vector<double>*");
+      swig_type_info* vecType = SWIG_TypeQuery("Playa::Vector<double>*");
       TEST_FOR_EXCEPTION(vecType==0, runtime_error,
                          "swig could not find a match for type name "
-                         "[TSFExtended::Vector<double>]");
+                         "[Playa::Vector<double>]");
 
 
-      swig_type_info* stateType = SWIG_TypeQuery("TSFExtended::SolverState<double>*");
+      swig_type_info* stateType = SWIG_TypeQuery("Playa::SolverState<double>*");
       TEST_FOR_EXCEPTION(stateType==0, runtime_error,
                          "swig could not find a match for type name "
-                         "[TSFExtended::SolverState<double>]");
+                         "[Playa::SolverState<double>]");
 
 
       PyObject* opObj = SWIG_NewPointerObj( (void*) &op, opType, 0);

@@ -62,6 +62,17 @@ int DefaultBlockVectorSpace<Scalar>::baseGlobalNaturalIndex() const
 /** \relates VectorSpace */
 template <class Scalar> inline
 VectorSpace<Scalar> blockSpace(
+  const VectorSpace<Scalar>& v1)
+{
+  Array<VectorSpace<Scalar> > x(1);
+  x[0] = v1;
+  return blockSpace<Scalar>(x);
+}
+
+
+/** \relates VectorSpace */
+template <class Scalar> inline
+VectorSpace<Scalar> blockSpace(
   const VectorSpace<Scalar>& v1,
   const VectorSpace<Scalar>& v2)
 {

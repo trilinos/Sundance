@@ -22,13 +22,13 @@ class Functional
     /** */
     Functional(const Sundance::Mesh& mesh, 
       const Sundance::Expr& integral, 
-      const TSFExtended::VectorType<double>& vecType);
+      const Playa::VectorType<double>& vecType);
 
     /** */
     Functional(const Sundance::Mesh& mesh, 
       const Sundance::Expr& integral, 
       const Sundance::Expr& essentialBC,
-      const TSFExtended::VectorType<double>& vecType);
+      const Playa::VectorType<double>& vecType);
 
     /** */
     NonlinearProblem
@@ -71,7 +71,7 @@ public:
     const Sundance::Expr& bcs,
     const Sundance::Expr& var,
     const Sundance::Expr& varEvalPts,
-    const TSFExtended::VectorType<double>& vectorType);
+    const Playa::VectorType<double>& vectorType);
 
   /** */
   FunctionalEvaluator(const Sundance::Mesh& mesh, 
@@ -81,7 +81,7 @@ public:
     const Sundance::Expr& varEvalPts,
     const Sundance::Expr& fields,
     const Sundance::Expr& fieldValues,
-    const TSFExtended::VectorType<double>& vectorType);
+    const Playa::VectorType<double>& vectorType);
 
 
   /** */

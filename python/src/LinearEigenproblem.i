@@ -7,7 +7,7 @@
 
   // Sundance includes
 #include "SundanceLinearEigenproblem.hpp"
-#include "TSFAnasaziEigensolverDecl.hpp"
+#include "PlayaAnasaziEigensolverDecl.hpp"
 #include "PySundanceLinearSolver.hpp"
 
   %}
@@ -45,19 +45,19 @@ public:
 %rename(AnasaziEigensolver) makeAnasaziEigensolver;
 
 %inline %{
-  TSFExtended::Eigensolver<double> makeAnasaziEigensolver(const Teuchos::ParameterList& params)
+  Playa::Eigensolver<double> makeAnasaziEigensolver(const Teuchos::ParameterList& params)
   {
-    return Eigensolver<double>(new TSFExtended::AnasaziEigensolver<double>(params));
+    return Eigensolver<double>(new Playa::AnasaziEigensolver<double>(params));
   }
   %}
 
 %inline %{
   /* Read an eigensolver from an XML file */
-  TSFExtended::Eigensolver<double> readEigensolver(const std::string& filename)
+  Playa::Eigensolver<double> readEigensolver(const std::string& filename)
   {
     Teuchos::ParameterXMLFileReader reader(filename);
     Teuchos::ParameterList solverParams = reader.getParameters();
-    TSFExtended::Eigensolver<double> solver = new TSFExtended::AnasaziEigensolver<double>(solverParams);
+    Playa::Eigensolver<double> solver = new Playa::AnasaziEigensolver<double>(solverParams);
     return solver;
   }
   %}
@@ -65,10 +65,10 @@ public:
 
 %rename(ComplexArray) CompArray;
 %rename(VectorArray) VecArray;
-%template(VecArray) Teuchos::Array<TSFExtended::Vector<double> >;
+%template(VecArray) Teuchos::Array<Playa::Vector<double> >;
 %template(CompArray) Teuchos::Array<std::complex<double> >;
 
-namespace TSFExtended
+namespace Playa
 {
 %rename(Eigensolver) EigenSol;
 
@@ -109,30 +109,30 @@ public:
     const Sundance::Expr& eqn,
     const Sundance::Expr& v, 
     const Sundance::Expr& u,
-    const TSFExtended::VectorType<double>& vecType);
+    const Playa::VectorType<double>& vecType);
   /** */
   LinearEigenproblem(
     const Sundance::Mesh& mesh, const Sundance::Expr& eqn,
     const Sundance::Expr& v, const Sundance::Expr& u,
-    const TSFExtended::VectorType<double>& vecType,
+    const Playa::VectorType<double>& vecType,
     bool lumpMass) ;
   /** */
   LinearEigenproblem(
     const Sundance::Mesh& mesh, const Sundance::Expr& eqn,
     const Sundance::Expr& massExpr,
     const Sundance::Expr& v, const Sundance::Expr& u,
-    const TSFExtended::VectorType<double>& vecType,
+    const Playa::VectorType<double>& vecType,
     bool lumpMass) ;
     
   /** */
-  Eigensolution solve(const TSFExtended::Eigensolver<double>& solver) const ;
+  Eigensolution solve(const Playa::Eigensolver<double>& solver) const ;
 
   /** */
-  TSFExtended::LinearOperator<double> getK() const ;
+  Playa::LinearOperator<double> getK() const ;
       
 
   /** */
-  TSFExtended::LinearOperator<double> getM() const ;
+  Playa::LinearOperator<double> getM() const ;
     
 
 };

@@ -42,12 +42,12 @@ namespace Sundance
   public:
     /** */
     AToCDensitySampler(const AToCPointLocator& locator,
-                       const TSFExtended::VectorType<double>& vecType);
+                       const Playa::VectorType<double>& vecType);
     /** */
     AToCDensitySampler(const AToCPointLocator& locator,
                        const std::vector<double>& origin,
                        const std::vector<double>& rotationalAxis,
-                       const TSFExtended::VectorType<double>& vecType);
+                       const Playa::VectorType<double>& vecType);
 
     /** */
     Sundance::Expr sample(const std::vector<double>& positions,

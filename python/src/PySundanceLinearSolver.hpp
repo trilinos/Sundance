@@ -9,7 +9,7 @@
 namespace Playa
 {
   class PySundanceLinearSolver : public LinearSolverBase<double>,
-                                 public Sundance::Handleable<LinearSolverBase<double> >
+                                 public Playa::Handleable<LinearSolverBase<double> >
   {
   public:
     /** */

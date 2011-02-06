@@ -25,14 +25,14 @@ namespace Sundance
       
       PyObject *py_quad_rule = 
 	PyObject_CallFunction( py_quad_factory , "(ii)" , i+1 , order );
-      TEST_FOR_EXCEPTION( !py_quad_rule , RuntimeError , 
+      TEST_FOR_EXCEPTION( !py_quad_rule , std::runtime_error , 
 			  "Unable to construct quadrature rule" );
       to_decref.push( py_quad_rule );
       
       PyObject *py_quad_points =
 	PyObject_CallMethod( py_quad_rule , "get_points" , NULL );
       
-      TEST_FOR_EXCEPTION( !py_quad_points , RuntimeError ,
+      TEST_FOR_EXCEPTION( !py_quad_points , std::runtime_error ,
 			  "Unable to extract quadrature points" );
       
       to_decref.push( py_quad_points );
@@ -41,16 +41,16 @@ namespace Sundance
 	PyObject_CallMethod( py_quad_rule , "get_weights" , NULL );
       
       
-      TEST_FOR_EXCEPTION( !py_quad_weights , RuntimeError , 
+      TEST_FOR_EXCEPTION( !py_quad_weights , std::runtime_error , 
 			  "Unable to extract quadrature weights" );
       
       int num_points = PyObject_Length( py_quad_points );
       
-      TEST_FOR_EXCEPTION( (num_points < 1) , RuntimeError ,
+      TEST_FOR_EXCEPTION( (num_points < 1) , std::runtime_error ,
 			  "Not enough points" );
       
       TEST_FOR_EXCEPTION( (num_points != PyObject_Length( py_quad_weights ) ) ,
-			  RuntimeError ,
+			  std::runtime_error ,
 			  "Number of points and weights don't match" );
       
       to_decref.push( py_quad_weights );

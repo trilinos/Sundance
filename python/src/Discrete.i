@@ -23,7 +23,7 @@
   Sundance::BasisArray pyListToBasisArray(PyObject* lst)
   {
     PyObject_Print(lst, stderr, Py_PRINT_RAW);
-    TEST_FOR_EXCEPTION(!PyList_Check(lst), RuntimeError, 
+    TEST_FOR_EXCEPTION(!PyList_Check(lst), std::runtime_error, 
                        "Expecting a python list as argument to conversion to basis array");
     int n = PyList_Size(lst);
     Sundance::BasisArray rtn(n);
@@ -52,12 +52,12 @@
     return rtn;
   }
 
-  TSFExtended::VectorType<double> pyObjToVectorType(PyObject* obj)
+  Playa::VectorType<double> pyObjToVectorType(PyObject* obj)
   {
-    TSFExtended::VectorType<double>  rtn;
-    TSFExtended::VectorType<double> * vPtr = 0;
+    Playa::VectorType<double>  rtn;
+    Playa::VectorType<double> * vPtr = 0;
     SWIG_Python_ConvertPtr(obj, (void**) &vPtr, 
-                             SWIGTYPE_p_TSFExtended__VectorTypeTdouble_t, 
+                             SWIGTYPE_p_Playa__VectorTypeTdouble_t, 
                              SWIG_POINTER_EXCEPTION | 0);
     rtn = *vPtr;
     return rtn;
@@ -78,15 +78,15 @@
 
 %typemap(in) (const Sundance::Mesh& mesh, 
               const Sundance::BasisArray& basis,
-              const TSFExtended::VectorType<double>& vecType)
+              const Playa::VectorType<double>& vecType)
   (Sundance::Mesh mesh,
    Sundance::BasisArray basis,
-   TSFExtended::VectorType<double> vecType)
+   Playa::VectorType<double> vecType)
 {
   std::cerr << "in (mesh, basis, vecType) typemap" << std::endl;
-  TEST_FOR_EXCEPTION(!PyTuple_Check($input), RuntimeError,
+  TEST_FOR_EXCEPTION(!PyTuple_Check($input), std::runtime_error,
                      "expecting a tuple");
-  TEST_FOR_EXCEPTION(PyTuple_Size($input) != 3, RuntimeError,
+  TEST_FOR_EXCEPTION(PyTuple_Size($input) != 3, std::runtime_error,
                      "expecting a tuple of length 3");
   mesh = pyObjToMesh(PyTuple_GetItem($input, 0));
   basis = pyListToBasisArray(PyTuple_GetItem($input, 1));
@@ -112,38 +112,38 @@ namespace Sundance
     /* */
     DiscreteSpace(const Sundance::Mesh& mesh, 
                   const BasisFamily& basis,
-                  const TSFExtended::VectorType<double>& vecType);
+                  const Playa::VectorType<double>& vecType);
     /* */
     DiscreteSpace(const Sundance::Mesh& mesh, 
                   const Sundance::BasisArray& basis,
-                  const TSFExtended::VectorType<double>& vecType);
+                  const Playa::VectorType<double>& vecType);
     /* */
     DiscreteSpace(const Sundance::Mesh& mesh, 
                   const Sundance::BasisArray& basis,
                   const Sundance::CellFilterArray& domains,
-                  const TSFExtended::VectorType<double>& vecType);
+                  const Playa::VectorType<double>& vecType);
     /* */
     DiscreteSpace(const Sundance::Mesh& mesh, 
                   const BasisFamily& basis,
                   const SpectralBasis& sb,
-                  const TSFExtended::VectorType<double>& vecType);
+                  const Playa::VectorType<double>& vecType);
     /** */
     DiscreteSpace(const Sundance::Mesh& mesh, 
                   const BasisFamily& basis,
                   const CellFilter& regions,
-                  const TSFExtended::VectorType<double>& vecType);
+                  const Playa::VectorType<double>& vecType);
 
 
     /** */
     DiscreteSpace(const Sundance::Mesh& mesh, 
                   const BasisArray& basis,
                   const CellFilter& regions,
-                  const TSFExtended::VectorType<double>& vecType);
+                  const Playa::VectorType<double>& vecType);
     /* */
     DiscreteSpace(const Sundance::Mesh& mesh, 
                   const Sundance::BasisArray& basis,
                   const SpectralBasis& sb,
-                  const TSFExtended::VectorType<double>& vecType);
+                  const Playa::VectorType<double>& vecType);
     /* */
     ~DiscreteSpace();
 
@@ -151,10 +151,10 @@ namespace Sundance
     const Sundance::Mesh& mesh() const ;
 
     /* */
-    TSFExtended::VectorSpace<double> vecSpace() const ;
+    Playa::VectorSpace<double> vecSpace() const ;
 
     /* */
-    TSFExtended::VectorType<double> vecType() const ;
+    Playa::VectorType<double> vecType() const ;
 
     
   };
@@ -168,7 +168,7 @@ namespace Sundance
     /* */
     L2Projector(const DiscreteSpace& space, 
                 const Sundance::Expr& expr,
-                const TSFExtended::LinearSolver<double>& solver);
+                const Playa::LinearSolver<double>& solver);
 
     /* */
     ~L2Projector();
@@ -217,7 +217,7 @@ namespace Sundance
 %inline %{
   /* Create a discrete function */
   Sundance::Expr makeDiscreteFunction(const Sundance::DiscreteSpace& space,
-                                          const TSFExtended::Vector<double>& vec)
+                                          const Playa::Vector<double>& vec)
   {
     return new Sundance::DiscreteFunction(space, vec);
   }
@@ -236,7 +236,7 @@ namespace Sundance
 %inline %{
   /* Create a discrete function */
   Sundance::Expr makeDiscreteFunction(const Sundance::DiscreteSpace& space,
-                                          const TSFExtended::Vector<double>& vec,
+                                          const Playa::Vector<double>& vec,
                                           const std::string& name)
   {
     return new Sundance::DiscreteFunction(space, vec, name);

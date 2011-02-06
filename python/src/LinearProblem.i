@@ -17,13 +17,13 @@ class Block
   {
   public:
     /** */
-    Block(const Sundance::Expr& expr, const TSFExtended::VectorType<double>& vecType);
+    Block(const Sundance::Expr& expr, const Playa::VectorType<double>& vecType);
 
     /** */
     const Sundance::Expr& expr() const ;
 
     /** */
-    const TSFExtended::VectorType<double>& vecType() const ;
+    const Playa::VectorType<double>& vecType() const ;
   };
 
   class BlockArray
@@ -126,7 +126,7 @@ namespace Sundance
                   const Sundance::Expr& bc,
                   const Sundance::Expr& v, 
                   const Sundance::Expr& u,
-                  const TSFExtended::VectorType<double>& vecType);
+                  const Playa::VectorType<double>& vecType);
 
     LinearProblem(const Sundance::Mesh& mesh, 
                   const Sundance::Expr& eqn,
@@ -134,24 +134,24 @@ namespace Sundance
                   const Sundance::BlockArray& v, 
                   const Sundance::BlockArray& u);
 
-    TSFExtended::Vector<double> getSingleRHS() const ;
+    Playa::Vector<double> getSingleRHS() const ;
 
-    TSFExtended::LinearOperator<double> getOperator() const ;
+    Playa::LinearOperator<double> getOperator() const ;
 
-    Sundance::Expr solve(const TSFExtended::LinearSolver<double>& solver) const ;
+    Sundance::Expr solve(const Playa::LinearSolver<double>& solver) const ;
 
   };
 
   %extend LinearProblem {
     Sundance::Expr solve(PyObject* pySolver)
     {
-      TSFExtended::PySundanceLinearSolver* tmp  
-        = new TSFExtended::PySundanceLinearSolver(pySolver);
+      Playa::PySundanceLinearSolver* tmp  
+        = new Playa::PySundanceLinearSolver(pySolver);
       
-      Teuchos::RCP<TSFExtended::LinearSolverBase<double> > 
+      Teuchos::RCP<Playa::LinearSolverBase<double> > 
         r = rcp(tmp);
 
-      TSFExtended::LinearSolver<double> cxxSolver = r;
+      Playa::LinearSolver<double> cxxSolver = r;
       return self->solve(cxxSolver);
     }
   }
