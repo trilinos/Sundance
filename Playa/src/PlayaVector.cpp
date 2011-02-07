@@ -16,6 +16,11 @@ template class Vector<double>;
 
 template LoadableVector<double>* loadable(Vector<double> vec);
 
+template 
+double* dataPtr(Vector<double> vec) ;
+
+template 
+const double* dataPtr(const Vector<double>& vec) ;
 }
 
 #endif

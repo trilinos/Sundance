@@ -77,34 +77,34 @@ public:
   //@{
   HANDLE_CTORS(Vector<Scalar>, VectorBase<Scalar>);
 
-  /** Construct a vector from a 2-term LC */
+  /**  \brief Construct a vector from a 2-term LC */
   template<class Node1, class Node2>
   Vector(const PlayaExprTemplates::LC2<Scalar, Node1, Node2>& x);
 
-  /** Construct a vector from an operator times a linear combination */
+  /**  \brief Construct a vector from an operator times a linear combination */
   template<class Node>
   Vector(const PlayaExprTemplates::OpTimesLC<Scalar, Node>& x);
 
-  /** Assign a linear combination of vectors to this vector */
+  /**  \brief Assign a linear combination of vectors to this vector */
   template<class Node1, class Node2>
   Vector& operator=(const PlayaExprTemplates::LC2<Scalar, Node1, Node2>& x);
 
-  /** Assign a scaled linear combination to this vector */
+  /**  \brief Assign a scaled linear combination to this vector */
   template<class Node>
   Vector& operator=(const PlayaExprTemplates::OpTimesLC<Scalar, Node>& x);
   //@}
 
   /** \name Structural information */
   //@{
-  /** My space */
+  /**  \brief My space */
   VectorSpace<Scalar> space() const 
     {return this->ptr()->space();}
 
-  /** My communicator */
+  /**  \brief My communicator */
   const MPIComm& comm() const 
     {return this->space().comm();}
 
-  /** My dimension  */
+  /**  \brief My dimension  */
   int dim() const
     {
       return this->ptr()->space()->dim();
@@ -114,22 +114,22 @@ public:
 
   /** \name Block operations */
   //@{
-  /** get number of blocks */
+  /**  \brief get number of blocks */
   int numBlocks() const ;
 
-  /** set the i-th block  */
+  /**  \brief set the i-th block  */
   void setBlock(int i, const Vector<Scalar>& v);
       
-  /** get the i-th block */
+  /**  \brief get the i-th block */
   const Vector<Scalar>& getBlock(int i) const;
       
-  /** get the i-th block */
+  /**  \brief get the i-th block */
   Vector<Scalar> getNonConstBlock(int i) ;
       
-  /** get the i-th block */
+  /**  \brief get the i-th block */
   const Vector<Scalar>& getBlock(const BlockIterator<Scalar>& b) const;
       
-  /** get the i-th block */
+  /**  \brief get the i-th block */
   Vector<Scalar> getNonConstBlock(const BlockIterator<Scalar>& b);
   //@}
 
@@ -137,23 +137,23 @@ public:
 
   /** \name Sequential data accessors */
   //@{
-  /** Get the next chunk of values for read-only access */
+  /**  \brief Get the next chunk of values for read-only access */
   ConstDataChunk<Scalar> nextConstChunk() const ;
     
-  /** Get the next chunk of values for read-write access */
+  /**  \brief Get the next chunk of values for read-write access */
   NonConstDataChunk<Scalar> nextChunk() ;
 
-  /** Tell whether there are more chunks remaining to be accessed */
+  /**  \brief Tell whether there are more chunks remaining to be accessed */
   bool hasMoreChunks() const ;
 
-  /** Reset the data stream back to a state where all chunks are
+  /**  \brief Reset the data stream back to a state where all chunks are
    * considered unread. */
   void rewind() const ;
   //@}
 
   /** \name Random access to local elements */
   //@{
-  /** const bracket operator for read-only random access to
+  /**  \brief const bracket operator for read-only random access to
    * local elements as specified by
    * a flat index that runs from 0 to space().numLocalElements(). 
    * If the vector does not consist of a single contiguous data chunk,
@@ -162,7 +162,7 @@ public:
    */
   const Scalar& operator[](int localIndex) const ;
     
-  /** non-const bracket operator for read-write random access to
+  /**  \brief non-const bracket operator for read-write random access to
    * local elements as specified by
    * a flat index that runs from 0 to space().numLocalElements(). 
    * If the vector does not consist of a single contiguous data chunk,
@@ -171,7 +171,7 @@ public:
    */
   Scalar& operator[](int localIndex);
 
-  /** parentheses operator for read-only random access to
+  /** \brief  parentheses operator for read-only random access to
    * local elements as specified by 
    * a block iterator and a flat index indicating the
    * element's location within that block. 
@@ -179,7 +179,7 @@ public:
   const Scalar& operator()(const BlockIterator<Scalar>& b,
     int localIndexWithinBlock) const ;
     
-/** parentheses operator for read-write random access to
+/** \brief  parentheses operator for read-write random access to
    * local elements as specified by 
    * a block iterator and a flat index indicating the
    * element's location within that block. 
@@ -190,17 +190,17 @@ public:
 
   /** \name Diagnostic output */
   //@{
-  /** Return a short string description of the vector */
+  /**  \brief Return a short string description of the vector */
   std::string description() const ;
 
-  /** Print the vector in some detail */
+  /** \brief  Print the vector in some detail */
   void print(std::ostream& os) const ;    
   //@}
 
 
   /** \name Math operations */
   //@{
-  /** Multiply this vector by a constant scalar factor 
+  /** \brief  Multiply this vector by a constant scalar factor 
    * \code
    * this = alpha * this;
    * \endcode
@@ -208,25 +208,21 @@ public:
   Vector<Scalar>& scale(const Scalar& alpha);
 
   /** 
-   * Add a scaled vector to this vector times a constant:
-   * \code
-   * this = gamma*this + alpha*x 
-   * \endcode
+   *  \brief Add a scaled vector to this vector times a constant:
+   * \f$ this=\alpha x + \gamma \,this. \f$
    */
   Vector<Scalar>& update(const Scalar& alpha, const Vector<Scalar>& x, 
     const Scalar& gamma=1.0);
   /** 
-   * Add two scaled vectors to this vector times a constant:
-   * \code
-   * this = alpha*x + beta*y + gamma*this
-   * \endcode
+   * \brief  Add two scaled vectors to this vector times a constant:
+   * \f$ this=\alpha x + \beta y + \gamma \, this. \f$
    */
   Vector<Scalar>& update(const Scalar& alpha, const Vector<Scalar>& x, 
     const Scalar& beta, const Vector<Scalar>& y, 
     const Scalar& gamma);
 
   /** 
-   * Copy the values of another vector into this vector
+   *  \brief Copy the values of another vector into this vector
    * \code
    * this = x
    * \endcode
@@ -234,103 +230,103 @@ public:
   Vector<Scalar>& acceptCopyOf(const Vector<Scalar>& x);
 
   /** 
-   * Create a new vector that is a copy of this vector 
+   * \brief  Create a new vector that is a copy of this vector 
    */
   Vector<Scalar> copy() const ;
 
   /** 
-   * In-place element-by-element product (Matlab dot-star operator)
+   * \brief  In-place element-by-element product (Matlab dot-star operator)
    */
   Vector<Scalar>& dotStar(const Vector<Scalar>& other) ;
 
   /** 
-   * In-place element-by-element division (Matlab dot-slash operator)
+   * \brief  In-place element-by-element division (Matlab dot-slash operator)
    */
   Vector<Scalar>& dotSlash(const Vector<Scalar>& other) ;
 
   /** 
-   * Element-by-element product (Matlab dot-star operator)
+   * \brief  Element-by-element product (Matlab dot-star operator)
    */
   Vector<Scalar> dotStar(const Vector<Scalar>& other) const ;
 
   /** 
-   * Element-by-element division (Matlab dot-slash operator)
+   *  \brief Element-by-element division (Matlab dot-slash operator)
    */
   Vector<Scalar> dotSlash(const Vector<Scalar>& other) const ;
 
   /** 
-   * Return element-by-element reciprocal as a new vector
+   * \brief  Return element-by-element reciprocal as a new vector
    */
   Vector<Scalar> reciprocal() const ;
 
 
   /** 
-   * Return element-by-element absolute value as a new vector
+   * \brief  Return element-by-element absolute value as a new vector
    */
   Vector<Scalar> abs() const ;
 
   /** 
-   * Overwrite self with element-by-element reciprocal
+   * \brief  Overwrite self with element-by-element reciprocal
    */
   Vector<Scalar>& reciprocal() ;
 
   /** 
-   * Overwrite self with element-by-element absolute value 
+   *  \brief Overwrite self with element-by-element absolute value 
    */
   Vector<Scalar>& abs() ;
 
   /** 
-   * Overwrite self with random values
+   *  \brief Overwrite self with random values
    */
   Vector<Scalar>& randomize() ;
 
   /** 
-   * Set all elements to a constant value
+   *  \brief Set all elements to a constant value
    */
   void setToConstant(const Scalar& alpha) ;
 
       
   /** 
-   * Take dot product with another vector
+   *  \brief Take dot product with another vector
    */
   Scalar dot(const Vector<Scalar>& other) const ;
 
   /** 
-   * Overloaded operator for dot product 
+   * \brief  Overloaded operator for dot product 
    */
   Scalar operator*(const Vector<Scalar>& other) const ;
 
   /**
-   * Compute the 1-norm of this vector
+   *  \brief Compute the 1-norm of this vector
    */
   Scalar norm1() const ;
 
   /**
-   * Compute the 2-norm of this vector
+   *  \brief Compute the 2-norm of this vector
    */
   Scalar norm2() const ;
 
   /**
-   * Compute the weighted 2-norm of this vector
+   *  \brief Compute the weighted 2-norm of this vector
    */
   Scalar norm2(const Vector<Scalar>& weights) const ;    
 
 
   /**
-   * Compute the infinity-norm of this vector
+   *  \brief Compute the infinity-norm of this vector
    */
   Scalar normInf() const ;
 
   /**
-   * Set all elements to zero 
+   *  \brief Set all elements to zero 
    */
   void zero();
 
 
-  /** Return the max element */
+  /**  \brief Return the max element */
   Scalar max() const;
 
-  /** Return the min element */
+  /**  \brief Return the min element */
   Scalar min()const;
 
 
@@ -339,7 +335,7 @@ public:
 
 
 
-  /** Get a stopwtach for timing vector operations */
+  /**  \brief Get a stopwtach for timing vector operations */
   static RCP<Time>& opTimer()
     {
       static RCP<Time> rtn 
@@ -362,38 +358,38 @@ public:
   /** \name Functor application */
   //@{
 
-  /** Apply a unary functor, overwriting this vector with the results */
+  /**  \brief Apply a unary functor, overwriting this vector with the results */
   template <class UF> 
   Vector<Scalar>& applyUnaryFunctor(const UF& functor);
 
-  /** Apply a unary functor to another vector, writing the results
+  /**  \brief Apply a unary functor to another vector, writing the results
       into this vector. The other vector is unchanged. */
   template <class UF> 
   Vector<Scalar>& acceptUnaryFunctor(const UF& functor,
     const Vector<Scalar>& other);
 
-  /** Apply a binary functor to this vector and another vector, 
+  /**  \brief Apply a binary functor to this vector and another vector, 
       writing the results
       into this vector. The other vector is unchanged. */
   template <class VF> 
   Vector<Scalar>& applyBinaryFunctor(const VF& functor,
     const Vector<Scalar>& other);
 
-  /** Apply a ternary functor to this vector and two other vectors, 
+  /** \brief Apply a ternary functor to this vector and two other vectors, 
       writing the results
       into this vector. The other vectors are unchanged. */
   template <class VF> 
   Vector<Scalar>& applyTernaryFunctor(const VF& functor,
     const Vector<Scalar>& x, const Vector<Scalar>& y);
 
-  /** Apply a unary reduction functor */
+  /** \brief Apply a unary reduction functor */
   template <class RF> 
   typename PlayaFunctors::VectorFunctorTraits<Scalar, RF>::ReturnType 
   applyUnaryReductionFunctor(
     const RF& functor)
     const ;
 
-  /** Apply a binary reduction functor */
+  /** \brief Apply a binary reduction functor */
   template <class RF> 
   typename PlayaFunctors::VectorFunctorTraits<Scalar, RF>::ReturnType 
   applyBinaryReductionFunctor(const RF& functor, const Vector<Scalar>& other)
@@ -418,9 +414,23 @@ private:
 
 
 template <class Scalar> class LoadableVector;
-/** \relates Vector */
+/** \relates Vector \brief Dynamic cast a Vector's underlying pointer to 
+a LoadableVector. */
 template <class Scalar>
 LoadableVector<Scalar>* loadable(Vector<Scalar> vec) ;
+
+
+/** \relates Vector \brief Return a pointer to the beginning of the vector's
+single data chunk. If the underlying VectorBase is not a SingleChunkVector
+an exception will be thrown. */
+template <class Scalar>
+Scalar* dataPtr(Vector<Scalar> vec) ;
+
+/** \relates Vector \brief Return a pointer to the beginning of the vector's
+single data chunk. If the underlying VectorBase is not a SingleChunkVector
+an exception will be thrown. */
+template <class Scalar>
+const Scalar* dataPtr(const Vector<Scalar>& vec) ;
 
 
 }

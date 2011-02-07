@@ -782,6 +782,29 @@ Scalar& Vector<Scalar>::operator()(const BlockIterator<Scalar>& b,
 //===========================================================================
 
 template <class Scalar> inline
+Scalar* dataPtr(Vector<Scalar> vec) 
+{
+  SingleChunkVector<Scalar>* v 
+    = dynamic_cast<SingleChunkVector<Scalar>* >(vec.ptr().get());
+  TEST_FOR_EXCEPT(v==0);
+  return v->dataPtr();
+}
+
+
+//===========================================================================
+
+template <class Scalar> inline
+const Scalar* dataPtr(const Vector<Scalar>& vec) 
+{
+  const SingleChunkVector<Scalar>* v 
+    = dynamic_cast<const SingleChunkVector<Scalar>* >(vec.ptr().get());
+  TEST_FOR_EXCEPT(v==0);
+  return v->dataPtr();
+}
+
+//===========================================================================
+
+template <class Scalar> inline
 LoadableVector<Scalar>* loadable(Vector<Scalar> vec) 
 {
   LoadableVector<Scalar>* lv 
