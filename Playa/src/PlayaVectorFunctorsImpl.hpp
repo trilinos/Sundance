@@ -11,68 +11,55 @@
 #include "Teuchos_MPIComm.hpp"
 #include "PlayaRand.hpp"
 
-namespace Playa
+namespace PlayaFunctors
 {
 
-/**
- * IndexedValue is the return type for reduction operations such
- * as MinLoc that return a location and a value. 
- */
+/** \brief Elementwise absolute value */
 template <class Scalar>
-struct IndexedValue
-{
-  /** Value */
-  Scalar what;
-  /** Index */
-  GeneralizedIndex where;
-};
-
-/** Functor for elementwise absolute value */
-template <class Scalar>
-class AbsFunctor
+class Abs
 {
 public:
   /** */
-  AbsFunctor() {}
+  Abs() {}
 
   /** */
   Scalar operator()(const Scalar& x) const 
     {return abs(x);}
 };
 
-/** Functor for elementwise reciprocal */
+/** \brief Elementwise reciprocal */
 template <class Scalar>
-class ReciprocalFunctor
+class Reciprocal
 {
 public:
   /** */
-  ReciprocalFunctor() {}
+  Reciprocal() {}
 
   /** */
   Scalar operator()(const Scalar& x) const 
     {return 1.0/x;}
 };
 
-/** Functor for elementwise reciprocal */
+/** \brief Set each element to a random scalar */
 template <class Scalar>
-class RandomFunctor
+class Random
 {
 public:
   /** */
-  RandomFunctor() {}
+  Random() {}
 
   /** */
   Scalar operator()(const Scalar& x) const 
-    {return Rand::val();}
+    {return Playa::Rand::val();}
 };
 
-/** Functor for multiplication by a scalar */
+/** \brief Multiplication by a scalar */
 template <class Scalar>
-class ScalarMultFunctor
+class ScalarMult
 {
 public:
   /** */
-  ScalarMultFunctor(const Scalar& alpha) : alpha_(alpha) {}
+  ScalarMult(const Scalar& alpha) : alpha_(alpha) {}
 
   /** */
   Scalar operator()(const Scalar& x) const 
@@ -81,26 +68,26 @@ private:
   Scalar alpha_;
 };
 
-/** Identity functor, used for copying */
+/** \brief Identity functor, used for copying */
 template <class Scalar>
-class IdentityFunctor
+class Identity
 {
 public:
   /** */
-  IdentityFunctor() {}
+  Identity() {}
 
   /** */
   Scalar operator()(const Scalar& x) const 
     {return x;}
 };
 
-/** Functor for setting all elements to a constant */
+/** \brief Setting all elements to a constant */
 template <class Scalar>
-class ConstantFunctor
+class SetConstant
 {
 public:
   /** */
-  ConstantFunctor(const Scalar& alpha) : alpha_(alpha) {}
+  SetConstant(const Scalar& alpha) : alpha_(alpha) {}
 
   /** */
   Scalar operator()(const Scalar& x) const 
@@ -110,13 +97,13 @@ private:
 };
 
 
-/** Functor for elementwise product */
+/** \brief Elementwise product (matlab dot star) */
 template <class Scalar>
-class DotStarFunctor
+class DotStar
 {
 public:
   /** */
-  DotStarFunctor() {}
+  DotStar() {}
 
   /** */
   Scalar operator()(const Scalar& x, const Scalar& y) const 
@@ -124,26 +111,26 @@ public:
 };
 
 
-/** Functor for elementwise quotient */
+/** \brief Elementwise quotient (matlab dot slash) */
 template <class Scalar>
-class DotSlashFunctor
+class DotSlash
 {
 public:
   /** */
-  DotSlashFunctor() {}
+  DotSlash() {}
 
   /** */
   Scalar operator()(const Scalar& x, const Scalar& y) const 
     {return x*y;}
 };
 
-/** Functor for linear combination of two vectors */
+/** \brief Linear combination of two vectors */
 template <class Scalar>
-class LCFunctor2
+class LC2
 {
 public:
   /** */
-  LCFunctor2(const Scalar& a, const Scalar& b) : a_(a), b_(b) {}
+  LC2(const Scalar& a, const Scalar& b) : a_(a), b_(b) {}
 
   /** */
   Scalar operator()(const Scalar& x, const Scalar& y) const 
@@ -155,13 +142,13 @@ private:
 };
 
 
-/** Functor for linear combination of two vectors */
+/** \brief Linear combination of three vectors */
 template <class Scalar>
-class LCFunctor3
+class LC3
 {
 public:
   /** */
-  LCFunctor3(const Scalar& a, const Scalar& b, const Scalar& c)
+  LC3(const Scalar& a, const Scalar& b, const Scalar& c)
     : a_(a), b_(b), c_(c) {}
 
   /** */
@@ -175,12 +162,12 @@ private:
 };
 
 
-/** Functor for Euclidean norm of a vector */
+/** \brief Euclidean norm of a vector */
 template <class Scalar>
-class Norm2Functor : public ReductionFunctorBase<Scalar>
+class Norm2 : public ReductionFunctorBase<Scalar>
 {
 public:
-  Norm2Functor(const MPIComm& comm)
+  Norm2(const MPIComm& comm)
     : ReductionFunctorBase<Scalar>(comm), val_(0.0) {}
 
   void step(int i, const Scalar& x) const 
@@ -204,12 +191,12 @@ private:
   mutable Scalar val_;
 };
 
-/** Functor for weighted 2-norm of a vector */
+/** \brief Weighted 2-norm of a vector */
 template <class Scalar>
-class WeightedNorm2Functor : public ReductionFunctorBase<Scalar>
+class WeightedNorm2 : public ReductionFunctorBase<Scalar>
 {
 public:
-  WeightedNorm2Functor(const MPIComm& comm)
+  WeightedNorm2(const MPIComm& comm)
     : ReductionFunctorBase<Scalar>(comm), val_(0.0) {}
 
   void step(int i, const Scalar& x, const Scalar& y) const 
@@ -234,12 +221,12 @@ private:
   mutable Scalar val_;
 };
 
-/** Functor for 1-norm */
+/** \brief 1-norm of a vector */
 template <class Scalar>
-class Norm1Functor : public ReductionFunctorBase<Scalar>
+class Norm1 : public ReductionFunctorBase<Scalar>
 {
 public:
-  Norm1Functor(const MPIComm& comm)
+  Norm1(const MPIComm& comm)
     : ReductionFunctorBase<Scalar>(comm), val_(0.0) {}
 
   void step(int i, const Scalar& x) const 
@@ -263,12 +250,12 @@ private:
   mutable Scalar val_;
 };
 
-/** Functor for infinity norm of a vector */
+/** \brief Infinity norm of a vector */
 template <class Scalar>
-class NormInfFunctor : public ReductionFunctorBase<Scalar>
+class NormInf : public ReductionFunctorBase<Scalar>
 {
 public:
-  NormInfFunctor(const MPIComm& comm)
+  NormInf(const MPIComm& comm)
     : ReductionFunctorBase<Scalar>(comm), val_(-1.0) {}
 
   void step(int i, const Scalar& x) const 
@@ -293,12 +280,12 @@ private:
   mutable Scalar val_;
 };
 
-/** Functor for dot product of two vectors */
+/** \brief Dot product of two vectors */
 template <class Scalar>
-class DotProductFunctor : public ReductionFunctorBase<Scalar>
+class DotProduct : public ReductionFunctorBase<Scalar>
 {
 public:
-  DotProductFunctor(const MPIComm& comm)
+  DotProduct(const MPIComm& comm)
     : ReductionFunctorBase<Scalar>(comm), val_(0.0) {}
 
   void step(int i, const Scalar& x, const Scalar& y) const 
@@ -323,12 +310,12 @@ private:
 };
 
 
-/** Functor to compute minimum element of a vector */
+/** \brief Find value of minimum element of a vector */
 template <class Scalar>
-class MinFunctor : public ReductionFunctorBase<Scalar>
+class Min : public ReductionFunctorBase<Scalar>
 {
 public:
-  MinFunctor(const MPIComm& comm)
+  Min(const MPIComm& comm)
     : ReductionFunctorBase<Scalar>(comm), val_(HUGE_VAL) {}
 
   void step(int i, const Scalar& x) const 
@@ -352,12 +339,13 @@ private:
   mutable Scalar val_;
 };
 
-/** Functor to compute minimum element of a vector */
+
+/** \brief Find value of minimum element of a vector */
 template <class Scalar>
-class MaxFunctor : public ReductionFunctorBase<Scalar>
+class Max : public ReductionFunctorBase<Scalar>
 {
 public:
-  MaxFunctor(const MPIComm& comm)
+  Max(const MPIComm& comm)
     : ReductionFunctorBase<Scalar>(comm), val_(-HUGE_VAL) {}
 
   void step(int i, const Scalar& x) const 
@@ -382,57 +370,6 @@ private:
 };
 
 
-
-
-/** Functor to find value and location of minimum element greater than
- * a specified bound */
-template <class Scalar>
-class BoundedMinLocFunctor : public ReductionFunctorBase<Scalar>
-{
-public:
-  BoundedMinLocFunctor(const MPIComm& comm, const Scalar& bound)
-    : ReductionFunctorBase<Scalar>(comm), min_(), bound_(bound)
-    {
-      min_.what = HUGE_VAL;
-    }
-      
-
-  void step(int i, const Scalar& x) const 
-    {
-      if (x < min_.what && x > bound_) 
-      {
-        min_.what = x;
-        min_.where.setLocalIndex(i);
-      }
-    }
-
-  void postProc() const 
-    {
-      IndexedValue<Scalar> out = min_;
-      this->comm().allReduce(&min_, &out, 1, MPIComm::DOUBLE_INT, MPIComm::MINLOC);
-      min_ = out;
-    }
-
-  IndexedValue<Scalar> result() const 
-    {
-      return min_;
-    }
-
-private:
-  MPIComm comm_;
-  mutable IndexedValue<Scalar> min_;
-  Scalar bound_;
-};
-
-
-
-
-template <class Scalar>
-class VectorFunctorTraits<Scalar, BoundedMinLocFunctor<Scalar> >
-{
-public:
-  typedef IndexedValue<Scalar> ReturnType ;
-};
 
 
 }

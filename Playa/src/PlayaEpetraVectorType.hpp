@@ -17,10 +17,8 @@ namespace Playa
 using namespace Teuchos;
   
 /**
- * Epetra vector type is a factory for epetra vector spaces
+ * \!brief Epetra vector type is a factory for epetra vector spaces
  */
-
-
 class EpetraVectorType : public VectorTypeBase<double>,
                          public Playa::Handleable<VectorTypeBase<double> >,
                          public Printable,

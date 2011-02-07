@@ -14,7 +14,7 @@ namespace Playa
 using namespace Teuchos;
 
 /**
- * Vector type objects are used by the application code to create
+ * \brief Vector type objects are used by the application code to create
  * vector spaces and operators of a given type.
  */
 template <class Scalar>
@@ -24,14 +24,17 @@ public:
   HANDLE_CTORS(VectorType<Scalar>, VectorTypeBase<Scalar>);
    
 
-  /** create a vector space having nLocal elements on each processor */
+  /** \brief Create a vector space having nLocal elements on each 
+      processor of the specified communicator. */
   VectorSpace<Scalar> createEvenlyPartitionedSpace(const MPIComm& comm,
     int nLocal) const ;
 
-  /** create a distributed vector space.
+  /** \brief Create a distributed vector space with an arbitrary
+   * user-specified distribution of elements.
    * @param dimension the dimension of the space
    * @param nLocal number of indices owned by the local processor
    * @param locallyOwnedIndices array of indices owned by this processor  
+   * @param comm the MPI communicator over which the space is to be distributed.
    */
   VectorSpace<Scalar> createSpace(int dimension, 
     int nLocal,
@@ -41,7 +44,7 @@ public:
 
 
   /** 
-   * Create an importer for ghost elements
+   * \brief Create an importer for ghost (off-processor) elements.
    **/
   RCP<GhostImporter<Scalar> > 
   createGhostImporter(const VectorSpace<Scalar>& space,
@@ -49,7 +52,7 @@ public:
     const int* ghostIndices) const ;
 
   /**
-   * Create a matrix factory of type compatible with this vector type,
+   * \brief Create a matrix factory of type compatible with this vector type,
    * sized according to the given domain and range spaces.
    */
   virtual RCP<MatrixFactory<Scalar> >

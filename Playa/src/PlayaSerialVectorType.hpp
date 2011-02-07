@@ -18,10 +18,9 @@ namespace Playa
 using namespace Teuchos;
   
 /**
- *
+ * \!brief Serial vector type is a factory for serial vector spaces. If used
+in a SPMD program the spece will be replicated on each processor. 
  */
-
-
 class SerialVectorType : public VectorTypeBase<double>,
                          public Handleable<VectorTypeBase<double> >,
                          public Printable,

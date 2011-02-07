@@ -18,7 +18,7 @@
 namespace NOX 
 {
 
-//! NOX BLAS/Playa support
+
 namespace NOXPlaya 
 {
 using Teuchos::RCP;
@@ -181,8 +181,9 @@ private:
 } // namespace Playa
 } // namespace NOX
 
-//! Function for printing
+
 namespace std{
+//! Function for printing
 ostream& operator<<(std::ostream& stream, const NOX::NOXPlaya::Vector& v);
 }
 

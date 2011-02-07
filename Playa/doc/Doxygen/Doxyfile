@@ -1,7 +1,7 @@
 #
 # Include the global look and feel options
 #
-@INCLUDE               = ../../../common/Doxyfile
+@INCLUDE               = ../../../../common/Doxyfile
 #
 # Package options
 #
@@ -46,8 +46,7 @@ QUIET                  = NO
 WARNINGS               = YES
 WARN_IF_UNDOCUMENTED   = YES
 WARN_FORMAT            = "$file:$line: $text"
-INPUT                  = ../../src
-#INPUT                  = index.doc
+INPUT                  = index.dox ../../src
 FILE_PATTERNS          = *.h *.hpp *.cpp
 RECURSIVE              = YES
 EXCLUDE                = 
@@ -77,12 +76,12 @@ SEARCH_INCLUDES        = YES
 INCLUDE_FILE_PATTERNS  = 
 PREDEFINED             = DOXYGEN_COMPILE DOXYGEN_SHOULD_SKIP_THIS EPETRA_MPI \
 INCLUDE_PATH           = ../../src
-EXPAND_AS_DEFINED      = STANDARD_MEMBER_COMPOSITION_MEMBERS TEUCHOS_GET_RCP
+EXPAND_AS_DEFINED      = STANDARD_MEMBER_COMPOSITION_MEMBERS TEUCHOS_GET_RCP HANDLE_CTORS GET_RCP
 #
 # Links to other packages
 #
-TAGFILES               =
-GENERATE_TAGFILE       = ../../../common/tag_files/playa.tag
+TAGFILES               = ../../../../common/tag_files/teuchos.tag=../../../../../teuchos/doc/html
+GENERATE_TAGFILE       = ../../../../common/tag_files/playa.tag
 ALLEXTERNALS           = NO
 EXTERNAL_GROUPS        = NO
 #

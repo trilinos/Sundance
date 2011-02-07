@@ -22,7 +22,7 @@
 STREAM_OUT(Vector<double>)
 
 using namespace Playa;
-using namespace PlayaOps;
+using namespace PlayaExprTemplates;
 
 int main(int argc, char *argv[]) 
 {

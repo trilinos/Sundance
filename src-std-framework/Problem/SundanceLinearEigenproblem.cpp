@@ -62,7 +62,7 @@ using namespace Sundance;
 using namespace Sundance;
 using namespace Teuchos;
 using namespace Playa;
-using namespace PlayaOps;
+using namespace PlayaExprTemplates;
 
 static Time& normalizationTimer() 
 {

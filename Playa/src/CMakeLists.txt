@@ -170,6 +170,8 @@ APPEND_SET(HEADERS
   PlayaVectorFunctorsDecl.hpp
   PlayaVectorFunctorsImpl.hpp
   PlayaVectorImpl.hpp
+  PlayaVectorOpsDecl.hpp
+  PlayaVectorOpsImpl.hpp
   PlayaVectorSpaceBaseDecl.hpp
   PlayaVectorSpaceBaseImpl.hpp
   PlayaVectorSpaceDecl.hpp
@@ -239,6 +241,7 @@ APPEND_SET(SOURCES
   PlayaSimpleOps.cpp
   PlayaTabs.cpp
   PlayaVector.cpp
+  PlayaVectorOps.cpp
   PlayaVectorSpaceBase.cpp
   PlayaVectorSpace.cpp
   )

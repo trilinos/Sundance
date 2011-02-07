@@ -32,7 +32,7 @@
 
 using namespace Teuchos;
 using namespace Playa;
-using namespace PlayaOps;
+using namespace PlayaExprTemplates;
 
 
 int main(int argc, char *argv[]) 

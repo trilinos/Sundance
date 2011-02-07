@@ -31,7 +31,7 @@ using namespace Teuchos;
 
   
 /**
- *
+ * \brief User-level linear solver object
  */
 template <class Scalar>
 class LinearSolver : public Playa::Handle<LinearSolverBase<Scalar> >

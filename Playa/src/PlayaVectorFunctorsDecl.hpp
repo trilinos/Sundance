@@ -10,14 +10,16 @@
 #include "Teuchos_RCP.hpp"
 #include "PlayaGeneralizedIndex.hpp"
 
-namespace Playa
+namespace PlayaFunctors
 {
 
+using Playa::GeneralizedIndex;
 using Teuchos::RCP;
 using Teuchos::MPIComm;
 
 /**
- * This traits class specifies the return type of a reduction functor. 
+ * \brief This traits class specifies the return type of a reduction functor. 
+ * If not specialized, the default return type will be a Scalar.
  *
  * @author Kevin Long (kevin.long@ttu.edu)
  */
@@ -30,32 +32,46 @@ public:
 
 
 
-/** */
+/** 
+ * \brief Base class for reduction functors
+ *
+ * @author Kevin Long (kevin.long@ttu.edu)
+*/
 template <class Scalar>
 class ReductionFunctorBase
 {
 public:
-  /** */
+  /** Construct with a communicator */
   ReductionFunctorBase(
     const MPIComm& comm
     )
-    : comm_(comm), gi_(rcp(new GeneralizedIndex())) {}
+    : comm_(comm) {}
 
-  /** */
+  /** Callback for any postprocessing step (for example, MPI all-reduce) */
   virtual void postProc() const = 0 ;
 
-  /** */
-  const MPIComm& comm() const {return comm_;}
+protected:
 
-  /** */
-  RCP<GeneralizedIndex> currentGI() const {return gi_;}
+  /** Return the MPI communicator */
+  const MPIComm& comm() const {return comm_;}
 
 private:
   MPIComm comm_;
-  mutable RCP<GeneralizedIndex> gi_;
 };
 
   
+/**
+ * \brief IndexedValue is the return type for reduction operations such
+ * as MinLoc that return a location and a value. 
+ */
+template <class Scalar>
+struct IndexedValue
+{
+  /** Value */
+  Scalar what;
+  /** Index */
+  int where;
+};
   
 }
 

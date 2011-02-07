@@ -202,7 +202,7 @@
 namespace Sundance
 {
 
-using namespace PlayaOps;
+using namespace PlayaExprTemplates;
 using namespace Playa;
 using namespace Teuchos;
 using Sundance::List;

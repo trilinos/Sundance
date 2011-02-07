@@ -12,7 +12,7 @@
 #include "Teuchos_ScalarTraits.hpp"
 
 using namespace Playa;
-using namespace PlayaOps;
+using namespace PlayaExprTemplates;
 using namespace Teuchos;
 
 

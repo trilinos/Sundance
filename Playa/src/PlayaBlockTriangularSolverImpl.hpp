@@ -19,7 +19,7 @@
 
 namespace Playa
 {
-using namespace PlayaOps;
+using namespace PlayaExprTemplates;
 
 template <class Scalar> inline
 BlockTriangularSolver<Scalar>

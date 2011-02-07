@@ -26,7 +26,7 @@
 
 using namespace Teuchos;
 using namespace Playa;
-using namespace PlayaOps;
+using namespace PlayaExprTemplates;
 using std::endl;
 
 int main(int argc, char *argv[]) 

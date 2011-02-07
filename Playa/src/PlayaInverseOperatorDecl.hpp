@@ -70,7 +70,7 @@ private:
 };
 
 
-/** */
+/** \brief Implicit inverse operator. */
 template <class Scalar> 
 LinearOperator<Scalar> 
 inverse(const LinearOperator<Scalar>& op, 

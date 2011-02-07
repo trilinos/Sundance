@@ -12,7 +12,7 @@
 #include "PlayaVectorFunctorsDecl.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
-namespace PlayaOps
+namespace PlayaExprTemplates
 {
 template <class Scalar, class Node1, class Node2> class LC2;
 template <class Scalar, class Node> class OpTimesLC; 
@@ -79,19 +79,19 @@ public:
 
   /** Construct a vector from a 2-term LC */
   template<class Node1, class Node2>
-  Vector(const PlayaOps::LC2<Scalar, Node1, Node2>& x);
+  Vector(const PlayaExprTemplates::LC2<Scalar, Node1, Node2>& x);
 
   /** Construct a vector from an operator times a linear combination */
   template<class Node>
-  Vector(const PlayaOps::OpTimesLC<Scalar, Node>& x);
+  Vector(const PlayaExprTemplates::OpTimesLC<Scalar, Node>& x);
 
   /** Assign a linear combination of vectors to this vector */
   template<class Node1, class Node2>
-  Vector& operator=(const PlayaOps::LC2<Scalar, Node1, Node2>& x);
+  Vector& operator=(const PlayaExprTemplates::LC2<Scalar, Node1, Node2>& x);
 
   /** Assign a scaled linear combination to this vector */
   template<class Node>
-  Vector& operator=(const PlayaOps::OpTimesLC<Scalar, Node>& x);
+  Vector& operator=(const PlayaExprTemplates::OpTimesLC<Scalar, Node>& x);
   //@}
 
   /** \name Structural information */
@@ -365,7 +365,7 @@ public:
 
   void evalInto(Vector<Scalar>& other) const {other.acceptCopyOf(*this);}
 
-  void addInto(Vector<Scalar>& other, PlayaOps::LCSign sign) const
+  void addInto(Vector<Scalar>& other, PlayaExprTemplates::LCSign sign) const
     {
       other.update(sign, *this);
     }
@@ -399,14 +399,14 @@ public:
 
   /** Apply a unary reduction functor */
   template <class RF> 
-  typename VectorFunctorTraits<Scalar, RF>::ReturnType 
+  typename PlayaFunctors::VectorFunctorTraits<Scalar, RF>::ReturnType 
   applyUnaryReductionFunctor(
     const RF& functor)
     const ;
 
   /** Apply a binary reduction functor */
   template <class RF> 
-  typename VectorFunctorTraits<Scalar, RF>::ReturnType 
+  typename PlayaFunctors::VectorFunctorTraits<Scalar, RF>::ReturnType 
   applyBinaryReductionFunctor(const RF& functor, const Vector<Scalar>& other)
     const ;
     

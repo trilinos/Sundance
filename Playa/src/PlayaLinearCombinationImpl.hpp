@@ -17,7 +17,7 @@
 #endif
 
 
-namespace PlayaOps
+namespace PlayaExprTemplates
 {
 
 using Playa::Out;
@@ -120,7 +120,7 @@ void LC2<Scalar, Node1, Node2>::evalInto(Playa::Vector<Scalar>& result) const
 
 template <class Scalar, class Node1, class Node2> inline
 void LC2<Scalar, Node1, Node2>::addInto(Playa::Vector<Scalar>& result,
-  PlayaOps::LCSign sign) const
+  PlayaExprTemplates::LCSign sign) const
 {
   x1_.addInto(result, sign);
   if (sign_*sign < 0) x2_.addInto(result, LCSubtract);
@@ -138,10 +138,10 @@ Playa::Vector<Scalar> LC2<Scalar, Node1, Node2>::eval() const
 
 namespace Playa
 {
-using PlayaOps::OpTimesLC;
-using PlayaOps::LC2;
-using PlayaOps::LCAdd;
-using PlayaOps::LCSubtract;
+using PlayaExprTemplates::OpTimesLC;
+using PlayaExprTemplates::LC2;
+using PlayaExprTemplates::LCAdd;
+using PlayaExprTemplates::LCSubtract;
 
 /* ------------------------ global methods ----------------------- */
 
@@ -497,7 +497,7 @@ operator-(const LC2<Scalar, Node1, Node2>& x1,
 /* definition of assignment from 1-term linear combination to a vector */
 template <class Scalar> 
 template <class Node> inline
-Vector<Scalar>& Vector<Scalar>::operator=(const PlayaOps::OpTimesLC<Scalar, Node>& x)
+Vector<Scalar>& Vector<Scalar>::operator=(const PlayaExprTemplates::OpTimesLC<Scalar, Node>& x)
 {
   if (this->ptr().get()==0)
   {
@@ -519,7 +519,7 @@ Vector<Scalar>& Vector<Scalar>::operator=(const PlayaOps::OpTimesLC<Scalar, Node
 /* definition of assignment from N-term linear combination to a vector */
 template <class Scalar>
 template <class Node1, class Node2> inline
-Vector<Scalar>& Vector<Scalar>::operator=(const PlayaOps::LC2<Scalar, Node1, Node2>& x)
+Vector<Scalar>& Vector<Scalar>::operator=(const PlayaExprTemplates::LC2<Scalar, Node1, Node2>& x)
 {
   if (this->ptr().get()==0)
   {
@@ -548,13 +548,13 @@ Vector<Scalar>& Vector<Scalar>::operator=(const PlayaOps::LC2<Scalar, Node1, Nod
 
 template <class Scalar>
 template <class Node1, class Node2> inline
-Vector<Scalar>::Vector(const PlayaOps::LC2<Scalar, Node1, Node2>& x)
+Vector<Scalar>::Vector(const PlayaExprTemplates::LC2<Scalar, Node1, Node2>& x)
   : Handle<VectorBase<Scalar> >(x.eval().ptr())
 {;}
 
 template <class Scalar> 
 template <class Node> inline
-Vector<Scalar>::Vector(const PlayaOps::OpTimesLC<Scalar, Node>& x)
+Vector<Scalar>::Vector(const PlayaExprTemplates::OpTimesLC<Scalar, Node>& x)
   : Handle<VectorBase<Scalar> >(x.eval().ptr())
 {;}
 

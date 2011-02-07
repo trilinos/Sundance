@@ -12,7 +12,7 @@
 
 
 
-namespace PlayaOps
+namespace PlayaExprTemplates
 {
 using Playa::Vector;
 using Playa::VectorBase;
@@ -196,10 +196,10 @@ private:
 
 namespace Playa
 {
-using PlayaOps::OpTimesLC;
-using PlayaOps::LC2;
-using PlayaOps::LCAdd;
-using PlayaOps::LCSubtract;
+using PlayaExprTemplates::OpTimesLC;
+using PlayaExprTemplates::LC2;
+using PlayaExprTemplates::LCAdd;
+using PlayaExprTemplates::LCSubtract;
 
 /* ------------------------ global methods ----------------------- */
 

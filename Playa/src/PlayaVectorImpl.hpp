@@ -393,7 +393,7 @@ Vector<Scalar>& Vector<Scalar>::applyTernaryFunctor(
 
 template <class Scalar>
 template <class RF> inline
-typename VectorFunctorTraits<Scalar, RF>::ReturnType
+typename PlayaFunctors::VectorFunctorTraits<Scalar, RF>::ReturnType
 Vector<Scalar>::applyUnaryReductionFunctor(const RF& func) const 
 {
   TimeMonitor t(*opTimer());
@@ -423,7 +423,7 @@ Vector<Scalar>::applyUnaryReductionFunctor(const RF& func) const
 
 template <class Scalar>
 template <class RF> inline
-typename VectorFunctorTraits<Scalar, RF>::ReturnType
+typename PlayaFunctors::VectorFunctorTraits<Scalar, RF>::ReturnType
 Vector<Scalar>::applyBinaryReductionFunctor(const RF& func, const Vector<Scalar>& y) const 
 {
   TimeMonitor t(*opTimer());
@@ -457,14 +457,14 @@ Vector<Scalar>::applyBinaryReductionFunctor(const RF& func, const Vector<Scalar>
 template <class Scalar> inline 
 Vector<Scalar>& Vector<Scalar>::scale(const Scalar& alpha)
 {
-  return applyUnaryFunctor(ScalarMultFunctor<Scalar>(alpha));
+  return applyUnaryFunctor(PlayaFunctors::ScalarMult<Scalar>(alpha));
 }
 
 //===========================================================================
 template <class Scalar> inline 
 Vector<Scalar>& Vector<Scalar>::reciprocal()
 {
-  return applyUnaryFunctor(ReciprocalFunctor<Scalar>());
+  return applyUnaryFunctor(PlayaFunctors::Reciprocal<Scalar>());
 }
 
 
@@ -472,7 +472,7 @@ Vector<Scalar>& Vector<Scalar>::reciprocal()
 template <class Scalar> inline 
 Vector<Scalar>& Vector<Scalar>::abs()
 {
-  return applyUnaryFunctor(AbsFunctor<Scalar>());
+  return applyUnaryFunctor(PlayaFunctors::Abs<Scalar>());
 }
 
 
@@ -480,7 +480,7 @@ Vector<Scalar>& Vector<Scalar>::abs()
 template <class Scalar> inline 
 Vector<Scalar>& Vector<Scalar>::randomize()
 {
-  return applyUnaryFunctor(RandomFunctor<Scalar>());
+  return applyUnaryFunctor(PlayaFunctors::Random<Scalar>());
 }
 
 
@@ -489,7 +489,7 @@ template <class Scalar> inline
 Vector<Scalar>& Vector<Scalar>::update(const Scalar& alpha, 
   const Vector<Scalar>& x, const Scalar& gamma)
 {
-  return applyBinaryFunctor(LCFunctor2<Scalar>(gamma, alpha), x);
+  return applyBinaryFunctor(PlayaFunctors::LC2<Scalar>(gamma, alpha), x);
 }
 
 
@@ -501,7 +501,7 @@ Vector<Scalar>& Vector<Scalar>::acceptCopyOf(const Vector<Scalar>& x)
   {
     this->ptr() = x.space().createMember().ptr();
   }
-  return acceptUnaryFunctor(IdentityFunctor<Scalar>(), x);
+  return acceptUnaryFunctor(PlayaFunctors::Identity<Scalar>(), x);
 }
 
 template <class Scalar> inline 
@@ -518,14 +518,14 @@ Vector<Scalar> Vector<Scalar>::copy() const
 template <class Scalar> inline 
 Vector<Scalar>& Vector<Scalar>::dotStar(const Vector<Scalar>& other) 
 {
-  return applyBinaryFunctor(DotStarFunctor<Scalar>(), other);
+  return applyBinaryFunctor(PlayaFunctors::DotStar<Scalar>(), other);
 }
 
 //===========================================================================
 template <class Scalar> inline 
 Vector<Scalar>& Vector<Scalar>::dotSlash(const Vector<Scalar>& other) 
 {
-  return applyBinaryFunctor(DotSlashFunctor<Scalar>(), other);
+  return applyBinaryFunctor(PlayaFunctors::DotSlash<Scalar>(), other);
 }
 
 
@@ -584,7 +584,7 @@ Vector<Scalar>& Vector<Scalar>::update(const Scalar& alpha,
   const Vector<Scalar>& y, 
   const Scalar& gamma)
 {
-  return applyTernaryFunctor(LCFunctor3<Scalar>(gamma, alpha, beta), x, y);
+  return applyTernaryFunctor(PlayaFunctors::LC3<Scalar>(gamma, alpha, beta), x, y);
 }
 
 
@@ -594,7 +594,7 @@ template <class Scalar> inline
 Scalar Vector<Scalar>::dot(const Vector<Scalar>& other) const 
 {
   return applyBinaryReductionFunctor(
-    DotProductFunctor<Scalar>(this->comm()), other);
+    PlayaFunctors::DotProduct<Scalar>(this->comm()), other);
 }
 
 
@@ -612,7 +612,7 @@ Scalar Vector<Scalar>::operator*(const Vector<Scalar>& other) const
 template <class Scalar> inline 
 Scalar Vector<Scalar>::norm1() const 
 {
-  return applyUnaryReductionFunctor(Norm1Functor<Scalar>(this->comm()));
+  return applyUnaryReductionFunctor(PlayaFunctors::Norm1<Scalar>(this->comm()));
 }
 
 
@@ -622,7 +622,7 @@ Scalar Vector<Scalar>::norm1() const
 template <class Scalar> inline 
 Scalar Vector<Scalar>::norm2() const 
 {
-  return applyUnaryReductionFunctor(Norm2Functor<Scalar>(this->comm()));
+  return applyUnaryReductionFunctor(PlayaFunctors::Norm2<Scalar>(this->comm()));
 }
 
 
@@ -632,7 +632,7 @@ Scalar Vector<Scalar>::norm2() const
 template <class Scalar> inline 
 Scalar Vector<Scalar>::norm2(const Vector<Scalar>& weights) const 
 {
-  return applyBinaryReductionFunctor(WeightedNorm2Functor<Scalar>(this->comm()), weights);
+  return applyBinaryReductionFunctor(PlayaFunctors::WeightedNorm2<Scalar>(this->comm()), weights);
 }
 
 
@@ -643,7 +643,7 @@ Scalar Vector<Scalar>::norm2(const Vector<Scalar>& weights) const
 template <class Scalar> inline 
 Scalar Vector<Scalar>::normInf() const 
 {
-  return applyUnaryReductionFunctor(NormInfFunctor<Scalar>(this->comm()));
+  return applyUnaryReductionFunctor(PlayaFunctors::NormInf<Scalar>(this->comm()));
 }
 
 
@@ -663,7 +663,7 @@ void Vector<Scalar>::zero()
 template <class Scalar> inline 
 void Vector<Scalar>::setToConstant(const Scalar& alpha)
 {
-  applyUnaryFunctor(ConstantFunctor<Scalar>(alpha));
+  applyUnaryFunctor(PlayaFunctors::SetConstant<Scalar>(alpha));
 }
 
 
@@ -671,7 +671,7 @@ void Vector<Scalar>::setToConstant(const Scalar& alpha)
 template <class Scalar> inline 
 Scalar Vector<Scalar>::max()const
 {
-  return applyUnaryReductionFunctor(MaxFunctor<Scalar>(this->comm()));
+  return applyUnaryReductionFunctor(PlayaFunctors::Max<Scalar>(this->comm()));
 }
 
 
@@ -679,19 +679,7 @@ Scalar Vector<Scalar>::max()const
 template <class Scalar> inline 
 Scalar Vector<Scalar>::min()const
 {
-  return applyUnaryReductionFunctor(MinFunctor<Scalar>(this->comm()));
-}
-
-
-//===========================================================================
-template <class Scalar> inline 
-Scalar Vector<Scalar>::min(const Scalar& bound, 
-  GeneralizedIndex& index)const
-{
-  IndexedValue<Scalar> minLoc 
-    = applyUnaryReductionFunctor(BoundedMinLocFunctor<Scalar>(this->comm(), bound));
-  index = minLoc.where;
-  return minLoc.what;
+  return applyUnaryReductionFunctor(PlayaFunctors::Min<Scalar>(this->comm()));
 }
 
 

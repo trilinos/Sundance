@@ -29,7 +29,7 @@
 
 using namespace Teuchos;
 using namespace Playa;
-using namespace PlayaOps;
+using namespace PlayaExprTemplates;
 
 
 bool runit(const VectorType<double>& vecType,

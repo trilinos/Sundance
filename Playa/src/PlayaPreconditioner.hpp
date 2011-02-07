@@ -12,7 +12,8 @@
 namespace Playa
 {
   /**
-   * 
+   * \brief Preconditioner stores left and/or right operators for
+   * use in preconditioning.
    */
   template <class Scalar> 
   class Preconditioner : public Playa::Handle<PreconditionerBase<Scalar> >
