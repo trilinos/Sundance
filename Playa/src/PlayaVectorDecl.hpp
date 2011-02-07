@@ -330,20 +330,9 @@ public:
   /** Return the max element */
   Scalar max() const;
 
-  /** Return the max element and the corresponding index */
-  Scalar max(int& index)const;
-
-  /** Return the max element less than bound and the corresponding index */
-  Scalar max(const Scalar& bound, GeneralizedIndex& index)const;
-
-  /** Retuen the min element */
+  /** Return the min element */
   Scalar min()const;
 
-  /** Return the min element and the corresponding index */
-  Scalar min(int& index)const;
-
-  /** Return the min element greater than bound and the corresponding index */
-  Scalar min(const Scalar& bound, GeneralizedIndex& index)const;
 
   //@}
 
