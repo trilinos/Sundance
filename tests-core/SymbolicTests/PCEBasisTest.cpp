@@ -1,20 +1,24 @@
 #include "SundanceExpr.hpp"
 #include "SundanceSpectralBasis.hpp"
 #include "SundanceHermiteSpectralBasis.hpp"
-#include "Stokhos_HermiteBasis.hpp"
 #include "SundanceStokhosBasisWrapper.hpp"
 #include "SundanceOut.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_GlobalMPISession.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
+#ifdef HAVE_SUNDANCE_STOKHOS
+#include "Stokhos_HermiteBasis.hpp"
+#endif
+
 using std::cout;
 using std::exception;
 using std::setw;
 using namespace Sundance;
 using namespace Teuchos;
+#ifdef HAVE_SUNDANCE_STOKHOS
 using namespace Stokhos;
-
+#endif
 
 
 static Time& totalTimer() 

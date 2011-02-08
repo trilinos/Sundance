@@ -37,10 +37,10 @@
 #include "SundanceMap.hpp"
 #include "SundanceSpectralBasisBase.hpp"
 
+#ifdef HAVE_SUNDANCE_STOKHOS
+
 #include "Stokhos_OrthogPolyBasis.hpp"
 #include "Stokhos_OneDOrthogPolyBasis.hpp"
-
-#ifdef HAVE_SUNDANCE_STOKHOS
 
 #include "cijk.h"
 #include "chaos.h"
