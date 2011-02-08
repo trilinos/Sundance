@@ -25,6 +25,9 @@ public:
   /** */
   Scalar operator()(const Scalar& x) const 
     {return abs(x);}
+
+  /** */
+  std::string description() const {return "Abs()";}
 };
 
 /** \brief Elementwise reciprocal */
@@ -38,6 +41,9 @@ public:
   /** */
   Scalar operator()(const Scalar& x) const 
     {return 1.0/x;}
+
+  /** */
+  std::string description() const {return "Reciprocal()";}
 };
 
 /** \brief Set each element to a random scalar */
@@ -51,6 +57,9 @@ public:
   /** */
   Scalar operator()(const Scalar& x) const 
     {return Playa::Rand::val();}
+
+  /** */
+  std::string description() const {return "Random()";}
 };
 
 /** \brief Multiplication by a scalar */
@@ -64,6 +73,14 @@ public:
   /** */
   Scalar operator()(const Scalar& x) const 
     {return alpha_*x;}
+
+  /** */
+  std::string description() const 
+    {
+      std::ostringstream oss;
+      oss << "ScalarMult(alpha=" << alpha_ << ")";
+      return oss.str();
+    }
 private:
   Scalar alpha_;
 };
@@ -79,6 +96,9 @@ public:
   /** */
   Scalar operator()(const Scalar& x) const 
     {return x;}
+
+  /** */
+  std::string description() const {return "Identity()";}
 };
 
 /** \brief Setting all elements to a constant */
@@ -92,6 +112,14 @@ public:
   /** */
   Scalar operator()(const Scalar& x) const 
     {return alpha_;}
+
+  /** */
+  std::string description() const 
+    {
+      std::ostringstream oss;
+      oss << "SetConstant(alpha=" << alpha_ << ")";
+      return oss.str();
+    }
 private:
   Scalar alpha_;
 };
@@ -108,6 +136,9 @@ public:
   /** */
   Scalar operator()(const Scalar& x, const Scalar& y) const 
     {return x*y;}
+
+  /** */
+  std::string description() const {return "dotStar()";}
 };
 
 
@@ -121,7 +152,10 @@ public:
 
   /** */
   Scalar operator()(const Scalar& x, const Scalar& y) const 
-    {return x*y;}
+    {return x/y;}
+
+  /** */
+  std::string description() const {return "dotSlash()";}
 };
 
 /** \brief Linear combination of two vectors */
@@ -136,6 +170,13 @@ public:
   Scalar operator()(const Scalar& x, const Scalar& y) const 
     {return a_*x + b_*y;}
 
+  /** */
+  std::string description() const 
+    {
+      std::ostringstream oss;
+      oss << "LC2(a=" << a_ << ", b=" << b_ << ")";
+      return oss.str();
+    }
 private:
   Scalar a_;
   Scalar b_;
@@ -155,6 +196,14 @@ public:
   Scalar operator()(const Scalar& x, const Scalar& y, const Scalar& z) const 
     {return a_*x + b_*y + c_*z;}
 
+
+  /** */
+  std::string description() const 
+    {
+      std::ostringstream oss;
+      oss << "LC3(a=" << a_ << ", b=" << b_ << ", c=" << c_ << ")";
+      return oss.str();
+    }
 private:
   Scalar a_;
   Scalar b_;
@@ -187,6 +236,9 @@ public:
       return ::sqrt(val_);
     }
 
+  /** */
+  std::string description() const {return "Norm2()";}
+
 private:
   mutable Scalar val_;
 };
@@ -215,6 +267,9 @@ public:
     {
       return ::sqrt(val_);
     }
+
+  /** */
+  std::string description() const {return "WeightedNorm2()";}
 
 private:
   MPIComm comm_;
@@ -246,6 +301,9 @@ public:
       return val_;
     }
 
+  /** */
+  std::string description() const {return "Norm1()";}
+
 private:
   mutable Scalar val_;
 };
@@ -276,6 +334,9 @@ public:
       return val_;
     }
 
+  /** */
+  std::string description() const {return "NormInf()";}
+
 private:
   mutable Scalar val_;
 };
@@ -304,6 +365,9 @@ public:
     {
       return val_;
     }
+
+  /** */
+  std::string description() const {return "DotProduct()";}
 
 private:
   mutable Scalar val_;
@@ -335,6 +399,9 @@ public:
       return val_;
     }
 
+  /** */
+  std::string description() const {return "Min()";}
+
 private:
   mutable Scalar val_;
 };
@@ -364,6 +431,9 @@ public:
     {
       return val_;
     }
+
+  /** */
+  std::string description() const {return "Max()";}
 
 private:
   mutable Scalar val_;

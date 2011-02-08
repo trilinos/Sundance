@@ -327,6 +327,12 @@ Vector<Scalar>& Vector<Scalar>::applyBinaryFunctor(const VF& func,
 {
   TimeMonitor t(*opTimer());
 
+  TEST_FOR_EXCEPTION(!this->space().isCompatible(other.space()),
+    std::runtime_error,
+    "Spaces this=" << this->space() << " and other="
+    << other.space() << " are not compatible in binary operation "
+    << func.description());
+
   for (BlockIterator<Scalar> b=this->space().beginBlock(); b!=this->space().endBlock(); b++)
   {
     Vector<Scalar> myBlock = this->getNonConstBlock(b);
@@ -359,6 +365,14 @@ Vector<Scalar>& Vector<Scalar>::applyTernaryFunctor(
   const Vector<Scalar>& z)
 {
   TimeMonitor t(*opTimer());
+
+  TEST_FOR_EXCEPTION(!this->space().isCompatible(y.space())
+    || !this->space().isCompatible(z.space()),
+    std::runtime_error,
+    "Spaces this=" << this->space() << ", Y="
+    << y.space() << " and Z=" << z.space()
+    << " are not compatible in ternary operation "
+    << func.description());
 
   for (BlockIterator<Scalar> b=this->space().beginBlock(); b!=this->space().endBlock(); b++)
   {
@@ -427,6 +441,12 @@ typename PlayaFunctors::VectorFunctorTraits<Scalar, RF>::ReturnType
 Vector<Scalar>::applyBinaryReductionFunctor(const RF& func, const Vector<Scalar>& y) const 
 {
   TimeMonitor t(*opTimer());
+
+  TEST_FOR_EXCEPTION(!this->space().isCompatible(y.space()),
+    std::runtime_error,
+    "Spaces this=" << this->space() << " and other="
+    << y.space() << " are not compatible in binary reduction operation "
+    << func.description());
 
   for (BlockIterator<Scalar> b=this->space().beginBlock(); b!=this->space().endBlock(); b++)
   {

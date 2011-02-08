@@ -111,6 +111,9 @@ public:
       return min_;
     }
 
+  /** */
+  std::string description() const {return "MinLoc()";}
+
 private:
   MPIComm comm_;
   mutable IndexedValue<Scalar> min_;
@@ -162,6 +165,9 @@ public:
     {
       return max_;
     }
+
+  /** */
+  std::string description() const {return "MinLoc()";}
 
 private:
   MPIComm comm_;
