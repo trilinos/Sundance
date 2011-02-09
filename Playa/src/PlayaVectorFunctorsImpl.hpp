@@ -24,7 +24,7 @@ public:
 
   /** */
   Scalar operator()(const Scalar& x) const 
-    {return abs(x);}
+    {return ::fabs(x);}
 
   /** */
   std::string description() const {return "Abs()";}
