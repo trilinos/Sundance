@@ -45,8 +45,14 @@ public:
 	/** Ctor with the points which form the polygon (the direction of the points matters for IN & OUT )*/
 	Polygon2D(const Mesh& mesh , const Array<Point>& points , double a1 , double a2, bool flipD = false);
 
+	/** Ctor with the points which form the polygon (the direction of the points matters for IN & OUT )*/
+	Polygon2D(const Array<Point>& points , double a1 , double a2, bool flipD = false);
+
 	/** Ctor to read in the polygon from file from file */
 	Polygon2D(const Mesh& mesh , const std::string& filename , double a1 , double a2, bool flipD = false);
+
+	/** Ctor to read in the polygon from file from file */
+	Polygon2D(const std::string& filename , double a1 , double a2, bool flipD = false);
 
 	/** */
 	virtual ~Polygon2D() {;}
@@ -103,9 +109,12 @@ private:
 	/** looks for each point in which cell it is contained (later for evaluation purposes)*/
 	void computeMaxCellLIDs();
 
+	/** indicates weather we have a mesh or not */
+	bool hasMesh_;
+
 	/** the mesh will be needed for point location, since the geometry is
 	 * non-conform with respect to the mesh */
-	const Mesh& mesh_;
+	const Mesh* mesh_;
 
 	/** The points in the specified order which form */
 	Array<Point> polyPoints_;

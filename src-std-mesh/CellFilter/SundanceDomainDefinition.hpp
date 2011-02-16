@@ -68,10 +68,10 @@ public:
 	/**  in or outside the domain */
 	virtual bool isInsideComputationalDomain(const Point& x) const {
 		if (mode_ == Outside_Curve){
-            return (curve_.curveEquation(x) >= -1e-8 );
+            return (curve_.curveEquation(x) >= -1e-16 );
 		}
 		else{
-			return (curve_.curveEquation(x) <= 1e-8 );
+			return (curve_.curveEquation(x) <= 1e-16 );
 		}
 	}
 

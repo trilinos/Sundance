@@ -80,7 +80,7 @@ void CellCurvePredicate::testBatch(const Array<int>& cellLID,
 		  break;
 	  case On_Curve:
 	      for (int i=0; i<cellLID.size(); i++)
-	    	  if ( fabs(curve_.curveEquation( mesh().nodePosition(cellLID[i]))) < 1e-8 )
+	    	  if ( fabs(curve_.curveEquation( mesh().nodePosition(cellLID[i]))) < 1e-16 )
 	              results[i] = true;
 	    	  else
 	    		  results[i] = false;

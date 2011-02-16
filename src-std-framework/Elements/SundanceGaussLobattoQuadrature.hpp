@@ -113,25 +113,34 @@ private:
 			                         Array<double>& weightsOut ,
 			                         double areFakt ) const {
 		int xi,yi;
-		double xc,yc, intR;
+		double xc,yc, intR , valTmp , valBasisX , valBasisY ;
 
-        SUNDANCE_MSG3(verb_, "px="<<px<<",py="<<py<<",ofx="<<ofx<<",ofy="<<ofy <<
-        		" , nr2DPoints:" << nr2DPoints << " , pointWeights.size():" << pointWeights.size());
+        //SUNDANCE_MSG3(verb_, "px="<<px<<",py="<<py<<",ofx="<<ofx<<",ofy="<<ofy <<
+        //		" , nr2DPoints:" << nr2DPoints << " , pointWeights.size():" <<
+        //		pointWeights.size() << " , areFakt:" << areFakt);
 
 		for (int i = 0 ; i < nr2DPoints ; i++){
-			xi = i % nr1DPoints; yi = i / nr1DPoints; intR = 0.0;
+			weightsOut[i] = 0.0;
+			yi = i % nr1DPoints; xi = i / nr1DPoints; intR = 0.0;
 			// for each quadrature point
 			for (int q = 0 ; q < pointWeights.size() ; q++){
 				xc = px + quadPoints[q][0]*ofx;
 				yc = py + quadPoints[q][1]*ofy;
-				//SUNDANCE_MSG3(verb_, "q="<<q<<",xc="<<xc<<",yc="<<yc<<",pointWeights[q]=" << pointWeights[q] );
-				intR = intR + pointWeights[q] * ( evalLagrangePol(yi , linePoints , yc) * evalLagrangePol(xi , linePoints , xc) );
+				valBasisX = evalLagrangePol(xi , linePoints , xc);
+				valBasisY = evalLagrangePol(yi , linePoints , yc);
+				valTmp = pointWeights[q] * ( valBasisX *  valBasisY);
+				intR = intR + valTmp;
+				//SUNDANCE_MSG3(verb_, "i="<<i<< " , valBasisX=" << valBasisX  << " , valBasisY=" << valBasisY << " , valBasis="
+				//		<< valBasisX*valBasisY <<" , val=" << valTmp*::fabs(ofx*ofy/areFakt) );
+				//SUNDANCE_MSG3(verb_, "i="<<i<<",xi="<<xi<<",yi="<<yi<<",q="<<q<<",xc="<<xc<<",yc="<<yc<<
+				//		",pointWeights[q]=" << pointWeights[q]);
 			}
 			intR = intR * ::fabs(ofx*ofy/areFakt);
 			weightsOut[i] = weightsOut[i] + intR;
 		}
 	}
 
+	/** nr of points in 1D, the rest should be tensor product */
 	int nrPointin1D_;
 
 	/** the verbosity of the object*/

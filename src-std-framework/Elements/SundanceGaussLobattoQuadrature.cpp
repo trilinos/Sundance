@@ -31,7 +31,7 @@ void GaussLobattoQuadrature::getLineRule(
 		Array<Point>& quadPointsL,
 		Array<double>& quadWeights) const {
 
-	int n = order()+1; //todo:
+	int n = order()+1; //this is correct m points for a basis of order m-1
 
 	Array<double> quadPoints;
 	quadPoints.resize(n);
@@ -471,7 +471,7 @@ void GaussLobattoQuadrature::getAdaptedQuadWeights(int cellLID, const Mesh& mesh
 	int nr2DPoints = quadQuadPoints.size();
 
 	//those must be equal
-	TEST_FOR_EXCEPTION( quadPoints.size() != quadQuadPoints.size() , std::runtime_error,
+	TEST_FOR_EXCEPTION( quadPoints.size() != quadQuadPoints.size() , std::runtime_error ,
 			"quadPoints.size() != quadQuadPoints.size() , size1:" << quadPoints.size() << " , size2:" << quadQuadPoints.size());
 	for (int q = 0; q < nr2DPoints; q++) {
 		SUNDANCE_MSG3(verb_, " Quad point quadWeights["<<q<<"]="<<quadWeights[q]);
@@ -594,7 +594,7 @@ void GaussLobattoQuadrature::getAdaptedQuadWeights(int cellLID, const Mesh& mesh
 				for (int i = 0 ; i < nr2DPoints ; i++){
 					SUNDANCE_MSG3(verb_, tabs << "i=" << i << " , Wquad[i]:" << tmpWeightsQuad[i] <<
 							" , Wquad2[i]:" << tmpWeightsQuad2[i] << " , Wtriag[i]:"<< tmpWeightsTriangle[i] );
-					quadWeights[i] = alpha1[listI]*(tmpWeightsQuad2[i]+tmpWeightsTriangle[i]) +
+					quadWeights[i] = alpha1[listI]*( tmpWeightsQuad2[i] + tmpWeightsTriangle[i] ) +
 							         alpha2[listI]*( tmpWeightsQuad[i] - tmpWeightsQuad2[i] - tmpWeightsTriangle[i]);
 				}
 			    break;}
@@ -644,7 +644,7 @@ void GaussLobattoQuadrature::getAdaptedQuadWeights(int cellLID, const Mesh& mesh
 			    break;}
 			default:{
 				// throw error
-				TEST_FOR_EXCEPTION( true , std::runtime_error , "Quad cell not integrable:" << intersectioncaseStack[listI]);
+				TEST_FOR_EXCEPTION( true , std::runtime_error  , "Quad cell not integrable:" << intersectioncaseStack[listI]);
 			    break; }
 			}
 		}
@@ -660,8 +660,8 @@ void GaussLobattoQuadrature::getAdaptedQuadWeights(int cellLID, const Mesh& mesh
 
 void GaussLobattoQuadrature::getTriangleQuadPoints(Array<Point>& pnt  ,Array<double>& weight ) const{
 	// we took this directly from the Matlab code of Prof.Ulbrich
-	int order = nrPointin1D_;
-	if (order==2){
+	int deg = nrPointin1D_ + nrPointin1D_ - 2;
+	if (deg==2){
 	  pnt.resize(3); weight.resize(3);
 	  pnt[0] = Point(0.50000000000000000000 , 0.00000000000000000000);
 	  pnt[1] = Point(0.50000000000000000000 , 0.50000000000000000000);
@@ -669,7 +669,7 @@ void GaussLobattoQuadrature::getTriangleQuadPoints(Array<Point>& pnt  ,Array<dou
 	  weight[0] = 0.33333333333333333333;
 	  weight[1] = 0.33333333333333333333;
 	  weight[2] = 0.33333333333333333333;
-	} else if (order==3){
+	} else if (deg==3){
 		pnt.resize(4); weight.resize(4);
 		pnt[0] = Point(0.33333333333333333333 , 0.33333333333333333333);
 		pnt[1] = Point(0.60000000000000000000 , 0.20000000000000000000);
@@ -679,7 +679,7 @@ void GaussLobattoQuadrature::getTriangleQuadPoints(Array<Point>& pnt  ,Array<dou
 		weight[1] = 0.52083333333333333333;
 		weight[2] = 0.52083333333333333333;
 		weight[3] = 0.52083333333333333333;
-	} else if (order==4) {
+	} else if (deg==4) {
 		pnt.resize(6); weight.resize(6);
 		pnt[0] = Point(0.816847572980459 , 0.091576213509771);
 		pnt[1] = Point(0.091576213509771 , 0.816847572980459);
@@ -693,7 +693,7 @@ void GaussLobattoQuadrature::getTriangleQuadPoints(Array<Point>& pnt  ,Array<dou
 		weight[3] = 0.223381589678011;
 		weight[4] = 0.223381589678011;
 		weight[5] = 0.223381589678011;
-	} else if (order==5) {
+	} else if (deg==5) {
 		pnt.resize(7); weight.resize(7);
 		pnt[0] = Point(0.33333333333333333 , 0.33333333333333333);
 		pnt[1] = Point(0.79742698535308720 , 0.10128650732345633);
@@ -709,7 +709,7 @@ void GaussLobattoQuadrature::getTriangleQuadPoints(Array<Point>& pnt  ,Array<dou
 		weight[4] = 0.13239415278850616;
 		weight[5] = 0.13239415278850616;
 		weight[6] = 0.13239415278850616;
-	} else if (order==6) {
+	} else if (deg==6) {
 		pnt.resize(9); weight.resize(9);
 		pnt[0] = Point(0.124949503233232 , 0.437525248383384);
 		pnt[1] = Point(0.437525248383384 , 0.124949503233232);
@@ -729,7 +729,7 @@ void GaussLobattoQuadrature::getTriangleQuadPoints(Array<Point>& pnt  ,Array<dou
 		weight[6] = 0.063691414286223;
 		weight[7] = 0.063691414286223;
 		weight[8] = 0.063691414286223;
-	} else if (order==7) {
+	} else if (deg==7) {
 		pnt.resize(13); weight.resize(13);
 		pnt[0] = Point(0.333333333333333 , 0.333333333333333);
 		pnt[1] = Point(0.479308067841923 , 0.260345966079038);
@@ -757,7 +757,7 @@ void GaussLobattoQuadrature::getTriangleQuadPoints(Array<Point>& pnt  ,Array<dou
 		weight[10] = 0.077113760890257;
 		weight[11] = 0.077113760890257;
 		weight[12] = 0.077113760890257;
-    } else if (order==8) {
+    } else if (deg==8) {
 		pnt.resize(19); weight.resize(19);
 		pnt[0] = Point(0.3333333333333333 , 0.3333333333333333);
 		pnt[1] = Point(0.7974269853530872 , 0.1012865073234563);
@@ -797,7 +797,7 @@ void GaussLobattoQuadrature::getTriangleQuadPoints(Array<Point>& pnt  ,Array<dou
 		weight[16] = 0.0375097224552317;
 		weight[17] = 0.0375097224552317;
 		weight[18] = 0.0375097224552317;
-    } else if (order == 9) {
+    } else if (deg == 9) {
 		pnt.resize(19); weight.resize(19);
 		pnt[0] = Point(0.33333333333333331     ,  0.33333333333333331);
 		pnt[1] = Point(2.06349616025259287E-002,  0.48968251919873701);
@@ -837,7 +837,7 @@ void GaussLobattoQuadrature::getTriangleQuadPoints(Array<Point>& pnt  ,Array<dou
 		weight[16] = 4.32835393772893970E-002;
 		weight[17] = 4.32835393772893970E-002;
 		weight[18] = 4.32835393772893970E-002;
-    } else if (order<=11) {
+    } else if (deg<=11) {
 		pnt.resize(28); weight.resize(28);
 		pnt[0] = Point(0.33333333333333333 , 0.333333333333333333);
 		pnt[1] = Point(0.9480217181434233  , 0.02598914092828833);
@@ -895,7 +895,86 @@ void GaussLobattoQuadrature::getTriangleQuadPoints(Array<Point>& pnt  ,Array<dou
 		weight[25] = 0.007362383783300573;
 		weight[26] = 0.007362383783300573;
 		weight[27] = 0.007362383783300573;
-    } else if (order<=13) {
-    	//
+    } else if (deg<=13) {
+    	pnt.resize(28); weight.resize(28);
+    	pnt[0] = Point(0.333333333333333333333333333333,  0.333333333333333333333333333333);
+    	pnt[1] = Point(0.950275662924105565450352089520,  0.024862168537947217274823955239);
+    	pnt[2] = Point(0.024862168537947217274823955239,  0.950275662924105565450352089520);
+    	pnt[3] = Point(0.024862168537947217274823955239,  0.024862168537947217274823955239);
+    	pnt[4] = Point(0.171614914923835347556304795551,  0.414192542538082326221847602214);
+    	pnt[5] = Point(0.414192542538082326221847602214,  0.171614914923835347556304795551);
+    	pnt[6] = Point(0.414192542538082326221847602214,  0.414192542538082326221847602214);
+    	pnt[7] = Point(0.539412243677190440263092985511,  0.230293878161404779868453507244);
+    	pnt[8] = Point(0.230293878161404779868453507244,  0.539412243677190440263092985511);
+    	pnt[9] = Point(0.230293878161404779868453507244,  0.230293878161404779868453507244);
+    	pnt[10] = Point(0.772160036676532561750285570113,  0.113919981661733719124857214943);
+    	pnt[11] = Point(0.113919981661733719124857214943,  0.772160036676532561750285570113);
+    	pnt[12] = Point(0.113919981661733719124857214943,  0.113919981661733719124857214943);
+    	pnt[13] = Point(0.009085399949835353883572964740,  0.495457300025082323058213517632);
+    	pnt[14] = Point(0.495457300025082323058213517632,  0.009085399949835353883572964740);
+    	pnt[15] = Point(0.495457300025082323058213517632,  0.495457300025082323058213517632);
+    	pnt[16] = Point(0.062277290305886993497083640527,  0.468861354847056503251458179727);
+    	pnt[17] = Point(0.468861354847056503251458179727,  0.062277290305886993497083640527);
+    	pnt[18] = Point(0.468861354847056503251458179727,  0.468861354847056503251458179727);
+    	pnt[19] = Point(0.022076289653624405142446876931,  0.851306504174348550389457672223);
+    	pnt[20] = Point(0.022076289653624405142446876931,  0.126617206172027096933163647918);
+    	pnt[21] = Point(0.851306504174348550389457672223,  0.022076289653624405142446876931);
+    	pnt[22] = Point(0.851306504174348550389457672223,  0.126617206172027096933163647918);
+    	pnt[23] = Point(0.126617206172027096933163647918,  0.022076289653624405142446876931);
+    	pnt[24] = Point(0.126617206172027096933163647918,  0.851306504174348550389457672223);
+    	pnt[25] = Point(0.018620522802520968955913511549,  0.689441970728591295496647976487);
+    	pnt[26] = Point(0.018620522802520968955913511549,  0.291937506468887771754472382212);
+    	pnt[27] = Point(0.689441970728591295496647976487,  0.018620522802520968955913511549);
+    	pnt[28] = Point(0.689441970728591295496647976487,  0.291937506468887771754472382212);
+    	pnt[29] = Point(0.291937506468887771754472382212,  0.018620522802520968955913511549);
+    	pnt[30] = Point(0.291937506468887771754472382212,  0.689441970728591295496647976487);
+    	pnt[31] = Point(0.096506481292159228736516560903,  0.635867859433872768286976979827);
+    	pnt[32] = Point(0.096506481292159228736516560903,  0.267625659273967961282458816185);
+    	pnt[33] = Point(0.635867859433872768286976979827,  0.096506481292159228736516560903);
+    	pnt[34] = Point(0.635867859433872768286976979827,  0.267625659273967961282458816185);
+    	pnt[35] = Point(0.267625659273967961282458816185,  0.096506481292159228736516560903);
+    	pnt[36] = Point(0.267625659273967961282458816185,  0.635867859433872768286976979827);
+
+        weight[0] = 0.051739766065744133555179145422;
+        weight[1] = 0.008007799555564801597804123460;
+        weight[2] = 0.008007799555564801597804123460;
+        weight[3] = 0.008007799555564801597804123460;
+        weight[4] = 0.046868898981821644823226732071;
+        weight[5] = 0.046868898981821644823226732071;
+        weight[6] = 0.046868898981821644823226732071;
+        weight[7] = 0.046590940183976487960361770070;
+        weight[8] = 0.046590940183976487960361770070;
+        weight[9] = 0.046590940183976487960361770070;
+        weight[10] = 0.031016943313796381407646220131;
+        weight[11] = 0.031016943313796381407646220131;
+        weight[12] = 0.031016943313796381407646220131;
+        weight[13] = 0.010791612736631273623178240136;
+        weight[14] = 0.010791612736631273623178240136;
+        weight[15] = 0.010791612736631273623178240136;
+        weight[16] = 0.032195534242431618819414482205;
+        weight[17] = 0.032195534242431618819414482205;
+        weight[18] = 0.032195534242431618819414482205;
+        weight[19] = 0.015445834210701583817692900053;
+        weight[20] = 0.015445834210701583817692900053;
+        weight[21] = 0.015445834210701583817692900053;
+        weight[22] = 0.015445834210701583817692900053;
+        weight[23] = 0.015445834210701583817692900053;
+        weight[24] = 0.015445834210701583817692900053;
+        weight[25] = 0.017822989923178661888748319485;
+        weight[26] = 0.017822989923178661888748319485;
+        weight[27] = 0.017822989923178661888748319485;
+        weight[28] = 0.017822989923178661888748319485;
+        weight[29] = 0.017822989923178661888748319485;
+        weight[30] = 0.017822989923178661888748319485;
+        weight[31] = 0.037038683681384627918546472190;
+        weight[32] = 0.037038683681384627918546472190;
+        weight[33] = 0.037038683681384627918546472190;
+        weight[34] = 0.037038683681384627918546472190;
+        weight[35] = 0.037038683681384627918546472190;
+        weight[36] = 0.037038683681384627918546472190;
+    }
+    else {
+    	// throw error , we do not have have the required order
+    	TEST_FOR_EXCEPTION( true , std::runtime_error  , " GaussLobattoQuadrature::getTriangleQuadPoints order of the quadrature to high !!! ");
     }
 }

@@ -111,7 +111,8 @@ void CurveIntegralCalc::getCurveQuadPoints_line(
 							<< " , start:" << startPoint << ", end:"<< endPoint);
 					// if we have more than one intersection point then just ignore that edge
 					TEST_FOR_EXCEPTION( nrPoints > 1 ,
-							std::runtime_error , " CurveIntegralCalc::getCurveQuadPoints , QuadCell one edge " << jj << " , can have only one intersection point" );
+							std::runtime_error , " CurveIntegralCalc::getCurveQuadPoints , QuadCell one edge " << jj << " , can have only one intersection point"
+							<< " edgeP0:" << cellPoints[edegIndex[jj][0]] << " edgeP1:" << cellPoints[edegIndex[jj][1]] );
 		    	}
 		    	// test if we have too much intersection points
 		    	TEST_FOR_EXCEPTION( total_points > 2 ,std::runtime_error , " CurveIntegralCalc::getCurveQuadPoints total_points > 2 : " << total_points );
@@ -134,7 +135,8 @@ void CurveIntegralCalc::getCurveQuadPoints_line(
 			    	}
 			    	// if we have more than one intersection point then just ignore that edge
 					TEST_FOR_EXCEPTION( nrPoints > 1 ,
-							std::runtime_error , " CurveIntegralCalc::getCurveQuadPoints , TriangleCell one edge " << jj << " , can have only one intersection point" );
+							std::runtime_error , " CurveIntegralCalc::getCurveQuadPoints , TriangleCell one edge " << jj << " , can have only one intersection point"
+							<< " edgeP0:" << cellPoints[edegIndex[jj][0]] << " edgeP1:" << cellPoints[edegIndex[jj][1]] );
 		    	}
 		    	// test if we have too much intersection points
 		    	TEST_FOR_EXCEPTION( total_points > 2 ,std::runtime_error , " CurveIntegralCalc::getCurveQuadPoints total_points > 2 : " << total_points );
