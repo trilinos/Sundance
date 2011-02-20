@@ -21,6 +21,7 @@
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
 #include "PlayaVectorSpaceImpl.hpp"
+#include "PlayaBlockIteratorImpl.hpp"
 #endif
 
 

@@ -13,7 +13,6 @@
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
 #include "PlayaLinearOperatorImpl.hpp"
-#include "PlayaLinearOpWithSpacesImpl.hpp"
 #endif
 
 

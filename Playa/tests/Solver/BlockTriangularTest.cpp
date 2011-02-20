@@ -26,8 +26,9 @@
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
 #include "PlayaLinearOperatorImpl.hpp"
 #include "PlayaLinearSolverImpl.hpp"
+#include "PlayaVectorImpl.hpp"
 #include "PlayaSimpleBlockOpImpl.hpp"
-#include "PlayaBlockVectorSpaceImpl.hpp"
+#include "PlayaDefaultBlockVectorImpl.hpp"
 #include "PlayaBlockTriangularSolverImpl.hpp"
 
 #endif

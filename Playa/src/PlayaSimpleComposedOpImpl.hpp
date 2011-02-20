@@ -17,7 +17,6 @@
 #include "PlayaLinearOperatorImpl.hpp"
 #include "PlayaSimpleIdentityOpImpl.hpp"
 #include "PlayaSimpleZeroOpImpl.hpp"
-#include "PlayaLinearOpWithSpacesImpl.hpp"
 #endif
 
 

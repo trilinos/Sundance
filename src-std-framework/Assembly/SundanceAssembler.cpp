@@ -65,6 +65,7 @@
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
 #include "PlayaLinearOperatorImpl.hpp"
 #include "PlayaSimpleBlockOpImpl.hpp"
+#include "PlayaDefaultBlockVectorImpl.hpp"
 #endif
 
 

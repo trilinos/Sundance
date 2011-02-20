@@ -22,7 +22,7 @@
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
 #include "PlayaLinearOperatorImpl.hpp"
 #include "PlayaLinearCombinationImpl.hpp"
-#include "PlayaDefaultBlockVectorSpaceImpl.hpp"
+#include "PlayaDefaultBlockVectorImpl.hpp"
 #include "PlayaRandomBlockMatrixBuilderImpl.hpp"
 #endif
 

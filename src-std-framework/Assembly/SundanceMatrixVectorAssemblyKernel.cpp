@@ -35,8 +35,12 @@
 
 
 
+
+
+
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
 #include "PlayaSimpleZeroOpImpl.hpp"
+#include "PlayaVectorImpl.hpp"
 #endif
 
 using namespace Sundance;

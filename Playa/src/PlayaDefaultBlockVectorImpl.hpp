@@ -8,6 +8,18 @@
 #include "PlayaDefaultBlockVectorDecl.hpp"
 #include "PlayaExceptions.hpp"
 
+#ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
+#include "PlayaVectorImpl.hpp"
+#include "PlayaBlockIteratorImpl.hpp"
+#include "PlayaVectorSpaceBaseImpl.hpp"
+#include "PlayaDefaultBlockVectorSpaceImpl.hpp"
+#include "PlayaBlockVectorBaseImpl.hpp"
+#endif
+
+
+
+
+
 namespace Playa
 {
 template <class Scalar> inline

@@ -20,6 +20,7 @@
 #include "PlayaLinearOperatorImpl.hpp"
 #include "PlayaSimpleDiagonalOpImpl.hpp"
 #include "PlayaSimpleComposedOpImpl.hpp"
+#include "PlayaSimpleTransposedOpImpl.hpp"
 #endif
 
 

@@ -36,6 +36,13 @@
 #include "PlayaDefaultBlockVectorSpaceDecl.hpp"
 #include "Teuchos_MPIContainerComm.hpp"
 
+
+#ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
+#include "PlayaVectorImpl.hpp"
+#include "PlayaDefaultBlockVectorImpl.hpp"
+#endif
+
+
 using namespace Sundance;
 using namespace Teuchos;
 using Playa::blockSpace;

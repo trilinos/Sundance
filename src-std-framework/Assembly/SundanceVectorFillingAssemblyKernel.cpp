@@ -35,6 +35,9 @@
 #include "Teuchos_TimeMonitor.hpp"
 
 
+#ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
+#include "PlayaVectorImpl.hpp"
+#endif
 
 using namespace Sundance;
 using namespace Sundance;

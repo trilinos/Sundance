@@ -1,6 +1,14 @@
 #include "SundanceStochBlockJacobiSolver.hpp"
 #include "Sundance.hpp"
 
+
+
+#ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
+#include "PlayaVectorImpl.hpp"
+#endif
+
+
+
 namespace Sundance
 {
 

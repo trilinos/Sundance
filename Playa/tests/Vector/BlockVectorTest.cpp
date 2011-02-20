@@ -17,6 +17,12 @@
 #include "Teuchos_Time.hpp"
 #include "Teuchos_MPIComm.hpp"
 
+#ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
+#include "PlayaDefaultBlockVectorImpl.hpp"
+#endif
+
+
+
 using namespace Playa;
 
 Array<Vector<double> > vecMaker(int nVecs,
