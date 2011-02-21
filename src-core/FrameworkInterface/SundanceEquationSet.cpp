@@ -380,10 +380,12 @@ void EquationSet::init(
     RegionQuadCombo rqc = r->first;
     int rqcVerb = verb;
     int symbVerb = 0;
+    int evalSetupVerb = 0;
     if (rqc.watch().isActive()) 
     {
       symbVerb = rqc.watch().param("symbolic preprocessing");
       rqcVerb=rqc.watch().param("equation set setup");
+      evalSetupVerb=rqc.watch().param("evaluator setup");
     }
     SUNDANCE_MSG1(std::max(verb,rqcVerb), tab15 << "processing RQC = " << rqc);
 
@@ -402,6 +404,7 @@ void EquationSet::init(
       Tabs tab3; 
       EvalContext context(rqc, makeSet(1,2), contextID[0]);
       context.setSetupVerbosity(symbVerb);
+      context.setEvalSetupVerbosity(evalSetupVerb);
       DerivSet nonzeros;
       
       if (isVariationalProblem_)
@@ -460,6 +463,7 @@ void EquationSet::init(
       Tabs tab3; 
       EvalContext context(rqc, makeSet(1), contextID[1]);
       context.setSetupVerbosity(symbVerb);
+      context.setEvalSetupVerbosity(evalSetupVerb);
       DerivSet nonzeros;
       if (isVariationalProblem_)
       {
@@ -512,6 +516,7 @@ void EquationSet::init(
       Tabs tab3;
       EvalContext context(rqc, makeSet(2), contextID[4]);
       context.setSetupVerbosity(symbVerb);
+      context.setEvalSetupVerbosity(evalSetupVerb);
       DerivSet nonzeros;
       nonzeros = SymbPreprocessor
         ::setupSensitivities(term, toList(vars), 
@@ -547,6 +552,7 @@ void EquationSet::init(
 
       EvalContext context(rqc, makeSet(0), contextID[2]);
       context.setSetupVerbosity(symbVerb);
+      context.setEvalSetupVerbosity(evalSetupVerb);
       DerivSet nonzeros;
       Expr fields;
       Expr fieldValues;
@@ -617,6 +623,7 @@ void EquationSet::init(
       Tabs tab3;
       EvalContext context(rqc, makeSet(0,1), contextID[3]);
       context.setSetupVerbosity(symbVerb);
+      context.setEvalSetupVerbosity(evalSetupVerb);
       DerivSet nonzeros;
       nonzeros = SymbPreprocessor
         ::setupGradient(term, 
@@ -655,10 +662,12 @@ void EquationSet::init(
       RegionQuadCombo rqc = r->first;
       int rqcVerb = verb;
       int symbVerb = 0;
+      int evalSetupVerb = 0;
       if (rqc.watch().isActive()) 
       {
         symbVerb = rqc.watch().param("symbolic preprocessing");
         rqcVerb=rqc.watch().param("equation set setup");
+        evalSetupVerb=rqc.watch().param("evaluator setup");
       }
       SUNDANCE_MSG1(verb, tab15 << "processing BC RQC = " << rqc);
 
@@ -678,6 +687,7 @@ void EquationSet::init(
         SUNDANCE_MSG2(rqcVerb, tab3 << "preparing matrix/vector calculation");
         EvalContext context(rqc, makeSet(1,2), contextID[0]);
         context.setSetupVerbosity(symbVerb);
+        context.setEvalSetupVerbosity(evalSetupVerb);
         DerivSet nonzeros;
               
         if (isVariationalProblem_)
@@ -737,6 +747,7 @@ void EquationSet::init(
         SUNDANCE_MSG2(rqcVerb, tab3 << "preparing vector-only calculation");
         EvalContext context(rqc, makeSet(1), contextID[1]);
         context.setSetupVerbosity(symbVerb);
+        context.setEvalSetupVerbosity(evalSetupVerb);
         DerivSet nonzeros;
         if (isVariationalProblem_)
         {
@@ -794,6 +805,7 @@ void EquationSet::init(
         SUNDANCE_MSG2(rqcVerb, tab3 << "preparing sensitivity calculation");
         EvalContext context(rqc, makeSet(2), contextID[4]);
         context.setSetupVerbosity(symbVerb);
+        context.setEvalSetupVerbosity(evalSetupVerb);
         DerivSet nonzeros;
         nonzeros = SymbPreprocessor
           ::setupSensitivities(term, toList(vars), toList(unks), 
@@ -832,6 +844,7 @@ void EquationSet::init(
         SUNDANCE_MSG2(rqcVerb, tab3 << "preparing functional-only calculation");
         EvalContext context(rqc, makeSet(0), contextID[2]);
         context.setSetupVerbosity(symbVerb);
+        context.setEvalSetupVerbosity(evalSetupVerb);
         DerivSet nonzeros;
         Expr fields;
         Expr fieldValues;
@@ -904,6 +917,7 @@ void EquationSet::init(
         SUNDANCE_MSG2(rqcVerb, tab3 << "preparing functional and gradient calculation");
         EvalContext context(rqc, makeSet(0,1), contextID[3]);
         context.setSetupVerbosity(symbVerb);
+        context.setEvalSetupVerbosity(evalSetupVerb);
         DerivSet nonzeros;
         nonzeros = SymbPreprocessor
           ::setupGradient(term, 

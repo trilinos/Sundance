@@ -45,7 +45,7 @@ ZeroExpr::internalFindW(int order, const EvalContext& context) const
 {
   Set<MultipleDeriv> rtn;
 
-  Tabs tab;
+  Tabs tab(0);
   SUNDANCE_MSG2(context.setupVerbosity(), 
     tab << "ZeroExpr::internalFindW found" << rtn << " for order="
     << order);
@@ -58,7 +58,7 @@ ZeroExpr::internalFindC(int order, const EvalContext& context) const
 {
   Set<MultipleDeriv> rtn;
 
-  Tabs tab;
+  Tabs tab(0);
   SUNDANCE_MSG2(context.setupVerbosity(), 
     tab << "ZeroExpr::internalFindC found" << rtn << " for order="
     << order);

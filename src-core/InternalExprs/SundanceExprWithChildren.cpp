@@ -151,11 +151,12 @@ void ExprWithChildren::registerSpatialDerivs(const EvalContext& context,
 void ExprWithChildren::setupEval(const EvalContext& context) const
 {
   Tabs tabs;
-  int verb = context.setupVerbosity();
-  SUNDANCE_MSG3(verb, tabs << "expr " + toString() 
+  int verb = context.evalSetupVerbosity();
+  SUNDANCE_MSG1(verb, tabs << "expr " + toString() 
     << ": creating evaluators for children");
   RCP<SparsitySuperset> ss = sparsitySuperset(context);
-  SUNDANCE_MSG3(verb, tabs << "my sparsity superset = " << *ss);
+  SUNDANCE_MSG2(verb, tabs << "my sparsity superset = " 
+    << std::endl << *ss);
 
 
   /* Create the evaluators for the children first so that I can refer to
@@ -165,7 +166,7 @@ void ExprWithChildren::setupEval(const EvalContext& context) const
     for (int i=0; i<children_.size(); i++)
     {
       Tabs tabs1;
-      SUNDANCE_MSG3(verb, tabs1 << "creating evaluator for child " 
+      SUNDANCE_MSG1(verb, tabs1 << "creating evaluator for child " 
         << evaluatableChild(i)->toString());
       evaluatableChild(i)->setupEval(context);
     }
@@ -328,7 +329,7 @@ ExprWithChildren::internalFindV(int order, const EvalContext& context) const
 {
   Tabs tab0;
   int verb = context.setupVerbosity();
-  SUNDANCE_MSG3(verb, tab0 << "EWC::internalFindV(" << order 
+  SUNDANCE_MSG2(verb, tab0 << "EWC::internalFindV(" << order 
     << ") for " << toString());
 
   Set<MultipleDeriv> rtn;
@@ -407,8 +408,8 @@ ExprWithChildren::internalFindV(int order, const EvalContext& context) const
   }
 
   rtn = rtn.intersection(RM);
-  SUNDANCE_MSG3(verb, tab0 << "V[" << order << "]=" << rtn);
-  SUNDANCE_MSG3(verb, tab0 << "done with EWC::internalFindV(" << order
+  SUNDANCE_MSG2(verb, tab0 << "V[" << order << "]=" << rtn);
+  SUNDANCE_MSG2(verb, tab0 << "done with EWC::internalFindV(" << order
     << ") for " << toString());
 
   return rtn;
@@ -423,7 +424,7 @@ ExprWithChildren::internalFindC(int order, const EvalContext& context) const
   bool started = false;
   int verb = context.setupVerbosity();
 
-  SUNDANCE_MSG3(verb, tab0 << "EWC::internalFindC(" << order 
+  SUNDANCE_MSG2(verb, tab0 << "EWC::internalFindC(" << order 
     << ") for " << toString());
 
   /* we'll dealt with zero order derivatives specially */
@@ -451,7 +452,7 @@ ExprWithChildren::internalFindC(int order, const EvalContext& context) const
   for (int i=1; i<=order; i++) 
   {
     Tabs tab1;
-    SUNDANCE_MSG5(verb, tab1 << "i=" << i);
+    SUNDANCE_MSG3(verb, tab1 << "i=" << i << " up to order=" << order);
 
 
     const Set<MultiSet<int> >& QC = findQ_C(i, context);
@@ -522,8 +523,8 @@ ExprWithChildren::internalFindC(int order, const EvalContext& context) const
   }
 
   rtn = rtn.intersection(RM);
-  SUNDANCE_MSG3(verb, tab0 << "C[" << order << "]=" << rtn);
-  SUNDANCE_MSG3(verb, tab0 << "done with EWC::internalFindC(" << order
+  SUNDANCE_MSG2(verb, tab0 << "C[" << order << "]=" << rtn);
+  SUNDANCE_MSG2(verb, tab0 << "done with EWC::internalFindC(" << order
     << ") for " << toString());
   return rtn;
 }
@@ -536,13 +537,14 @@ ExprWithChildren::internalFindW(int order, const EvalContext& context) const
   Tabs tab0;
   int verb = context.setupVerbosity();
   Set<MultipleDeriv> rtn;
-  SUNDANCE_MSG3(verb, tab0 << "EWC::internalFindW("
+  SUNDANCE_MSG2(verb, tab0 << "EWC::internalFindW(order="
     << order << ") for " << toString());  
+  Tabs tabz;
   /* we'll deal with zero order derivatives specially */
   if (order==0) 
   {
     Tabs tab1;
-    SUNDANCE_MSG3(verb, tab1 << "case: order=0");  
+    SUNDANCE_MSG2(verb, tab1 << "** CASE: order=0");  
     /* If I am an arbitrary nonlinear expression, I cannot be known to
      * be zero regardless of the state of my arguments. Return the
      * zeroth-order derivative. */
@@ -596,9 +598,9 @@ ExprWithChildren::internalFindW(int order, const EvalContext& context) const
     {
       rtn.put(MultipleDeriv());
     }
-    SUNDANCE_MSG3(verb, tab1 << "I am a product");  
-    SUNDANCE_MSG3(verb, tab1 << "W[" << order << "]=" << rtn);
-    SUNDANCE_MSG3(verb, tab0 << "done with EWC::internalFindW for "
+    SUNDANCE_MSG2(verb, tab1 << "I am a product");  
+    SUNDANCE_MSG2(verb, tab1 << "W[" << order << "]=" << rtn);
+    SUNDANCE_MSG2(verb, tab0 << "done with EWC::internalFindW for "
       << toString());
     return rtn;
   }
@@ -609,7 +611,7 @@ ExprWithChildren::internalFindW(int order, const EvalContext& context) const
   for (int i=1; i<=order; i++) 
   {
     Tabs tab1;
-    SUNDANCE_MSG3(verb, tab1 << "doing order=" << i);  
+    SUNDANCE_MSG2(verb, tab1 << "** CASE order=" << i);  
 
     const Set<MultiSet<int> >& QW = findQ_W(i, context);
 
@@ -628,8 +630,8 @@ ExprWithChildren::internalFindW(int order, const EvalContext& context) const
     }
   }
 
-  SUNDANCE_MSG3(verb, tab0 << "W[" << order << "]=" << rtn);
-  SUNDANCE_MSG3(verb, tab0 << "done with EWC::internalFindW for "
+  SUNDANCE_MSG2(verb, tabz << "W[" << order << "]=" << rtn);
+  SUNDANCE_MSG2(verb, tab0 << "done with EWC::internalFindW for "
     << toString());
   return rtn;
 }
@@ -640,14 +642,14 @@ ExprWithChildren::findQ_W(int order,
 {
   Tabs tab1;
   int verb = context.setupVerbosity();
-  SUNDANCE_MSG3(verb, tab1 << "finding Q_W");  
+  SUNDANCE_MSG2(verb, tab1 << "finding Q_W");  
   if (!contextToQWMap_[order].containsKey(context))
   {
     contextToQWMap_[order].put(context, internalFindQ_W(order, context));
   }
   else
   {
-    SUNDANCE_MSG3(verb, tab1 << "using previously computed Q_W");  
+    SUNDANCE_MSG5(verb, tab1 << "using previously computed Q_W");  
   }
   return contextToQWMap_[order].get(context);
 
@@ -711,7 +713,7 @@ Set<MultiSet<int> > ExprWithChildren::internalFindQ_V(int order,
 {
   Tabs tab0;
   int verb = context.setupVerbosity();
-  SUNDANCE_MSG3(verb, tab0 << "EWC::internalFindQ_V(order=" << order <<")");
+  SUNDANCE_MSG2(verb, tab0 << "EWC::internalFindQ_V(order=" << order <<")");
   Set<MultiSet<int> > rtn;
 
   if (!isLinear())
@@ -727,7 +729,7 @@ Set<MultiSet<int> > ExprWithChildren::internalFindQ_V(int order,
     }
     if (isVar) rtn = findQ_W(order, context); 
   }
-  SUNDANCE_MSG3(verb, tab0 << "Q_V = " << rtn);
+  SUNDANCE_MSG2(verb, tab0 << "Q_V = " << rtn);
   return rtn;
 }
 
@@ -746,10 +748,10 @@ Set<MultiSet<int> > ExprWithChildren
 {
   Tabs tab0;
   int verb = context.setupVerbosity();
-  SUNDANCE_MSG3(verb, tab0 << "in internalFindQ_W");
+  SUNDANCE_MSG2(verb, tab0 << "in internalFindQ_W");
   Set<MultiSet<int> > rtn;
   const Set<MultiSet<int> >& I_N = getI_N();
-  SUNDANCE_MSG3(verb, tab0 << "I_N=" << I_N);
+  SUNDANCE_MSG2(verb, tab0 << "I_N=" << I_N);
 
   if (isLinear())
   {
@@ -794,6 +796,7 @@ Set<MultiSet<int> > ExprWithChildren
       rtn = indexSetProduct(rtn, I_N);
     }
   }
+  SUNDANCE_MSG2(verb, tab0 << "rtn=" << rtn);
   return rtn;
 }
 
@@ -817,8 +820,8 @@ RCP<Array<Set<MultipleDeriv> > > ExprWithChildren
   RCP<Array<Set<MultipleDeriv> > > rtn 
     = rcp(new Array<Set<MultipleDeriv> >(RInput.size()));
 
-  SUNDANCE_MSG3(verb, tab0 << "in internalDetermineR() for " << toString());
-  SUNDANCE_MSG3(verb, tab0 << "RInput = " << RInput);
+  SUNDANCE_MSG2(verb, tab0 << "in internalDetermineR() for " << toString());
+  SUNDANCE_MSG2(verb, tab0 << "RInput = " << RInput);
 
 
 
@@ -835,15 +838,15 @@ RCP<Array<Set<MultipleDeriv> > > ExprWithChildren
   const Set<MultiSet<int> >& Q2 = findQ_W(2, context);
   const Set<MultiSet<int> >& Q3 = findQ_W(3, context);
 
-  SUNDANCE_MSG5(verb, tab0 << "Q1 = " << Q1);
-  SUNDANCE_MSG5(verb, tab0 << "Q2 = " << Q2);
-  SUNDANCE_MSG5(verb, tab0 << "Q3 = " << Q3);
+  SUNDANCE_MSG3(verb, tab0 << "Q1 = " << Q1);
+  SUNDANCE_MSG3(verb, tab0 << "Q2 = " << Q2);
+  SUNDANCE_MSG3(verb, tab0 << "Q3 = " << Q3);
 
   for (int i=0; i<numChildren(); i++)
   {
     Tabs tab1;
     MultiSet<int> mi = makeMultiSet(i);
-    SUNDANCE_MSG5(verb, tab1 << "i=" << i << ", Q1_i = " << mi );
+    SUNDANCE_MSG4(verb, tab1 << "i=" << i << ", Q1_i = " << mi );
     TEST_FOR_EXCEPTION(mi.size() != 1, std::logic_error, "unexpected multiset size");
     //      int i = *(mi.begin());
     Set<MultipleDeriv> R11;
@@ -929,12 +932,12 @@ RCP<Array<Set<MultipleDeriv> > > ExprWithChildren
     if (maxOrder >= 1) RChild.append(R1);
     if (maxOrder >= 2) RChild.append(R2);
     if (maxOrder >= 3) RChild.append(R3);
-    SUNDANCE_MSG5(verb,  tab1 << "RChild = " << RChild );
+    SUNDANCE_MSG4(verb,  tab1 << "RChild = " << RChild );
     evaluatableChild(i)->determineR(context, RChild);
   }
 
-  SUNDANCE_MSG3(verb,  tab0 << "R = " << (*rtn) );
-  SUNDANCE_MSG3(verb, tab0 << "done with EWC::internalDetermineR for "
+  printR(verb, rtn);
+  SUNDANCE_MSG2(verb, tab0 << "done with EWC::internalDetermineR for "
     << toString());
   
   return rtn;
@@ -945,18 +948,22 @@ RCP<Array<Set<MultipleDeriv> > > ExprWithChildren
 
 void ExprWithChildren::displayNonzeros(std::ostream& os, const EvalContext& context) const 
 {
-  Tabs tabs0;
+  Tabs tabs0(0);
   os << tabs0 << "Nonzeros of " << toString() << std::endl;
-  os << tabs0 << "Diving into children " << std::endl;
+  if (context.setupVerbosity() > 4)
+  {
+    os << tabs0 << "Diving into children " << std::endl;
+  }
 
   for (int i=0; i<numChildren(); i++)
   {
     Tabs tab1;
-    os << tab1 << "Child " << i << std::endl;
+    if (context.setupVerbosity() > 4) os << tab1 << "Child " << i << std::endl;
     evaluatableChild(i)->displayNonzeros(os, context);
   }
 
-  os << tabs0 << "Printing nonzeros for parent " << toString() << std::endl;
+  if (context.setupVerbosity() > 4)
+    os << tabs0 << "Printing nonzeros for parent " << toString() << std::endl;
   const Set<MultipleDeriv>& W = findW(context);
   const Set<MultipleDeriv>& R = findR(context);
   const Set<MultipleDeriv>& C = findC(context);

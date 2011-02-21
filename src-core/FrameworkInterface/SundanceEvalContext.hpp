@@ -65,25 +65,35 @@ class EvalContext
 {
 public:
   /** Empty ctor */
-  EvalContext() : data_() {;}
+  EvalContext() : setupVerbosity_(0), evalSetupVerbosity_(0), 
+                  maxDiffOrder_(0),
+                  data_() {;}
 
   /** Construct with a region-quadrature combination and
    * an identifier of the construcing context. */
   EvalContext(const RegionQuadCombo& rqc,
     const Set<int>& needsDiffOrder,
     int contextID)
-    : setupVerbosity_(0), 
+    : setupVerbosity_(0), evalSetupVerbosity_(0),
       maxDiffOrder_(*std::max_element(needsDiffOrder.begin(), needsDiffOrder.end())),
       data_(rcp(new OrderedTriple<Set<int>, int, RegionQuadCombo>(needsDiffOrder, contextID, rqc)))
     {}
 
   /** Set the verbosity level to be used during preprocessing 
    * of expressions in this context */
-  void setSetupVerbosity(int v) {setupVerbosity_ = v;}
+  void setSetupVerbosity(int v) const {setupVerbosity_ = v;}
 
   /** Return the verbosity level to be used during preprocessing 
    * of expressions in this context */
   int setupVerbosity() const {return setupVerbosity_;}
+
+  /** Set the verbosity level to be used during setup of evaluators
+   * for expressions in this context */
+  void setEvalSetupVerbosity(int v) const {evalSetupVerbosity_ = v;}
+
+  /** Get the verbosity level to be used during setup of evaluators
+   * for expressions in this context */
+  int evalSetupVerbosity() const {return evalSetupVerbosity_;}
 
   /** Comparison operator for use in maps */
   bool operator<(const EvalContext& other) const 
@@ -116,7 +126,8 @@ public:
   /** Return a unique context ID */
   static int nextID() {static int rtn=0; return rtn++;}
 private:
-  int setupVerbosity_;
+  mutable int setupVerbosity_;
+  mutable int evalSetupVerbosity_;
   int maxDiffOrder_;
   RCP<OrderedTriple<Set<int>, int, RegionQuadCombo> > data_;
 };

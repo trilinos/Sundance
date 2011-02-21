@@ -245,7 +245,7 @@ int main(int argc, char** argv)
 #endif
 
 
-#ifdef BLARF
+
     TESTER(u, U);
 
 
@@ -397,18 +397,20 @@ int main(int argc, char** argv)
     TESTER((dx*(x*x + y*y)), (Dx*(X*X + Y*Y)));
 
 
-#ifdef BLARF2
-    TESTER((b*x*dx*(b) + b*b*(dx*x)), (B*(Dx*(X*B))));
-    TESTER((b*b*(dx*x)), (B*B)*(Dx*X));
+// disabled by KL
+//    TESTER((b*x*dx*(b) + b*b*(dx*x)), (B*(Dx*(X*B))));
+//    TESTER((b*b*(dx*x)), (B*B)*(Dx*X));
     TESTER((dx*x), (Dx*X));
-    TESTER((b*b), (B*B));
+//    TESTER((b*b), (B*B));
       
     TESTER((c*dx*(x*b)), (C*(Dx*(X*B))));
 
     TESTER((u*dx*(x*b)), (U*(Dx*(X*B))));
     TESTER((u*dx*(x*b)), (U*(Dx*(X*B))));
-    TESTER((dx*(sin(x)*b)), (Dx*(sin(X)*B)));
-#endif 
+
+// disabled by KL
+//    TESTER((dx*(sin(x)*b)), (Dx*(sin(X)*B)));
+
 
 
     /* */
@@ -416,7 +418,7 @@ int main(int argc, char** argv)
 
     TESTER((dx*u+dx*w), (Dx*U+Dx*W));
 
-#endif
+
       
     TESTER((dx*(u+w)), (Dx*(U+W)));
 
@@ -601,8 +603,8 @@ int main(int argc, char** argv)
 
     TESTER(dx*(exp(2.0*log(u))), Dx*(exp(2.0*log(U))));
 
-    TESTER(w*((u-c_old)/dt) + (grad*w)*(grad*(u + c_old)/2.0),
-      W*((U-C_old)/dt) + (Dx*W)*(Dx*(U + C_old)/2.0) + (Dy*W)*(Dy*(U + C_old)/2.0));
+//    TESTER(w*((u-c_old)/dt) + (grad*w)*(grad*(u + c_old)/2.0),
+//      W*((U-C_old)/dt) + (Dx*W)*(Dx*(U + C_old)/2.0) + (Dy*W)*(Dy*(U + C_old)/2.0));
              
 
 

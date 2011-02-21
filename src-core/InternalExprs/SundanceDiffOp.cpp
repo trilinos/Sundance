@@ -95,7 +95,7 @@ void DiffOp::requestMultiIndexAtEvalPoint(const MultiIndex& mi,
   const EvalContext& context) const 
 {
   int verb = context.setupVerbosity();
-  Tabs tab0;
+  Tabs tab0(0);
   SUNDANCE_MSG3(verb, tab0 << "DiffOp::requestMultiIndexAtEvalPoint() for=" << toString());
   TEST_FOR_EXCEPT(u.size() != 1);
   const Deriv& d = *(u.begin());
@@ -130,11 +130,11 @@ RCP<Array<Set<MultipleDeriv> > >
 DiffOp::internalDetermineR(const EvalContext& context,
   const Array<Set<MultipleDeriv> >& RInput) const
 {
-  Tabs tab0;
+  Tabs tab0(0);
   int verb = context.setupVerbosity();
 
-  SUNDANCE_MSG3(verb, tab0 << "DiffOp::internalDetermineR for=" << toString());
-  SUNDANCE_MSG3(verb, tab0 << "RInput = " << RInput );
+  SUNDANCE_MSG2(verb, tab0 << "DiffOp::internalDetermineR for=" << toString());
+  SUNDANCE_MSG2(verb, tab0 << "RInput = " << RInput );
 
   RCP<Array<Set<MultipleDeriv> > > rtn 
     = rcp(new Array<Set<MultipleDeriv> >(RInput.size()));
@@ -177,7 +177,7 @@ DiffOp::internalDetermineR(const EvalContext& context,
     }
     SUNDANCE_MSG3(verb, tab1 << "RArg = " << RArg);
     
-    SUNDANCE_MSG3(verb, tab1 << "calling determineR() for arg "
+    SUNDANCE_MSG2(verb, tab1 << "calling determineR() for arg "
       << evaluatableArg()->toString());
     evaluatableArg()->determineR(context, RArg);
 
@@ -192,8 +192,8 @@ DiffOp::internalDetermineR(const EvalContext& context,
       requestMultiIndexAtEvalPoint(mi(), *i, context);
     }
   }
-  SUNDANCE_MSG3(verb, tab0 << "R = " << (*rtn) );
-  SUNDANCE_MSG3(verb, tab0 << "done with DiffOp::internalDetermineR for "
+  printR(verb, rtn);
+  SUNDANCE_MSG2(verb, tab0 << "done with DiffOp::internalDetermineR for "
     << toString());
   /* all done */  
   return rtn;
@@ -202,10 +202,10 @@ DiffOp::internalDetermineR(const EvalContext& context,
 
 Set<MultipleDeriv> DiffOp::internalFindW(int order, const EvalContext& context) const
 {
-  Tabs tabs;
+  Tabs tabs(0);
   int verb = context.setupVerbosity();
 
-  SUNDANCE_MSG3(verb, tabs << "DiffOp::internalFindW(order="
+  SUNDANCE_MSG2(verb, tabs << "DiffOp::internalFindW(order="
     << order << ") for " << toString());
 
   Set<MultipleDeriv> rtn ;
@@ -238,9 +238,9 @@ Set<MultipleDeriv> DiffOp::internalFindW(int order, const EvalContext& context) 
 
 Set<MultipleDeriv> DiffOp::internalFindV(int order, const EvalContext& context) const
 {
-  Tabs tabs;
+  Tabs tabs(0);
   int verb = context.setupVerbosity();
-  SUNDANCE_MSG3(verb, tabs << "DiffOp::internalFindV(" << order << ") for " 
+  SUNDANCE_MSG2(verb, tabs << "DiffOp::internalFindV(" << order << ") for " 
     << toString());
 
   Set<MultipleDeriv> rtn;
@@ -278,8 +278,8 @@ Set<MultipleDeriv> DiffOp::internalFindV(int order, const EvalContext& context) 
     rtn = rtn.intersection(findR(order, context));
   }
 
-  SUNDANCE_MSG3(verb, tabs << "V[" << order << "]=" << rtn);
-  SUNDANCE_MSG3(verb, tabs << "done with DiffOp::internalFindV(" << order << ") for "
+  SUNDANCE_MSG2(verb, tabs << "V[" << order << "]=" << rtn);
+  SUNDANCE_MSG2(verb, tabs << "done with DiffOp::internalFindV(" << order << ") for "
     << toString());
 
   return rtn;
@@ -288,9 +288,9 @@ Set<MultipleDeriv> DiffOp::internalFindV(int order, const EvalContext& context) 
 
 Set<MultipleDeriv> DiffOp::internalFindC(int order, const EvalContext& context) const
 {
-  Tabs tabs;
+  Tabs tabs(0);
   int verb = context.setupVerbosity();
-  SUNDANCE_MSG3(verb, tabs << "DiffOp::internalFindC() for " 
+  SUNDANCE_MSG2(verb, tabs << "DiffOp::internalFindC() for " 
     << toString());
   Set<MultipleDeriv> rtn ;
 
@@ -309,8 +309,8 @@ Set<MultipleDeriv> DiffOp::internalFindC(int order, const EvalContext& context) 
     SUNDANCE_MSG3(verb, tabs << "C[" << order << "]=" << rtn);
   }
 
-  SUNDANCE_MSG3(verb, tabs << "C[" << order << "]=R\\V = " << rtn);
-  SUNDANCE_MSG3(verb, tabs << "done with DiffOp::internalFindC for "
+  SUNDANCE_MSG2(verb, tabs << "C[" << order << "]=R\\V = " << rtn);
+  SUNDANCE_MSG2(verb, tabs << "done with DiffOp::internalFindC for "
     << toString());
   return rtn;
 }

@@ -21,7 +21,9 @@ INCLUDE(AddOptionAndDefine)
 # C) Add the libraries, tests, and examples
 #
 
+MESSAGE("adding Playa/src")
 ADD_SUBDIRECTORY(src)
+MESSAGE("adding Playa/tests")
 PACKAGE_ADD_TEST_DIRECTORIES(tests)
 
 

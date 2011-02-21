@@ -96,29 +96,41 @@ ENDIF()
 # C) Add the libraries, tests, and examples
 #
 
+MESSAGE("adding Playa")
 ADD_SUBDIRECTORY(Playa)
 
+MESSAGE("adding src-utils")
 ADD_SUBDIRECTORY(src-utils)
+MESSAGE("adding test-utils")
 PACKAGE_ADD_TEST_DIRECTORIES(tests-utils)
 
 #ADD_SUBDIRECTORY(src-solvers)
 #PACKAGE_ADD_TEST_DIRECTORIES(tests-solvers)
 
+MESSAGE("adding src-interop")
 ADD_SUBDIRECTORY(src-interop)
 
+MESSAGE("adding src-core")
 ADD_SUBDIRECTORY(src-core)
+MESSAGE("adding tests-core")
 PACKAGE_ADD_TEST_DIRECTORIES(tests-core)
 
+MESSAGE("adding src-std-mesh")
 ADD_SUBDIRECTORY(src-std-mesh)
+MESSAGE("adding tests-std-mesh")
 PACKAGE_ADD_TEST_DIRECTORIES(tests-std-mesh)
 
+MESSAGE("adding src-std-fwk")
 ADD_SUBDIRECTORY(src-std-framework)
+MESSAGE("adding tests-std-fwk")
 PACKAGE_ADD_TEST_DIRECTORIES(tests-std-framework)
 
 IF(Sundance_ENABLE_Python)
+  MESSAGE("adding python")
   ADD_SUBDIRECTORY(python)
 ENDIF()
 
+MESSAGE("adding ex-tut")
 PACKAGE_ADD_TEST_DIRECTORIES(examples-tutorial)
 
 

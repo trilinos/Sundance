@@ -83,9 +83,9 @@ const std::string& ProductExpr::opChar() const
 
 Set<MultiSet<int> > ProductExpr::internalFindQ_W(int order, const EvalContext& context) const
 {
-  Tabs tab0;
+  Tabs tab0(0);
   int verb = context.setupVerbosity();
-  SUNDANCE_MSG3(verb, tab0 << "ProdExpr::internalFindQ_W(" << order << ")");
+  SUNDANCE_MSG2(verb, tab0 << "ProdExpr::internalFindQ_W(" << order << ")");
 
   Set<MultiSet<int> > rtn;
   if (order > 2) return rtn;
@@ -96,14 +96,16 @@ Set<MultiSet<int> > ProductExpr::internalFindQ_W(int order, const EvalContext& c
     return rtn;
   }
 
-
+  Tabs tab1;
+  SUNDANCE_MSG3(verb, tab1 << "calling findW(0) for left");
   const Set<MultipleDeriv>& wLeft 
     = leftEvaluatable()->findW(0, context);
-  SUNDANCE_MSG3(verb, tab0 << "wLeft=" << wLeft);
+  SUNDANCE_MSG3(verb, tab1 << "found wLeft(0)=" << wLeft);
 
+  SUNDANCE_MSG3(verb, tab1 << "calling findW(0) for right");
   const Set<MultipleDeriv>& wRight
     = rightEvaluatable()->findW(0, context);
-  SUNDANCE_MSG3(verb, tab0 << "wRight=" << wRight);
+  SUNDANCE_MSG3(verb, tab1 << "found wRight(0)=" << wRight);
   
   if (order==0)
   {
@@ -123,15 +125,16 @@ Set<MultiSet<int> > ProductExpr::internalFindQ_W(int order, const EvalContext& c
     if (wRight.size() > 0) rtn.put(makeMultiSet<int>(0));
   }
   
+  SUNDANCE_MSG2(verb, tab0 << "Q_W[" << order << "]=" << rtn);
   return rtn;
 }
 
 
 Set<MultiSet<int> > ProductExpr::internalFindQ_V(int order, const EvalContext& context) const
 {
-  Tabs tab0;
+  Tabs tab0(0);
   int verb = context.setupVerbosity();
-  SUNDANCE_MSG3(verb, tab0 << "ProdExpr::internalFindQ_V(" << order << ")");
+  SUNDANCE_MSG2(verb, tab0 << "ProdExpr::internalFindQ_V(" << order << ")");
 
   Set<MultiSet<int> > rtn;
   if (order > 1) return rtn;
@@ -159,7 +162,7 @@ Set<MultiSet<int> > ProductExpr::internalFindQ_V(int order, const EvalContext& c
     if (vRight.size() > 0) rtn.put(makeMultiSet<int>(0));
   }
 
-  
+  SUNDANCE_MSG2(verb, tab0 << "Q_V[" << order << "]=" << rtn);  
   return rtn;
 }
 

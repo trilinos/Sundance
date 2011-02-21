@@ -56,22 +56,22 @@ DiscreteFuncElement
 
 RCP<Array<Set<MultipleDeriv> > > DiscreteFuncElement
 ::internalDetermineR(const EvalContext& context,
-                     const Array<Set<MultipleDeriv> >& RInput) const
+  const Array<Set<MultipleDeriv> >& RInput) const
 {
-  Tabs tab;
+  Tabs tab(0);
   int verb = context.setupVerbosity();
-  SUNDANCE_MSG3(verb, tab << "DFE::internalDetermineR() for "
-                     << toString());
+  SUNDANCE_MSG2(verb, tab << "DFE::internalDetermineR() for "
+    << toString());
   Array<Set<MultipleDeriv> > RIn = RInput;
   Set<MultiIndex> miSet = activeSpatialDerivs(context);
 
   for (Set<MultiIndex>::const_iterator i=miSet.begin(); i!=miSet.end(); i++)
-    {
-      const MultiIndex& mi = *i;
-      int order = mi.order();
-      if (order==0) RIn[0].put(MultipleDeriv());
-      if (order==1) RIn[1].put(MultipleDeriv(coordDeriv(mi)));
-    }
+  {
+    const MultiIndex& mi = *i;
+    int order = mi.order();
+    if (order==0) RIn[0].put(MultipleDeriv());
+    if (order==1) RIn[1].put(MultipleDeriv(coordDeriv(mi)));
+  }
 
   return EvaluatableExpr::internalDetermineR(context, RIn);
 }
@@ -80,66 +80,73 @@ RCP<Array<Set<MultipleDeriv> > > DiscreteFuncElement
 Set<MultipleDeriv> 
 DiscreteFuncElement::internalFindW(int order, const EvalContext& context) const
 {
-  Tabs tab;
+  Tabs tab(0);
   int verb = context.setupVerbosity();
-  SUNDANCE_MSG3(verb, tab << "DFE::internalFindW(order=" << order << ") for "
-                     << toString());
+  SUNDANCE_MSG2(verb, tab << "DFE::internalFindW(order=" << order << ") for "
+    << toString());
   Set<MultipleDeriv> rtn;
 
   Set<MultiIndex> miSet = activeSpatialDerivs(context);
 
   if (order==0) 
-    {
-      if (miSet.contains(MultiIndex())) rtn.put(MultipleDeriv());
-    }
+  {
+    if (miSet.contains(MultiIndex())) rtn.put(MultipleDeriv());
+  }
   if (order==1)
+  {
+    for (Set<MultiIndex>::const_iterator i=miSet.begin(); i!=miSet.end(); i++)
     {
-      for (Set<MultiIndex>::const_iterator i=miSet.begin(); i!=miSet.end(); i++)
-        {
-          const MultiIndex& mi = *i;
-          int diffOrder = mi.order();
-          if (diffOrder==1) 
-            rtn.put(MultipleDeriv(coordDeriv(mi)));
-        }
+      const MultiIndex& mi = *i;
+      int diffOrder = mi.order();
+      if (diffOrder==1) 
+        rtn.put(MultipleDeriv(coordDeriv(mi)));
     }
+  }
 
+  SUNDANCE_MSG3(verb, tab << "W[" << order << "]=" << rtn);
+  SUNDANCE_MSG3(verb, tab << "done with DFE::internalFindW(" << order << ") for "
+    << toString());
   return rtn;
 }
 
 Set<MultipleDeriv> 
 DiscreteFuncElement::internalFindV(int order, const EvalContext& context) const
 {
-  Tabs tab;
+  Tabs tab(0);
   int verb = context.setupVerbosity();
-  SUNDANCE_MSG3(verb, tab << "DFE::internalFindV(order=" << order << ") for "
-                     << toString());
+  SUNDANCE_MSG2(verb, tab << "DFE::internalFindV(order=" << order << ") for "
+    << toString());
   Set<MultipleDeriv> rtn;
   Set<MultiIndex> miSet = activeSpatialDerivs(context);
 
   if (order==0) 
-    {
-      if (miSet.contains(MultiIndex())) rtn.put(MultipleDeriv());
-    }
+  {
+    if (miSet.contains(MultiIndex())) rtn.put(MultipleDeriv());
+  }
   if (order==1)
+  {
+    for (Set<MultiIndex>::const_iterator i=miSet.begin(); i!=miSet.end(); i++)
     {
-      for (Set<MultiIndex>::const_iterator i=miSet.begin(); i!=miSet.end(); i++)
-        {
-          const MultiIndex& mi = *i;
-          int diffOrder = mi.order();
-          if (diffOrder==1) 
-            rtn.put(MultipleDeriv(coordDeriv(mi)));
-        }
+      const MultiIndex& mi = *i;
+      int diffOrder = mi.order();
+      if (diffOrder==1) 
+        rtn.put(MultipleDeriv(coordDeriv(mi)));
     }
+  }
   
   rtn = rtn.intersection(findR(order, context));
+
+  SUNDANCE_MSG2(verb, tab << "V[" << order << "]=" << rtn);
+  SUNDANCE_MSG2(verb, tab << "done with DFE::internalFindV(" << order << ") for "
+    << toString());
   return rtn;
 }
 
 Set<MultipleDeriv> 
 DiscreteFuncElement::internalFindC(int order, const EvalContext& context) const
 {
-  Tabs tab;
-  SUNDANCE_MSG5(context.setupVerbosity(), 
+  Tabs tab(0);
+  SUNDANCE_MSG2(context.setupVerbosity(), 
     tab << "DFE::internalFindC is a no-op");
   Set<MultipleDeriv> rtn;
   return rtn;

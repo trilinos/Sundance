@@ -283,6 +283,7 @@ APPEND_SET(HEADERS
   Problem/SundanceRivaraDriver.hpp
   Problem/SundanceStochBlockJacobiSolver.hpp
   Problem/SundanceNonlinearProblem.hpp 
+  Problem/SundanceUniformRefinementPair.hpp 
   )
 
 APPEND_SET(SOURCES
@@ -304,7 +305,8 @@ APPEND_SET(SOURCES
   Problem/SundanceProblemTesting.cpp
   Problem/SundanceRivaraDriver.cpp
   Problem/SundanceStochBlockJacobiSolver.cpp
-  Problem/SundanceNonlinearProblem.cpp
+  Problem/SundanceNonlinearProblem.cpp  
+  Problem/SundanceUniformRefinementPair.cpp 
   )
 
 

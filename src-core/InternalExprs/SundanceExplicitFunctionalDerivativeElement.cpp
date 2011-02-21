@@ -85,10 +85,10 @@ ExplicitFunctionalDerivativeElement
 ::internalDetermineR(const EvalContext& context,
                            const Array<Set<MultipleDeriv> >& RInput) const
 {
-  Tabs tab0;
+  Tabs tab0(0);
   int verb = context.setupVerbosity();
-  SUNDANCE_MSG3(verb, tab0 << "ExplicitFunctionalDerivativeElement::internalDetermineR for=" << toString());
-  SUNDANCE_MSG3(verb, tab0 << "RInput = " << RInput );
+  SUNDANCE_MSG2(verb, tab0 << "ExplicitFunctionalDerivativeElement::internalDetermineR for=" << toString());
+  SUNDANCE_MSG2(verb, tab0 << "RInput = " << RInput );
 
   RCP<Array<Set<MultipleDeriv> > > rtn 
     = rcp(new Array<Set<MultipleDeriv> >(RInput.size()));
@@ -126,8 +126,8 @@ ExplicitFunctionalDerivativeElement
                        << evaluatableArg()->toString());
     evaluatableArg()->determineR(context, RArg);
   }
-  SUNDANCE_MSG3(verb, tab0 << "R = " << (*rtn) );
-  SUNDANCE_MSG3(verb, tab0 << "done with ExplicitFunctionalDerivativeElement::internalDetermineR for "
+  printR(verb, rtn);
+  SUNDANCE_MSG2(verb, tab0 << "done with ExplicitFunctionalDerivativeElement::internalDetermineR for "
                      << toString());
   /* all done */  
   return rtn;
@@ -137,9 +137,9 @@ ExplicitFunctionalDerivativeElement
 Set<MultipleDeriv> ExplicitFunctionalDerivativeElement
 ::internalFindW(int order, const EvalContext& context) const
 {
-  Tabs tab0;
+  Tabs tab0(0);
   int verb = context.setupVerbosity();
-  SUNDANCE_MSG3(verb, tab0 
+  SUNDANCE_MSG2(verb, tab0 
     << "ExplicitFunctionalDerivativeElement::internalFindW(order="
     << order << ") for " << toString());
 
@@ -159,8 +159,8 @@ Set<MultipleDeriv> ExplicitFunctionalDerivativeElement
       << WargPlusOslashFD);
     rtn = WargPlusOslashFD;
   }
-  SUNDANCE_MSG3(verb, tab0 << "W[" << order << "]=" << rtn);
-  SUNDANCE_MSG3(verb, tab0 << "done with ExplicitFunctionalDerivativeElement::internalFindW(" << order << ") for "
+  SUNDANCE_MSG2(verb, tab0 << "W[" << order << "]=" << rtn);
+  SUNDANCE_MSG2(verb, tab0 << "done with ExplicitFunctionalDerivativeElement::internalFindW(" << order << ") for "
                      << toString());
 
   return rtn;
@@ -170,9 +170,9 @@ Set<MultipleDeriv> ExplicitFunctionalDerivativeElement
 Set<MultipleDeriv> ExplicitFunctionalDerivativeElement
 ::internalFindV(int order, const EvalContext& context) const
 {
-  Tabs tabs;
+  Tabs tabs(0);
   int verb = context.setupVerbosity();
-  SUNDANCE_MSG3(verb, tabs << "ExplicitFunctionalDerivativeElement::internalFindV(" << order << ") for " 
+  SUNDANCE_MSG2(verb, tabs << "ExplicitFunctionalDerivativeElement::internalFindV(" << order << ") for " 
                      << toString());
 
   Set<MultipleDeriv> rtn;
@@ -185,8 +185,8 @@ Set<MultipleDeriv> ExplicitFunctionalDerivativeElement
     const Set<MultipleDeriv>& C = findC(order, context);
     rtn = R.setDifference(C);
   }
-  SUNDANCE_MSG3(verb, tabs << "V[" << order << "]=" << rtn);
-  SUNDANCE_MSG3(verb, tabs << "done with ExplicitFunctionalDerivativeElement::internalFindV(" << order << ") for "
+  SUNDANCE_MSG2(verb, tabs << "V[" << order << "]=" << rtn);
+  SUNDANCE_MSG2(verb, tabs << "done with ExplicitFunctionalDerivativeElement::internalFindV(" << order << ") for "
     << toString());
   
   return rtn;
@@ -196,9 +196,9 @@ Set<MultipleDeriv> ExplicitFunctionalDerivativeElement
 Set<MultipleDeriv> ExplicitFunctionalDerivativeElement
 ::internalFindC(int order, const EvalContext& context) const
 {
-  Tabs tabs;
+  Tabs tabs(0);
   int verb = context.setupVerbosity();
-  SUNDANCE_MSG3(verb, tabs << "ExplicitFunctionalDerivativeElement::internalFindC() for " 
+  SUNDANCE_MSG2(verb, tabs << "ExplicitFunctionalDerivativeElement::internalFindC() for " 
     << toString());
   Set<MultipleDeriv> rtn ;
   if (order < 3) 
@@ -218,8 +218,8 @@ Set<MultipleDeriv> ExplicitFunctionalDerivativeElement
     rtn = tmp.intersection(R);
   }
 
-  SUNDANCE_MSG3(verb, tabs << "C[" << order << "]=" << rtn);
-  SUNDANCE_MSG3(verb, tabs << "done with ExplicitFunctionalDerivativeElement::internalFindC for "
+  SUNDANCE_MSG2(verb, tabs << "C[" << order << "]=" << rtn);
+  SUNDANCE_MSG2(verb, tabs << "done with ExplicitFunctionalDerivativeElement::internalFindC for "
     << toString());
   return rtn;
 }

@@ -252,7 +252,7 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
   /* put together the set of functions that are active differentiation
    * variables */
 
-  SUNDANCE_MSG5(verb, tab << "forming active set");
+  SUNDANCE_MSG2(verb, tab << "forming active set");
   Array<Sundance::Set<MultiSet<int> > > activeFuncIDs(3);
   if (context.needsDerivOrder(0)) activeFuncIDs[0].put(MultiSet<int>());
   if (context.topLevelDiffOrder() >= 1)
@@ -285,7 +285,7 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
       }
     }
   }
-  SUNDANCE_MSG3(verb, tab << std::endl << tab 
+  SUNDANCE_MSG2(verb, tab << std::endl << tab 
     << " ************* Finding nonzeros for expr " << std::endl << tab);
   for (int i=0; i<=context.topLevelDiffOrder(); i++)
   {
@@ -298,10 +298,13 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
   miSet.put(MultiIndex());
   e->registerSpatialDerivs(context, miSet);
   
-  SUNDANCE_MSG3(verb,
+  SUNDANCE_MSG2(verb,
     tab << std::endl << tab 
     << " ************* finding required functions" << std::endl << tab);
-
+  SUNDANCE_MSG2(verb,
+    tab << "activeFuncIDs are = " << activeFuncIDs);
+  SUNDANCE_MSG2(verb,
+    tab << "spatial derivs are = " << spatialDerivs);
   Array<Set<MultipleDeriv> > RInput 
     = e->computeInputR(context, activeFuncIDs, spatialDerivs);
 
@@ -310,17 +313,27 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
     << " ************* Top-level required funcs are " << RInput << std::endl << tab);
 
 
-  SUNDANCE_MSG3(verb,
+  SUNDANCE_MSG2(verb,
     tab << std::endl << tab 
     << " ************* Calling determineR()" << std::endl << tab);
   
   e->determineR(context, RInput);
 
+  
+  SUNDANCE_MSG2(verb,
+    tab << std::endl << tab 
+    << " ************* Finding sparsity structure " << std::endl << tab);
+  DerivSet derivs = e->sparsitySuperset(context)->derivSet();
+  SUNDANCE_MSG1(verb,
+    tab << std::endl << tab 
+    << "Nonzero deriv set = " << derivs);
 
-  SUNDANCE_MSG3(verb,
+  SUNDANCE_MSG2(verb,
     tab << std::endl << tab 
     << " ************* Setting up evaluators for expr " << std::endl << tab);
 
+  int saveVerb = context.setupVerbosity();
+  context.setSetupVerbosity(0);
   e->setupEval(context);
 
   if (verb>1)
@@ -329,15 +342,11 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
       tab << std::endl << tab 
       << " ************* Nonzeros are:");
     e->displayNonzeros(Out::os(), context);
+
   }
 
-  DerivSet derivs = e->sparsitySuperset(context)->derivSet();
 
-
-  SUNDANCE_MSG1(verb,
-    tab << std::endl << tab 
-    << "Nonzero deriv set = " << derivs);
-
+  context.setSetupVerbosity(saveVerb);
   return derivs;
 }
 

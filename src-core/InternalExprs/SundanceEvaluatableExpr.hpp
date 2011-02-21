@@ -278,6 +278,9 @@ protected:
   /** */
   std::string derivType(const DerivSubsetSpecifier& dss) const;
 
+  /** */
+  void printR(int verb, const RCP<Array<Set<MultipleDeriv> > >& R) const ;
+
 private:
       
   /** */

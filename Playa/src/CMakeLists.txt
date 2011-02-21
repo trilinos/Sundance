@@ -253,6 +253,8 @@ ENDIF()
 # C) Define the targets for package's library(s)
 #
 
+PRINT_VAR(DEPLIBS)
+
 PACKAGE_ADD_LIBRARY(
   playa
   HEADERS ${HEADERS}

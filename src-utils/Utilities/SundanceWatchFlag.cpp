@@ -85,6 +85,7 @@ RCP<ParameterList> WatchFlag::defaultParams()
   if (first)
   {
     rtn->set<int>("evaluation", 0);
+    rtn->set<int>("evaluator setup", 0);
     rtn->set<int>("discrete function evaluation", 0);
     rtn->set<int>("symbolic preprocessing", 0);
     rtn->set<int>("equation set setup", 0);

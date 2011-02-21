@@ -58,8 +58,9 @@ SumEvaluator::SumEvaluator(const SumExpr* se,
     vvSums_()
 {
   Tabs tabs(0);
+  int verb = context.evalSetupVerbosity();
 
-  if (verb() > 2)
+  if (verb > 1)
     {
       Out::os() << tabs << "initializing sum evaluator for " 
            << se->toString() << std::endl;
@@ -68,7 +69,7 @@ SumEvaluator::SumEvaluator(const SumExpr* se,
   int constantCounter = 0;
   int vectorCounter = 0;
 
-  if (verb() > 2)
+  if (verb > 2)
     {
       Out::os() << std::endl << tabs << "return sparsity ";
       this->sparsity()->print(Out::os());
@@ -108,17 +109,17 @@ SumEvaluator::SumEvaluator(const SumExpr* se,
           iRight = rightSparsity()->getIndex(d);
         }
 
-      SUNDANCE_VERB_MEDIUM(tabs << "deriv " << d);
+      SUNDANCE_MSG2(verb, tabs << "deriv " << d);
 
       if (iLeft == -1) /* case where the left operand is zero */
         {
-          SUNDANCE_VERB_HIGH(tabs << "left operand is zero ");
+          SUNDANCE_MSG3(verb, tabs << "left operand is zero ");
           if (rightSparsity()->state(iRight)==ConstantDeriv)
             {
               int rc = rightEval()->constantIndexMap().get(iRight);
               singleRightConstant_.append(tuple(constantCounter, rc));
               addConstantIndex(i, constantCounter++);
-              SUNDANCE_VERB_HIGH(tabs << "single right constant " 
+              SUNDANCE_MSG4(verb, tabs << "single right constant " 
                                  << singleRightConstant_[singleRightConstant_.size()-1]);
             }
           else
@@ -126,19 +127,19 @@ SumEvaluator::SumEvaluator(const SumExpr* se,
               int rv = rightEval()->vectorIndexMap().get(iRight);
               singleRightVector_.append(tuple(vectorCounter, rv));
               addVectorIndex(i, vectorCounter++);
-              SUNDANCE_VERB_HIGH(tabs << "single right vector " 
+              SUNDANCE_MSG4(verb, tabs << "single right vector " 
                                  << singleRightVector_[singleRightVector_.size()-1]);
             }
         }
       else if (iRight == -1) /* case where the right operand is zero */
         {
-          SUNDANCE_VERB_HIGH(tabs << "right operand is zero ");
+          SUNDANCE_MSG3(verb, tabs << "right operand is zero ");
           if (leftSparsity()->state(iLeft)==ConstantDeriv)
             {
               int lc = leftEval()->constantIndexMap().get(iLeft);
               singleLeftConstant_.append(tuple(constantCounter, lc));
               addConstantIndex(i, constantCounter++);
-              SUNDANCE_VERB_HIGH(tabs << "single left constant " 
+              SUNDANCE_MSG4(verb, tabs << "single left constant " 
                                  << singleLeftConstant_[singleLeftConstant_.size()-1]);
             }
           else
@@ -146,51 +147,51 @@ SumEvaluator::SumEvaluator(const SumExpr* se,
               int lv = leftEval()->vectorIndexMap().get(iLeft);
               singleLeftVector_.append(tuple(vectorCounter, lv));
               addVectorIndex(i, vectorCounter++);
-              SUNDANCE_VERB_HIGH(tabs << "single left vector " 
+              SUNDANCE_MSG4(verb, tabs << "single left vector " 
                                  << singleLeftVector_[singleLeftVector_.size()-1]);
             }
         }
       else /* both are nonzero */
         {
-          SUNDANCE_VERB_HIGH(tabs << "both operands are nonzero ");
+          SUNDANCE_MSG4(verb, tabs << "both operands are nonzero ");
           bool leftIsConstant = leftSparsity()->state(iLeft)==ConstantDeriv;
           bool rightIsConstant = rightSparsity()->state(iRight)==ConstantDeriv;
           
           if (leftIsConstant && rightIsConstant)
             {
-              SUNDANCE_VERB_HIGH(tabs << "both operands are constant");
+              SUNDANCE_MSG4(verb, tabs << "both operands are constant");
               int lc = leftEval()->constantIndexMap().get(iLeft);
               int rc = rightEval()->constantIndexMap().get(iRight);
               ccSums_.append(tuple(constantCounter, lc, rc));
               addConstantIndex(i, constantCounter++);
-              SUNDANCE_VERB_HIGH(tabs << "c-c sum " << ccSums_[ccSums_.size()-1]);
+              SUNDANCE_MSG4(verb, tabs << "c-c sum " << ccSums_[ccSums_.size()-1]);
             }
           else if (leftIsConstant)
             {
-              SUNDANCE_VERB_HIGH(tabs << "left operand is constant");
+              SUNDANCE_MSG4(verb, tabs << "left operand is constant");
               int lc = leftEval()->constantIndexMap().get(iLeft);
               int rv = rightEval()->vectorIndexMap().get(iRight);
               cvSums_.append(tuple(vectorCounter, lc, rv));
               addVectorIndex(i, vectorCounter++);
-              SUNDANCE_VERB_HIGH(tabs << "c-v sum " << cvSums_[cvSums_.size()-1]);
+              SUNDANCE_MSG4(verb, tabs << "c-v sum " << cvSums_[cvSums_.size()-1]);
             }
           else if (rightIsConstant)
             {
-              SUNDANCE_VERB_HIGH(tabs << "right operand is constant");
+              SUNDANCE_MSG4(verb, tabs << "right operand is constant");
               int lv = leftEval()->vectorIndexMap().get(iLeft);
               int rc = rightEval()->constantIndexMap().get(iRight);
               vcSums_.append(tuple(vectorCounter, lv, rc));
               addVectorIndex(i, vectorCounter++);
-              SUNDANCE_VERB_HIGH(tabs << "v-c sum " << vcSums_[vcSums_.size()-1]);
+              SUNDANCE_MSG4(verb, tabs << "v-c sum " << vcSums_[vcSums_.size()-1]);
             }
           else
             {
-              SUNDANCE_VERB_HIGH(tabs << "both operands are vectors");
+              SUNDANCE_MSG4(verb, tabs << "both operands are vectors");
               int lv = leftEval()->vectorIndexMap().get(iLeft);
               int rv = rightEval()->vectorIndexMap().get(iRight);
               vvSums_.append(tuple(vectorCounter, lv, rv));
               addVectorIndex(i, vectorCounter++);
-              SUNDANCE_VERB_HIGH(tabs << "v-v sum " << vvSums_[vvSums_.size()-1]);
+              SUNDANCE_MSG4(verb, tabs << "v-v sum " << vvSums_[vvSums_.size()-1]);
             }
         }
     }

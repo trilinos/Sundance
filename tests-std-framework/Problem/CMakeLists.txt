@@ -23,6 +23,7 @@ SET(SerialTests
   PoissonBoltzmannDemo1D
   BesselTest2D 
   Coupled2D
+  CNBugTest
   EdgeDFTest
   Kepler 
   Stokes2D 
@@ -42,6 +43,7 @@ SET(SerialTests
   StokesPeano2D 
   SecondOrderFloquet 
   MixedTest
+  RefinementTest2D
   Poisson2D_HN_Nitsch
   Stokes_Chanel_Nitsche_line_obstic
 )

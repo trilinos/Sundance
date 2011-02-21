@@ -43,27 +43,27 @@ UnaryMinus::UnaryMinus(const RCP<ScalarExpr>& arg)
 Set<MultiSet<int> > UnaryMinus::internalFindQ_W(int order, const EvalContext& context) const
 {
   int verb = context.setupVerbosity();
-  Tabs tab;
-  SUNDANCE_MSG3(verb, tab << "UnaryMinus::internalFindQ_W(" << order << ")");
+  Tabs tab(0);
+  SUNDANCE_MSG2(verb, tab << "UnaryMinus::internalFindQ_W(" << order << ")");
   Set<MultiSet<int> > rtn;
   if (order > 1) return rtn;
 
   if (order==1)
+  {
+    /* first derivatives of the sum wrt the arguments are 
+     * always nonzero */
+    rtn.put(makeMultiSet<int>(0));
+  }
+  else 
+  {
+    /* zeroth derivatives are nonzero if terms are nonzero */
+    const Set<MultipleDeriv>& w 
+      = evaluatableArg()->findW(0, context);
+    if (w.size() > 0)
     {
-      /* first derivatives of the sum wrt the arguments are 
-       * always nonzero */
       rtn.put(makeMultiSet<int>(0));
     }
-  else 
-    {
-      /* zeroth derivatives are nonzero if terms are nonzero */
-      const Set<MultipleDeriv>& w 
-        = evaluatableArg()->findW(0, context);
-      if (w.size() > 0)
-        {
-          rtn.put(makeMultiSet<int>(0));
-        }
-    }
+  }
   return rtn;
 }
 
