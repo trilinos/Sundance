@@ -126,9 +126,12 @@ EvaluatableExpr::sparsitySuperset(const EvalContext& context) const
     const Set<MultipleDeriv>& R = findR(context);
     const Set<MultipleDeriv>& C = findC(context);
     const Set<MultipleDeriv>& V = findV(context);
-    Out::os() << tab1 << "R=" << R << endl;
-    Out::os() << tab1 << "C=" << C << endl;
-    Out::os() << tab1 << "V=" << V << endl;
+    if (context.setupVerbosity() > 4)
+    {
+      Out::os() << tab1 << "R=" << R << endl;
+      Out::os() << tab1 << "C=" << C << endl;
+      Out::os() << tab1 << "V=" << V << endl;
+    }
     rtn = rcp(new SparsitySuperset(C.intersection(R), V.intersection(R)));
     sparsity_.put(context, rtn);
   }
