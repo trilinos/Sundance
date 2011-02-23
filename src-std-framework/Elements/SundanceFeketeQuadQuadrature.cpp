@@ -113,7 +113,7 @@ void FeketeQuadQuadrature::evalPolynomials(int nPts, double x,
 {
 	// Calculate all (normalized and shifted) Legendre polynomials < order
 	int i = 0;
-	int order = (int) sqrt(nPts);
+	int order = (int) sqrt((double) nPts);
 
 	double xLegendre  = 1.;
 	double xLegendre1 = 0.;

@@ -1407,8 +1407,8 @@ void InhomogeneousDOFMapHN::getTrafoMatrixForCell(
 		const Array<int> &matrixIndexes = maxCellLIDwithHN_to_TrafoMatrix_.get( cellLID );
 		matrixStore_.getMatrix( chunkForFuncID(funcID) , matrixIndexes[chunkForFuncID(funcID)] , transfMatrix );
 		//transfMatrix = (maxCellLIDwithHN_to_TrafoMatrix_.get( cellLID ))[chunkForFuncID(funcID)]; // this should return a valid array
-
-		trafoMatrixSize = sqrt(transfMatrix.size());
+    // KL added cast to double to avoid compilation problems on windows
+		trafoMatrixSize = sqrt((double) transfMatrix.size());
 		SUNDANCE_MSG1(setupVerb(), "getTrafoMatrixForCell() cellLID:" << cellLID << ",funcID:" <<
 				funcID << ",chunkForFuncID(funcID):" << chunkForFuncID(funcID) <<
 				" , indexForFuncID(funcID)" << indexForFuncID(funcID) << ", trafoMatrixSize:" << trafoMatrixSize);
