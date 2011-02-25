@@ -74,6 +74,7 @@ void MatrixVectorAssemblyKernel::init(
     mat_[br].resize(numColBlocks);
     for (int bc=0; bc<numColBlocks; bc++)
     {
+      Tabs tab1;
       LinearOperator<double> matBlock;
       if (partitionBCs && numRowBlocks==1 && numColBlocks==1)
       {
@@ -86,7 +87,14 @@ void MatrixVectorAssemblyKernel::init(
       if (matBlock.ptr().get() == 0) continue;
       const SimpleZeroOp<double>* zp
         = dynamic_cast<const SimpleZeroOp<double>*>(matBlock.ptr().get());
-      if (zp) continue;
+      if (zp) 
+      {
+        SUNDANCE_MSG3(verb(), tab1 << "block(br=" << br << ", "
+          << bc << ") is zero");
+        TEST_FOR_EXCEPTION(numRowBlocks==1 && numColBlocks==1 && zp,
+          std::runtime_error, "no nonzero block in target matrix");
+        continue;
+      }
       mat_[br][bc] 
         = dynamic_cast<Playa::LoadableMatrix<double>* >(matBlock.ptr().get());
       TEST_FOR_EXCEPTION(mat_[br][bc]==0, std::runtime_error,
@@ -191,6 +199,7 @@ void MatrixVectorAssemblyKernel::insertLocalMatrixBatch(
       << tab1 << "is BC eqn = " << isBCRqc << std::endl
       << tab1 << "num cells = " << nCells << std::endl
       << tab1 << "using cofacet cells = " << useCofacetCells);
+    SUNDANCE_MSG3(verb(), tab1 << "local values=" << localValues);
 
     const RCP<DOFMapBase>& rowMap = rmb().dofMap(br);
     int lowestLocalRow = rmb().lowestLocalIndex(br);
@@ -212,6 +221,7 @@ void MatrixVectorAssemblyKernel::insertLocalMatrixBatch(
       << tab1 << "num test nodes in chunk = " << nTestNodes);
     
     int numRows = nCells * nTestNodes;
+    SUNDANCE_MSG3(verb(), tab1 << "numRows=" << numRows);
     const Array<int>& isBCRow = *(rmb().isBCIndex(br));
     rows.resize(numRows);
     skipRow.resize(numRows);
@@ -228,7 +238,9 @@ void MatrixVectorAssemblyKernel::insertLocalMatrixBatch(
           || (!isBCRqc && isBCRow[localRow]);
       }
     }
-    
+
+    SUNDANCE_MSG3(verb(), tab1 << "rows=" << rows);
+    SUNDANCE_MSG3(verb(), tab1 << "skipRow=" << skipRow);
     for (int u=0; u<unkID.size(); u++)
     {      
       Tabs tab2;
@@ -275,6 +287,7 @@ void MatrixVectorAssemblyKernel::insertLocalMatrixBatch(
       }
 
       SUNDANCE_MSG2(verb(), tab2 << "calling addToElementBatch()");
+      TEST_FOR_EXCEPT(mat_[br][bc]==0);
       mat_[br][bc]->addToElementBatch(numRows,
         nTestNodes,
         &(rows[0]),

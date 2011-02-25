@@ -31,21 +31,16 @@
 #include "Sundance.hpp"
 #include "SundanceProblemTesting.hpp"
 
-int main()
-{
-  return 0;
-}
 
-#ifdef BLARF
 
 /** 
  * Solves the radiation diffusion equation in 1D
  */
 
 
-double runRadDiff1D(int nx, double* hMean)
+double runRadDiff1D(int nx, int p, double* hMean)
 {
-  LineDomain dom(0.0, 1.0, nx);
+  LineDomain dom(0.0, 1.0, tuple(nx));
   
   VectorType<double> vecType = new EpetraVectorType();
 
@@ -53,9 +48,8 @@ double runRadDiff1D(int nx, double* hMean)
   CellFilter right = dom.right();
   CellFilter interior = dom.interior();
 
-  Mesh mesh = dom.mesh();
+  Mesh mesh = dom.mesh(0);
 
-  int p = 3;
   Expr u = new UnknownFunction(new Lagrange(p), "u");
   Expr v = new TestFunction(new Lagrange(p), "v");
 
@@ -144,41 +138,56 @@ void fitExp(const Array<double>& h, const Array<double>& err,
 int main(int argc, char** argv)
 {
   try
-		{
-      Sundance::init(&argc, &argv);
-      int np = MPIComm::world().getNProc();
+  {
+    Sundance::init(&argc, &argv);
+    int np = MPIComm::world().getNProc();
 
+    int logNp = lrint(log2(np));
+    Out::root() << "log(np)=" << logNp << std::endl;
+
+    double maxErr = -1.0;
+
+    for (int p=1; p<=3; p++)
+    {
+      Tabs tab;
+      Out::root() << tab << "p=" << p << std::endl;
       Array<int> N;
       Array<double> h;
       Array<double> err;
-
-      for (int i=4; i<=7; i++)
+      
+      int offset = p+logNp;
+      for (int i=8-offset; i<=12-offset; i++)
       {
         int nx = lrint(pow(2.0, i));
         double hMean;
-        double eps = runRadDiff1D(nx, &hMean);
+        double eps = runRadDiff1D(nx, p, &hMean);
         N.append(nx*np);
         h.append(hMean);
         err.append(eps);
       }
       for (int i=0; i<N.size(); i++)
       {
-        Out::root() << "nx=" << setw(10) << N[i]
+        Tabs tab1;
+        Out::root() << tab1 << "nx=" << setw(10) << N[i]
                     << " " << setw(20) << setprecision(5) << h[i] 
                     << " " << setw(20) << setprecision(5) << err[i] 
                     << std::endl;
       }
-      double p;
-      fitExp(h, err, &p);
-      Out::root() << "exponent: " << p << std::endl;
-
+      double pFit;
+      fitExp(h, err, &pFit);
+      Out::root() << tab << "exponent: " << pFit << std::endl;
+      maxErr = ::max(maxErr, ::fabs(pFit - (p+1)));
     }
+
+    double tol = 0.1;
+    Sundance::passFailTest(maxErr, tol);
+  }
 	catch(std::exception& e)
-		{
-      std::cerr << e.what() << std::endl;
-		}
+  {
+    std::cerr << e.what() << std::endl;
+  }
   Sundance::finalize(); return Sundance::testStatus(); 
 }
 
 
-#endif
+
