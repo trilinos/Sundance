@@ -45,6 +45,8 @@ class UniformRefinementPair
 {
 public:
   /** */
+  UniformRefinementPair();
+  /** */
   UniformRefinementPair(const MeshType& meshType,
     const Mesh& coarse);
 
