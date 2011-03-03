@@ -7,6 +7,7 @@
 
 #include "PlayaDefs.hpp"
 #include "PlayaSingleChunkVector.hpp"
+#include "PlayaLoadableVector.hpp"
 #include "PlayaVectorSpaceDecl.hpp"
 #include "Teuchos_Array.hpp"
 
@@ -23,6 +24,7 @@ template <class Scalar> class Vector;
  * all processors.
  */
 class SerialVector : public SingleChunkVector<double>,
+                     public LoadableVector<double>,
                      public Describable
 {
 public:
