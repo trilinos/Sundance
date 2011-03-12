@@ -148,13 +148,8 @@ public:
   void incrementalGetGraph(int br, int bc, 
     IncrementallyConfigurableMatrixFactory* mf) const ;
 
-  /** */
-  void flushConfiguration() 
-    {
-      numConfiguredColumns_ = 0;
-      matNeedsConfiguration_ = true;
-    }
-
+  /** flushes all configuration , so that it enforces the reassemble of the matrix*/
+  void flushConfiguration() const;
 
   /** */
   static int& numAssembleCalls() {static int rtn=0; return rtn;}

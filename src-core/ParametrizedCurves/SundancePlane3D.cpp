@@ -49,13 +49,13 @@ Expr Plane3D::getParams() const
 	return Expr(List( a_ , b_ , c_ ));
 }
 
-double Plane3D::curveEquation(const Point& evalPoint) const
+double Plane3D::curveEquation_intern(const Point& evalPoint) const
 {
 	TEST_FOR_EXCEPTION(evalPoint.dim() != 3, std::runtime_error,
 			"Plane3D::curveEquation() evaluation point dimension must be 3");
 
 	// z = a*x + b*y + c
-	return flipDomains_*( a_*evalPoint[0] + b_*evalPoint[1] + c_ -  evalPoint[2]);
+	return ( a_*evalPoint[0] + b_*evalPoint[1] + c_ -  evalPoint[2]);
 }
 
 void Plane3D::returnIntersectPoints(const Point& start, const Point& end, int& nrPoints,

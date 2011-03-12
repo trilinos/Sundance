@@ -114,6 +114,8 @@ public:
   /** Return the number of block cols in the problem  */
   int numBlockCols() const ;
 
+  /** with this function we can force the assembler to reassemble the matrix */
+  void reAssembleProblem() const ;
 
   /** */
   Expr formSolutionExpr(const Array<Vector<double> >& vec) const ;

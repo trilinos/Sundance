@@ -50,7 +50,7 @@ Expr Sphere::getParams() const
 	return Expr(List(_centerx, _centery, _centerz, _radius));
 }
 
-double Sphere::curveEquation(const Point& evalPoint) const
+double Sphere::curveEquation_intern(const Point& evalPoint) const
 {
 	TEST_FOR_EXCEPTION(evalPoint.dim() != 3, std::runtime_error,
 			"Sphere::curveEquation() evaluation point dimension must be 3");
@@ -58,7 +58,7 @@ double Sphere::curveEquation(const Point& evalPoint) const
 	Point center( _centerx , _centery , _centerz );
 
 	// the sphere equation is (x-cx)^2 + (y-cy)^2 + (z-cz)^2 - r^2 = 0
-	return flipDomains_*((evalPoint - center) * (evalPoint - center)) - _radius * _radius;
+	return ((evalPoint - center) * (evalPoint - center)) - _radius * _radius;
 }
 
 void Sphere::returnIntersectPoints(const Point& start, const Point& end, int& nrPoints,

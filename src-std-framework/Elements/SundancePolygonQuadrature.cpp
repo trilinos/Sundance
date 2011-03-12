@@ -28,38 +28,50 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceCellFilterBase.hpp"
-#include "SundanceOut.hpp"
+#include "SundancePolygonQuadrature.hpp"
 
-
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
 using namespace Sundance;
 using namespace Teuchos;
 
+int PolygonQuadrature::nrMaxLinePerCell_ = 5;
 
-CellFilterBase::CellFilterBase()
-  : CellFilterStub(), cellSetCache_(), name_()
-{;}
-
-CellFilterBase::~CellFilterBase()
+PolygonQuadrature::PolygonQuadrature( const QuadratureFamily& quad )
+  : QuadratureFamilyBase(quad.order()) , quad_(quad)
 {
-//  Out::os() << "~CellFilterBase()" << std::endl;
+  
 }
 
-CellSet CellFilterBase::getCells(const Mesh& mesh) const
+XMLObject PolygonQuadrature::toXML() const
 {
-  int id = mesh.id();
-  if (!cellSetCache_.containsKey(id))
-  {
-    cellSetCache_.put(id, internalGetCells(mesh));
-  }
-  return cellSetCache_.get(id);
+  XMLObject rtn("PolygonQuadrature");
+  rtn.addAttribute("order", Teuchos::toString(order()));
+  return rtn;
 }
 
-void CellFilterBase::flushCache() const {
-	// reset the cache object
-	cellSetCache_ = Sundance::Map<int, CellSet>();
-}
 
+
+void PolygonQuadrature::getLineRule(Array<Point>& quadPoints,
+                                     Array<double>& quadWeights) const 
+{
+	Array<Point> quadPoints_tmp;
+	Array<double> quadWeights_tmp;
+	quad_.getPoints( LineCell , quadPoints_tmp , quadWeights_tmp );
+
+	// the nr. of points per line segments
+	int nrPointPerLine = quadPoints_tmp.size() , ind = 0;
+
+	// resize the point arrays and the weight arrays
+	quadPoints.resize( nrMaxLinePerCell_*nrPointPerLine );
+	quadWeights.resize( nrMaxLinePerCell_*nrPointPerLine );
+
+	// each line segment
+	for (int nrl = 0 ; nrl < nrMaxLinePerCell_ ; nrl++ ){
+		// loop over each quadrature point
+		for (int q = 0 ; q < nrPointPerLine ; q++ ){
+			// copy the points and the weights several times
+			quadPoints[ind] = quadPoints_tmp[q];
+			quadWeights[ind] = quadWeights_tmp[q]/((double)nrMaxLinePerCell_);
+			ind++;
+		}
+	}
+}

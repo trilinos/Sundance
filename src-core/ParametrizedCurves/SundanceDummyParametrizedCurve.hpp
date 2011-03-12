@@ -58,7 +58,9 @@ public:
 	/** */
 	virtual double integrationParameter(const Point& evaluationPoint) const{ return 1.0;}
 
-	virtual double curveEquation(const Point& evaluationPoint) const { return 1.0; }
+protected:
+	virtual double curveEquation_intern(const Point& evaluationPoint) const { return 1.0; }
+public:
 
 	virtual void returnIntersectPoints(const Point& startEdgePoint, const Point& endEdgePoint,
 			                      int& nrPoints ,Array<Point>& result) const {;}

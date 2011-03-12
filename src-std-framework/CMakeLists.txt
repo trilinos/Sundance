@@ -53,6 +53,7 @@ APPEND_SET(HEADERS
   Elements/SundanceFeketeTriangleQuadrature.hpp
   Elements/SundanceTrapesoidQuadrature.hpp
   Elements/SundanceGaussLobattoQuadrature.hpp
+  Elements/SundancePolygonQuadrature.hpp
   Elements/SundanceFuncWithBasis.hpp
   Elements/SundanceGauss1D.hpp
   Elements/SundanceGaussLobatto1D.hpp
@@ -97,6 +98,7 @@ APPEND_SET(SOURCES
   Elements/SundanceFeketeTriangleQuadrature.cpp
   Elements/SundanceTrapesoidQuadrature.cpp
   Elements/SundanceGaussLobattoQuadrature.cpp
+  Elements/SundancePolygonQuadrature.cpp
   Elements/SundanceFuncWithBasis.cpp
   Elements/SundanceGauss1D.cpp
   Elements/SundanceGaussLobatto1D.cpp

@@ -58,8 +58,13 @@ public:
 	/** See upper class */
 	virtual Expr getParams() const { return paramcurve_.getParams();}
 
+	/** return the control points of the parameterized curve */
+	virtual Array<Point>& getControlPoints() { return paramcurve_.getControlPoints(); }
+
+protected:
 	/** See upper class */
-	virtual double curveEquation(const Point& evaluationPoint) const { return paramcurve_.curveEquation(evaluationPoint); }
+	virtual double curveEquation_intern(const Point& evaluationPoint) const { return paramcurve_.curveEquation(evaluationPoint); }
+public:
 
 	/** See upper class */
 	virtual void returnIntersectPoints(const Point& startEdgePoint, const Point& endEdgePoint,
@@ -81,6 +86,9 @@ public:
 	/** This is the only place where this function should return true */
 	virtual bool isCurveIntegral() const { return true; }
 
+	/** Returns the underlying object */
+	virtual const CurveBase* getUnderlyingCurveObj() const { return paramcurve_.ptr().get() ; }
+
 	/** Return a ref count pointer to self */
 	virtual RCP<CurveBase> getRcp()
 	{
@@ -92,7 +100,7 @@ private:
 
 	/** Parameterized curve for which this class is a wrapper and so this class signals
 	 * that this will be a curve integral */
-	const ParametrizedCurve paramcurve_;
+	ParametrizedCurve paramcurve_;
 };
 
 }

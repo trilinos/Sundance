@@ -393,4 +393,7 @@ Expr LinearProblem::formSolutionExpr(const Array<Vector<double> >& vec) const
 }
 
 
+void LinearProblem::reAssembleProblem() const {
+	assembler_->flushConfiguration();
+}
 

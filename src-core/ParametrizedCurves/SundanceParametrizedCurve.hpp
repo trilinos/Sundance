@@ -75,6 +75,11 @@ public:
 		return ptr()->getParams();
 	}
 
+	/** return the control points of the parameterized curve */
+	Array<Point>& getControlPoints() {
+		return ptr()->getControlPoints();
+	}
+
 	/** List integration parameters for the FCM method*/
 	void getIntegrationParams(Array<double>& alphas) const {
 		return ptr()->getIntegrationParams(alphas);
@@ -127,6 +132,12 @@ public:
 	 * @param resolution , the global resolution */
 	const RCP<CurveBase> getPolygon(const Mesh& mesh , double resolution) const {
 		return ptr()->getPolygon( mesh , resolution);
+	}
+
+	/** Some parameterized curve types need also the mesh
+	 * @param mesh */
+	void setMesh(const Mesh& mesh) {
+		ptr()->setMesh( mesh );
 	}
 
 	/** Writes the geometry into a VTK file for visualization purposes

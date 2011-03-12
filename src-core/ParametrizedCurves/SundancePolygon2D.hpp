@@ -43,16 +43,16 @@ class Polygon2D: public Sundance::CurveBase
 public:
 
 	/** Ctor with the points which form the polygon (the direction of the points matters for IN & OUT )*/
-	Polygon2D(const Mesh& mesh , const Array<Point>& points , double a1 , double a2, bool flipD = false);
+	Polygon2D(const Mesh& mesh , const Array<Point>& points , double a1 , double a2, bool closedPolygon = true ,bool flipD = false);
 
 	/** Ctor with the points which form the polygon (the direction of the points matters for IN & OUT )*/
-	Polygon2D(const Array<Point>& points , double a1 , double a2, bool flipD = false);
+	Polygon2D(const Array<Point>& points , double a1 , double a2, bool closedPolygon = true , bool flipD = false);
 
 	/** Ctor to read in the polygon from file from file */
-	Polygon2D(const Mesh& mesh , const std::string& filename , double a1 , double a2, bool flipD = false);
+	Polygon2D(const Mesh& mesh , const std::string& filename , double a1 , double a2, bool closedPolygon = true ,bool flipD = false);
 
 	/** Ctor to read in the polygon from file from file */
-	Polygon2D(const std::string& filename , double a1 , double a2, bool flipD = false);
+	Polygon2D(const std::string& filename , double a1 , double a2, bool closedPolygon = true ,bool flipD = false);
 
 	/** */
 	virtual ~Polygon2D() {;}
@@ -60,11 +60,16 @@ public:
 	/** @return Expr The parameters of the curve which uniquely defines the curve*/
 	virtual Expr getParams() const;
 
+	/** return the points of the polygon */
+	virtual Array<Point>& getControlPoints() { return polyPoints_; }
+
+protected:
 	/**
 	 * This function should be implemented
 	 * @param evalPoint point where the polygon equation is evaluated <br>
 	 * @return double the value of the curve equation at the evaluation point  */
-	virtual double curveEquation(const Point& evalPoint) const;
+	virtual double curveEquation_intern(const Point& evalPoint) const;
+public:
 
 	/**
 	 * This function is important for nonstructural mesh integration.<br>
@@ -97,9 +102,15 @@ public:
 		return true;
 	}
 
+	/** sets the mesh for the polygon , empty implementation*/
+	virtual void setMesh(const Mesh& mesh);
+
 	/** Writes the geometry into a VTK file for visualization purposes
 	 * @param filename */
 	virtual void writeToVTK(const std::string& filename) const;
+
+	/** returns the points which are inside one maxCell */
+	void getCellsPolygonesPoint( int maxCellLID , Array<Point>& points) const ;
 
 	/** generate the polygon which is the unification (not intersection) of two polygons */
     static RCP<CurveBase> unite(ParametrizedCurve& c1 , ParametrizedCurve& c2);
@@ -111,6 +122,9 @@ private:
 
 	/** indicates weather we have a mesh or not */
 	bool hasMesh_;
+
+	/** this flag shows if the last point is connected to the first one*/
+	bool closedPolygon_;
 
 	/** the mesh will be needed for point location, since the geometry is
 	 * non-conform with respect to the mesh */

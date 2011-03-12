@@ -50,7 +50,7 @@ Expr Box3D::getParams() const
 	return Expr(List(px_, py_, py_, ox_ , oy_, oz_));
 }
 
-double Box3D::curveEquation(const Point& evalPoint) const
+double Box3D::curveEquation_intern(const Point& evalPoint) const
 {
 	int verb = 0;
 	TEST_FOR_EXCEPTION(evalPoint.dim() != 3, std::runtime_error,
@@ -65,7 +65,7 @@ double Box3D::curveEquation(const Point& evalPoint) const
 
 	SUNDANCE_OUT(verb > 3, " Box3D::curveEquation for:" << evalPoint << " is: " << distX);
 
-	return flipDomains_*distX;
+	return distX;
 }
 
 void Box3D::returnIntersect(const Point& start, const Point& end, int& nrPoints,
