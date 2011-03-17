@@ -6,6 +6,8 @@
  */
 
 #include "SundanceGaussLobattoQuadrature.hpp"
+#include "SundanceCurveIntegralCalc.hpp"
+#include "SundancePolygon2D.hpp"
 #include "PlayaTabs.hpp"
 
 using namespace Sundance;
@@ -321,7 +323,15 @@ void GaussLobattoQuadrature::getAdaptedWeights(
 		case QuadCell:
 		{
 			// call the method to integrate the Quad
-			getAdaptedQuadWeights(cellLID, mesh, globalCurve, quadPoints, quadWeights, weightsChanged);
+
+			if (CurveIntegralCalc::usePolygoneCurveQuadrature( cellType , mesh , globalCurve)){
+				// if the curve is a polygon then use a different
+				getAdaptedQuadWeights_polygon(cellLID, mesh, globalCurve, quadPoints, quadWeights, weightsChanged);
+			}
+			else
+			{
+				getAdaptedQuadWeights(cellLID, mesh, globalCurve, quadPoints, quadWeights, weightsChanged);
+			}
 			break;
 		}
 		default:
@@ -348,12 +358,375 @@ void GaussLobattoQuadrature::getAdaptedWeights(
 }
 
 
+
+void GaussLobattoQuadrature::getAdaptedQuadWeights_polygon(int cellLID, const Mesh& mesh,
+		const ParametrizedCurve& globalCurve, Array<Point>& quadPoints,
+		Array<double>& quadWeights, bool& weightsChanged) const {
+
+	// this works only in 2D for polygons, it is important that we ask the underlying object and not the object itself
+	const Polygon2D* poly = dynamic_cast<const Polygon2D* > ( globalCurve.ptr().get()->getUnderlyingCurveObj() );
+	if ( poly == 0 ) {
+		TEST_FOR_EXCEPTION( true , std::runtime_error , " getAdaptedQuadWeights_polygon , paramCurve must be a Polygon and the cell must be a quad" );
+		return;
+	}
+
+	// the main idea of the algorithm is to get a raw of points
+	// (P1,P2,P3,P4,P5) and (alpha1,aplpha2), the coefficients
+	// this raw of points must be ordered correctly and contains intersection and polygon points
+	// by integrating the left side of this curve we can calculate the exact integral
+
+	// - get the intersection points
+	// - get the polygon points
+	// form out of these points a row of points with the shortest distance
+	// choose as starting point the one with the smallest x and y coordinate
+
+	// use this raw of points for quadrature
+	//  - see in which direction is always increasing the coordinate
+	//  - choose one direction (x or y) to parse the raw of points (if not always increasing then take the sign in consideration)
+
+	Array<Point> quadOfPoints(4);
+	Array<Point> intesectPoints(8);
+	Array<Point> pointStack(0);
+	Array<bool>  isInnerPoint(0);
+	Array<Point> pointStackTmp(0);
+	Array<Point> allPolygonPoints(0);
+	int nrIPoints , pointsNr , polyNrPoint ;
+	double eps = 1e-14;
+
+	SUNDANCE_MSG3(verb_, " ---------- START METHOD -----------  ");
+
+	// get the points of the quad
+	for (int i = 0 ; i < 4 ; i++){
+		quadOfPoints[i] = mesh.nodePosition( mesh.facetLID(2,cellLID , 0 , i , nrIPoints ) );
+	}
+
+	// get all the intersection points
+	pointsNr = 0;
+	for (int i = 0 ; i < 4 ; i++)
+	{
+		// for each edge test intersection point
+		globalCurve.returnIntersectPoints( quadOfPoints[quadsEdgesPoints[i][0]] , quadOfPoints[quadsEdgesPoints[i][1]],
+				 nrIPoints , intesectPoints );
+		//SUNDANCE_MSG3(verb_, " Test edge: "<< quadOfPoints[quadsEdgesPoints[i][0]] << " -- " << quadOfPoints[quadsEdgesPoints[i][1]] );
+		for (int j = 0 ; j < nrIPoints ; j++){
+			bool addThisPoint = true;
+			// add these points only when they are not duplicate
+			for (int tmpP = 0 ; tmpP < pointsNr ; tmpP++){
+				double dist = ::sqrt( (pointStackTmp[tmpP] - intesectPoints[j])*(pointStackTmp[tmpP] - intesectPoints[j]) );
+				if ( dist < eps) addThisPoint = false;
+			}
+			// if the point is not a duplicate then add
+			if (addThisPoint) {
+				pointStack.resize( pointsNr + 1  );
+				pointStackTmp.resize( pointsNr + 1 );
+				isInnerPoint.resize( pointsNr + 1 );
+				// transform to reference coordinates back
+				pointStack[pointsNr] = Point( ( intesectPoints[j][0] - quadOfPoints[0][0])/( quadOfPoints[3][0]-quadOfPoints[0][0] ) ,
+					                      ( intesectPoints[j][1] - quadOfPoints[0][1])/( quadOfPoints[3][1]-quadOfPoints[0][1] )  );
+				// we store the intersection point also in real coordinates
+				pointStackTmp[pointsNr] = intesectPoints[j];
+				isInnerPoint[pointsNr] = false;
+				//SUNDANCE_MSG3(verb_, " adding Ints Points:"<< pointsNr << " P:"
+				//		<< pointStack[pointsNr] << " Real P:" << intesectPoints[j] );
+				pointsNr = pointsNr + 1;
+			}
+		}
+	}
+
+	// get the point
+	poly->getCellsPolygonesPoint( cellLID ,allPolygonPoints);
+	polyNrPoint = allPolygonPoints.size();
+	//SUNDANCE_MSG3(verb_, " Polygon has :"<< polyNrPoint << " points inside the cell");
+	// add also the points which come from the polygon
+	for (int j = 0 ; j < polyNrPoint ; j++){
+		bool addThisPoint = true;
+		// add these points only when they are not duplicate
+		for (int tmpP = 0 ; tmpP < pointsNr ; tmpP++){
+			double dist = ::sqrt( (pointStackTmp[tmpP] - allPolygonPoints[j])*(pointStackTmp[tmpP] - allPolygonPoints[j]) );
+			if ( dist < eps) addThisPoint = false;
+		}
+		// if the point is not a duplicate then add
+		if (addThisPoint) {
+			pointStack.resize( pointsNr + 1  );
+			pointStackTmp.resize( pointsNr + 1 );
+			isInnerPoint.resize( pointsNr + 1 );
+			// transform to reference coordinates back
+			pointStack[pointsNr] = Point( ( allPolygonPoints[j][0] - quadOfPoints[0][0])/( quadOfPoints[3][0]-quadOfPoints[0][0] ) ,
+				                      ( allPolygonPoints[j][1] - quadOfPoints[0][1])/( quadOfPoints[3][1]-quadOfPoints[0][1] )  );
+			// we store the intersection point also in real coordinates
+			pointStackTmp[pointsNr] = allPolygonPoints[j];
+			isInnerPoint[pointsNr] = true;
+			//SUNDANCE_MSG3(verb_, " adding Polygon Points:"<< pointsNr << " P:"
+			//		<< pointStack[pointsNr] << " Real P:" << allPolygonPoints[j] );
+			pointsNr = pointsNr + 1;
+		}
+	}
+
+	// now we have all the points we just need to get them in a sorted way, after distance (Manhattan distance)
+	// first we select the point which is closes to the (0,0) Point and is an intersection point of the edges
+	double dist = 1e+100 , firstind = -1;
+	for (int tmpP = 0 ; tmpP < pointsNr ; tmpP++){
+		// we look only for intersection points to have as starting point
+		if ( (pointStack[tmpP][0] + pointStack[tmpP][1] < dist) && (!isInnerPoint[tmpP])){
+			dist = pointStack[tmpP][0] + pointStack[tmpP][1];
+			firstind = tmpP;
+		}
+	}
+
+	Array<Point> orderedPoints(1);
+	Array<Point> orderedPointsRealCoords(1);
+	Array<bool> orderedPointsIsIntersection(1);
+	orderedPoints[0] = pointStack[firstind];
+	orderedPointsRealCoords[0] = pointStackTmp[firstind];
+	orderedPointsIsIntersection[0] = (!isInnerPoint[firstind]);
+	//SUNDANCE_MSG3(verb_, "Add first point to position 0  from firstind:"<< firstind << " , P:" << orderedPoints[0]);
+
+	int orderedP = 1;
+
+	// with this for loop
+	for (int tmpP = 0 ; tmpP < pointsNr ; tmpP++){
+		// the first point which we added we do not want to add again
+		if (tmpP == firstind) continue;
+
+		// add all the 1..pointsNr points to the ordered list
+		double dist = 1e+100 , dist_tmp;
+		int ind = -1;
+		//SUNDANCE_MSG3(verb_, " Trying to insert: "<< tmpP << " out of " << pointsNr);
+		for (int p = 0 ; p <= orderedP ; p++){
+			dist_tmp = dist;
+			//SUNDANCE_MSG3(verb_, " probe position " << p << " , orderedP:"<<orderedP);
+			if (( p == orderedP ) || (p == 0) ){
+				if (!isInnerPoint[tmpP]){
+					Point poin = orderedPoints[(p == orderedP)?p-1:p] - pointStack[tmpP];
+					// check this, what kind of distance * 1.0 should be here added
+					dist_tmp = 1.0 * ::sqrt(poin*poin);
+				}
+			}
+			else {
+				Point poin1 = orderedPoints[p-1] - pointStack[tmpP];
+				Point poin2 = orderedPoints[p] - pointStack[tmpP];
+				Point prev_dist = orderedPoints[p] - orderedPoints[p-1];
+				dist_tmp = ::sqrt(poin1*poin1) + ::sqrt(poin2*poin2) - ::sqrt(prev_dist*prev_dist);
+			}
+			//SUNDANCE_MSG3(verb_, " dist_tmp: " << dist_tmp << " , dist:" << dist );
+			// if this distance is shorter than mark this position
+			if (dist_tmp < dist){
+				dist = dist_tmp;
+				ind = p;
+			}
+		}
+
+		// the first point should be inserted always to the back
+		if ( (ind == 0) && ( orderedP <= 1) ){ ind = 1;}
+
+		// if "ind"
+		TEST_FOR_EXCEPTION( ind < 0 , std::runtime_error , " GaussLobattoQuadrature::getAdaptedQuadWeights_polygon ind < 0 ind:"<<ind );
+		// insert the point to the "ind" position
+		orderedPoints.resize(orderedP+1);
+		orderedPointsRealCoords.resize(orderedP+1);
+		orderedPointsIsIntersection.resize(orderedP+1);
+		for (int p = orderedP-1 ; p >= ind ; p--){
+			orderedPoints[p+1] = orderedPoints[p];
+			orderedPointsRealCoords[p+1] = orderedPointsRealCoords[p];
+			orderedPointsIsIntersection[p+1] = orderedPointsIsIntersection[p];
+		}
+		//SUNDANCE_MSG3(verb_, "Add point to position ind:"<< ind <<  " , tmpP:" << tmpP << " , orderedP:" << orderedP );
+		//SUNDANCE_MSG3(verb_, "pointStack[tmpP]:"<< pointStack[tmpP] <<  " , pointStackTmp[tmpP]:" << pointStackTmp[tmpP] );
+		orderedPoints[ind] = pointStack[tmpP];
+		orderedPointsRealCoords[ind] = pointStackTmp[tmpP];
+		orderedPointsIsIntersection[ind] = (!isInnerPoint[tmpP]);
+		orderedP = orderedP + 1;
+	}
+
+	// print the points which were ordered
+	for (int pi = 0 ; pi < orderedP ; pi++){
+		//SUNDANCE_MSG3(verb_, "Ordered Points pi:"<< pi << " P:" << orderedPoints[pi] );
+	}
+	// at this stage we have the ordered raw of point we just have to use it
+	// the ordered
+	bool increaseX = true;
+	bool increaseY = true;
+	double minX = orderedPoints[0][0], maxX = orderedPoints[0][0], minY = orderedPoints[0][1], maxY = orderedPoints[0][1];
+	for (int p = 1 ; p < orderedP ; p++){
+		if ( orderedPoints[p-1][0] - eps > orderedPoints[p][0]) increaseX = false;
+		if ( orderedPoints[p-1][1] - eps > orderedPoints[p][1]) increaseY = false;
+		minX = (orderedPoints[p][0] < minX) ? orderedPoints[p][0] : minX;
+		maxX = (orderedPoints[p][0] > maxX) ? orderedPoints[p][0] : maxX;
+		minY = (orderedPoints[p][1] < minY) ? orderedPoints[p][1] : minY;
+		maxY = (orderedPoints[p][1] > maxY) ? orderedPoints[p][1] : maxY;
+	}
+
+	// get all the possible weights and quadrature points
+	Array<Point> linePoints;
+	Array<double> lineWeights;
+	getLineRule( linePoints , lineWeights);
+	int nr1DPoints = linePoints.size();
+	int nr2DPoints = nr1DPoints * nr1DPoints;
+	Array<Point> quadQuadPoints;
+	Array<double> quadQuadWeights;
+	getQuadRule( quadQuadPoints , quadQuadWeights);
+	Array<Point> trianglePoints;
+	Array<double> triangleWeights;
+	getTriangleQuadPoints( trianglePoints , triangleWeights);
+
+	// the integration coefficients , we get the coefficient left from the curve and right from the curve
+	double alphaLeft , alphaRight;
+	Point curvderi = orderedPointsRealCoords[0] - orderedPointsRealCoords[1];
+	Point norm_vec = Point( -curvderi[1] , curvderi[0] );
+	norm_vec = norm_vec / ::sqrt(norm_vec*norm_vec);
+	double relative_length = 1e-2 * ::sqrt(curvderi*curvderi);
+	//SUNDANCE_MSG3(verb_, " First segment P0: " << orderedPointsRealCoords[0] << " , P1:" <<orderedPointsRealCoords[1]);
+	//SUNDANCE_MSG3(verb_, " Alpha left P: " << (0.5*orderedPointsRealCoords[0] + 0.5*orderedPointsRealCoords[1]) + relative_length*norm_vec );
+	//SUNDANCE_MSG3(verb_, " Alpha right P: " << (0.5*orderedPointsRealCoords[0] + 0.5*orderedPointsRealCoords[1]) - relative_length*norm_vec );
+	alphaLeft = globalCurve.integrationParameter( (0.5*orderedPointsRealCoords[0] + 0.5*orderedPointsRealCoords[1]) + relative_length*norm_vec );
+	alphaRight = globalCurve.integrationParameter( (0.5*orderedPointsRealCoords[0] + 0.5*orderedPointsRealCoords[1]) - relative_length*norm_vec );
+
+	//SUNDANCE_MSG3(verb_, "minX:"<< minX << " , maxX:" << maxX << " , minY:" << minY << " , maxY:" << maxY <<
+	//		" , alphaLeft:" << alphaLeft << " , alphaRight:" << alphaRight);
+	//SUNDANCE_MSG3(verb_, "increaseX:"<< increaseX << " , increaseY:" << increaseY );
+
+	// first quadrate the whole quad
+	Array<double> wholeWeightsQuad( quadWeights.size() , 0.0 );
+    makeInterpolantQuad( 0.0, 0.0 , 1.0 , 1.0, nr1DPoints , nr2DPoints ,linePoints ,
+    		             quadQuadPoints , quadQuadWeights ,wholeWeightsQuad , 1.0 );
+
+	Array<double> leftWeightsQuad( quadWeights.size() , 0.0 );
+	// here we have a big branch, eighter to parse in the X direction or in the Y direction
+	if ( (increaseX) || (increaseY == false)){
+		// quadrate in the X direction
+		// first make a quadrature from 0 to MinX
+		//SUNDANCE_MSG3(verb_, " Increase X , integrate initial quad");
+	    makeInterpolantQuad( 0.0, orderedPoints[0][1] ,
+	    		             minX , 1.0-orderedPoints[0][1],
+	    		             nr1DPoints , nr2DPoints ,linePoints ,
+	    		             quadQuadPoints , quadQuadWeights ,leftWeightsQuad , 1.0 );
+
+	    // for each segment make a triangle and quad quadrature
+	    for (int seg = 1 ; seg < orderedP ; seg++){
+	    	//SUNDANCE_MSG3(verb_, " Integrate segment : " << seg );
+	    	Point p0 = orderedPoints[seg-1];
+	    	Point p1 = orderedPoints[seg];
+	    	if (p0[0] < p1[0] ){
+	    		// X is increasing
+	    		if (p0[1] < p1[1]){
+	    			// Y increasing
+	    		    makeInterpolantQuad( p0[0] , p1[1] ,
+	    		    		             p1[0] - p0[0] , 1.0-p1[1] ,
+	    		    		             nr1DPoints , nr2DPoints ,linePoints ,
+	    		    		             quadQuadPoints , quadQuadWeights ,leftWeightsQuad , 1.0 );
+	    		    makeInterpolantQuad( p0[0] , p1[1] ,
+	    		                         p1[0] - p0[0] , p0[1] - p1[1] ,
+	    		    		             nr1DPoints , nr2DPoints ,linePoints ,
+	    		    		             trianglePoints , triangleWeights ,leftWeightsQuad , 2.0  );
+	    		}else{
+	    			// Y decreasing
+	    		    makeInterpolantQuad( p0[0] , p0[1] ,
+	    		    		             p1[0] - p0[0] , 1.0-p0[1] ,
+	    		    		             nr1DPoints , nr2DPoints ,linePoints ,
+	    		    		             quadQuadPoints , quadQuadWeights ,leftWeightsQuad , 1.0 );
+	    		    makeInterpolantQuad( p1[0] , p0[1] ,
+	    		                         p0[0] - p1[0] , p1[1] - p0[1] ,
+	    		    		             nr1DPoints , nr2DPoints ,linePoints ,
+	    		    		             trianglePoints , triangleWeights ,leftWeightsQuad , 2.0  );
+	    		}
+	    	}
+	    	else{
+	    		// X is decreasing (this should happen rather seldom)
+	    		if (p0[1] < p1[1]){
+	    			// Y increasing
+	    		    makeInterpolantQuad( p1[0] , 0.0 ,
+	    		    		             p1[0] - p0[0] , p0[1] ,
+	    		    		             nr1DPoints , nr2DPoints ,linePoints ,
+	    		    		             quadQuadPoints , quadQuadWeights ,leftWeightsQuad , 1.0 );
+	    		    makeInterpolantQuad( p1[0] , p0[1] ,
+	    		                         p0[0] - p1[0] , p1[1] - p0[1] ,
+	    		    		             nr1DPoints , nr2DPoints ,linePoints ,
+	    		    		             trianglePoints , triangleWeights ,leftWeightsQuad , 2.0  );
+	    		}else{
+	    			// Y decreasing
+	    		    makeInterpolantQuad( p1[0] , 0.0 ,
+	    		    		             p0[0] - p1[0] , p1[1] ,
+	    		    		             nr1DPoints , nr2DPoints ,linePoints ,
+	    		    		             quadQuadPoints , quadQuadWeights ,leftWeightsQuad , 1.0 );
+	    		    makeInterpolantQuad( p0[0] , p1[1] ,
+	    		                         p1[0] - p0[0] , p0[1] - p1[1] ,
+	    		    		             nr1DPoints , nr2DPoints ,linePoints ,
+	    		    		             trianglePoints , triangleWeights ,leftWeightsQuad , 2.0  );
+	    		}
+	    	}
+	    }
+
+	    //SUNDANCE_MSG3(verb_, " Integrate rest of the quad ");
+	    // quadrate the rest of the quad
+	    makeInterpolantQuad( maxX , orderedPoints[orderedP-1][1] ,
+	    		             1.0-maxX , 1.0-orderedPoints[orderedP-1][1] ,
+	                         nr1DPoints , nr2DPoints ,linePoints ,
+	    		             quadQuadPoints , quadQuadWeights ,leftWeightsQuad , 1.0 );
+	}
+	else{
+		//SUNDANCE_MSG3(verb_, " Increase Y , integrate initial quad");
+		// quadrate in Y direction
+		// first make a quadrature from 0 to MinY
+	    makeInterpolantQuad( 0.0 , 0.0 ,
+	    		             orderedPoints[0][0] , minY,
+	    		             nr1DPoints , nr2DPoints ,linePoints ,
+	    		             quadQuadPoints , quadQuadWeights ,leftWeightsQuad , 1.0 );
+
+	    // for each segment make a triangle and quad quadrature
+	    for (int seg = 1 ; seg < orderedP ; seg++){
+	    	//SUNDANCE_MSG3(verb_, " Integrate segment : " << seg );
+	    	Point p0 = orderedPoints[seg-1];
+	    	Point p1 = orderedPoints[seg];
+	    	// Y must be always increasing !!!
+	    	if (p0[0] < p1[0]){
+	    		// X increasing
+	    	    makeInterpolantQuad( 0.0 , p0[1] ,
+	    	    		             p0[0] , p1[1]-p0[1] ,
+	    	    		             nr1DPoints , nr2DPoints ,linePoints ,
+	    	    		             quadQuadPoints , quadQuadWeights ,leftWeightsQuad , 1.0 );
+	    	    makeInterpolantQuad( p0[0] , p1[1] ,
+	    	                         p1[0] - p0[0] , p0[1] - p1[1] ,
+	    	    		             nr1DPoints , nr2DPoints ,linePoints ,
+	    	    		             trianglePoints , triangleWeights ,leftWeightsQuad , 2.0  );
+	    	}else{
+	    		// X decreasing
+	    	    makeInterpolantQuad( 0.0 , p0[1] ,
+	    	    		             p1[0] , p1[1]-p0[1] ,
+	    	    		             nr1DPoints , nr2DPoints ,linePoints ,
+	    	    		             quadQuadPoints , quadQuadWeights ,leftWeightsQuad , 1.0 );
+	    	    makeInterpolantQuad( p1[0] , p0[1] ,
+	    	                         p0[0] - p1[0] , p1[1] - p0[1] ,
+	    	    		             nr1DPoints , nr2DPoints ,linePoints ,
+	    	    		             trianglePoints , triangleWeights ,leftWeightsQuad , 2.0  );
+	    	}
+	    }
+
+	    //SUNDANCE_MSG3(verb_, " Integrate rest of the quad ");
+	    // quadrate the rest of the quad
+	    makeInterpolantQuad( 0.0 , maxY ,
+	    		             orderedPoints[orderedP-1][0] , 1.0-maxY ,
+	                         nr1DPoints , nr2DPoints ,linePoints ,
+	    		             quadQuadPoints , quadQuadWeights ,leftWeightsQuad , 1.0 );
+	}
+
+
+	// here just add up   W(i) = alphaLeft*leftW(i) + alphaRight*(wholeW(i)-leftW(i))
+	double sumWeights = 0.0;
+	for (int q = 0 ; q < quadPoints.size() ; q++ ){
+		quadWeights[q] = alphaLeft * leftWeightsQuad[q] + alphaRight*( wholeWeightsQuad[q]- leftWeightsQuad[q] );
+		sumWeights = sumWeights + quadWeights[q];
+	}
+	SUNDANCE_MSG3(verb_, " ---------- END METHOD -----------  sum weights = " << sumWeights);
+}
+
+
+
 void GaussLobattoQuadrature::getAdaptedQuadWeights(int cellLID, const Mesh& mesh,
 		const ParametrizedCurve& globalCurve, Array<Point>& quadPoints,
 		Array<double>& quadWeights, bool& weightsChanged) const{
 
 	int maxStack = 1000;
-	int maxLevel = 5;
+	//int maxLevel = 5;
 	int stackIndex = 0;
 	Tabs tabs;
 
@@ -452,7 +825,7 @@ void GaussLobattoQuadrature::getAdaptedQuadWeights(int cellLID, const Mesh& mesh
 	// the criterion for division is if the are after the refinement is different significantly
 	// then before the division
 	// put these quads with the intersection points in one list
-	// todo: make here a while cycle, till we arrive
+	// todo: here we make no while loop since then also the curve integrals should be adaptive
 
 
 	// get all the possible weights and quadrature points
@@ -896,7 +1269,7 @@ void GaussLobattoQuadrature::getTriangleQuadPoints(Array<Point>& pnt  ,Array<dou
 		weight[26] = 0.007362383783300573;
 		weight[27] = 0.007362383783300573;
     } else if (deg<=13) {
-    	pnt.resize(28); weight.resize(28);
+    	pnt.resize(37); weight.resize(37);
     	pnt[0] = Point(0.333333333333333333333333333333,  0.333333333333333333333333333333);
     	pnt[1] = Point(0.950275662924105565450352089520,  0.024862168537947217274823955239);
     	pnt[2] = Point(0.024862168537947217274823955239,  0.950275662924105565450352089520);
@@ -972,6 +1345,887 @@ void GaussLobattoQuadrature::getTriangleQuadPoints(Array<Point>& pnt  ,Array<dou
         weight[34] = 0.037038683681384627918546472190;
         weight[35] = 0.037038683681384627918546472190;
         weight[36] = 0.037038683681384627918546472190;
+    } else if (deg<=14) {
+    	pnt.resize(46); weight.resize(46);
+        pnt[0] = Point(0.33333333333333331000 , 0.33333333333333331000);
+        pnt[1] = Point(0.00997976080645843200 , 0.00997976080645843200);
+        pnt[2] = Point(0.00997976080645843200 , 0.98004047838708308000);
+        pnt[3] = Point(0.98004047838708308000 , 0.00997976080645843200);
+        pnt[4] = Point(0.47997789352118841000 , 0.47997789352118841000);
+        pnt[5] = Point(0.47997789352118841000 , 0.04004421295762317100);
+        pnt[6] = Point(0.04004421295762317100 , 0.47997789352118841000);
+        pnt[7] = Point(0.15381195917696691000 , 0.15381195917696691000);
+        pnt[8] = Point(0.15381195917696691000 , 0.69237608164606623000);
+        pnt[9] = Point(0.69237608164606623000 , 0.15381195917696691000);
+        pnt[10] = Point(0.07402347711698781300 , 0.07402347711698781300);
+        pnt[11] = Point(0.07402347711698781300 , 0.85195304576602437000);
+        pnt[12] = Point(0.85195304576602437000 , 0.07402347711698781300);
+        pnt[13] = Point(0.13035468250332999000 , 0.13035468250332999000);
+        pnt[14] = Point(0.13035468250332999000 , 0.73929063499334002000);
+        pnt[15] = Point(0.73929063499334002000 , 0.13035468250332999000);
+        pnt[16] = Point(0.23061722602665313000 , 0.23061722602665313000);
+        pnt[17] = Point(0.23061722602665313000 , 0.53876554794669373000);
+        pnt[18] = Point(0.53876554794669373000 , 0.23061722602665313000);
+        pnt[19] = Point(0.42233208341914780000 , 0.42233208341914780000);
+        pnt[20] = Point(0.42233208341914780000 , 0.15533583316170441000);
+        pnt[21] = Point(0.15533583316170441000 , 0.42233208341914780000);
+        pnt[22] = Point(0.78623738593466097000 , 0.19061636003190091000);
+        pnt[23] = Point(0.78623738593466097000 , 0.02314625403343817400);
+        pnt[24] = Point(0.19061636003190091000 , 0.78623738593466097000);
+        pnt[25] = Point(0.19061636003190091000 , 0.02314625403343817400);
+        pnt[26] = Point(0.02314625403343817400 , 0.78623738593466097000);
+        pnt[27] = Point(0.02314625403343817400 , 0.19061636003190091000);
+        pnt[28] = Point(0.63055214366060741000 , 0.36232313774354713000);
+        pnt[29] = Point(0.63055214366060741000 , 0.00712471859584540290);
+        pnt[30] = Point(0.36232313774354713000 , 0.63055214366060741000);
+        pnt[31] = Point(0.36232313774354713000 , 0.00712471859584540290);
+        pnt[32] = Point(0.00712471859584540290 , 0.63055214366060741000);
+        pnt[33] = Point(0.00712471859584540290 , 0.36232313774354713000);
+        pnt[34] = Point(0.62657732985630632000 , 0.29077120588366739000);
+        pnt[35] = Point(0.62657732985630632000 , 0.08265146426002623100);
+        pnt[36] = Point(0.29077120588366739000 , 0.62657732985630632000);
+        pnt[37] = Point(0.29077120588366739000 , 0.08265146426002623100);
+        pnt[38] = Point(0.08265146426002623100 , 0.62657732985630632000);
+        pnt[39] = Point(0.08265146426002623100 , 0.29077120588366739000);
+        pnt[40] = Point(0.91420998492962546000 , 0.07116571087775076800);
+        pnt[41] = Point(0.91420998492962546000 , 0.01462430419262372700);
+        pnt[42] = Point(0.07116571087775076800 , 0.91420998492962546000);
+        pnt[43] = Point(0.07116571087775076800 , 0.01462430419262372700);
+        pnt[44] = Point(0.01462430419262372700 , 0.91420998492962546000);
+        pnt[45] = Point(0.01462430419262372700 , 0.07116571087775076800);
+
+        weight[0] = 0.05859628522602859700;
+        weight[1] = 0.00173515122972526760;
+        weight[2] = 0.00173515122972526760;
+        weight[3] = 0.00173515122972526760;
+        weight[4] = 0.02616378255861452300;
+        weight[5] = 0.02616378255861452300;
+        weight[6] = 0.02616378255861452300;
+        weight[7] = 0.00391972924240182890;
+        weight[8] = 0.00391972924240182890;
+        weight[9] = 0.00391972924240182890;
+        weight[10] = 0.01224735975694086700;
+        weight[11] = 0.01224735975694086700;
+        weight[12] = 0.01224735975694086700;
+        weight[13] = 0.02819962850325796000;
+        weight[14] = 0.02819962850325796000;
+        weight[15] = 0.02819962850325796000;
+        weight[16] = 0.05088708718595948800;
+        weight[17] = 0.05088708718595948800;
+        weight[18] = 0.05088708718595948800;
+        weight[19] = 0.05045343990160360000;
+        weight[20] = 0.05045343990160360000;
+        weight[21] = 0.05045343990160360000;
+        weight[22] = 0.01706364421223345200;
+        weight[23] = 0.01706364421223345200;
+        weight[24] = 0.01706364421223345200;
+        weight[25] = 0.01706364421223345200;
+        weight[26] = 0.01706364421223345200;
+        weight[27] = 0.01706364421223345200;
+        weight[28] = 0.00968346642550660040;
+        weight[29] = 0.00968346642550660040;
+        weight[30] = 0.00968346642550660040;
+        weight[31] = 0.00968346642550660040;
+        weight[32] = 0.00968346642550660040;
+        weight[33] = 0.00968346642550660040;
+        weight[34] = 0.03638575592848500300;
+        weight[35] = 0.03638575592848500300;
+        weight[36] = 0.03638575592848500300;
+        weight[37] = 0.03638575592848500300;
+        weight[38] = 0.03638575592848500300;
+        weight[39] = 0.03638575592848500300;
+        weight[40] = 0.00696466337351841270;
+        weight[41] = 0.00696466337351841270;
+        weight[42] = 0.00696466337351841270;
+        weight[43] = 0.00696466337351841270;
+        weight[44] = 0.00696466337351841270;
+        weight[45] = 0.00696466337351841270;
+    } else if (deg<=20) {
+    	pnt.resize(88); weight.resize(88);
+        pnt[0] = Point(0.33333333333333331000 , 0.33333333333333331000);
+        pnt[1] = Point(0.21587430593299198000 , 0.21587430593299198000);
+        pnt[2] = Point(0.21587430593299198000 , 0.56825138813401610000);
+        pnt[3] = Point(0.56825138813401610000 , 0.21587430593299198000);
+        pnt[4] = Point(0.07537676652974727200 , 0.07537676652974727200);
+        pnt[5] = Point(0.07537676652974727200 , 0.84924646694050543000);
+        pnt[6] = Point(0.84924646694050543000 , 0.07537676652974727200);
+        pnt[7] = Point(0.01030082813722179300 , 0.01030082813722179300);
+        pnt[8] = Point(0.01030082813722179300 , 0.97939834372555645000);
+        pnt[9] = Point(0.97939834372555645000 , 0.01030082813722179300);
+        pnt[10] = Point(0.49360221129870019000 , 0.49360221129870019000);
+        pnt[11] = Point(0.49360221129870019000 , 0.01279557740259962300);
+        pnt[12] = Point(0.01279557740259962300 , 0.49360221129870019000);
+        pnt[13] = Point(0.46155093810692532000 , 0.46155093810692532000);
+        pnt[14] = Point(0.46155093810692532000 , 0.07689812378614935300);
+        pnt[15] = Point(0.07689812378614935300 , 0.46155093810692532000);
+        pnt[16] = Point(0.32862140642423698000 , 0.42934057025821037000);
+        pnt[17] = Point(0.32862140642423698000 , 0.24203802331755264000);
+        pnt[18] = Point(0.42934057025821037000 , 0.32862140642423698000);
+        pnt[19] = Point(0.42934057025821037000 , 0.24203802331755264000);
+        pnt[20] = Point(0.24203802331755264000 , 0.32862140642423698000);
+        pnt[21] = Point(0.24203802331755264000 , 0.42934057025821037000);
+        pnt[22] = Point(0.26048036178656875000 , 0.10157753428096944000);
+        pnt[23] = Point(0.26048036178656875000 , 0.63794210393246176000);
+        pnt[24] = Point(0.10157753428096944000 , 0.26048036178656875000);
+        pnt[25] = Point(0.10157753428096944000 , 0.63794210393246176000);
+        pnt[26] = Point(0.63794210393246176000 , 0.26048036178656875000);
+        pnt[27] = Point(0.63794210393246176000 , 0.10157753428096944000);
+        pnt[28] = Point(0.13707423584645531000 , 0.71006597300113017000);
+        pnt[29] = Point(0.13707423584645531000 , 0.15285979115241455000);
+        pnt[30] = Point(0.71006597300113017000 , 0.13707423584645531000);
+        pnt[31] = Point(0.71006597300113017000 , 0.15285979115241455000);
+        pnt[32] = Point(0.15285979115241455000 , 0.13707423584645531000);
+        pnt[33] = Point(0.15285979115241455000 , 0.71006597300113017000);
+        pnt[34] = Point(0.14672694587229979000 , 0.49854547767841484000);
+        pnt[35] = Point(0.14672694587229979000 , 0.35472757644928543000);
+        pnt[36] = Point(0.49854547767841484000 , 0.14672694587229979000);
+        pnt[37] = Point(0.49854547767841484000 , 0.35472757644928543000);
+        pnt[38] = Point(0.35472757644928543000 , 0.14672694587229979000);
+        pnt[39] = Point(0.35472757644928543000 , 0.49854547767841484000);
+        pnt[40] = Point(0.02699897774255329000 , 0.04918672267258199900);
+        pnt[41] = Point(0.02699897774255329000 , 0.92381429958486472000);
+        pnt[42] = Point(0.04918672267258199900 , 0.02699897774255329000);
+        pnt[43] = Point(0.04918672267258199900 , 0.92381429958486472000);
+        pnt[44] = Point(0.92381429958486472000 , 0.02699897774255329000);
+        pnt[45] = Point(0.92381429958486472000 , 0.04918672267258199900);
+        pnt[46] = Point(0.06187178593361702900 , 0.77966014654056937000);
+        pnt[47] = Point(0.06187178593361702900 , 0.15846806752581366000);
+        pnt[48] = Point(0.77966014654056937000 , 0.06187178593361702900);
+        pnt[49] = Point(0.77966014654056937000 , 0.15846806752581366000);
+        pnt[50] = Point(0.15846806752581366000 , 0.06187178593361702900);
+        pnt[51] = Point(0.15846806752581366000 , 0.77966014654056937000);
+        pnt[52] = Point(0.04772436742762199700 , 0.37049153914954763000);
+        pnt[53] = Point(0.04772436742762199700 , 0.58178409342283044000);
+        pnt[54] = Point(0.37049153914954763000 , 0.04772436742762199700);
+        pnt[55] = Point(0.37049153914954763000 , 0.58178409342283044000);
+        pnt[56] = Point(0.58178409342283044000 , 0.04772436742762199700);
+        pnt[57] = Point(0.58178409342283044000 , 0.37049153914954763000);
+        pnt[58] = Point(0.12060051518636437000 , 0.86334694875475260000);
+        pnt[59] = Point(0.12060051518636437000 , 0.01605253605888301600);
+        pnt[60] = Point(0.86334694875475260000 , 0.12060051518636437000);
+        pnt[61] = Point(0.86334694875475260000 , 0.01605253605888301600);
+        pnt[62] = Point(0.01605253605888301600 , 0.12060051518636437000);
+        pnt[63] = Point(0.01605253605888301600 , 0.86334694875475260000);
+        pnt[64] = Point(0.00269714779670978760 , 0.05619493818774550000);
+        pnt[65] = Point(0.00269714779670978760 , 0.94110791401554472000);
+        pnt[66] = Point(0.05619493818774550000 , 0.00269714779670978760);
+        pnt[67] = Point(0.05619493818774550000 , 0.94110791401554472000);
+        pnt[68] = Point(0.94110791401554472000 , 0.00269714779670978760);
+        pnt[69] = Point(0.94110791401554472000 , 0.05619493818774550000);
+        pnt[70] = Point(0.00301563327794236250 , 0.20867500674842135000);
+        pnt[71] = Point(0.00301563327794236250 , 0.78830935997363627000);
+        pnt[72] = Point(0.20867500674842135000 , 0.00301563327794236250);
+        pnt[73] = Point(0.20867500674842135000 , 0.78830935997363627000);
+        pnt[74] = Point(0.78830935997363627000 , 0.00301563327794236250);
+        pnt[75] = Point(0.78830935997363627000 , 0.20867500674842135000);
+        pnt[76] = Point(0.02990537578845702000 , 0.72115124091203409000);
+        pnt[77] = Point(0.02990537578845702000 , 0.24894338329950894000);
+        pnt[78] = Point(0.72115124091203409000 , 0.02990537578845702000);
+        pnt[79] = Point(0.72115124091203409000 , 0.24894338329950894000);
+        pnt[80] = Point(0.24894338329950894000 , 0.02990537578845702000);
+        pnt[81] = Point(0.24894338329950894000 , 0.72115124091203409000);
+        pnt[82] = Point(0.00675665422246098880 , 0.64005544194054187000);
+        pnt[83] = Point(0.00675665422246098880 , 0.35318790383699716000);
+        pnt[84] = Point(0.64005544194054187000 , 0.00675665422246098880);
+        pnt[85] = Point(0.64005544194054187000 , 0.35318790383699716000);
+        pnt[86] = Point(0.35318790383699716000 , 0.00675665422246098880);
+        pnt[87] = Point(0.35318790383699716000 , 0.64005544194054187000);
+
+        weight[0] = 0.01253760799449665600;
+        weight[1] = 0.02747186987642421400;
+        weight[2] = 0.02747186987642421400;
+        weight[3] = 0.02747186987642421400;
+        weight[4] = 0.00976527227705142370;
+        weight[5] = 0.00976527227705142370;
+        weight[6] = 0.00976527227705142370;
+        weight[7] = 0.00139841953539182350;
+        weight[8] = 0.00139841953539182350;
+        weight[9] = 0.00139841953539182350;
+        weight[10] = 0.00929210262518518310;
+        weight[11] = 0.00929210262518518310;
+        weight[12] = 0.00929210262518518310;
+        weight[13] = 0.01657787603236692700;
+        weight[14] = 0.01657787603236692700;
+        weight[15] = 0.01657787603236692700;
+        weight[16] = 0.02066776234866507900;
+        weight[17] = 0.02066776234866507900;
+        weight[18] = 0.02066776234866507900;
+        weight[19] = 0.02066776234866507900;
+        weight[20] = 0.02066776234866507900;
+        weight[21] = 0.02066776234866507900;
+        weight[22] = 0.02082223552115450600;
+        weight[23] = 0.02082223552115450600;
+        weight[24] = 0.02082223552115450600;
+        weight[25] = 0.02082223552115450600;
+        weight[26] = 0.02082223552115450600;
+        weight[27] = 0.02082223552115450600;
+        weight[28] = 0.00956863841984906090;
+        weight[29] = 0.00956863841984906090;
+        weight[30] = 0.00956863841984906090;
+        weight[31] = 0.00956863841984906090;
+        weight[32] = 0.00956863841984906090;
+        weight[33] = 0.00956863841984906090;
+        weight[34] = 0.02445277096897246300;
+        weight[35] = 0.02445277096897246300;
+        weight[36] = 0.02445277096897246300;
+        weight[37] = 0.02445277096897246300;
+        weight[38] = 0.02445277096897246300;
+        weight[39] = 0.02445277096897246300;
+        weight[40] = 0.00315573063063053420;
+        weight[41] = 0.00315573063063053420;
+        weight[42] = 0.00315573063063053420;
+        weight[43] = 0.00315573063063053420;
+        weight[44] = 0.00315573063063053420;
+        weight[45] = 0.00315573063063053420;
+        weight[46] = 0.01213679636532129800;
+        weight[47] = 0.01213679636532129800;
+        weight[48] = 0.01213679636532129800;
+        weight[49] = 0.01213679636532129800;
+        weight[50] = 0.01213679636532129800;
+        weight[51] = 0.01213679636532129800;
+        weight[52] = 0.01496648014388644900;
+        weight[53] = 0.01496648014388644900;
+        weight[54] = 0.01496648014388644900;
+        weight[55] = 0.01496648014388644900;
+        weight[56] = 0.01496648014388644900;
+        weight[57] = 0.01496648014388644900;
+        weight[58] = 0.00632759332177773930;
+        weight[59] = 0.00632759332177773930;
+        weight[60] = 0.00632759332177773930;
+        weight[61] = 0.00632759332177773930;
+        weight[62] = 0.00632759332177773930;
+        weight[63] = 0.00632759332177773930;
+        weight[64] = 0.00134256031206369590;
+        weight[65] = 0.00134256031206369590;
+        weight[66] = 0.00134256031206369590;
+        weight[67] = 0.00134256031206369590;
+        weight[68] = 0.00134256031206369590;
+        weight[69] = 0.00134256031206369590;
+        weight[70] = 0.00277607691634755400;
+        weight[71] = 0.00277607691634755400;
+        weight[72] = 0.00277607691634755400;
+        weight[73] = 0.00277607691634755400;
+        weight[74] = 0.00277607691634755400;
+        weight[75] = 0.00277607691634755400;
+        weight[76] = 0.01073984447418494100;
+        weight[77] = 0.01073984447418494100;
+        weight[78] = 0.01073984447418494100;
+        weight[79] = 0.01073984447418494100;
+        weight[80] = 0.01073984447418494100;
+        weight[81] = 0.01073984447418494100;
+        weight[82] = 0.00536780573818745280;
+        weight[83] = 0.00536780573818745280;
+        weight[84] = 0.00536780573818745280;
+        weight[85] = 0.00536780573818745280;
+        weight[86] = 0.00536780573818745280;
+        weight[87] = 0.00536780573818745280;
+    } else if (deg<=25) {
+    	pnt.resize(126); weight.resize(126);
+        pnt[0] = Point(0.02794648307316999900 , 0.48602675846340998000);
+        pnt[1] = Point(0.48602675846340998000 , 0.48602675846340998000);
+        pnt[2] = Point(0.48602675846340998000 , 0.02794648307316999900);
+        pnt[3] = Point(0.13117860132765000000 , 0.43441069933616999000);
+        pnt[4] = Point(0.43441069933616999000 , 0.43441069933616999000);
+        pnt[5] = Point(0.43441069933616999000 , 0.13117860132765000000);
+        pnt[6] = Point(0.22022172951207000000 , 0.38988913524396002000);
+        pnt[7] = Point(0.38988913524396002000 , 0.38988913524396002000);
+        pnt[8] = Point(0.38988913524396002000 , 0.22022172951207000000);
+        pnt[9] = Point(0.40311353196039001000 , 0.29844323401980000000);
+        pnt[10] = Point(0.29844323401980000000 , 0.29844323401980000000);
+        pnt[11] = Point(0.29844323401980000000 , 0.40311353196039001000);
+        pnt[12] = Point(0.53191165532525997000 , 0.23404417233736999000);
+        pnt[13] = Point(0.23404417233736999000 , 0.23404417233736999000);
+        pnt[14] = Point(0.23404417233736999000 , 0.53191165532525997000);
+        pnt[15] = Point(0.69706333078196003000 , 0.15146833460902001000);
+        pnt[16] = Point(0.15146833460902001000 , 0.15146833460902001000);
+        pnt[17] = Point(0.15146833460902001000 , 0.69706333078196003000);
+        pnt[18] = Point(0.77453221290801000000 , 0.11273389354599000000);
+        pnt[19] = Point(0.11273389354599000000 , 0.11273389354599000000);
+        pnt[20] = Point(0.11273389354599000000 , 0.77453221290801000000);
+        pnt[21] = Point(0.84456861581694997000 , 0.07771569209152999500);
+        pnt[22] = Point(0.07771569209152999500 , 0.07771569209152999500);
+        pnt[23] = Point(0.07771569209152999500 , 0.84456861581694997000);
+        pnt[24] = Point(0.93021381277141002000 , 0.03489309361430000000);
+        pnt[25] = Point(0.03489309361430000000 , 0.03489309361430000000);
+        pnt[26] = Point(0.03489309361430000000 , 0.93021381277141002000);
+        pnt[27] = Point(0.98548363075812995000 , 0.00725818462093000010);
+        pnt[28] = Point(0.00725818462093000010 , 0.00725818462093000010);
+        pnt[29] = Point(0.00725818462093000010 , 0.98548363075812995000);
+        pnt[30] = Point(0.00129235270443999990 , 0.22721445215336000000);
+        pnt[31] = Point(0.22721445215336000000 , 0.77149319514218995000);
+        pnt[32] = Point(0.77149319514218995000 , 0.00129235270443999990);
+        pnt[33] = Point(0.22721445215336000000 , 0.00129235270443999990);
+        pnt[34] = Point(0.77149319514218995000 , 0.22721445215336000000);
+        pnt[35] = Point(0.00129235270443999990 , 0.77149319514218995000);
+        pnt[36] = Point(0.00539970127212000000 , 0.43501055485356999000);
+        pnt[37] = Point(0.43501055485356999000 , 0.55958974387431004000);
+        pnt[38] = Point(0.55958974387431004000 , 0.00539970127212000000);
+        pnt[39] = Point(0.43501055485356999000 , 0.00539970127212000000);
+        pnt[40] = Point(0.55958974387431004000 , 0.43501055485356999000);
+        pnt[41] = Point(0.00539970127212000000 , 0.55958974387431004000);
+        pnt[42] = Point(0.00638400303398000030 , 0.32030959927219999000);
+        pnt[43] = Point(0.32030959927219999000 , 0.67330639769381995000);
+        pnt[44] = Point(0.67330639769381995000 , 0.00638400303398000030);
+        pnt[45] = Point(0.32030959927219999000 , 0.00638400303398000030);
+        pnt[46] = Point(0.67330639769381995000 , 0.32030959927219999000);
+        pnt[47] = Point(0.00638400303398000030 , 0.67330639769381995000);
+        pnt[48] = Point(0.00502821150199000020 , 0.09175032228000999700);
+        pnt[49] = Point(0.09175032228000999700 , 0.90322146621800004000);
+        pnt[50] = Point(0.90322146621800004000 , 0.00502821150199000020);
+        pnt[51] = Point(0.09175032228000999700 , 0.00502821150199000020);
+        pnt[52] = Point(0.90322146621800004000 , 0.09175032228000999700);
+        pnt[53] = Point(0.00502821150199000020 , 0.90322146621800004000);
+        pnt[54] = Point(0.00682675862178000040 , 0.03801083585871999800);
+        pnt[55] = Point(0.03801083585871999800 , 0.95516240551949005000);
+        pnt[56] = Point(0.95516240551949005000 , 0.00682675862178000040);
+        pnt[57] = Point(0.03801083585871999800 , 0.00682675862178000040);
+        pnt[58] = Point(0.95516240551949005000 , 0.03801083585871999800);
+        pnt[59] = Point(0.00682675862178000040 , 0.95516240551949005000);
+        pnt[60] = Point(0.01001619963993000000 , 0.15742521848530999000);
+        pnt[61] = Point(0.15742521848530999000 , 0.83255858187475995000);
+        pnt[62] = Point(0.83255858187475995000 , 0.01001619963993000000);
+        pnt[63] = Point(0.15742521848530999000 , 0.01001619963993000000);
+        pnt[64] = Point(0.83255858187475995000 , 0.15742521848530999000);
+        pnt[65] = Point(0.01001619963993000000 , 0.83255858187475995000);
+        pnt[66] = Point(0.02575781317339000100 , 0.23988965977853000000);
+        pnt[67] = Point(0.23988965977853000000 , 0.73435252704807996000);
+        pnt[68] = Point(0.73435252704807996000 , 0.02575781317339000100);
+        pnt[69] = Point(0.23988965977853000000 , 0.02575781317339000100);
+        pnt[70] = Point(0.73435252704807996000 , 0.23988965977853000000);
+        pnt[71] = Point(0.02575781317339000100 , 0.73435252704807996000);
+        pnt[72] = Point(0.03022789811992000100 , 0.36194311812606000000);
+        pnt[73] = Point(0.36194311812606000000 , 0.60782898375401995000);
+        pnt[74] = Point(0.60782898375401995000 , 0.03022789811992000100);
+        pnt[75] = Point(0.36194311812606000000 , 0.03022789811992000100);
+        pnt[76] = Point(0.60782898375401995000 , 0.36194311812606000000);
+        pnt[77] = Point(0.03022789811992000100 , 0.60782898375401995000);
+        pnt[78] = Point(0.03050499010715999900 , 0.08355196095483000100);
+        pnt[79] = Point(0.08355196095483000100 , 0.88594304893801001000);
+        pnt[80] = Point(0.88594304893801001000 , 0.03050499010715999900);
+        pnt[81] = Point(0.08355196095483000100 , 0.03050499010715999900);
+        pnt[82] = Point(0.88594304893801001000 , 0.08355196095483000100);
+        pnt[83] = Point(0.03050499010715999900 , 0.88594304893801001000);
+        pnt[84] = Point(0.04595654736257000200 , 0.14844322073242000000);
+        pnt[85] = Point(0.14844322073242000000 , 0.80560023190500996000);
+        pnt[86] = Point(0.80560023190500996000 , 0.04595654736257000200);
+        pnt[87] = Point(0.14844322073242000000 , 0.04595654736257000200);
+        pnt[88] = Point(0.80560023190500996000 , 0.14844322073242000000);
+        pnt[89] = Point(0.04595654736257000200 , 0.80560023190500996000);
+        pnt[90] = Point(0.06744280054027999800 , 0.28373970872753002000);
+        pnt[91] = Point(0.28373970872753002000 , 0.64881749073218997000);
+        pnt[92] = Point(0.64881749073218997000 , 0.06744280054027999800);
+        pnt[93] = Point(0.28373970872753002000 , 0.06744280054027999800);
+        pnt[94] = Point(0.64881749073218997000 , 0.28373970872753002000);
+        pnt[95] = Point(0.06744280054027999800 , 0.64881749073218997000);
+        pnt[96] = Point(0.07004509141591000500 , 0.40689937511878999000);
+        pnt[97] = Point(0.40689937511878999000 , 0.52305553346529998000);
+        pnt[98] = Point(0.52305553346529998000 , 0.07004509141591000500);
+        pnt[99] = Point(0.40689937511878999000 , 0.07004509141591000500);
+        pnt[100] = Point(0.52305553346529998000 , 0.40689937511878999000);
+        pnt[101] = Point(0.07004509141591000500 , 0.52305553346529998000);
+        pnt[102] = Point(0.08391152464012000000 , 0.19411398702488999000);
+        pnt[103] = Point(0.19411398702488999000 , 0.72197448833499001000);
+        pnt[104] = Point(0.72197448833499001000 , 0.08391152464012000000);
+        pnt[105] = Point(0.19411398702488999000 , 0.08391152464012000000);
+        pnt[106] = Point(0.72197448833499001000 , 0.19411398702488999000);
+        pnt[107] = Point(0.08391152464012000000 , 0.72197448833499001000);
+        pnt[108] = Point(0.12037553567714999000 , 0.32413434700069998000);
+        pnt[109] = Point(0.32413434700069998000 , 0.55549011732214004000);
+        pnt[110] = Point(0.55549011732214004000 , 0.12037553567714999000);
+        pnt[111] = Point(0.32413434700069998000 , 0.12037553567714999000);
+        pnt[112] = Point(0.55549011732214004000 , 0.32413434700069998000);
+        pnt[113] = Point(0.12037553567714999000 , 0.55549011732214004000);
+        pnt[114] = Point(0.14806689915737001000 , 0.22927748355597999000);
+        pnt[115] = Point(0.22927748355597999000 , 0.62265561728664998000);
+        pnt[116] = Point(0.62265561728664998000 , 0.14806689915737001000);
+        pnt[117] = Point(0.22927748355597999000 , 0.14806689915737001000);
+        pnt[118] = Point(0.62265561728664998000 , 0.22927748355597999000);
+        pnt[119] = Point(0.14806689915737001000 , 0.62265561728664998000);
+        pnt[120] = Point(0.19177186586733000000 , 0.32561812259598000000);
+        pnt[121] = Point(0.32561812259598000000 , 0.48261001153668998000);
+        pnt[122] = Point(0.48261001153668998000 , 0.19177186586733000000);
+        pnt[123] = Point(0.32561812259598000000 , 0.19177186586733000000);
+        pnt[124] = Point(0.48261001153668998000 , 0.32561812259598000000);
+        pnt[125] = Point(0.19177186586733000000 , 0.48261001153668998000);
+        weight[0] = 0.00800558188002041710;
+        weight[1] = 0.00800558188002041710;
+        weight[2] = 0.00800558188002041710;
+        weight[3] = 0.01594707683239050100;
+        weight[4] = 0.01594707683239050100;
+        weight[5] = 0.01594707683239050100;
+        weight[6] = 0.01310914123079553000;
+        weight[7] = 0.01310914123079553000;
+        weight[8] = 0.01310914123079553000;
+        weight[9] = 0.01958300096563562000;
+        weight[10] = 0.01958300096563562000;
+        weight[11] = 0.01958300096563562000;
+        weight[12] = 0.01647088544153727000;
+        weight[13] = 0.01647088544153727000;
+        weight[14] = 0.01647088544153727000;
+        weight[15] = 0.00854727907409210020;
+        weight[16] = 0.00854727907409210020;
+        weight[17] = 0.00854727907409210020;
+        weight[18] = 0.00816188585722649180;
+        weight[19] = 0.00816188585722649180;
+        weight[20] = 0.00816188585722649180;
+        weight[21] = 0.00612114653998377910;
+        weight[22] = 0.00612114653998377910;
+        weight[23] = 0.00612114653998377910;
+        weight[24] = 0.00290849826493666490;
+        weight[25] = 0.00290849826493666490;
+        weight[26] = 0.00290849826493666490;
+        weight[27] = 0.00069227524566199629;
+        weight[28] = 0.00069227524566199629;
+        weight[29] = 0.00069227524566199629;
+        weight[30] = 0.00124828919927739700;
+        weight[31] = 0.00124828919927739700;
+        weight[32] = 0.00124828919927739700;
+        weight[33] = 0.00124828919927739700;
+        weight[34] = 0.00124828919927739700;
+        weight[35] = 0.00124828919927739700;
+        weight[36] = 0.00340475290880302200;
+        weight[37] = 0.00340475290880302200;
+        weight[38] = 0.00340475290880302200;
+        weight[39] = 0.00340475290880302200;
+        weight[40] = 0.00340475290880302200;
+        weight[41] = 0.00340475290880302200;
+        weight[42] = 0.00335965432606405090;
+        weight[43] = 0.00335965432606405090;
+        weight[44] = 0.00335965432606405090;
+        weight[45] = 0.00335965432606405090;
+        weight[46] = 0.00335965432606405090;
+        weight[47] = 0.00335965432606405090;
+        weight[48] = 0.00171615653949675410;
+        weight[49] = 0.00171615653949675410;
+        weight[50] = 0.00171615653949675410;
+        weight[51] = 0.00171615653949675410;
+        weight[52] = 0.00171615653949675410;
+        weight[53] = 0.00171615653949675410;
+        weight[54] = 0.00148085631671560600;
+        weight[55] = 0.00148085631671560600;
+        weight[56] = 0.00148085631671560600;
+        weight[57] = 0.00148085631671560600;
+        weight[58] = 0.00148085631671560600;
+        weight[59] = 0.00148085631671560600;
+        weight[60] = 0.00351131261072868500;
+        weight[61] = 0.00351131261072868500;
+        weight[62] = 0.00351131261072868500;
+        weight[63] = 0.00351131261072868500;
+        weight[64] = 0.00351131261072868500;
+        weight[65] = 0.00351131261072868500;
+        weight[66] = 0.00739355014970648380;
+        weight[67] = 0.00739355014970648380;
+        weight[68] = 0.00739355014970648380;
+        weight[69] = 0.00739355014970648380;
+        weight[70] = 0.00739355014970648380;
+        weight[71] = 0.00739355014970648380;
+        weight[72] = 0.00798308747737655820;
+        weight[73] = 0.00798308747737655820;
+        weight[74] = 0.00798308747737655820;
+        weight[75] = 0.00798308747737655820;
+        weight[76] = 0.00798308747737655820;
+        weight[77] = 0.00798308747737655820;
+        weight[78] = 0.00435596261315804140;
+        weight[79] = 0.00435596261315804140;
+        weight[80] = 0.00435596261315804140;
+        weight[81] = 0.00435596261315804140;
+        weight[82] = 0.00435596261315804140;
+        weight[83] = 0.00435596261315804140;
+        weight[84] = 0.00736505670141783180;
+        weight[85] = 0.00736505670141783180;
+        weight[86] = 0.00736505670141783180;
+        weight[87] = 0.00736505670141783180;
+        weight[88] = 0.00736505670141783180;
+        weight[89] = 0.00736505670141783180;
+        weight[90] = 0.01096357284641955000;
+        weight[91] = 0.01096357284641955000;
+        weight[92] = 0.01096357284641955000;
+        weight[93] = 0.01096357284641955000;
+        weight[94] = 0.01096357284641955000;
+        weight[95] = 0.01096357284641955000;
+        weight[96] = 0.01174996174354112100;
+        weight[97] = 0.01174996174354112100;
+        weight[98] = 0.01174996174354112100;
+        weight[99] = 0.01174996174354112100;
+        weight[100] = 0.01174996174354112100;
+        weight[101] = 0.01174996174354112100;
+        weight[102] = 0.01001560071379857000;
+        weight[103] = 0.01001560071379857000;
+        weight[104] = 0.01001560071379857000;
+        weight[105] = 0.01001560071379857000;
+        weight[106] = 0.01001560071379857000;
+        weight[107] = 0.01001560071379857000;
+        weight[108] = 0.01330964078762868000;
+        weight[109] = 0.01330964078762868000;
+        weight[110] = 0.01330964078762868000;
+        weight[111] = 0.01330964078762868000;
+        weight[112] = 0.01330964078762868000;
+        weight[113] = 0.01330964078762868000;
+        weight[114] = 0.01415444650522614000;
+        weight[115] = 0.01415444650522614000;
+        weight[116] = 0.01415444650522614000;
+        weight[117] = 0.01415444650522614000;
+        weight[118] = 0.01415444650522614000;
+        weight[119] = 0.01415444650522614000;
+        weight[120] = 0.01488137956116801000;
+        weight[121] = 0.01488137956116801000;
+        weight[122] = 0.01488137956116801000;
+        weight[123] = 0.01488137956116801000;
+        weight[124] = 0.01488137956116801000;
+        weight[125] = 0.01488137956116801000;
+    } else if (deg<=30) {
+    	pnt.resize(175); weight.resize(175);
+        pnt[0] = Point(0.33333333333332998000 , 0.33333333333332998000);
+        pnt[1] = Point(0.00733011643276999980 , 0.49633494178361998000);
+        pnt[2] = Point(0.49633494178361998000 , 0.49633494178361998000);
+        pnt[3] = Point(0.49633494178361998000 , 0.00733011643276999980);
+        pnt[4] = Point(0.08299567580295999500 , 0.45850216209852002000);
+        pnt[5] = Point(0.45850216209852002000 , 0.45850216209852002000);
+        pnt[6] = Point(0.45850216209852002000 , 0.08299567580295999500);
+        pnt[7] = Point(0.15098095612540999000 , 0.42450952193729002000);
+        pnt[8] = Point(0.42450952193729002000 , 0.42450952193729002000);
+        pnt[9] = Point(0.42450952193729002000 , 0.15098095612540999000);
+        pnt[10] = Point(0.23590585989217000000 , 0.38204707005392002000);
+        pnt[11] = Point(0.38204707005392002000 , 0.38204707005392002000);
+        pnt[12] = Point(0.38204707005392002000 , 0.23590585989217000000);
+        pnt[13] = Point(0.43802430840785000000 , 0.28098784579607999000);
+        pnt[14] = Point(0.28098784579607999000 , 0.28098784579607999000);
+        pnt[15] = Point(0.28098784579607999000 , 0.43802430840785000000);
+        pnt[16] = Point(0.54530204829192996000 , 0.22734897585402999000);
+        pnt[17] = Point(0.22734897585402999000 , 0.22734897585402999000);
+        pnt[18] = Point(0.22734897585402999000 , 0.54530204829192996000);
+        pnt[19] = Point(0.65088177698254002000 , 0.17455911150872999000);
+        pnt[20] = Point(0.17455911150872999000 , 0.17455911150872999000);
+        pnt[21] = Point(0.17455911150872999000 , 0.65088177698254002000);
+        pnt[22] = Point(0.75348314559713003000 , 0.12325842720143999000);
+        pnt[23] = Point(0.12325842720143999000 , 0.12325842720143999000);
+        pnt[24] = Point(0.12325842720143999000 , 0.75348314559713003000);
+        pnt[25] = Point(0.83983154221560996000 , 0.08008422889220000200);
+        pnt[26] = Point(0.08008422889220000200 , 0.08008422889220000200);
+        pnt[27] = Point(0.08008422889220000200 , 0.83983154221560996000);
+        pnt[28] = Point(0.90445106518420004000 , 0.04777446740790000000);
+        pnt[29] = Point(0.04777446740790000000 , 0.04777446740790000000);
+        pnt[30] = Point(0.04777446740790000000 , 0.90445106518420004000);
+        pnt[31] = Point(0.95655897063971995000 , 0.02172051468014000000);
+        pnt[32] = Point(0.02172051468014000000 , 0.02172051468014000000);
+        pnt[33] = Point(0.02172051468014000000 , 0.95655897063971995000);
+        pnt[34] = Point(0.99047064476913005000 , 0.00476467761544000030);
+        pnt[35] = Point(0.00476467761544000030 , 0.00476467761544000030);
+        pnt[36] = Point(0.00476467761544000030 , 0.99047064476913005000);
+        pnt[37] = Point(0.00092537119334999999 , 0.41529527091330998000);
+        pnt[38] = Point(0.41529527091330998000 , 0.58377935789334001000);
+        pnt[39] = Point(0.58377935789334001000 , 0.00092537119334999999);
+        pnt[40] = Point(0.41529527091330998000 , 0.00092537119334999999);
+        pnt[41] = Point(0.58377935789334001000 , 0.41529527091330998000);
+        pnt[42] = Point(0.00092537119334999999 , 0.58377935789334001000);
+        pnt[43] = Point(0.00138592585556000010 , 0.06118990978535000100);
+        pnt[44] = Point(0.06118990978535000100 , 0.93742416435909004000);
+        pnt[45] = Point(0.93742416435909004000 , 0.00138592585556000010);
+        pnt[46] = Point(0.06118990978535000100 , 0.00138592585556000010);
+        pnt[47] = Point(0.93742416435909004000 , 0.06118990978535000100);
+        pnt[48] = Point(0.00138592585556000010 , 0.93742416435909004000);
+        pnt[49] = Point(0.00368241545590999990 , 0.16490869013691001000);
+        pnt[50] = Point(0.16490869013691001000 , 0.83140889440718002000);
+        pnt[51] = Point(0.83140889440718002000 , 0.00368241545590999990);
+        pnt[52] = Point(0.16490869013691001000 , 0.00368241545590999990);
+        pnt[53] = Point(0.83140889440718002000 , 0.16490869013691001000);
+        pnt[54] = Point(0.00368241545590999990 , 0.83140889440718002000);
+        pnt[55] = Point(0.00390322342416000000 , 0.02503506223199999900);
+        pnt[56] = Point(0.02503506223199999900 , 0.97106171434384003000);
+        pnt[57] = Point(0.97106171434384003000 , 0.00390322342416000000);
+        pnt[58] = Point(0.02503506223199999900 , 0.00390322342416000000);
+        pnt[59] = Point(0.97106171434384003000 , 0.02503506223199999900);
+        pnt[60] = Point(0.00390322342416000000 , 0.97106171434384003000);
+        pnt[61] = Point(0.00323324815500999980 , 0.30606446515109997000);
+        pnt[62] = Point(0.30606446515109997000 , 0.69070228669389000000);
+        pnt[63] = Point(0.69070228669389000000 , 0.00323324815500999980);
+        pnt[64] = Point(0.30606446515109997000 , 0.00323324815500999980);
+        pnt[65] = Point(0.69070228669389000000 , 0.30606446515109997000);
+        pnt[66] = Point(0.00323324815500999980 , 0.69070228669389000000);
+        pnt[67] = Point(0.00646743211223999980 , 0.10707328373022000000);
+        pnt[68] = Point(0.10707328373022000000 , 0.88645928415754005000);
+        pnt[69] = Point(0.88645928415754005000 , 0.00646743211223999980);
+        pnt[70] = Point(0.10707328373022000000 , 0.00646743211223999980);
+        pnt[71] = Point(0.88645928415754005000 , 0.10707328373022000000);
+        pnt[72] = Point(0.00646743211223999980 , 0.88645928415754005000);
+        pnt[73] = Point(0.00324747549132999980 , 0.22995754934557999000);
+        pnt[74] = Point(0.22995754934557999000 , 0.76679497516308004000);
+        pnt[75] = Point(0.76679497516308004000 , 0.00324747549132999980);
+        pnt[76] = Point(0.22995754934557999000 , 0.00324747549132999980);
+        pnt[77] = Point(0.76679497516308004000 , 0.22995754934557999000);
+        pnt[78] = Point(0.00324747549132999980 , 0.76679497516308004000);
+        pnt[79] = Point(0.00867509080675000000 , 0.33703663330577999000);
+        pnt[80] = Point(0.33703663330577999000 , 0.65428827588745997000);
+        pnt[81] = Point(0.65428827588745997000 , 0.00867509080675000000);
+        pnt[82] = Point(0.33703663330577999000 , 0.00867509080675000000);
+        pnt[83] = Point(0.65428827588745997000 , 0.33703663330577999000);
+        pnt[84] = Point(0.00867509080675000000 , 0.65428827588745997000);
+        pnt[85] = Point(0.01559702646731000000 , 0.05625657618206000200);
+        pnt[86] = Point(0.05625657618206000200 , 0.92814639735062998000);
+        pnt[87] = Point(0.92814639735062998000 , 0.01559702646731000000);
+        pnt[88] = Point(0.05625657618206000200 , 0.01559702646731000000);
+        pnt[89] = Point(0.92814639735062998000 , 0.05625657618206000200);
+        pnt[90] = Point(0.01559702646731000000 , 0.92814639735062998000);
+        pnt[91] = Point(0.01797672125369000100 , 0.40245137521239999000);
+        pnt[92] = Point(0.40245137521239999000 , 0.57957190353390997000);
+        pnt[93] = Point(0.57957190353390997000 , 0.01797672125369000100);
+        pnt[94] = Point(0.40245137521239999000 , 0.01797672125369000100);
+        pnt[95] = Point(0.57957190353390997000 , 0.40245137521239999000);
+        pnt[96] = Point(0.01797672125369000100 , 0.57957190353390997000);
+        pnt[97] = Point(0.01712424535389000000 , 0.24365470201083000000);
+        pnt[98] = Point(0.24365470201083000000 , 0.73922105263528004000);
+        pnt[99] = Point(0.73922105263528004000 , 0.01712424535389000000);
+        pnt[100] = Point(0.24365470201083000000 , 0.01712424535389000000);
+        pnt[101] = Point(0.73922105263528004000 , 0.24365470201083000000);
+        pnt[102] = Point(0.01712424535389000000 , 0.73922105263528004000);
+        pnt[103] = Point(0.02288340534658000000 , 0.16538958561452999000);
+        pnt[104] = Point(0.16538958561452999000 , 0.81172700903887995000);
+        pnt[105] = Point(0.81172700903887995000 , 0.02288340534658000000);
+        pnt[106] = Point(0.16538958561452999000 , 0.02288340534658000000);
+        pnt[107] = Point(0.81172700903887995000 , 0.16538958561452999000);
+        pnt[108] = Point(0.02288340534658000000 , 0.81172700903887995000);
+        pnt[109] = Point(0.03273759728777000200 , 0.09930187449584999800);
+        pnt[110] = Point(0.09930187449584999800 , 0.86796052821639003000);
+        pnt[111] = Point(0.86796052821639003000 , 0.03273759728777000200);
+        pnt[112] = Point(0.09930187449584999800 , 0.03273759728777000200);
+        pnt[113] = Point(0.86796052821639003000 , 0.09930187449584999800);
+        pnt[114] = Point(0.03273759728777000200 , 0.86796052821639003000);
+        pnt[115] = Point(0.03382101234234000100 , 0.30847833306904998000);
+        pnt[116] = Point(0.30847833306904998000 , 0.65770065458860005000);
+        pnt[117] = Point(0.65770065458860005000 , 0.03382101234234000100);
+        pnt[118] = Point(0.30847833306904998000 , 0.03382101234234000100);
+        pnt[119] = Point(0.65770065458860005000 , 0.30847833306904998000);
+        pnt[120] = Point(0.03382101234234000100 , 0.65770065458860005000);
+        pnt[121] = Point(0.03554761446001999900 , 0.46066831859210999000);
+        pnt[122] = Point(0.46066831859210999000 , 0.50378406694787004000);
+        pnt[123] = Point(0.50378406694787004000 , 0.03554761446001999900);
+        pnt[124] = Point(0.46066831859210999000 , 0.03554761446001999900);
+        pnt[125] = Point(0.50378406694787004000 , 0.46066831859210999000);
+        pnt[126] = Point(0.03554761446001999900 , 0.50378406694787004000);
+        pnt[127] = Point(0.05053979030687000300 , 0.21881529945393000000);
+        pnt[128] = Point(0.21881529945393000000 , 0.73064491023919997000);
+        pnt[129] = Point(0.73064491023919997000 , 0.05053979030687000300);
+        pnt[130] = Point(0.21881529945393000000 , 0.05053979030687000300);
+        pnt[131] = Point(0.73064491023919997000 , 0.21881529945393000000);
+        pnt[132] = Point(0.05053979030687000300 , 0.73064491023919997000);
+        pnt[133] = Point(0.05701471491573000000 , 0.37920955156026998000);
+        pnt[134] = Point(0.37920955156026998000 , 0.56377573352399002000);
+        pnt[135] = Point(0.56377573352399002000 , 0.05701471491573000000);
+        pnt[136] = Point(0.37920955156026998000 , 0.05701471491573000000);
+        pnt[137] = Point(0.56377573352399002000 , 0.37920955156026998000);
+        pnt[138] = Point(0.05701471491573000000 , 0.56377573352399002000);
+        pnt[139] = Point(0.06415280642119999800 , 0.14296081941819000000);
+        pnt[140] = Point(0.14296081941819000000 , 0.79288637416061003000);
+        pnt[141] = Point(0.79288637416061003000 , 0.06415280642119999800);
+        pnt[142] = Point(0.14296081941819000000 , 0.06415280642119999800);
+        pnt[143] = Point(0.79288637416061003000 , 0.14296081941819000000);
+        pnt[144] = Point(0.06415280642119999800 , 0.79288637416061003000);
+        pnt[145] = Point(0.08050114828762999800 , 0.28373128210592002000);
+        pnt[146] = Point(0.28373128210592002000 , 0.63576756960644998000);
+        pnt[147] = Point(0.63576756960644998000 , 0.08050114828762999800);
+        pnt[148] = Point(0.28373128210592002000 , 0.08050114828762999800);
+        pnt[149] = Point(0.63576756960644998000 , 0.28373128210592002000);
+        pnt[150] = Point(0.08050114828762999800 , 0.63576756960644998000);
+        pnt[151] = Point(0.10436706813453001000 , 0.19673744100443999000);
+        pnt[152] = Point(0.19673744100443999000 , 0.69889549086102998000);
+        pnt[153] = Point(0.69889549086102998000 , 0.10436706813453001000);
+        pnt[154] = Point(0.19673744100443999000 , 0.10436706813453001000);
+        pnt[155] = Point(0.69889549086102998000 , 0.19673744100443999000);
+        pnt[156] = Point(0.10436706813453001000 , 0.69889549086102998000);
+        pnt[157] = Point(0.11384489442875000000 , 0.35588914121165999000);
+        pnt[158] = Point(0.35588914121165999000 , 0.53026596435958995000);
+        pnt[159] = Point(0.53026596435958995000 , 0.11384489442875000000);
+        pnt[160] = Point(0.35588914121165999000 , 0.11384489442875000000);
+        pnt[161] = Point(0.53026596435958995000 , 0.35588914121165999000);
+        pnt[162] = Point(0.11384489442875000000 , 0.53026596435958995000);
+        pnt[163] = Point(0.14536348771551999000 , 0.25981868535190999000);
+        pnt[164] = Point(0.25981868535190999000 , 0.59481782693256002000);
+        pnt[165] = Point(0.59481782693256002000 , 0.14536348771551999000);
+        pnt[166] = Point(0.25981868535190999000 , 0.14536348771551999000);
+        pnt[167] = Point(0.59481782693256002000 , 0.25981868535190999000);
+        pnt[168] = Point(0.14536348771551999000 , 0.59481782693256002000);
+        pnt[169] = Point(0.18994565282198000000 , 0.32192318123129998000);
+        pnt[170] = Point(0.32192318123129998000 , 0.48813116594672001000);
+        pnt[171] = Point(0.48813116594672001000 , 0.18994565282198000000);
+        pnt[172] = Point(0.32192318123129998000 , 0.18994565282198000000);
+        pnt[173] = Point(0.48813116594672001000 , 0.32192318123129998000);
+        pnt[174] = Point(0.18994565282198000000 , 0.48813116594672001000);
+
+        weight[0] = 0.01557996020289920000;
+        weight[1] = 0.00317723370053413400;
+        weight[2] = 0.00317723370053413400;
+        weight[3] = 0.00317723370053413400;
+        weight[4] = 0.01048342663573077100;
+        weight[5] = 0.01048342663573077100;
+        weight[6] = 0.01048342663573077100;
+        weight[7] = 0.01320945957774363000;
+        weight[8] = 0.01320945957774363000;
+        weight[9] = 0.01320945957774363000;
+        weight[10] = 0.01497500696627149900;
+        weight[11] = 0.01497500696627149900;
+        weight[12] = 0.01497500696627149900;
+        weight[13] = 0.01498790444338419000;
+        weight[14] = 0.01498790444338419000;
+        weight[15] = 0.01498790444338419000;
+        weight[16] = 0.01333886474102166000;
+        weight[17] = 0.01333886474102166000;
+        weight[18] = 0.01333886474102166000;
+        weight[19] = 0.01088917111390201100;
+        weight[20] = 0.01088917111390201100;
+        weight[21] = 0.01088917111390201100;
+        weight[22] = 0.00818944066089346070;
+        weight[23] = 0.00818944066089346070;
+        weight[24] = 0.00818944066089346070;
+        weight[25] = 0.00557538758860778510;
+        weight[26] = 0.00557538758860778510;
+        weight[27] = 0.00557538758860778510;
+        weight[28] = 0.00319121647341197600;
+        weight[29] = 0.00319121647341197600;
+        weight[30] = 0.00319121647341197600;
+        weight[31] = 0.00129671514432704500;
+        weight[32] = 0.00129671514432704500;
+        weight[33] = 0.00129671514432704500;
+        weight[34] = 0.00029826282613491719;
+        weight[35] = 0.00029826282613491719;
+        weight[36] = 0.00029826282613491719;
+        weight[37] = 0.00099890568507889641;
+        weight[38] = 0.00099890568507889641;
+        weight[39] = 0.00099890568507889641;
+        weight[40] = 0.00099890568507889641;
+        weight[41] = 0.00099890568507889641;
+        weight[42] = 0.00099890568507889641;
+        weight[43] = 0.00046285084917325331;
+        weight[44] = 0.00046285084917325331;
+        weight[45] = 0.00046285084917325331;
+        weight[46] = 0.00046285084917325331;
+        weight[47] = 0.00046285084917325331;
+        weight[48] = 0.00046285084917325331;
+        weight[49] = 0.00123445133638241290;
+        weight[50] = 0.00123445133638241290;
+        weight[51] = 0.00123445133638241290;
+        weight[52] = 0.00123445133638241290;
+        weight[53] = 0.00123445133638241290;
+        weight[54] = 0.00123445133638241290;
+        weight[55] = 0.00057071985224320615;
+        weight[56] = 0.00057071985224320615;
+        weight[57] = 0.00057071985224320615;
+        weight[58] = 0.00057071985224320615;
+        weight[59] = 0.00057071985224320615;
+        weight[60] = 0.00057071985224320615;
+        weight[61] = 0.00112694612587762410;
+        weight[62] = 0.00112694612587762410;
+        weight[63] = 0.00112694612587762410;
+        weight[64] = 0.00112694612587762410;
+        weight[65] = 0.00112694612587762410;
+        weight[66] = 0.00112694612587762410;
+        weight[67] = 0.00174786694940733710;
+        weight[68] = 0.00174786694940733710;
+        weight[69] = 0.00174786694940733710;
+        weight[70] = 0.00174786694940733710;
+        weight[71] = 0.00174786694940733710;
+        weight[72] = 0.00174786694940733710;
+        weight[73] = 0.00118281881503165690;
+        weight[74] = 0.00118281881503165690;
+        weight[75] = 0.00118281881503165690;
+        weight[76] = 0.00118281881503165690;
+        weight[77] = 0.00118281881503165690;
+        weight[78] = 0.00118281881503165690;
+        weight[79] = 0.00199083929467503380;
+        weight[80] = 0.00199083929467503380;
+        weight[81] = 0.00199083929467503380;
+        weight[82] = 0.00199083929467503380;
+        weight[83] = 0.00199083929467503380;
+        weight[84] = 0.00199083929467503380;
+        weight[85] = 0.00190041279503598000;
+        weight[86] = 0.00190041279503598000;
+        weight[87] = 0.00190041279503598000;
+        weight[88] = 0.00190041279503598000;
+        weight[89] = 0.00190041279503598000;
+        weight[90] = 0.00190041279503598000;
+        weight[91] = 0.00449836580881745120;
+        weight[92] = 0.00449836580881745120;
+        weight[93] = 0.00449836580881745120;
+        weight[94] = 0.00449836580881745120;
+        weight[95] = 0.00449836580881745120;
+        weight[96] = 0.00449836580881745120;
+        weight[97] = 0.00347871946027471890;
+        weight[98] = 0.00347871946027471890;
+        weight[99] = 0.00347871946027471890;
+        weight[100] = 0.00347871946027471890;
+        weight[101] = 0.00347871946027471890;
+        weight[102] = 0.00347871946027471890;
+        weight[103] = 0.00410239903672395340;
+        weight[104] = 0.00410239903672395340;
+        weight[105] = 0.00410239903672395340;
+        weight[106] = 0.00410239903672395340;
+        weight[107] = 0.00410239903672395340;
+        weight[108] = 0.00410239903672395340;
+        weight[109] = 0.00402176154974416210;
+        weight[110] = 0.00402176154974416210;
+        weight[111] = 0.00402176154974416210;
+        weight[112] = 0.00402176154974416210;
+        weight[113] = 0.00402176154974416210;
+        weight[114] = 0.00402176154974416210;
+        weight[115] = 0.00603316466079506590;
+        weight[116] = 0.00603316466079506590;
+        weight[117] = 0.00603316466079506590;
+        weight[118] = 0.00603316466079506590;
+        weight[119] = 0.00603316466079506590;
+        weight[120] = 0.00603316466079506590;
+        weight[121] = 0.00394629030212959810;
+        weight[122] = 0.00394629030212959810;
+        weight[123] = 0.00394629030212959810;
+        weight[124] = 0.00394629030212959810;
+        weight[125] = 0.00394629030212959810;
+        weight[126] = 0.00394629030212959810;
+        weight[127] = 0.00664404453768026840;
+        weight[128] = 0.00664404453768026840;
+        weight[129] = 0.00664404453768026840;
+        weight[130] = 0.00664404453768026840;
+        weight[131] = 0.00664404453768026840;
+        weight[132] = 0.00664404453768026840;
+        weight[133] = 0.00825430585607845810;
+        weight[134] = 0.00825430585607845810;
+        weight[135] = 0.00825430585607845810;
+        weight[136] = 0.00825430585607845810;
+        weight[137] = 0.00825430585607845810;
+        weight[138] = 0.00825430585607845810;
+        weight[139] = 0.00649605663340641070;
+        weight[140] = 0.00649605663340641070;
+        weight[141] = 0.00649605663340641070;
+        weight[142] = 0.00649605663340641070;
+        weight[143] = 0.00649605663340641070;
+        weight[144] = 0.00649605663340641070;
+        weight[145] = 0.00925277814414660230;
+        weight[146] = 0.00925277814414660230;
+        weight[147] = 0.00925277814414660230;
+        weight[148] = 0.00925277814414660230;
+        weight[149] = 0.00925277814414660230;
+        weight[150] = 0.00925277814414660230;
+        weight[151] = 0.00916492072629427990;
+        weight[152] = 0.00916492072629427990;
+        weight[153] = 0.00916492072629427990;
+        weight[154] = 0.00916492072629427990;
+        weight[155] = 0.00916492072629427990;
+        weight[156] = 0.00916492072629427990;
+        weight[157] = 0.01156952462809767100;
+        weight[158] = 0.01156952462809767100;
+        weight[159] = 0.01156952462809767100;
+        weight[160] = 0.01156952462809767100;
+        weight[161] = 0.01156952462809767100;
+        weight[162] = 0.01156952462809767100;
+        weight[163] = 0.01176111646760917000;
+        weight[164] = 0.01176111646760917000;
+        weight[165] = 0.01176111646760917000;
+        weight[166] = 0.01176111646760917000;
+        weight[167] = 0.01176111646760917000;
+        weight[168] = 0.01176111646760917000;
+        weight[169] = 0.01382470218216540000;
+        weight[170] = 0.01382470218216540000;
+        weight[171] = 0.01382470218216540000;
+        weight[172] = 0.01382470218216540000;
+        weight[173] = 0.01382470218216540000;
+        weight[174] = 0.01382470218216540000;
     }
     else {
     	// throw error , we do not have have the required order

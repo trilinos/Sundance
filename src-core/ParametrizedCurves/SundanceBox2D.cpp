@@ -50,7 +50,7 @@ Expr Box2D::getParams() const
 	return Expr(List(px_, py_, ox_ , oy_));
 }
 
-double Box2D::curveEquation(const Point& evalPoint) const
+double Box2D::curveEquation_intern(const Point& evalPoint) const
 {
 	int verb = 0;
 	TEST_FOR_EXCEPTION(evalPoint.dim() != 2, std::runtime_error ,
@@ -63,7 +63,7 @@ double Box2D::curveEquation(const Point& evalPoint) const
 
 	SUNDANCE_OUT(verb > 3, " Box2D::curveEquation for:" << evalPoint << " is: " << distX);
 
-	return flipDomains_*distX;
+	return distX;
 }
 
 void Box2D::returnIntersect(const Point& start, const Point& end, int& nrPoints,
@@ -207,5 +207,5 @@ const RCP<CurveBase> Box2D::getPolygon(const Mesh& mesh ,double resolution) cons
    points.resize(actualPoint);
 
    // return the polygon
-   return rcp(new Polygon2D( mesh , points , _alpha1 , _alpha2 , (flipDomains_ < 0) ));
+   return rcp(new Polygon2D( mesh , points , _alpha1 , _alpha2 , true , (flipDomains_ < 0) ));
 }

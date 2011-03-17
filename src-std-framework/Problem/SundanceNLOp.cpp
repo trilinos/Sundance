@@ -379,3 +379,9 @@ computeSensitivities(const LinearSolver<double>& solver) const
   driver.solve(solver, J_, mv, assembler_->solutionSpace(), names, vrb, sens);
   return sens;
 }
+
+
+void NLOp::reAssembleProblem() const
+{
+	assembler_->flushConfiguration();
+}

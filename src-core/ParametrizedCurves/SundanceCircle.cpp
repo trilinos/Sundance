@@ -52,7 +52,7 @@ Expr Circle::getParams() const
 	return Expr(List(_centerx, _centery, _radius));
 }
 
-double Circle::curveEquation(const Point& evalPoint) const
+double Circle::curveEquation_intern(const Point& evalPoint) const
 {
 	TEST_FOR_EXCEPTION(evalPoint.dim() != 2, std::runtime_error,
 			"Circle::curveEquation() evaluation point dimension must be 2");
@@ -60,7 +60,7 @@ double Circle::curveEquation(const Point& evalPoint) const
 	Point center(_centerx, _centery);
 
 	// the circle equation is (x-cx)^2 + (y-cy)^2 - r^2 = 0
-	return flipDomains_*(((evalPoint - center) * (evalPoint - center)) - _radius * _radius);
+	return (((evalPoint - center) * (evalPoint - center)) - _radius * _radius);
 }
 
 void Circle::returnIntersectPoints(const Point& start, const Point& end, int& nrPoints,
@@ -136,10 +136,10 @@ const RCP<CurveBase> Circle::getPolygon(const Mesh& mesh , double resolution) co
 
 	int verb = 0;
 	// 2*pi*r/h will give the angle
-	double average_angle = resolution/(2.0*3.14*_radius);
+	double average_angle = resolution/(2.0*3.14159265358979*_radius);
 
-	int nrPoints = ::ceil (2.0*3.14/average_angle);
-	double stepAngle = (2.0*3.14/(double)nrPoints);
+	int nrPoints = ::ceil (2.0*3.14159265358979/average_angle);
+	double stepAngle = (2.0*3.14159265358979/(double)nrPoints);
 
 	SUNDANCE_MSG3( verb , " Circle::getPolygon average_angle=" << average_angle << " nrPoints = " << nrPoints << " stepAngle=" << stepAngle);
 	Array<Point> points(nrPoints);
@@ -150,5 +150,5 @@ const RCP<CurveBase> Circle::getPolygon(const Mesh& mesh , double resolution) co
 	}
 
 	// return the polygon
-	return rcp(new Polygon2D( mesh , points , _alpha1 , _alpha2 , (flipDomains_ < 0) ));
+	return rcp(new Polygon2D( mesh , points , _alpha1 , _alpha2 , true , (flipDomains_ < 0) ));
 }

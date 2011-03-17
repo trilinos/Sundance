@@ -107,6 +107,9 @@ public:
   LinearOperator<double> allocateJacobian() const 
     {return op_->allocateJacobian();}
 
+  /** This function forces the assembler to reassemble the matrix */
+  void reAssembleProblem() const { op_->reAssembleProblem();}
+
 private:
   RCP<NLOp> op_;
 };

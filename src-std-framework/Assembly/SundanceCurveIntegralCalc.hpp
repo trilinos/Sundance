@@ -44,11 +44,16 @@ public:
 								   Array<Point>& curveDerivs ,
 								   Array<Point>& curveNormals );
 
-    /** 0 - line , 1 - polygon */
-    static void setMethod(int methodNr) { method_option = methodNr; }
+    /** this method shows if special methods for polygon can be used */
+    static bool usePolygoneCurveQuadrature(
+    		const CellType& cellType ,
+    		const Mesh& mesh ,
+    		const ParametrizedCurve& paramCurve);
 
 private :
 
+    /** the simplest method which considers only the intersection points on the
+     * facets, and inside the element we use */
     static void getCurveQuadPoints_line(
                                    int  maxCellLID ,
                                    CellType  maxCellType ,
@@ -60,6 +65,7 @@ private :
 								   Array<Point>& curveDerivs ,
 								   Array<Point>& curveNormals );
 
+    /** projects the point from 2D surf to 3D points of the element (needed for surf integrals)*/
     static void get3DRealCoordsOnSurf(const Point &refP ,
     		                          const Array<Point>& cellPoints,
     		                          const Array<int> &triangles ,
@@ -68,20 +74,18 @@ private :
     		                          int &triagIndex ,
     		                          Point &realPoint);
 
-    static void getCurveQuadPoints_polyline(
+
+    /** polygons in 1D curves, uses the information from the polygon */
+    static void getCurveQuadPoints_polygon(
                                    int  maxCellLID ,
                                    CellType  maxCellType ,
                                    const Mesh& mesh ,
                                    const Array<Point>& cellPoints,
-                                   const ParametrizedCurve& paramCurve,
-                                   const QuadratureFamily& quad ,
-                                   Array<Point>& curvePoints ,
-                                   Array<Point>& curveDerivs ,
-                                   Array<Point>& curveNormals  );
-
-    /** the int "flag" which chooses among different curve discretization methods*/
-    static int method_option;
-
+								   const ParametrizedCurve& paramCurve,
+								   const QuadratureFamily& quad ,
+								   Array<Point>& curvePoints ,
+								   Array<Point>& curveDerivs ,
+								   Array<Point>& curveNormals );
 };
 
 }

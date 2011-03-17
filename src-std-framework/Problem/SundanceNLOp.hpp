@@ -109,6 +109,8 @@ public:
   /** Set an initial guess */
   void setInitialGuess(const Expr& u0New);
 
+  /** This function forces the assembler to reassemble the matrix */
+  void reAssembleProblem() const;
 
   /* Handle boilerplate */
   GET_RCP(Playa::NonlinearOperatorBase<double>);

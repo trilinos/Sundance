@@ -50,13 +50,13 @@ Expr Line2D::getParams() const
 	return Expr(List(slope_, b_ ));
 }
 
-double Line2D::curveEquation(const Point& evalPoint) const
+double Line2D::curveEquation_intern(const Point& evalPoint) const
 {
 	TEST_FOR_EXCEPTION(evalPoint.dim() != 2, std::runtime_error,
 			"Line2D::curveEquation() evaluation point dimension must be 2");
 
 	// y = slope *x + b
-	return flipDomains_*(slope_ * evalPoint[0] + b_ - evalPoint[1]);
+	return (slope_ * evalPoint[0] + b_ - evalPoint[1]);
 }
 
 void Line2D::returnIntersectPoints(const Point& start, const Point& end, int& nrPoints,
@@ -111,6 +111,6 @@ const RCP<CurveBase> Line2D::getPolygon(const Mesh& mesh , double resolution) co
 	}
 
 	// return the polygon
-	return rcp(new Polygon2D( mesh , points , _alpha1 , _alpha2 , (flipDomains_<0)));
+	return rcp(new Polygon2D( mesh , points , _alpha1 , _alpha2 , false, (flipDomains_<0)));
 }
 

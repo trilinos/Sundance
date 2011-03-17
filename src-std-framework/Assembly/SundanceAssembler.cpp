@@ -2158,3 +2158,20 @@ int Assembler::maxWatchFlagSetting(const std::string& name) const
 {
   return eqnSet()->maxWatchFlagSetting(name);
 }
+
+
+
+void Assembler::flushConfiguration() const
+{
+    numConfiguredColumns_ = 0;
+    matNeedsConfiguration_ = true;
+    mesh_.flushSpecialWeights();
+    mesh_.flushCurvePoints();
+
+    // empty the cache from the cell filters
+    for (int r=0; r<rqc_.size(); r++)
+    {
+    	const CellFilter filter = rqc_[r].domain();
+    	filter.cfbPtr()->flushCache();
+    }
+}

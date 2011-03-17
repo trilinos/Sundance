@@ -52,7 +52,7 @@ Expr Ellipse2D::getParams() const
 	return Expr(List(px_, py_, a_ , b_ ));
 }
 
-double Ellipse2D::curveEquation(const Point& evalPoint) const
+double Ellipse2D::curveEquation_intern(const Point& evalPoint) const
 {
 	int verb = 0;
 	TEST_FOR_EXCEPTION(evalPoint.dim() != 2, std::runtime_error,
@@ -64,7 +64,7 @@ double Ellipse2D::curveEquation(const Point& evalPoint) const
 	double distY =  (evalPoint[1] - py_)*(evalPoint[1] - py_)/(b_*b_);
 	distX = distX + distY - 1.0;
 	SUNDANCE_OUT(verb > 3, " Ellipse2D::curveEquation for:" << evalPoint << " is: " << distX);
-	return flipDomains_*distX;
+	return distX;
 }
 
 void Ellipse2D::returnIntersect(const Point& start, const Point& end, int& nrPoints, Array<
@@ -215,5 +215,5 @@ const RCP<CurveBase> Ellipse2D::getPolygon(const Mesh& mesh ,double resolution) 
 	}
 
 	// return the polygon
-	return rcp(new Polygon2D( mesh , points , _alpha1 , _alpha2 , (flipDomains_ < 0)));
+	return rcp(new Polygon2D( mesh , points , _alpha1 , _alpha2 , true , (flipDomains_ < 0)));
 }

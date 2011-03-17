@@ -74,6 +74,11 @@ public:
 	 * @return Expr The parameters of the curve which uniquely defines the curve*/
 	virtual Expr getParams() const = 0 ;
 
+	/** function to return the control points of a given curve */
+	virtual Array<Point>& getControlPoints() {
+		TEST_FOR_EXCEPTION( true , std::runtime_error, " getControlPoints() method is not overwritten ");
+	}
+
 	/**
 	 * Return the integration parameters
 	 * @param alphas, integration parameters, first one corresponds to Equation > 0
@@ -105,7 +110,7 @@ public:
 			return _alpha2;
 	}
 
-	/** If we want to flip the ficticious with the real computational domain then call this method */
+	/** If we want to flip the fictitious with the real computational domain then call this method */
 	void flipDomains() const {
       if ( flipDomains_ > 0){
     	  flipDomains_ = -1.0;
@@ -115,10 +120,22 @@ public:
 	}
 
 	/**
+	 * Returns the value of the parameterized curve at one given location
+	 * @param evaluationPoint the point where we want the alpha integration parameter <br>
+	 * @return double the value of the curve equation at the evaluation point  */
+	double curveEquation(const Point& evaluationPoint) const {
+		return flipDomains_ * curveEquation_intern(evaluationPoint);
+	}
+
+protected:
+
+	/**
 	 * This function should be implemented
 	 * @param evaluationPoint the point where we want the alpha integration parameter <br>
 	 * @return double the value of the curve equation at the evaluation point  */
-	virtual double curveEquation(const Point& evaluationPoint) const = 0 ;
+	virtual double curveEquation_intern(const Point& evaluationPoint) const = 0 ;
+
+public:
 
 	/**
 	 * This function is important for nonstructural mesh integration.<br>
@@ -154,6 +171,15 @@ public:
 		TEST_FOR_EXCEPTION( true , std::runtime_error, " getPolygon() method is not overwritten ");
 		return rcp((CurveBase*)0);
 	}
+
+	/** e.g. the polygon needs the mesh for additional informations
+	 * empty implementation in the base class
+	 * @param mesh */
+	virtual void setMesh(const Mesh& mesh) {;}
+
+	/** is case of wrapper objects this should return the real object behind the wrapper
+	 * e.g. such wrapper is the ParametrizedCurveIntegral class */
+	virtual const CurveBase* getUnderlyingCurveObj() const { return this; }
 
 	/** Writes the geometry into a VTK file for visualization purposes
 	 * @param filename */

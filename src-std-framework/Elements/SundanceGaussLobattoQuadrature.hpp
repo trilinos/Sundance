@@ -82,6 +82,11 @@ protected:
 			const ParametrizedCurve& globalCurve, Array<Point>& quadPoints,
 			Array<double>& quadWeights, bool& weightsChanged) const;
 
+	/** Get the weights for one quad knowing that the curve is a 2D polygon */
+	virtual void getAdaptedQuadWeights_polygon(int cellLID, const Mesh& mesh,
+			const ParametrizedCurve& globalCurve, Array<Point>& quadPoints,
+			Array<double>& quadWeights, bool& weightsChanged) const;
+
 private:
 
 	/** get the triangle quadrature points for the adaptive integration*/
@@ -115,12 +120,15 @@ private:
 		int xi,yi;
 		double xc,yc, intR , valTmp , valBasisX , valBasisY ;
 
+		// if the area of integration is not significant then just return
+		if ( fabs(ofx*ofy) < 1e-14 ) return;
+
         //SUNDANCE_MSG3(verb_, "px="<<px<<",py="<<py<<",ofx="<<ofx<<",ofy="<<ofy <<
         //		" , nr2DPoints:" << nr2DPoints << " , pointWeights.size():" <<
         //		pointWeights.size() << " , areFakt:" << areFakt);
 
 		for (int i = 0 ; i < nr2DPoints ; i++){
-			weightsOut[i] = 0.0;
+			// we should add the integration values, and we not set the values //weightsOut[i] = 0.0;
 			yi = i % nr1DPoints; xi = i / nr1DPoints; intR = 0.0;
 			// for each quadrature point
 			for (int q = 0 ; q < pointWeights.size() ; q++){

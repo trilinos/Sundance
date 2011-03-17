@@ -433,8 +433,8 @@ public:
    *  if this is false then usually the special weights have to be recomputed */
   void setSpecialWeightValid(bool val) const { ptr()->setSpecialWeightValid(val);}
 
-  /** removes the special weights */
-  void removeSpecialWeights(int dim, int cellLID) const {ptr()->removeSpecialWeights( dim, cellLID);}
+  /** deletes all the special weights*/
+  void flushSpecialWeights() const { ptr()->flushSpecialWeights(); }
 
   /** verifies if the specified cell with the given dimension has special weights */
   bool hasSpecialWeight(int dim, int cellLID) const {return ptr()->hasSpecialWeight( dim, cellLID); }
@@ -454,23 +454,23 @@ public:
     //@{
 
   /** */
-  virtual bool IsCurvePointsValid() const {return ptr()->IsCurvePointsValid();}
+  bool IsCurvePointsValid() const {return ptr()->IsCurvePointsValid();}
 
   /**  */
-  virtual void setCurvePointsValid(bool val)  const {ptr()->setCurvePointsValid(val); }
+  void setCurvePointsValid(bool val)  const {ptr()->setCurvePointsValid(val); }
 
-  /** removes the curve intersection points */
-  virtual void removeCurvePoints(int maxCellLID , int curveID)  const { ptr()->removeCurvePoints(maxCellLID , curveID); }
+  /** deletes all the curve points */
+  void flushCurvePoints() const { ptr()->flushCurvePoints(); }
 
   /** verifies if the specified maxCell has already precalculated quadrature point for one curve */
-  virtual bool hasCurvePoints(int maxCellLID , int curveID) const { return ptr()->hasCurvePoints( maxCellLID , curveID); }
+  bool hasCurvePoints(int maxCellLID , int curveID) const { return ptr()->hasCurvePoints( maxCellLID , curveID); }
 
   /** Sets the points, curve derivatives and curve normals for one maxCell needed for curve/surf integral*/
-  virtual void setCurvePoints(int maxCellLID, int curveID , Array<Point>& points , Array<Point>& derivs , Array<Point>& normals) const
+  void setCurvePoints(int maxCellLID, int curveID , Array<Point>& points , Array<Point>& derivs , Array<Point>& normals) const
 		{ptr()->setCurvePoints( maxCellLID, curveID , points , derivs , normals); }
 
   /** Gets the points, curve derivatives and curve normals for one maxCell needed for curve/surf integral*/
-  virtual void getCurvePoints(int maxCellLID,  int curveID , Array<Point>& points , Array<Point>& derivs , Array<Point>& normals) const
+  void getCurvePoints(int maxCellLID,  int curveID , Array<Point>& points , Array<Point>& derivs , Array<Point>& normals) const
 		{ptr()->getCurvePoints( maxCellLID,  curveID ,  points , derivs , normals); }
 
   //@}

@@ -49,7 +49,7 @@ MeshBase::MeshBase(int dim, const MPIComm& comm,
     reorderer_(Mesh::defaultReorderer().createInstance(this)),
     validWeights_(true),
     specialWeights_(),
-    curvePoints_Are_Valid_(),
+    curvePoints_Are_Valid_(true),
     nrCurvesForIntegral_(0),
     curvePoints_() ,
     curveDerivative_(),
@@ -167,7 +167,48 @@ void MeshBase::getLabels(int cellDim, const Array<int>& cellLID,
 }
 
 
+// ===================== storing special weights for specfic cells  ======================
+
+bool MeshBase::hasSpecialWeight(int dim, int cellLID) const {
+	if (specialWeights_[dim-1].containsKey(cellLID))
+        return ((specialWeights_[dim-1].get(cellLID).size() > 0));
+	else
+		return false;
+}
+
+void MeshBase::setSpecialWeight(int dim, int cellLID, Array<double>& w) const {
+	specialWeights_[dim-1].put(cellLID,w);
+}
+
+void MeshBase::getSpecialWeight(int dim, int cellLID, Array<double>& w) const {
+	w = specialWeights_[dim-1].get(cellLID);
+}
+
+/** deletes all special weights so those have to be recreated*/
+void MeshBase::flushSpecialWeights() const {
+	// delete all the special weights for all cells
+	for (int d = 0 ; d < dim_ ; d++){
+		// reset the map to a new and empty one
+		specialWeights_[d] = Sundance::Map< int , Array<double> >();
+	}
+	validWeights_ = true;
+}
+
 // ===================== storing curve intersection/quadrature points ======================
+
+void MeshBase::flushCurvePoints() const {
+	// all the curve points should be deleted
+	// first reset the Map between curve ID and index
+	curveID_to_ArrayIndex_ = Sundance::Map< int , int >();
+	nrCurvesForIntegral_ = 0;
+	curvePoints_Are_Valid_ = true;
+	for (int c = 0 ; c < curvePoints_.size() ; c++ ){
+		// here delete each Map which existed before
+		curvePoints_[c] = Sundance::Map< int , Array<Point> >();
+		curveDerivative_[c] = Sundance::Map< int , Array<Point> >();
+		curveNormal_[c] = Sundance::Map< int , Array<Point> >();
+	}
+}
 
 bool MeshBase::hasCurvePoints(int maxCellLID , int curveID) const {
    	if (curvePoints_[mapCurveID_to_Index(curveID)].containsKey(maxCellLID))
