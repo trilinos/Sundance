@@ -181,6 +181,8 @@ void ExprWithChildren::setupEval(const EvalContext& context) const
     }
     else
     {
+      SUNDANCE_MSG2(verb, 
+        tabs << "EWC: no results needed... creating null evaluator");
       eval = rcp(new NullEvaluator());
     }
     evaluators().put(context, eval);
@@ -339,6 +341,8 @@ ExprWithChildren::internalFindV(int order, const EvalContext& context) const
   /* we'll dealt with zero order derivatives specially */
   if (order==0) 
   {
+    Tabs tab1;
+    SUNDANCE_MSG3(verb, tab1 << "case: order=0"); 
     for (int i=0; i<numChildren(); i++)
     {
       if (!childIsRequired(i, order, context)) continue;
@@ -355,23 +359,24 @@ ExprWithChildren::internalFindV(int order, const EvalContext& context) const
     return rtn;
   }
 
-
   /* now do arbitrary order derivatives with the multivariable chain rule*/
+  SUNDANCE_MSG3(verb, tab0 << "getting required set"); 
   const Set<MultipleDeriv>& RM = findR(order, context);
+  SUNDANCE_MSG3(verb, tab0 << "RM=" << RM); 
   Array<Array<Array<int> > > comp = compositions(order);
   for (int i=1; i<=order; i++) 
   {
     Tabs tab1;
-    SUNDANCE_MSG5(verb, tab1 << "i=" << i);
+    SUNDANCE_MSG3(verb, tab1 << "i=" << i << " out of order=" << order);
     const Set<MultiSet<int> >& QC = findQ_C(i, context);
-    SUNDANCE_MSG5(verb, tab1 << "QC[" << i << "] = " << QC);
+    SUNDANCE_MSG3(verb, tab1 << "QC[" << i << "] = " << QC);
     for (Set<MultiSet<int> >::const_iterator j=QC.begin(); j!=QC.end(); j++)
     {
       Tabs tab2;
       Array<int> J = j->elements();
       const Array<Array<int> >& K = comp[J.size()-1];
-      SUNDANCE_MSG5(verb, tab2 << "J=" << J);
-      SUNDANCE_MSG5(verb, tab2 << "K=" << K);
+      SUNDANCE_MSG3(verb, tab2 << "J=" << J);
+      SUNDANCE_MSG3(verb, tab2 << "K=" << K);
 
       for (int k=0; k<K.size(); k++)
       {
@@ -380,33 +385,34 @@ ExprWithChildren::internalFindV(int order, const EvalContext& context) const
           RequiredNonzeros, context);
         Set<MultipleDeriv> CProd = product(J, K[k], 
           ConstantNonzeros, context);
-        SUNDANCE_MSG5(verb, tab3 << "CProd = " << CProd);
-        SUNDANCE_MSG5(verb, tab3 << "RProd = " << RProd);
+        SUNDANCE_MSG3(verb, tab3 << "CProd = " << CProd);
+        SUNDANCE_MSG3(verb, tab3 << "RProd = " << RProd);
         rtn.merge(RProd.setDifference(CProd));
       }
     }
 
     const Set<MultiSet<int> >& QV = findQ_V(i, context);
-    SUNDANCE_MSG5(verb, tab1 << "QV[" << i << "] = " << QV);
+    SUNDANCE_MSG3(verb, tab1 << "QV[" << i << "] = " << QV);
     for (Set<MultiSet<int> >::const_iterator j=QV.begin(); j!=QV.end(); j++)
     {
       Tabs tab2;
       Array<int> J = j->elements();
       const Array<Array<int> >& K = comp[J.size()-1];
-      SUNDANCE_MSG5(verb, tab2 << "J=" << J);
-      SUNDANCE_MSG5(verb, tab2 << "K=" << K);
+      SUNDANCE_MSG3(verb, tab2 << "J=" << J);
+      SUNDANCE_MSG3(verb, tab2 << "K=" << K);
 
       for (int k=0; k<K.size(); k++)
       {
         Tabs tab3;
         Set<MultipleDeriv> RProd = product(J, K[k], 
           RequiredNonzeros, context);
-        SUNDANCE_MSG5(verb, tab3 << "RProd = " << RProd);
+        SUNDANCE_MSG3(verb, tab3 << "RProd = " << RProd);
         rtn.merge(RProd);
       }
     }
   }
 
+  SUNDANCE_MSG3(verb, tab0 << "rtn before intersection = " << rtn);
   rtn = rtn.intersection(RM);
   SUNDANCE_MSG2(verb, tab0 << "V[" << order << "]=" << rtn);
   SUNDANCE_MSG2(verb, tab0 << "done with EWC::internalFindV(" << order
@@ -729,6 +735,7 @@ Set<MultiSet<int> > ExprWithChildren::internalFindQ_V(int order,
     }
     if (isVar) rtn = findQ_W(order, context); 
   }
+
   SUNDANCE_MSG2(verb, tab0 << "Q_V = " << rtn);
   return rtn;
 }

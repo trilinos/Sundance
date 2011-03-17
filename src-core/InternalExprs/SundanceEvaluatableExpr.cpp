@@ -176,7 +176,7 @@ void EvaluatableExpr::setupEval(const EvalContext& context) const
     else
     {
       SUNDANCE_MSG2(verb, 
-        tabs << "no results needed... creating null evaluator");
+        tabs << "EE: no results needed... creating null evaluator");
       eval = rcp(new NullEvaluator());
     }
     evaluators_.put(context, eval);

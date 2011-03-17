@@ -401,6 +401,7 @@ int main(int argc, char** argv)
 //    TESTER((b*x*dx*(b) + b*b*(dx*x)), (B*(Dx*(X*B))));
 //    TESTER((b*b*(dx*x)), (B*B)*(Dx*X));
     TESTER((dx*x), (Dx*X));
+    TESTER((dx*(u+x)), (Dx*U + Dx*X));
 //    TESTER((b*b), (B*B));
       
     TESTER((c*dx*(x*b)), (C*(Dx*(X*B))));

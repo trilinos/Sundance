@@ -40,11 +40,39 @@
 namespace Sundance
 {
 using Teuchos::Array;
+class IntVec;
+
+
 /**
  * Return partitions of an integer
  * @author Kevin Long
  */
 Array<Array<int> > partitionInteger(int n);
+
+/**
+ * Get the weighted partitions of an integer
+ */
+void weightedPartitions(int n, const Array<int>& w, 
+  Array<Array<int> >& parts);
+
+/** */
+void weightedOrderedPartitions(const IntVec& v, const Array<int>& w,
+  Array<Array<IntVec> >& parts);
+
+
+/** */
+void pSet(const IntVec& lambda, const IntVec& nu, int s,
+  Array<Array<IntVec> >& K, Array<Array<IntVec> >& L);
+
+/** 
+ * Get the compositions of length M of an integer n.
+ */
+void restrictedCompositions(int n, int M, Array<Array<int> >& rComps);
+
+/** Get the next mixed-radix number */
+bool nextNum(Array<int>& digits, const Array<int>& radix);
+
+
 
 /** 
  * Return compositions of an integer

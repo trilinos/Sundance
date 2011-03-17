@@ -36,14 +36,14 @@ int main(int argc, char** argv)
     QuadratureFamily quad = new GaussianQuadrature(4);
 
     DiscreteSpace discSpaceL1(mesh, L1, vecType);
-    Expr ud = sqrt(2.0)*x; //proj.project();
+    Expr ud = x; //proj.project();
     
     WatchFlag watch("watch");
     watch.setParam("evaluation", 5);
     watch.setParam("evaluator setup", 5);
     watch.setParam("discrete function evaluation", 1);
     watch.setParam("integration setup", 0);
-    watch.setParam("symbolic preprocessing", 0);
+    watch.setParam("symbolic preprocessing", 3);
     watch.setParam("integration", 0);
 
     Expr eqn1 = Integral(interior, w*(dx*(u+ud)), quad, watch);
@@ -74,11 +74,13 @@ int main(int argc, char** argv)
     Vector<double> b = A2.domain().createMember();
     b.randomize();
 
-    Vector<double> r = 2.0*(A2*b) - A1*b;
+    Vector<double> r = A2*b - A1*b;
 
     Out::root() << "difference in operator application = " 
                 << r.norm2() << endl;
     
+    double tol = 1000.0;
+    Sundance::passFailTest(r.norm2(), tol);
 
   }
 	catch(std::exception& e)
@@ -86,6 +88,6 @@ int main(int argc, char** argv)
     std::cerr << e.what() << std::endl;
   }
   Sundance::finalize();
-//  return Sundance::testStatus(); 
-  return(0);
+  return Sundance::testStatus(); 
+  //return(0);
 }

@@ -1,4 +1,5 @@
 #include "SundanceCombinatorialUtils.hpp"
+#include "SundanceIntVec.hpp"
 #include "Teuchos_GlobalMPISession.hpp"
 
 
@@ -117,7 +118,74 @@ int main(int argc, char** argv)
           if ((i % 5)==0) std::cout << std::endl;
           std::cout << x[i] << std::endl;
         }
+
+      std::cout << "--------- int vec parts ----------------" << std::endl;
+      IntVec iv = intVec(1,3,2);
+      Array<Array<IntVec> > parts;
+      iv.getPartitions(3, parts);
+      std::cout << "----------- partitions of " << iv << " ---------" 
+                << std::endl;
+      for (int i=0; i<parts.size(); i++)
+      {
+        std::cout << i << " -- " << std::endl;
+        for (int j=0; j<parts[i].size(); j++) 
+        {
+          std::cout << "\t\t" << parts[i][j] << std::endl;
+        }
+      }
+
+      std::cout << "--------- weighted parts ----------------" << std::endl;
+      Array<int> wgts = tuple(3,1);
+      Array<Array<int> > wParts;
+      int M = 3;
+      weightedPartitions(M, wgts, wParts);
+      std::cout << "----------- partitions of " << M << " ---------" 
+                << std::endl;
+      for (int i=0; i<wParts.size(); i++)
+      {
+        std::cout << "\t" << wParts[i] << std::endl;
+      }
+
+      std::cout << "--------- weighted ordered parts ---------" << std::endl;
+
+      IntVec iv2 = intVec(1,3,2,1);
+      Array<Array<IntVec> > vParts;
+
+      weightedOrderedPartitions(iv2, wgts, vParts);
+      std::cout << "----------- partitions of " << iv2 << " ---------" 
+                << std::endl;
+      for (int i=0; i<vParts.size(); i++)
+      {
+        std::cout << "\t" << vParts[i] << std::endl;
+      }
       
+      IntVec lam = intVec(1,2,1);
+      IntVec nu = intVec(2,3);
+      Array<Array<IntVec> > K;
+      Array<Array<IntVec> > L;
+      int S = 2;
+      pSet(lam, nu, S, K, L);
+
+      std::cout << "pSet(" << lam << ", " << nu << ", " << S 
+                << ")" << std::endl;
+      for (int i=0; i<K.size(); i++)
+      {
+        std::cout << "i=" << i << std::endl;
+        IntVec kSum(K[i][0].size());
+        IntVec lSum(L[i][0].size());
+        
+        for (int j=0; j<K[i].size(); j++)
+        {
+          kSum = kSum + K[i][j];
+          lSum = lSum + K[i][j].abs() * L[i][j];
+          std::cout << "\t\t\t K=" << K[i][j] << ", L="
+                    << L[i][j] << std::endl;
+        }
+        std::cout << "\t\tKSum=" << kSum << std::endl;
+        std::cout << "\t\tLSum=" << lSum << std::endl;
+      }
+      
+
 #ifdef BLAH
       TEST_MS(makeMultiSet(1));
       TEST_MS(makeMultiSet(1, 1));

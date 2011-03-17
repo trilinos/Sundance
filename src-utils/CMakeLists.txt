@@ -43,6 +43,7 @@ APPEND_SET(HEADERS
   Utilities/SundanceEnumTypeField.hpp
   Utilities/SundanceFunctorDomain.hpp
   Utilities/SundanceIntHashSet.hpp
+  Utilities/SundanceIntVec.hpp
   Utilities/SundanceMap.hpp
   Utilities/SundanceMultiSet.hpp
   Utilities/SundanceNamedObject.hpp
@@ -70,6 +71,7 @@ APPEND_SET(SOURCES
   Utilities/SundanceCombinatorialUtils.cpp
   Utilities/SundanceFunctorDomain.cpp
   Utilities/SundanceIntHashSet.cpp
+  Utilities/SundanceIntVec.cpp
   Utilities/SundanceParamUtils.cpp
   Utilities/SundancePathUtils.cpp
   Utilities/SundancePoint.cpp

@@ -1,6 +1,8 @@
 #include "SundanceCombinatorialUtils.hpp"
+#include "SundanceIntVec.hpp"
 #include "PlayaExceptions.hpp"
 #include "PlayaTabs.hpp"
+#include "SundanceOut.hpp"
 #include <algorithm>
 #include <iterator>
 #include <iostream>
@@ -9,6 +11,7 @@
 namespace Sundance
 {
 using namespace Teuchos;
+using std::endl;
 
 Array<Array<int> > partitionInteger(int n)
 {
@@ -18,16 +21,159 @@ Array<Array<int> > partitionInteger(int n)
     tuple<AAint>(
       tuple<Aint>(tuple(1)), 
       tuple<Aint>(tuple(2), tuple(1, 1)),
-      tuple<Aint>(tuple(3), tuple(2, 1), tuple(1, 1, 1)),
-      tuple<Aint>(tuple(4), tuple(3, 1), tuple(2, 2), tuple(2, 1, 1), tuple(1,1,1,1)));
-  TEST_FOR_EXCEPTION(n<1 || n>4, std::runtime_error, 
+      tuple<Aint>(
+        tuple(3), 
+        tuple(2, 1), 
+        tuple(1, 1, 1)),
+      tuple<Aint>(
+        tuple(4), 
+        tuple(3, 1), 
+        tuple(2, 2),
+        tuple(2, 1, 1), 
+        tuple(1,1,1,1)),
+      tuple<Aint>(
+        tuple(5), 
+        tuple(4, 1), 
+        tuple(3, 2), 
+        tuple(3, 1, 1), 
+        tuple(2, 2, 1), 
+        tuple(2, 1, 1, 1), 
+        tuple(1, 1, 1, 1, 1)
+        ));
+  TEST_FOR_EXCEPTION(n<1 || n>5, std::runtime_error, 
     "case n=" << n << " not implemented in partitionInteger()");
   return rtn[n-1];
 }
 
 
+bool nextNum(Array<int>& digits, const Array<int>& radix)
+{
+  /* See Knuth TAOCP vol 4 fascicle 2, algorithm M */
+  int n = digits.size();
+  int j = n-1;
+  while(j >= 0)
+  {
+    if (digits[j]==(radix[j]-1)) 
+    {
+      digits[j] = 0;
+      j--;
+    }
+    else
+    {
+      digits[j]++;
+      return true;
+    }
+  }
+  return false;
+}
 
+void weightedPartitions(int n, const Array<int>& w, 
+  Array<Array<int> >& parts)
+{
+  int S = w.size();
+  for (int i=0; i<S; i++) 
+  {
+    TEST_FOR_EXCEPT(w[i] <= 0);
+  }
+
+  Array<Array<int> > trial(S);
+  Array<int> radix(S);
+  for (int i=0; i<S; i++)
+  {
+    trial[i].resize(n/w[i]+1);
+    for (int j=0; j<trial[i].size(); j++)
+    {
+      trial[i][j] = j;
+    }
+    radix[i] = trial[i].size();
+  }
+
+  bool workLeft = true;
+  Array<int> index(S, 0);
+  while (workLeft)
+  {
+    Array<int> vals(S);
+    int count = 0;
+    for (int i=0; i<S; i++) 
+    {
+      vals[i] = trial[i][index[i]];
+      count += w[i]*vals[i];
+    }
+    if (count==n)
+    {
+      parts.append(vals);
+    }
+    workLeft = nextNum(index, radix);
+  }
+}
+
+void weightedOrderedPartitions(const IntVec& v, const Array<int>& w,
+  Array<Array<IntVec> >& parts)
+{
+  int D = v.size();
+  int S = w.size();
+  Array<int> radix(D);
+
+  Array<Array<Array<int> > > nParts(D);
+  for (int i=0; i<D; i++)
+  {
+    weightedPartitions(v[i], w, nParts[i]);
+    radix[i] = nParts[i].size();
+    if (radix[i]==0) radix[i] = 1;
+  }
+
+  bool workLeft = true;
+  Array<int> index(D, 0);
+  while (workLeft)
+  {
+    Array<IntVec> L(S, D);
+    for (int i=0; i<D; i++) 
+    {
+      for (int j=0; j<S; j++) 
+      {
+        if (nParts[i].size()==0) L[i][j] = 0;
+        else L[j][i] = nParts[i][index[i]][j];
+      }
+    }
+    /* test ordering */
+    bool accept = true;
+    for (int i=0; i<S; i++)
+    {
+      if (L[i].abs()==0) {accept = false; break;}
+      if (i>0 && !(L[i-1] < L[i]))  {accept = false; break;}
+    }
+    if (accept) 
+    {
+      parts.append(L);
+    }
+    workLeft = nextNum(index, radix);
+  }
   
+}
+
+
+void pSet(const IntVec& lambda, const IntVec& nu, int s,
+  Array<Array<IntVec> >& K, Array<Array<IntVec> >& L)
+{
+  Array<Array<IntVec> > KParts;
+  lambda.getPartitions(s, KParts);
+
+  for (int i=0; i<KParts.size(); i++)
+  {
+    const Array<IntVec>& kPart = KParts[i];
+    Array<int> w(s);
+    for (int j=0; j<s; j++) w[j] = kPart[j].abs();
+    Array<Array<IntVec> > LParts;
+    weightedOrderedPartitions(nu, w, LParts);
+    for (int j=0; j<LParts.size(); j++)
+    {
+      K.append(kPart);
+      L.append(LParts[j]);
+    }
+  }
+
+}
+
 
 
 Array<Array<Array<int> > > compositions(int n)
@@ -59,6 +205,11 @@ Array<Array<Array<int> > > compositions(int n)
   }
 
   return q;
+}
+
+void restrictedCompositions(int n, int len, Array<Array<int> >& rComps)
+{
+  rComps = nonNegCompositions(n, len);
 }
 
 Array<Array<int> > nonNegCompositions(int n, int J)

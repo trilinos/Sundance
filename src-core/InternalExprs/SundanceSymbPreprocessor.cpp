@@ -285,7 +285,7 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
       }
     }
   }
-  SUNDANCE_MSG2(verb, tab << std::endl << tab 
+  SUNDANCE_MSG1(verb, tab << std::endl << tab 
     << " ************* Finding nonzeros for expr " << std::endl << tab);
   for (int i=0; i<=context.topLevelDiffOrder(); i++)
   {
@@ -320,7 +320,7 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
   e->determineR(context, RInput);
 
   
-  SUNDANCE_MSG2(verb,
+  SUNDANCE_MSG1(verb,
     tab << std::endl << tab 
     << " ************* Finding sparsity structure " << std::endl << tab);
   DerivSet derivs = e->sparsitySuperset(context)->derivSet();
@@ -328,7 +328,7 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
     tab << std::endl << tab 
     << "Nonzero deriv set = " << derivs);
 
-  SUNDANCE_MSG2(verb,
+  SUNDANCE_MSG1(verb,
     tab << std::endl << tab 
     << " ************* Setting up evaluators for expr " << std::endl << tab);
 
