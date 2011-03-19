@@ -68,7 +68,7 @@ public:
   /** Debugging utility to check the gradient 
    * by comparing to a finite difference 
    * gradient calculation. This is will be expensive. */
-  void fdCheck(const Vector<double>& x, int verbosity=0) const ;
+  bool fdCheck(const Vector<double>& x, double tol, int verbosity=0) const ;
 
 protected:
   /** */

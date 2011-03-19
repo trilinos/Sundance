@@ -34,13 +34,13 @@
      <Parameter name="Num Required Passes"  type="int" value="2"/>
 
      <!-- Tolerance in change in objective function value            -->
-     <Parameter name="Objective Tolerance" type="double" value="1.0e-5"/>
+     <Parameter name="Objective Tolerance" type="double" value="1.0e-6"/>
 
      <!-- Tolerance in 2-norm of gradient                            -->
-     <Parameter name="Gradient Tolerance" type="double" value="1.0e-5"/>
+     <Parameter name="Gradient Tolerance" type="double" value="1.0e-6"/>
 
      <!-- Tolerance in scaled max norm of step                       -->
-     <Parameter name="Step Tolerance" type="double" value="1.0e-5"/>
+     <Parameter name="Step Tolerance" type="double" value="1.0e-6"/>
 
      <!-- Verbosity level: 0 is silent, larger values mean  more output -->
      <Parameter name="Verbosity"     type="int" value="0"/>

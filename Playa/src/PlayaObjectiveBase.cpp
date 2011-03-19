@@ -12,7 +12,8 @@ using std::endl;
 using std::ostream;
 using std::setw;
 
-void ObjectiveBase::fdCheck(const Vector<double>& xIn,
+bool ObjectiveBase::fdCheck(const Vector<double>& xIn,
+  double tol,
   int verbosity) const 
 {
   double f0, fPlus, fMinus;
@@ -96,6 +97,7 @@ void ObjectiveBase::fdCheck(const Vector<double>& xIn,
   PLAYA_MSG2(verbosity, "local max error = " << localMaxErr);
   double maxErr = localMaxErr;
   PLAYA_MSG1(verbosity, "fd check: max error = " << maxErr);
+  return maxErr <= tol;
 }
 
 }
