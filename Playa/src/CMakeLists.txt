@@ -42,6 +42,7 @@ APPEND_SET(HEADERS
   PlayaAnasaziEigensolverDecl.hpp
   PlayaAnasaziEigensolverImpl.hpp
   PlayaAztecSolver.hpp
+  PlayaBasicLMBFGS.hpp
   PlayaBelosSolver.hpp
   PlayaBICGSTABSolverDecl.hpp
   PlayaBICGSTABSolverImpl.hpp
@@ -57,12 +58,14 @@ APPEND_SET(HEADERS
   PlayaBlockVectorSpaceImpl.hpp
   PlayaCollectivelyConfigurableMatrixFactory.hpp
   PlayaCompoundTester.hpp
+  PlayaConvergenceMonitor.hpp
   PlayaDataChunk.hpp
   PlayaDebug.hpp
   PlayaDefaultBlockVectorDecl.hpp
   PlayaDefaultBlockVectorImpl.hpp
   PlayaDefaultBlockVectorSpaceDecl.hpp
   PlayaDefaultBlockVectorSpaceImpl.hpp
+  PlayaDefaultOptConvergenceTest.hpp
   PlayaDefs.hpp
   PlayaDenseLUSolver.hpp
   PlayaDenseSerialMatrixFactory.hpp
@@ -110,6 +113,9 @@ APPEND_SET(HEADERS
   PlayaLinearSolverBuilder.hpp
   PlayaLinearSolverDecl.hpp
   PlayaLinearSolverImpl.hpp
+  PlayaLineSearchBase.hpp
+  PlayaLineSearchBasedOptBase.hpp
+  PlayaLineSearchBuilder.hpp
   PlayaLoadableMatrix.hpp
   PlayaLoadableVector.hpp
   PlayaMatrixFactory.hpp
@@ -122,8 +128,13 @@ APPEND_SET(HEADERS
   PlayaNonlinearOperatorBase.hpp
   PlayaNonlinearSolverBase.hpp
   PlayaNOXSolver.hpp
+  PlayaObjectiveBase.hpp
   PlayaObjectWithVerbosity.hpp
   PlayaOperatorBuilder.hpp
+  PlayaOptBuilder.hpp
+  PlayaOptConvergenceTestBase.hpp
+  PlayaOptConvergenceTestBuilder.hpp
+  PlayaOptState.hpp
   PlayaOut.hpp
   PlayaParameterListPreconditionerFactory.hpp
   PlayaPoissonBoltzmannJacobian.hpp
@@ -146,6 +157,7 @@ APPEND_SET(HEADERS
   PlayaSerialVectorType.hpp
   PlayaSimpleAddedOpDecl.hpp
   PlayaSimpleAddedOpImpl.hpp
+  PlayaSimpleBacktracking.hpp
   PlayaSimpleBlockOpDecl.hpp
   PlayaSimpleBlockOpImpl.hpp
   PlayaSimpleComposedOpDecl.hpp
@@ -162,9 +174,11 @@ APPEND_SET(HEADERS
   PlayaSimpleZeroOpImpl.hpp
   PlayaSingleChunkVector.hpp
   PlayaSolverState.hpp
+  PlayaSteepestDescent.hpp
   PlayaTabs.hpp
   PlayaTesterBase.hpp
   PlayaTestSpecifier.hpp
+  PlayaUnconstrainedOptimizerBase.hpp
   PlayaVectorBaseDecl.hpp
   PlayaVectorDecl.hpp
   PlayaVectorFunctorsDecl.hpp
@@ -191,15 +205,18 @@ APPEND_SET(SOURCES
   PlayaAmesosSolver.cpp
   PlayaAnasaziEigensolver.cpp
   PlayaAztecSolver.cpp
+  PlayaBasicLMBFGS.cpp
   PlayaBelosSolver.cpp
   PlayaBICGSTABSolver.cpp
   PlayaBlockIterator.cpp
   PlayaBlockTriangularSolver.cpp
   PlayaBlockVectorBase.cpp
-  PlayaBlockVectorSpace.cpp
+  PlayaBlockVectorSpace.cpp  
+  PlayaConvergenceMonitor.cpp
   PlayaDebug.cpp
   PlayaDefaultBlockVector.cpp
   PlayaDefaultBlockVectorSpace.cpp
+  PlayaDefaultOptConvergenceTest.cpp
   PlayaDenseLUSolver.cpp
   PlayaDenseSerialMatrix.cpp
   PlayaDenseSerialMatrixFactory.cpp
@@ -223,11 +240,18 @@ APPEND_SET(SOURCES
   PlayaLinearSolverBase.cpp
   PlayaLinearSolverBuilder.cpp
   PlayaLinearSolver.cpp
+  PlayaLineSearchBase.cpp
+  PlayaLineSearchBasedOptBase.cpp
+  PlayaLineSearchBuilder.cpp
   PlayaMatrixLaplacian1D.cpp
   PlayaMLOperator.cpp
   PlayaMultiVectorOperator.cpp
   PlayaNOXSolver.cpp
   PlayaOut.cpp
+  PlayaObjectiveBase.cpp
+  PlayaOptBuilder.cpp
+  PlayaOptConvergenceTestBuilder.cpp
+  PlayaOptState.cpp
   PlayaParameterListPreconditionerFactory.cpp
   PlayaPoissonBoltzmannJacobian.cpp
   PlayaPoissonBoltzmannOp.cpp
@@ -238,7 +262,9 @@ APPEND_SET(SOURCES
   PlayaSerialVector.cpp
   PlayaSerialVectorSpace.cpp
   PlayaSerialVectorType.cpp
+  PlayaSimpleBacktracking.cpp
   PlayaSimpleOps.cpp
+  PlayaSteepestDescent.cpp
   PlayaTabs.cpp
   PlayaVector.cpp
   PlayaVectorOps.cpp

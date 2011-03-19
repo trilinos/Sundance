@@ -57,12 +57,12 @@ public:
   /** 
    * Return element-by-element reciprocal as a new vector
    */
-  Vector<Scalar> reciprocal() const {return reciprocal();}
+  Vector<Scalar> reciprocal() const {return eval().reciprocal();}
 
   /** 
    * Return element-by-element absolute value as a new vector
    */
-  Vector<Scalar> abs() const {return abs();} 
+  Vector<Scalar> abs() const {return eval().abs();} 
 
   /** */
   Scalar norm2() const {return eval().norm2();}
