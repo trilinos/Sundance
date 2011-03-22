@@ -29,8 +29,7 @@ using namespace Playa;
 using std::ofstream;
 using std::ostringstream;
 
-class UncTestProb : public ObjectiveBase,
-                    public Describable
+class UncTestProb : public ObjectiveBase
 {
 public:
   /** */

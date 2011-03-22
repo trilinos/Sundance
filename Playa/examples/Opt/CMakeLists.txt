@@ -8,6 +8,7 @@ PACKAGE_ADD_EXECUTABLE_AND_TEST(
   SOURCES PlayaOptRosenbrock.cpp PlayaRosenbrock.cpp
   ARGS
   COMM serial mpi
+  NUM_MPI_PROCS 1
   )
 
 
