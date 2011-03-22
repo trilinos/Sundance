@@ -10,14 +10,20 @@
 #endif
 
 
+/** \example Rosenbrock.cpp 
+ * An example of an objective function 
+ */
+
 
 namespace Playa
 {
 /**
  * Base class for differentiable objective functions.
  * @author Paul Boggs and Kevin Long
+ *
  */
-class ObjectiveBase : public ObjectWithVerbosity
+class ObjectiveBase : public ObjectWithVerbosity,
+                      public Describable
 {
 public:
   /** */
@@ -64,6 +70,11 @@ public:
    * Return the number of evaluations
    */
   virtual int numFuncEvals() const {return -1;}
+
+  /** 
+   *
+   */
+  virtual string description() const {return "ObjectiveBase";}
 
   /** Debugging utility to check the gradient 
    * by comparing to a finite difference 
