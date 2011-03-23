@@ -30,16 +30,6 @@
 
 #include "Sundance.hpp"
 
-void updateDiscreteFunction(const Expr& newVals, Expr old)
-{
-  const DiscreteFunction* in = DiscreteFunction::discFunc(newVals);
-  TEST_FOR_EXCEPT(in==0);
-  DiscreteFunction* out = DiscreteFunction::discFunc(old);
-  TEST_FOR_EXCEPT(out==0);
-  Vector<double> vec = in->getVector();
-  out->setVector(vec);
-}
-
 
 
 /** 
