@@ -5,6 +5,7 @@ INCLUDE(AddTestBatch)
 SET(MPITests
   PoissonDemo3D
   PoissonBoltzmannDemo2D
+  transientNonlinear1D
 )
 
 

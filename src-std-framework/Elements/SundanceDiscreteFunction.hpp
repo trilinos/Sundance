@@ -128,6 +128,25 @@ private:
 
 };
 
+
+/** \relates DiscreteFunction
+ * Replace the vector in oldVals with the vector from newVals.
+ */
+void updateDiscreteFunction(const Expr& newVals, Expr oldVals);
+
+
+/** \relates DiscreteFunction
+ * Make a copy of the discrete function u0. The copy will have a shallow
+ * copy of u0's space, and a deep copy of u0's vector. 
+ */
+Expr copyDiscreteFunction(const Expr& u0, const string& name = "");
+
+
+/** \relates DiscreteFunction
+ * Add a vector v to the vector underlying the discrete function u.
+ */
+void addVecToDiscreteFunction(Expr u, const Vector<double>& v);
+
 }
 
 
