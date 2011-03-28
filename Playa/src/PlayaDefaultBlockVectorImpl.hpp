@@ -6,6 +6,7 @@
 #define PLAYA_DEFAULT_BLOCK_VECTOR_IMPL_HPP
 
 #include "PlayaDefaultBlockVectorDecl.hpp"
+#include "PlayaDefaultBlockVectorSpaceDecl.hpp"
 #include "PlayaExceptions.hpp"
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
@@ -32,6 +33,13 @@ DefaultBlockVector<Scalar>
     blocks_[i] = space.getBlock(i).createMember();
   }
 }
+
+template <class Scalar> inline
+DefaultBlockVector<Scalar>
+::DefaultBlockVector(const VectorSpace<Scalar>& space, 
+    const Array<Vector<Scalar> >& blocks)
+  : BlockVectorBase<Scalar>(), space_(space), blocks_(blocks)
+{}
 
 template <class Scalar> inline
 void DefaultBlockVector<Scalar>::setBlock(int b, const Vector<Scalar>& block)
@@ -68,6 +76,72 @@ Vector<Scalar> DefaultBlockVector<Scalar>::getNonConstBlock(int b)
   return blocks_[b];
 }
 
+
+
+/** \relates Vector */
+template <class Scalar> inline
+Vector<Scalar> blockVector(
+  const Vector<Scalar>& v1)
+{
+  Array<Vector<Scalar> > x(1);
+  x[0] = v1;
+  return blockVector<Scalar>(x);
+}
+
+
+/** \relates Vector */
+template <class Scalar> inline
+Vector<Scalar> blockVector(
+  const Vector<Scalar>& v1,
+  const Vector<Scalar>& v2)
+{
+  Array<Vector<Scalar> > x(2);
+  x[0] = v1;
+  x[1] = v2;
+  return blockVector<Scalar>(x);
+}
+
+/** \relates Vector */
+template <class Scalar> inline
+Vector<Scalar> blockVector(
+  const Vector<Scalar>& v1,
+  const Vector<Scalar>& v2,
+  const Vector<Scalar>& v3)
+{
+  Array<Vector<Scalar> > x(3);
+  x[0] = v1;
+  x[1] = v2;
+  x[2] = v3;
+  return blockVector<Scalar>(x);
+}
+
+/** \relates Vector */
+template <class Scalar> inline
+Vector<Scalar> blockVector(
+  const Vector<Scalar>& v1,
+  const Vector<Scalar>& v2,
+  const Vector<Scalar>& v3,
+  const Vector<Scalar>& v4)
+{
+  Array<Vector<Scalar> > x(4);
+  x[0] = v1;
+  x[1] = v2;
+  x[2] = v3;
+  x[3] = v4;
+  return blockVector<Scalar>(x);
+}
+
+/** \relates Vector */
+template <class Scalar> inline
+Vector<Scalar> blockVector(const Array<Vector<Scalar> >& x)
+{
+  Array<VectorSpace<Scalar> > spaces(x.size());
+  for (int i=0; i<x.size(); i++) spaces[i] = x[i].space();
+
+  VectorSpace<Scalar> bs = blockSpace(spaces);
+  RCP<VectorBase<Scalar> > rtn = rcp(new DefaultBlockVector<Scalar>(bs, x));
+  return rtn;
+}
 
 
   

@@ -25,6 +25,10 @@ public:
   DefaultBlockVector(const VectorSpace<Scalar>& space);
 
   /** */
+  DefaultBlockVector(const VectorSpace<Scalar>& space, 
+    const Array<Vector<Scalar> >& blocks);
+
+  /** */
   virtual ~DefaultBlockVector(){}
 
   /** \name VectorBase interface */
@@ -50,6 +54,37 @@ private:
   Teuchos::Array<Vector<Scalar> > blocks_;
   
 };
+
+/** \relates Vector */
+template <class Scalar> 
+Vector<Scalar> blockVector(
+  const Vector<Scalar>& v1);
+
+/** \relates Vector */
+template <class Scalar> 
+Vector<Scalar> blockVector(
+  const Vector<Scalar>& v1,
+  const Vector<Scalar>& v2);
+
+/** \relates Vector */
+template <class Scalar> 
+Vector<Scalar> blockVector(
+  const Vector<Scalar>& v1,
+  const Vector<Scalar>& v2,
+  const Vector<Scalar>& v3);
+
+/** \relates Vector */
+template <class Scalar> 
+Vector<Scalar> blockVector(
+  const Vector<Scalar>& v1,
+  const Vector<Scalar>& v2,
+  const Vector<Scalar>& v3,
+  const Vector<Scalar>& v4);
+
+/** \relates Vector */
+template <class Scalar> 
+Vector<Scalar> blockVector(const Array<Vector<Scalar> >& x);
+
 
 }
 

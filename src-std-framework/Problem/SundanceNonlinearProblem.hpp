@@ -80,6 +80,9 @@ public:
 
   /** Set an initial guess */
   void setInitialGuess(const Expr& u0New) {op_->setInitialGuess(u0New);}
+
+  /** Set the current evaluation point */
+  void setEvalPoint(const Expr& u0New) {op_->setInitialGuess(u0New);}
       
 
   /** Compute the residual and Jacobian at the current evaluation point */

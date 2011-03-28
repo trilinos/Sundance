@@ -66,7 +66,8 @@ int main(int argc, char** argv)
 
       double epsilon = 0.25;
       /* The initial profile is u(x,0)=1 + epsilon x^2. 
-       * Project this onto a discrete function. This discrete function, uPrev, will represent
+       * Project this onto a discrete function. This discrete function,
+       * uPrev, will represent
        * the initial conditions but will also be re-used as the starting value for
        * each timestep */
       Expr uStart = 1.0 + epsilon*x*x;
@@ -80,7 +81,7 @@ int main(int argc, char** argv)
       /* We need a quadrature rule for doing the integrations */
       QuadratureFamily quad = new GaussianQuadrature(4);
 
-      int nSteps = 32;
+      int nSteps = nx;
       double dt = 1.0/((double) nSteps);
       /* Represent the time variable as a parameter expression, NOT as
        * a double variable. The reason is that we need to be able to update
@@ -116,7 +117,6 @@ int main(int argc, char** argv)
       FieldWriter w = new MatlabWriter("transientNonlinear1D-0.dat"); 
       w.addMesh(mesh);
       w.addField("u", new ExprFieldWrapper(uPrev[0]));
-      w.addField("uNewt", new ExprFieldWrapper(uNewt[0]));
       w.write();
 
       /* loop over timesteps */
@@ -132,13 +132,15 @@ int main(int argc, char** argv)
 
         for (int j=0; j<maxNewtIters; j++)
         {
-          prob.setInitialGuess(uNewt);
+          prob.setEvalPoint(uNewt);
           prob.computeJacobianAndFunction(J, resid);
           SolverState<double> solveState 
             = linSolver.solve(J, -1.0*resid, newtonStep);
+
           TEST_FOR_EXCEPTION(solveState.finalState() != SolveConverged,
             std::runtime_error,
             "linear solve failed!");
+
           addVecToDiscreteFunction(uNewt, newtonStep);
           double newtStepNorm = newtonStep.norm2();
           Out::root() << "|newt step| = " << newtStepNorm << endl;
@@ -163,7 +165,7 @@ int main(int argc, char** argv)
       }
 
       double err = L2Norm(mesh, interior, uPrev - uStart, quad);
-      Out::root() << "error = " << err << endl;
+      Out::root() << "dt=" << setw(16) << dt << " error = " << setw(16) << err << endl;
 
       double tol = 1.0e-4;
       Sundance::passFailTest(err, tol);

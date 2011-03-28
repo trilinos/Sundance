@@ -72,7 +72,7 @@ public:
       jacobianIsValid_ = false;
       residualIsValid_ = false;
 
-      currentEvalPt_ = x.copy();
+      currentEvalPt_.acceptCopyOf(x);
     }
 
   /** Get the current point at which the function is to be 

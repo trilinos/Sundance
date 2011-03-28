@@ -34,6 +34,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceMesh.hpp"
 #include "SundanceExpr.hpp"
+#include "SundanceBlock.hpp"
 #include "SundanceDiscreteFunction.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
 #include "PlayaNonlinearOperatorBase.hpp"
@@ -66,6 +67,12 @@ public:
     const Expr& test, const Expr& unk, const Expr& u0, 
     const Playa::VectorType<double>& vecType,
     bool partitionBCs = false);
+
+  /** Construct with a mesh, equation set, bcs, test and unknown funcs,
+   * and a vector type */
+  NLOp(const Mesh& mesh, const Expr& eqn, const Expr& bc,
+    const BlockArray& test, const BlockArray& unk, const Array<Expr>& u0);
+
 
   /** Construct with a mesh, equation set, bcs, test and unknown funcs,
    * parameters, and a vector type */
@@ -115,6 +122,9 @@ public:
   /* Handle boilerplate */
   GET_RCP(Playa::NonlinearOperatorBase<double>);
 
+protected:
+  /** */
+  void updateDiscreteFunctionValue(const Vector<double>& vec) const ;
 private:
       
   /** */
@@ -133,7 +143,7 @@ private:
   Expr paramVals_;
 
   /** */
-  mutable DiscreteFunction* discreteU0_;
+  mutable Array<DiscreteFunction*> discreteU0_;
       
 };
 }

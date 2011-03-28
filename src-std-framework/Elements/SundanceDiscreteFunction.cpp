@@ -35,15 +35,17 @@
 #include "SundanceCellFilter.hpp"
 #include "SundanceCellSet.hpp"
 #include "SundanceSubtypeEvaluator.hpp"
+#include "PlayaDefaultBlockVectorDecl.hpp"
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
 #include "PlayaVectorImpl.hpp"
+#include "PlayaDefaultBlockVectorImpl.hpp"
 #endif
 
 namespace Sundance
 {
 using namespace Teuchos;
-
+using std::runtime_error;
 
 static Time& getLocalValsTimer() 
 {
@@ -245,6 +247,27 @@ void addVecToDiscreteFunction(Expr u, const Vector<double>& v)
   
   vec.update(1.0, v);
 }
+
+Vector<double> getDiscreteFunctionVector(const Expr& u)
+{
+  const DiscreteFunction* df = DiscreteFunction::discFunc(u);  
+  if (df != 0)
+  {
+    return df->getVector();
+  }
+  else
+  {
+    TEST_FOR_EXCEPTION(df==0 && u.size()==1, runtime_error,
+      "non-block vector should be a discrete function in getDiscreteFunctionVector()");
+    Array<Vector<double> > vec(u.size());
+    for (int b=0; b<u.size(); b++)
+    {
+      vec[b] = getDiscreteFunctionVector(u[b]);
+    }
+    return blockVector(vec);
+  }
+}
+
 
 }
 
