@@ -94,6 +94,9 @@ public:
   /** */
   static const DiscreteFunctionData* getData(const DiscreteFuncElement* ufe);
 
+  /** */
+  static DiscreteFunctionData* getData(DiscreteFuncElement* ufe);
+
 
 private:
 

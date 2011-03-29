@@ -85,6 +85,12 @@ NonlinearProblem::NonlinearProblem(const Mesh& mesh,
         params, paramValues, vecType)))
 {}
 
+NonlinearProblem::NonlinearProblem(
+  const Mesh& mesh, const Expr& eqn, const Expr& bc,
+  const BlockArray& test, const BlockArray& unk, const Expr& u0)
+  : op_(rcp(new NLOp(mesh, eqn, bc, test, unk, u0)))
+{}
+
 
 NonlinearProblem::NonlinearProblem(const RCP<Assembler>& assembler, 
                                    const Expr& u0)

@@ -67,7 +67,8 @@ NLOp::NLOp()
   : NonlinearOperatorBase<double>(),
     assembler_(),
     u0_(),
-    discreteU0_()
+    params_()
+
 {
   TimeMonitor timer(nlpCtorTimer());
 }
@@ -84,9 +85,7 @@ NLOp::NLOp(const Mesh& mesh,
   : NonlinearOperatorBase<double>(),
     assembler_(),
     u0_(u0),
-    params_(),
-    discreteU0_(1)
-    
+    params_()
 {
   TimeMonitor timer(nlpCtorTimer());
 
@@ -105,12 +104,6 @@ NLOp::NLOp(const Mesh& mesh,
 
   assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vecType), tuple(vecType), partitionBCs));
 
-  discreteU0_[0] = dynamic_cast<DiscreteFunction*>(u0_.ptr().get());
-
-  TEST_FOR_EXCEPTION(discreteU0_[0]==0, std::runtime_error,
-    "null discrete function pointer in "
-    "NLOp ctor");
-
   VectorSpace<double> domain = assembler_->solnVecSpace();
   VectorSpace<double> range = assembler_->rowVecSpace();
 
@@ -124,18 +117,18 @@ NLOp::NLOp(const Mesh& mesh,
   const Expr& bc,
   const BlockArray& test, 
   const BlockArray& unk, 
-  const Array<Expr>& u0)
+  const Expr& u0)
   : NonlinearOperatorBase<double>(),
     assembler_(),
-    u0_(new ListExpr(u0)),
-    params_(),
-    discreteU0_(u0.size())
+    u0_(u0),
+    params_()
 {
   TimeMonitor timer(nlpCtorTimer());
   bool partitionBCs = false;
 
   Array<Expr> v(test.size());  
   Array<Expr> u(unk.size());
+  Array<Expr> u0Array(unk.size());
 
   Array<VectorType<double> > testVecType(test.size());
   Array<VectorType<double> > unkVecType(unk.size());
@@ -149,12 +142,8 @@ NLOp::NLOp(const Mesh& mesh,
   for (int i=0; i<unk.size(); i++)
   {
     u[i] = unk[i].expr().flattenSpectral();
+    u0Array[i] = u0[i].flattenSpectral();
     unkVecType[i] = unk[i].vecType(); 
-    discreteU0_[i] = dynamic_cast<DiscreteFunction*>(u0_[i].ptr().get());
-
-    TEST_FOR_EXCEPTION(discreteU0_[i]==0, std::runtime_error,
-      "null discrete function pointer in "
-      "NLOp ctor");
   }
 
   Expr unkParams;
@@ -166,7 +155,7 @@ NLOp::NLOp(const Mesh& mesh,
 
   RCP<EquationSet> eqnSet 
     = rcp(new EquationSet(eqn, bc, 
-        v, u, u0,
+        v, u, u0Array,
         unkParams, unkParamValues,
         fixedParams, fixedParamValues,
         tuple(fixedFields), tuple(fixedFieldValues)));
@@ -195,8 +184,7 @@ NLOp::NLOp(const Mesh& mesh,
     assembler_(),
     J_(),
     u0_(u0),
-    params_(params),
-    discreteU0_(1)
+    params_(params)
 {
   TimeMonitor timer(nlpCtorTimer());
 
@@ -215,12 +203,6 @@ NLOp::NLOp(const Mesh& mesh,
 
   assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vecType), tuple(vecType), partitionBCs));
 
-  discreteU0_[0] = dynamic_cast<DiscreteFunction*>(u0_.ptr().get());
-
-  TEST_FOR_EXCEPTION(discreteU0_[0]==0, std::runtime_error,
-    "null discrete function pointer in "
-    "NLOp ctor");
-
   VectorSpace<double> domain = assembler_->solnVecSpace();
   VectorSpace<double> range = assembler_->rowVecSpace();
 
@@ -234,15 +216,9 @@ NLOp::NLOp(const RCP<Assembler>& assembler,
     assembler_(assembler),
     J_(),
     u0_(u0),
-    params_(),
-    discreteU0_(1)
+    params_()
 {
   TimeMonitor timer(nlpCtorTimer());
-  discreteU0_[0] = dynamic_cast<DiscreteFunction*>(u0_.ptr().get());
-
-  TEST_FOR_EXCEPTION(discreteU0_[0]==0, std::runtime_error,
-    "null discrete function pointer in "
-    "NLOp ctor");
 
   VectorSpace<double> domain = assembler_->solnVecSpace();
   VectorSpace<double> range = assembler_->rowVecSpace();
@@ -253,22 +229,7 @@ NLOp::NLOp(const RCP<Assembler>& assembler,
 
 void NLOp::updateDiscreteFunctionValue(const Vector<double>& vec) const
 {
-  if (discreteU0_.size()==1)
-  {
-    discreteU0_[0]->setVector(vec);
-  }
-  else
-  {
-    TEST_FOR_EXCEPTION(domain()->isCompatible(vec.space().ptr().get()),
-      runtime_error, "mismatched spaces vec.space()=" 
-      << vec.space()
-      << " and domain=" 
-      << VectorSpace<double>(domain()) << " in NLOp::setDiscreteFunctionValue");
-    for (int b=0; b<domain()->numBlocks(); b++)
-    {
-      discreteU0_[b]->setVector(vec.getBlock(b));
-    }
-  }
+  setDiscreteFunctionVector(u0_, vec.copy());
 }
 
 Vector<double> NLOp::getInitialGuess() const 

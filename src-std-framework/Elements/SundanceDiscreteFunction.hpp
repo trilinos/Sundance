@@ -148,9 +148,15 @@ Expr copyDiscreteFunction(const Expr& u0, const string& name = "");
 void addVecToDiscreteFunction(Expr u, const Vector<double>& v);
 
 /** \relates DiscreteFunction
- * Get the vector underlying a discrete function 
+ * Get a shallow copy of the vector underlying a discrete function 
  */
 Vector<double> getDiscreteFunctionVector(const Expr& u);
+
+
+/** \relates DiscreteFunction
+ * Set the vector underlying a discrete function 
+ */
+void setDiscreteFunctionVector(Expr u, const Vector<double>& v);
 
 }
 

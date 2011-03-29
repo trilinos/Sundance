@@ -45,7 +45,9 @@
 namespace Sundance
 {
 using namespace Teuchos;
+using std::string;
 using std::runtime_error;
+using std::endl;
 
 static Time& getLocalValsTimer() 
 {
@@ -61,7 +63,7 @@ static Time& dfCtorTimer()
 }
 
 DiscreteFunction::DiscreteFunction(const DiscreteSpace& space, 
-  const std::string& name)
+  const string& name)
   : DiscreteFunctionStub(tuple(name), space.dimStructure(),
     getRCP(new DiscreteFunctionData(space))), 
     FuncWithBasis(space.basis()),
@@ -84,7 +86,7 @@ DiscreteFunction::DiscreteFunction(const DiscreteSpace& space,
 
 DiscreteFunction::DiscreteFunction(const DiscreteSpace& space, 
   const double& constantValue,
-  const std::string& name)
+  const string& name)
   : DiscreteFunctionStub(tuple(name), space.dimStructure(),
     getRCP(new DiscreteFunctionData(space, constantValue))), 
     FuncWithBasis(space.basis()),
@@ -114,7 +116,7 @@ DiscreteFunction::DiscreteFunction(const DiscreteSpace& space,
 
 DiscreteFunction::DiscreteFunction(const DiscreteSpace& space, 
   const Vector<double>& vec,
-  const std::string& name)
+  const string& name)
   : DiscreteFunctionStub(tuple(name), space.dimStructure(),
     getRCP(new DiscreteFunctionData(space, vec))), 
     FuncWithBasis(space.basis()),
@@ -162,7 +164,7 @@ const DiscreteFunction* DiscreteFunction::discFunc(const Expr& expr)
   const DiscreteFunction* df 
     = dynamic_cast<const DiscreteFunction*>(e);
 
-  TEST_FOR_EXCEPTION(df==0, std::runtime_error,
+  TEST_FOR_EXCEPTION(df==0, runtime_error,
     "failed to cast " << expr << " to a discrete function. "
     "It appears to be of type " << e->typeName());
 
@@ -176,7 +178,7 @@ DiscreteFunction* DiscreteFunction::discFunc(Expr& expr)
   DiscreteFunction* df 
     = dynamic_cast<DiscreteFunction*>(expr.ptr().get());
 
-  TEST_FOR_EXCEPTION(df==0, std::runtime_error,
+  TEST_FOR_EXCEPTION(df==0, runtime_error,
     "failed to cast " << expr << " to a discrete function. "
     "It appears to be of type " << expr.ptr()->typeName());
 
@@ -191,81 +193,131 @@ RCP<DiscreteFuncDataStub> DiscreteFunction::getRCP(DiscreteFunctionData* ptr)
 
 
 
+
+
 void updateDiscreteFunction(const Expr& newVals, Expr old)
 {
-  const DiscreteFunction* in = DiscreteFunction::discFunc(newVals);
-  TEST_FOR_EXCEPTION(in==0, std::runtime_error,
-    "input argument " << newVals 
-    << " is not a discrete function in updateDiscreteFunction()");
+  Vector<double> vIn = getDiscreteFunctionVector(newVals);
+  Vector<double> vOut = getDiscreteFunctionVector(old);
 
-  DiscreteFunction* out = DiscreteFunction::discFunc(old);
-  TEST_FOR_EXCEPTION(out==0, std::runtime_error,
-    "output argument " << old 
-    << " is not a discrete function in updateDiscreteFunction()");
+  vOut.acceptCopyOf(vIn);
+  setDiscreteFunctionVector(old, vOut);
+}
 
-  TEST_FOR_EXCEPTION(
-    in->getVector().space() != out->getVector().space(),
-    std::runtime_error,
-    "incompatible spaces " << in->getVector().space()
-    << " and " << out->getVector().space()
-    << " in updateDiscreteFunction()");
-
-  Vector<double> vec = in->getVector();
-  out->setVector(vec);
+void addVecToDiscreteFunction(Expr df, const Vector<double>& v)
+{
+  Vector<double> dfVec = getDiscreteFunctionVector(df);
+  dfVec.update(1.0, v);
+  setDiscreteFunctionVector(df, dfVec);
 }
 
 Expr copyDiscreteFunction(const Expr& u0, const string& name)
 {
-  const DiscreteFunction* in = DiscreteFunction::discFunc(u0);  
+  const DiscreteFunction* df 
+    = dynamic_cast<const DiscreteFunction*>(u0.ptr().get());
 
-  TEST_FOR_EXCEPTION(in==0, std::runtime_error,
-    "input argument " << u0 
-    << " is not a discrete function in copyDiscreteFunction()");
+  /* Case 1: u is a discrete function */
+  if (df != 0)
+  {
+    Vector<double> dfVec = df->getVector().copy();
+    return new DiscreteFunction(df->discreteSpace(), dfVec, name);
+  }
 
-  const DiscreteSpace& space = in->discreteSpace();
-  const Vector<double>& vec = in->getVector();
-  Vector<double> vecCopy = vec.copy();
-  return new DiscreteFunction(space, vec, name);
+  /* Case 2: u is an element of a length-one expression whose DiscreteFunction
+   * wrapper has gotten lost in dereferencing. */
+  const DiscreteFuncElement* dfe 
+    = dynamic_cast<const DiscreteFuncElement*>(u0.ptr().get());
+  TEST_FOR_EXCEPTION(dfe!=0 && u0.size() > 1, runtime_error,
+    "attempt to access vector of a single element of a multicomponent "
+    "DiscreteFunction");
+  if (dfe != 0)
+  {
+    Vector<double> dfVec 
+      = DiscreteFunctionData::getData(dfe)->getVector().copy();
+    return new DiscreteFunction(
+      DiscreteFunctionData::getData(dfe)->discreteSpace(),
+      dfVec, name);
+  }
+
+  /* Case 3: u is a list of discrete functions */
+  Array<Expr> rtn(u0.size());
+  for (int b=0; b<u0.size(); b++)
+  {
+    rtn[b] = copyDiscreteFunction(u0[b], 
+      name + "[" + Teuchos::toString(b) + "]");
+  }
+  return new ListExpr(rtn);
 }
 
-void addVecToDiscreteFunction(Expr u, const Vector<double>& v)
+void setDiscreteFunctionVector(Expr u, const Vector<double>& v)
 {
-  DiscreteFunction* in = DiscreteFunction::discFunc(u);
+  DiscreteFunction* df 
+    = dynamic_cast<DiscreteFunction*>(u.ptr().get());
 
-  TEST_FOR_EXCEPTION(in==0, std::runtime_error,
-    "input argument " << u
-    << " is not a discrete function in addVecToDiscreteFunction()");
-  
-  Vector<double> vec = in->getVector();
+  /* Case 1: u is a discrete function */
+  if (df != 0)
+  {
+    df->setVector(v);
+    return;
+  }
 
-  TEST_FOR_EXCEPTION(
-    in->getVector().space() != v.space(),
-    std::runtime_error,
-    "incompatible spaces " << in->getVector().space()
-    << " and " << v.space()
-    << " in addVecToDiscreteFunction()");
-  
-  vec.update(1.0, v);
+  /* Case 2: u is an element of a length-one expression whose DiscreteFunction
+   * wrapper has gotten lost in list element dereferencing. */
+  DiscreteFuncElement* dfe 
+    = dynamic_cast<DiscreteFuncElement*>(u.ptr().get());
+  TEST_FOR_EXCEPTION(dfe!=0 && u.size() > 1, runtime_error,
+    "attempt to set vector of a single element of a multicomponent "
+    "DiscreteFunction");
+  if (dfe != 0)
+  {
+    DiscreteFunctionData::getData(dfe)->setVector(v);
+    return;
+  }
+
+  /* At this point, the vector should be a block vector */
+  TEST_FOR_EXCEPTION((df==0 && dfe==0) && u.size()==1, 
+    runtime_error,
+    "non-block vector should be a discrete function in setDFVector()");
+
+  /* Case 3: u is a list of discrete functions */
+  for (int b=0; b<u.size(); b++)
+  {
+    setDiscreteFunctionVector(u[b], v.getBlock(b));
+  }
 }
 
 Vector<double> getDiscreteFunctionVector(const Expr& u)
 {
-  const DiscreteFunction* df = DiscreteFunction::discFunc(u);  
+  const DiscreteFunction* df 
+    = dynamic_cast<const DiscreteFunction*>(u.ptr().get());
+
+  /* Case 1: u is a discrete function */
   if (df != 0)
   {
     return df->getVector();
   }
-  else
+
+  /* Case 2: u is an element of a length-one expression whose DiscreteFunction
+   * wrapper has gotten lost in dereferencing. */
+  const DiscreteFuncElement* dfe 
+    = dynamic_cast<const DiscreteFuncElement*>(u.ptr().get());
+  TEST_FOR_EXCEPTION(dfe!=0 && u.size() > 1, runtime_error,
+    "attempt to access vector of a single element of a multicomponent "
+    "DiscreteFunction");
+  if (dfe != 0)
   {
-    TEST_FOR_EXCEPTION(df==0 && u.size()==1, runtime_error,
-      "non-block vector should be a discrete function in getDiscreteFunctionVector()");
-    Array<Vector<double> > vec(u.size());
-    for (int b=0; b<u.size(); b++)
-    {
-      vec[b] = getDiscreteFunctionVector(u[b]);
-    }
-    return blockVector(vec);
+    return DiscreteFunctionData::getData(dfe)->getVector();
   }
+
+  /* Case 3: u is a list of discrete functions */
+  TEST_FOR_EXCEPTION(df==0 && u.size()==1, runtime_error,
+    "non-block vector should be a discrete function in getDiscreteFunctionVector()");
+  Array<Vector<double> > vec(u.size());
+  for (int b=0; b<u.size(); b++)
+  {
+    vec[b] = getDiscreteFunctionVector(u[b]);
+  }
+  return blockVector(vec);
 }
 
 

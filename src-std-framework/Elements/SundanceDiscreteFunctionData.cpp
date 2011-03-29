@@ -87,6 +87,17 @@ const DiscreteFunctionData* DiscreteFunctionData::getData(const DiscreteFuncElem
   return rtn.get();
 }
 
+DiscreteFunctionData* DiscreteFunctionData::getData(DiscreteFuncElement* dfe)
+{
+  TEST_FOR_EXCEPTION(dfe==0, std::runtime_error, "null argument to DiscreteFunctionData::getData()");
+  DiscreteFunctionData* rtn 
+    = dynamic_cast<DiscreteFunctionData*>(dfe->commonData());
+  TEST_FOR_EXCEPTION(rtn==0, std::runtime_error, 
+    "cast to DiscreteFunctionData* failed for "
+    "discrete function element " << dfe->toXML());
+  return rtn;
+}
+
 void DiscreteFunctionData::setVector(const Vector<double>& vec) 
 {
   ghostsAreValid_ = false;

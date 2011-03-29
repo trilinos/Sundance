@@ -28,6 +28,7 @@ SET(SerialTests
   Kepler 
   Stokes2D 
   PCDStokesCouette2D
+  PCDNavierStokesCouette2D
   LinearPartialDomain 
   NonlinearPartialDomain 
   AToCDensitySample

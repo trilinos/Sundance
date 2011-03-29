@@ -14,7 +14,7 @@
     <Parameter name="Output Frequency" type="int" value="1"/>
     <Parameter name="Output Style" type="int" value="1"/>
     <!-- NumBlocks is size of Krylov subspace... for unrestarted gmres, set equal to max its -->
-    <Parameter name="Num Blocks" type="int" value="500"/>
+    <Parameter name="Num Blocks" type="int" value="100"/>
     <Parameter name="Block Size" type="int" value="1"/>
   </ParameterList>
 
