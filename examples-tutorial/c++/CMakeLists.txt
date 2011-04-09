@@ -3,9 +3,14 @@
 INCLUDE(AddTestBatch)
 
 SET(MPITests
-  PoissonDemo3D
-  PoissonBoltzmannDemo2D
-  transientNonlinear1D
+  Example1-Laplace3D
+  Example2-SteadyRadDiff2D
+  Example3-TransientHeat2D
+  Example4-TransientNonlinear1D
+  Example5-PoissonBoltzmann2D
+  Example6-TransientTwoZoneHeat2D
+  
+
 )
 
 

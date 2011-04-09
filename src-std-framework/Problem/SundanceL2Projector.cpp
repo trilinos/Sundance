@@ -54,7 +54,7 @@ L2Projector::L2Projector(const DiscreteSpace& space,
   : prob_(), solver_()
 {
   CoordinateSystem cs = new CartesianCoordinateSystem();
-  init(space, cs, expr, solver);
+  init(space, cs, expr, solver, new GaussianQuadrature(4));
 }
 
 
@@ -64,7 +64,18 @@ L2Projector::L2Projector(const DiscreteSpace& space,
   const LinearSolver<double>& solver)
   : prob_(), solver_()
 {
-  init(space, cs, expr, solver);
+  init(space, cs, expr, solver, new GaussianQuadrature(4));
+}
+
+
+L2Projector::L2Projector(const DiscreteSpace& space, 
+  const Expr& expr, 
+  const LinearSolver<double>& solver,
+  const QuadratureFamily& quad)
+  : prob_(), solver_()
+{
+  CoordinateSystem cs = new CartesianCoordinateSystem();
+  init(space, cs, expr, solver, quad);
 }
 
 L2Projector::L2Projector(const DiscreteSpace& space, 
@@ -87,7 +98,31 @@ L2Projector::L2Projector(const DiscreteSpace& space,
   
   LinearSolver<double> solver = new AztecSolver(azOptions,azParams);
 
-  init(space, cs, expr, solver);
+  init(space, cs, expr, solver, new GaussianQuadrature(4));
+}
+
+L2Projector::L2Projector(const DiscreteSpace& space, 
+  const Expr& expr,
+  const QuadratureFamily& quad)
+  : prob_(), solver_()
+{
+  CoordinateSystem cs = new CartesianCoordinateSystem();
+
+  /* Create an Aztec solver for solving the linear subproblems */
+  std::map<int,int> azOptions;
+  std::map<int,double> azParams;
+  
+  azOptions[AZ_solver] = AZ_cg;
+  azOptions[AZ_precond] = AZ_dom_decomp;
+  azOptions[AZ_subdomain_solve] = AZ_icc;
+  azOptions[AZ_graph_fill] = 1;
+  azOptions[AZ_max_iter] = 1000;
+  azOptions[AZ_output] = AZ_none;
+  azParams[AZ_tol] = 1.0e-13;
+  
+  LinearSolver<double> solver = new AztecSolver(azOptions,azParams);
+
+  init(space, cs, expr, solver, quad);
 }
 
 
@@ -110,7 +145,7 @@ L2Projector::L2Projector(const DiscreteSpace& space,
   
   LinearSolver<double> solver = new AztecSolver(azOptions,azParams);
 
-  init(space, cs, expr, solver);
+  init(space, cs, expr, solver, new GaussianQuadrature(4));
 }
 
 
@@ -119,7 +154,8 @@ L2Projector::L2Projector(const DiscreteSpace& space,
 void L2Projector::init(const DiscreteSpace& space,        
   const CoordinateSystem& coordSys,
   const Expr& expr, 
-  const LinearSolver<double>& solver)
+  const LinearSolver<double>& solver,
+  const QuadratureFamily& quad)
 {
   TEST_FOR_EXCEPTION(space.basis().size() != expr.size(),
                      std::runtime_error,
@@ -148,8 +184,8 @@ void L2Projector::init(const DiscreteSpace& space,
   for (int i=0; i<space.basis().size(); i++)
     {
       eqn = eqn + Integral(space.cellFilters(i), 
-                           J*v[i]*(u[i]-expr[i]), 
-                           new GaussianQuadrature(4));
+        J*v[i]*(u[i]-expr[i]), 
+        quad);
     }
   Expr bc;
 

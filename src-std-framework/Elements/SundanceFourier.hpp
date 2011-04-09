@@ -28,63 +28,74 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_PERIODIC_LINE_MESHER_HPP
-#define SUNDANCE_PERIODIC_LINE_MESHER_HPP
+#ifndef SUNDANCE_FOURIER_H
+#define SUNDANCE_FOURIER_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceMeshReaderBase.hpp"
-#include "SundancePeriodicMesh1D.hpp"
-#include "SundancePeriodicSingleCellMesh1D.hpp"
+#include "Teuchos_RefCountPtr.hpp"
+#include "SundanceBasisFamilyBase.hpp"
 
-namespace Sundance
+namespace Sundance 
 {
-using namespace Teuchos;
-  
-/**
- * Create a mesh having one triangle
+/** 
+ * Fourier basis
  */
-class PeriodicLineMesher : public MeshSourceBase
+class Fourier : public ScalarBasis
 {
 public:
+  /** Construct a Fourier basis with the specified maximum frequency */
+	Fourier(int N);
+
+  /**   
+   * \brief Inform caller as to whether a given cell type is supported 
+   */
+  bool supportsCellTypePair(
+    const CellType& maximalCellType,
+    const CellType& cellType
+    ) const ;
+
   /** */
-  PeriodicLineMesher(
-    const double& a, 
-    const double& b,
-    int nx,
-    const MeshType& meshType)
-    : MeshSourceBase(meshType, MPIComm::self()),
-      nx_(nx),
-      a_(a),
-      b_(b)
-    {}
+  void print(std::ostream& os) const ;
 
-  /** virtual dtor */
-  virtual ~PeriodicLineMesher(){;}
+  /** */
+  int order() const {return 2*N_+1;}
 
+  /** return the number of nodes for this basis on the given cell type */
+  int nReferenceDOFsWithoutFacets(
+    const CellType& maximalCellType,
+    const CellType& cellType
+    ) const ;
 
-  /** Create a mesh */
-  virtual Mesh fillMesh() const 
-    {
-      RCP<MeshBase> rtn;
-      if (nx_<=1) rtn = rcp(new PeriodicSingleCellMesh1D(a_, b_));
-      else rtn = rcp(new PeriodicMesh1D(a_, b_, nx_));
-      return rtn;
-    }
+  /** */
+  void getReferenceDOFs(
+    const CellType& maximalCellType,
+    const CellType& cellType,
+    Array<Array<Array<int> > >& dofs) const ;
 
-  /** Print a short descriptive std::string */
-  virtual std::string description() const 
-    {return "PeriodicLineMesher";}
-      
+  /** */
+  void refEval(
+    const CellType& cellType,
+    const Array<Point>& pts,
+    const SpatialDerivSpecifier& deriv,
+    Array<Array<Array<double> > >& result,
+    int verbosity=0) const ;
 
-  /** Return a ref count pointer to self */
-  virtual RCP<MeshSourceBase> getRcp() {return rcp(this);}
+  /* Handleable boilerplate */
+  GET_RCP(BasisFamilyBase);
 
 private:
-  int nx_;
-  double a_;
-  double b_;
-};
+  static Array<int> makeRange(int low, int high);
 
+  /** evaluate on a line cell  */
+  void evalOnLine(const Point& pt,
+    const MultiIndex& deriv,
+    Array<double>& result) const ;
+    
+  /** the order of the basis*/
+  int N_;
+
+
+};
 }
 
 #endif

@@ -45,52 +45,62 @@
 
 namespace Sundance
 {
-  using namespace Playa;
-  using namespace Teuchos;
+using namespace Playa;
+using namespace Teuchos;
 
-  /**
-   * L2Projector projects an expression onto a DiscreteSpace. 
-   */
-  class L2Projector
-  {
-  public:
-    /** */
-    L2Projector(){;}
-    /** */
-    L2Projector(const DiscreteSpace& space, 
-                const Expr& expr);
-    /** */
-    L2Projector(const DiscreteSpace& space, 
-                const Expr& expr,
-                const LinearSolver<double>& solver);
-    /** */
-    L2Projector(const DiscreteSpace& space, 
-      const CoordinateSystem& coordSys,
-      const Expr& expr);
-    /** */
-    L2Projector(const DiscreteSpace& space, 
-      const CoordinateSystem& coordSys,
-      const Expr& expr,
-      const LinearSolver<double>& solver);
+/**
+ * L2Projector projects an expression onto a DiscreteSpace. 
+ */
+class L2Projector
+{
+public:
+  /** */
+  L2Projector(){;}
+  /** */
+  L2Projector(const DiscreteSpace& space, 
+    const Expr& expr);
+  /** */
+  L2Projector(const DiscreteSpace& space, 
+    const Expr& expr,
+    const QuadratureFamily& quad);
+  /** */
+  L2Projector(const DiscreteSpace& space, 
+    const Expr& expr,
+    const LinearSolver<double>& solver);
+  /** */
+  L2Projector(const DiscreteSpace& space, 
+    const Expr& expr,
+    const LinearSolver<double>& solver,
+    const QuadratureFamily& quad);
+  /** */
+  L2Projector(const DiscreteSpace& space, 
+    const CoordinateSystem& coordSys,
+    const Expr& expr);
+  /** */
+  L2Projector(const DiscreteSpace& space, 
+    const CoordinateSystem& coordSys,
+    const Expr& expr,
+    const LinearSolver<double>& solver);
 
-    /** */
-    Expr project() const {return prob_.solve(solver_);}
+  /** */
+  Expr project() const {return prob_.solve(solver_);}
 
-    /** */
-    const LinearProblem& prob() const {return prob_;}
+  /** */
+  const LinearProblem& prob() const {return prob_;}
 
-  private:
+private:
 
-    void init(const DiscreteSpace& space,       
-      const CoordinateSystem& coordSys,
-      const Expr& expr,
-      const LinearSolver<double>& solver);
+  void init(const DiscreteSpace& space,       
+    const CoordinateSystem& coordSys,
+    const Expr& expr,
+    const LinearSolver<double>& solver,
+    const QuadratureFamily& quad);
     
-    LinearProblem prob_;
+  LinearProblem prob_;
 
-    LinearSolver<double> solver_;
+  LinearSolver<double> solver_;
     
-  };
+};
 }
 
 
