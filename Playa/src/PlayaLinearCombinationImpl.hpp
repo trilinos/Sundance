@@ -538,6 +538,99 @@ Vector<Scalar>& Vector<Scalar>::operator=(const PlayaExprTemplates::LC2<Scalar, 
 }
 
  
+/* definition of sum-assignment from 1-term linear combination to a vector */
+template <class Scalar> 
+template <class Node> inline
+Vector<Scalar>& Vector<Scalar>::operator+=(const PlayaExprTemplates::OpTimesLC<Scalar, Node>& x)
+{
+  if (this->ptr().get()==0)
+  {
+    *this = x.eval();
+  }
+  else if (x.containsVector(this->ptr().get()))
+  {
+    Vector<Scalar> rtn = x.eval();
+    update(1.0, rtn);
+  }
+  else
+  {
+    x.addInto(*this);
+  }
+  return *this;
+}
+
+
+/* definition of subtraction-assignment from 
+ * 1-term linear combination to a vector */
+template <class Scalar> 
+template <class Node> inline
+Vector<Scalar>& Vector<Scalar>::operator-=(const PlayaExprTemplates::OpTimesLC<Scalar, Node>& x)
+{
+  if (this->ptr().get()==0)
+  {
+    *this = -x.eval();
+  }
+  else if (x.containsVector(this->ptr().get()))
+  {
+    Vector<Scalar> rtn = x.eval();
+    update(-1.0, rtn);
+  }
+  else
+  {
+    x.addInto(*this, LCSubtract);
+  }
+  return *this;
+}
+
+
+ 
+/* definition of sum-assignment from N-term linear combination to a vector */
+template <class Scalar>
+template <class Node1, class Node2> inline
+Vector<Scalar>& Vector<Scalar>::operator+=(const PlayaExprTemplates::LC2<Scalar, Node1, Node2>& x)
+{
+  if (this->ptr().get()==0)
+  {
+    *this = x.eval();
+  }
+  else if (x.containsVector(this->ptr().get()))
+  {
+    Vector<Scalar> rtn = x.eval();
+    update(1.0, rtn);
+  }
+  else
+  {
+    x.addInto(*this);
+  }
+  return *this;
+}
+
+
+ 
+/* definition of subtract-assignment from N-term linear combination 
+ * to a vector */
+template <class Scalar>
+template <class Node1, class Node2> inline
+Vector<Scalar>& Vector<Scalar>::operator-=(const PlayaExprTemplates::LC2<Scalar, Node1, Node2>& x)
+{
+  if (this->ptr().get()==0)
+  {
+    *this = -x.eval();
+  }
+  else if (x.containsVector(this->ptr().get()))
+  {
+    Vector<Scalar> rtn = x.eval();
+    update(-1.0, rtn);
+  }
+  else
+  {
+    x.addInto(*this, LCSubtract);
+  }
+  return *this;
+}
+
+
+
 
 /*======================================================================
  *

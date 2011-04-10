@@ -87,11 +87,40 @@ public:
 
   /**  \brief Assign a linear combination of vectors to this vector */
   template<class Node1, class Node2>
-  Vector& operator=(const PlayaExprTemplates::LC2<Scalar, Node1, Node2>& x);
+  Vector<Scalar>& operator=(const PlayaExprTemplates::LC2<Scalar, Node1, Node2>& x);
 
   /**  \brief Assign a scaled linear combination to this vector */
   template<class Node>
-  Vector& operator=(const PlayaExprTemplates::OpTimesLC<Scalar, Node>& x);
+  Vector<Scalar>& operator=(const PlayaExprTemplates::OpTimesLC<Scalar, Node>& x);
+  //@}
+
+  /** \name Operators with assignment */
+  //@{
+  /** Add a vector into this vector */
+  Vector<Scalar>& operator+=(const Vector<Scalar>& other);
+
+  /** Add a linear combination of vectors into this vector */
+  template<class Node1, class Node2>
+  Vector<Scalar>& operator+=(const PlayaExprTemplates::LC2<Scalar, Node1, Node2>& x);
+
+  /** Add an operator times a linear combination into this vector */
+  template <class Node>
+  Vector<Scalar>& operator+=(const PlayaExprTemplates::OpTimesLC<Scalar, Node>& x);
+
+  /** Subtract a vector from this vector */
+  Vector<Scalar>& operator-=(const Vector<Scalar>& other);
+
+  /** Subtract a linear combination of vectors from this vector */
+  template<class Node1, class Node2>
+  Vector<Scalar>& operator-=(const PlayaExprTemplates::LC2<Scalar, Node1, Node2>& x);
+
+  /** Subtract operator times a linear combination from this vector */
+  template <class Node>
+  Vector<Scalar>& operator-=(const PlayaExprTemplates::OpTimesLC<Scalar, Node>& x);
+
+  Vector<Scalar>& operator*=(const Scalar& a);
+
+  Vector<Scalar>& operator/=(const Scalar& a);
   //@}
 
   /** \name Structural information */

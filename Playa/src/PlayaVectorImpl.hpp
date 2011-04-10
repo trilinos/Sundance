@@ -33,6 +33,40 @@ using Playa::Out;
 using Playa::Tabs;
 using Playa::Printable;
 
+
+
+
+//===========================================================================
+template <class Scalar> 
+Vector<Scalar>& Vector<Scalar>::operator+=(const Vector<Scalar>& other)
+{
+  return update(1.0, other, 1.0);
+}  
+
+
+//===========================================================================
+template <class Scalar> 
+Vector<Scalar>& Vector<Scalar>::operator-=(const Vector<Scalar>& other)
+{
+  return update(-1.0, other, 1.0);
+}  
+
+
+//===========================================================================
+template <class Scalar> 
+Vector<Scalar>& Vector<Scalar>::operator*=(const Scalar& a)
+{
+  return scale(a);
+}  
+
+//===========================================================================
+template <class Scalar> 
+Vector<Scalar>& Vector<Scalar>::operator/=(const Scalar& a)
+{
+  return scale(1.0/a);
+}  
+
+
 //===========================================================================
 template <class Scalar> 
 int Vector<Scalar>::numBlocks() const 

@@ -16,6 +16,12 @@ namespace PlayaFunctors
 template <class Scalar> class BoundedMinLocFunctor;
 
 template <class Scalar> class BoundedMaxLocFunctor;
+
+template <class Scalar> class Norm2Dist;
+
+template <class Scalar> class Norm1Dist;
+
+template <class Scalar> class NormInfDist;
 }
 
 namespace Playa
@@ -58,6 +64,43 @@ Scalar maxlocWithBound(const Scalar& upperBound,
   gni = y.where;
   return y.what;
 }
+
+
+/* */
+template <class Scalar>
+Scalar norm2Dist(const Vector<Scalar>& x, const Vector<Scalar>& y)
+{
+  return x.applyBinaryReductionFunctor(
+    PlayaFunctors::Norm2Dist<Scalar>(x.comm()), y);
+}
+
+/* */
+template <class Scalar>
+Scalar norm1Dist(const Vector<Scalar>& x, const Vector<Scalar>& y)
+{
+  return x.applyBinaryReductionFunctor(
+    PlayaFunctors::Norm1Dist<Scalar>(x.comm()), y);
+}
+
+/* */
+template <class Scalar>
+Scalar normInfDist(const Vector<Scalar>& x, const Vector<Scalar>& y)
+{
+  return x.applyBinaryReductionFunctor(
+    PlayaFunctors::NormInfDist<Scalar>(x.comm()), y);
+}
+
+/** \relates Vector \brief Compute the Euclidean norm of a vector */
+template <class Scalar>
+Scalar norm2(const Vector<Scalar>& x) {return x.norm2();}
+
+/** \relates Vector \brief Compute the one-norm of a vector */
+template <class Scalar>
+Scalar norm1(const Vector<Scalar>& x) {return x.norm1();}
+
+/** \relates Vector \brief Compute the infinity norm of a vector */
+template <class Scalar>
+Scalar normInf(const Vector<Scalar>& x) {return x.normInf();}
 
 } // end namespace Playa
 
@@ -176,6 +219,108 @@ private:
   int baseGNI_;
 };
 
+
+
+/** \brief Euclidean distance between two vectors */
+template <class Scalar>
+class Norm2Dist : public ReductionFunctorBase<Scalar>
+{
+public:
+  Norm2Dist(const MPIComm& comm)
+    : ReductionFunctorBase<Scalar>(comm), val_(0.0) {}
+
+  void step(int i, const Scalar& x, const Scalar& y) const 
+    {
+      Scalar d = x-y;
+      val_ += d*d;
+    }
+
+  void postProc() const 
+    {
+      Scalar final = val_;
+      this->comm().allReduce(&val_, &final, 1, MPIComm::DOUBLE, MPIComm::SUM);
+      val_ = final;
+    }
+
+  Scalar result() const 
+    {
+      return ::sqrt(val_);
+    }
+
+  /** */
+  std::string description() const {return "Norm2Dist()";}
+
+private:
+  mutable Scalar val_;
+};
+
+
+
+/** \brief One-norm distance between two vectors */
+template <class Scalar>
+class Norm1Dist : public ReductionFunctorBase<Scalar>
+{
+public:
+  Norm1Dist(const MPIComm& comm)
+    : ReductionFunctorBase<Scalar>(comm), val_(0.0) {}
+
+  void step(int i, const Scalar& x, const Scalar& y) const 
+    {
+      Scalar d = x-y;
+      val_ += ::fabs(d);
+    }
+
+  void postProc() const 
+    {
+      Scalar final = val_;
+      this->comm().allReduce(&val_, &final, 1, MPIComm::DOUBLE, MPIComm::SUM);
+      val_ = final;
+    }
+
+  Scalar result() const 
+    {
+      return val_;
+    }
+
+  /** */
+  std::string description() const {return "Norm1Dist()";}
+
+private:
+  mutable Scalar val_;
+};
+
+/** \brief Infinity-norm distance between two vectors */
+template <class Scalar>
+class NormInfDist : public ReductionFunctorBase<Scalar>
+{
+public:
+  NormInfDist(const MPIComm& comm)
+    : ReductionFunctorBase<Scalar>(comm), val_(0.0) {}
+
+  void step(int i, const Scalar& x, const Scalar& y) const 
+    {
+      Scalar d = ::fabs(x-y);
+      if (d > val_) val_ = d;
+    }
+
+  void postProc() const 
+    {
+      Scalar final = val_;
+      this->comm().allReduce(&val_, &final, 1, MPIComm::DOUBLE, MPIComm::MAX);
+      val_ = final;
+    }
+
+  Scalar result() const 
+    {
+      return val_;
+    }
+
+  /** */
+  std::string description() const {return "NormInfDist()";}
+
+private:
+  mutable Scalar val_;
+};
 
 
 /** \brief Specify return type of BoundedMinLocFunctor */

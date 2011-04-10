@@ -86,6 +86,21 @@ public:
   Scalar max(int& index)const {return eval().max(index);}
 };
 
+/** */
+template <class Scalar>
+Scalar norm2(const ConvertibleToVector<Scalar>& c)
+{return c.norm2();}
+
+/** */
+template <class Scalar>
+Scalar norm1(const ConvertibleToVector<Scalar>& c)
+{return c.norm1();}
+
+/** */
+template <class Scalar>
+Scalar normInf(const ConvertibleToVector<Scalar>& c)
+{return c.normInf();}
+
 /** 
  * Class OpTimesLC holds an operator times something convertible to a vector
  */

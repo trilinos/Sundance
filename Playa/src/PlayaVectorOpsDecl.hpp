@@ -32,6 +32,32 @@ template <class Scalar>
 Scalar maxlocWithBound(const Scalar& upperBound, 
   const Vector<Scalar>& x, int& gni);
 
+/** \relates Vector \brief Compute the Euclidean norm of a vector */
+template <class Scalar>
+Scalar norm2(const Vector<Scalar>& x);
+
+/** \relates Vector \brief Compute the one-norm of a vector */
+template <class Scalar>
+Scalar norm1(const Vector<Scalar>& x);
+
+/** \relates Vector \brief Compute the infinity norm of a vector */
+template <class Scalar>
+Scalar normInf(const Vector<Scalar>& x);
+
+/** \relates Vector 
+ * \brief Compute the Euclidean distance between two vectors */
+template <class Scalar>
+Scalar norm2Dist(const Vector<Scalar>& x, const Vector<Scalar>& y);
+
+/** \relates Vector \brief Compute the one-norm distance between two vectors */
+template <class Scalar>
+Scalar norm1Dist(const Vector<Scalar>& x, const Vector<Scalar>& y);
+
+/** \relates Vector
+ *  \brief Compute the infinity-norm distance between two vectors */
+template <class Scalar>
+Scalar normInfDist(const Vector<Scalar>& x, const Vector<Scalar>& y);
+
 }
 
  
