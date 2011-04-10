@@ -28,6 +28,7 @@ int main(int argc, char *argv[])
   {
     /* Initialize MPI */
     GlobalMPISession session(&argc, &argv);
+    Tabs::showDepth() = false;
 
 
     /* The VectorType object will be used when we create vector spaces, 
@@ -36,9 +37,11 @@ int main(int argc, char *argv[])
     VectorType<double> vecType = new EpetraVectorType();
 
     /* Construct a vector space  */
-    int n = 100;
+    int n = 4;
     VectorSpace<double> vs = vecType.createEvenlyPartitionedSpace(MPIComm::world(), n);
 
+    /* */
+    Rand::setLocalSeed(MPIComm::world(), 12345);
 
     /* Make some vectors */
     Vector<double> x = vs.createMember();
@@ -61,8 +64,13 @@ int main(int argc, char *argv[])
     double tol = 1.0e-10;
     int fails = 0;
 
+    /* Print a vector */
+    Out::root() << "x = " << x.description() << endl;
+    Out::os() << x << endl;
     /* Make sure we've not created a zero-norm random vector */
     Out::root() << "||x||=" << norm2(x) << endl;
+
+    
 
 
     /* Test the deep copying of a vector */
@@ -92,7 +100,7 @@ int main(int argc, char *argv[])
 
     
      
-    if (rtn == 0)
+    if (fails == 0)
     {
       Out::root() << "test PASSED" << endl;
     }
