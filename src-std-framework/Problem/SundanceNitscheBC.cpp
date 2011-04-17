@@ -79,7 +79,7 @@ Expr NitscheStokesNoSlipBC(const CellFilter& cells,
   Expr h = new CellDiameterExpr();
   
   return Integral(cells,
-    -nu*(v*((n*grad)*(u-uBC)) + (u-uBC)*((n*grad)*v))
+    -nu*(v*((n*grad)*u /*- (n*grad)*uBC*/) + (u-uBC)*((n*grad)*v))
     + p*(v*n) + q*((u-uBC)*n)
     + gamma1/h * v*(u-uBC) + gamma2/h * (v*n) * ((u-uBC)*n),
     quad);

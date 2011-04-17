@@ -4,7 +4,7 @@
   <ParameterList name="Linear Solver">
     <!-- preconditioner will be specified in user code -->
     <Parameter name="Type" type="string" value="Belos"/>
-    <Parameter name="Maximum Iterations" type="int" value="500"/>
+    <Parameter name="Maximum Iterations" type="int" value="100"/>
     <Parameter name="Method" type="string" value="GMRES"/>
 
     <!-- <Parameter name="Flexible Gmres" type="bool" value="true"/> -->
@@ -14,7 +14,7 @@
     <Parameter name="Output Frequency" type="int" value="1"/>
     <Parameter name="Output Style" type="int" value="1"/>
     <!-- NumBlocks is size of Krylov subspace... for unrestarted gmres, set equal to max its -->
-    <Parameter name="Num Blocks" type="int" value="100"/>
+    <Parameter name="Num Blocks" type="int" value="20"/>
     <Parameter name="Block Size" type="int" value="1"/>
   </ParameterList>
 

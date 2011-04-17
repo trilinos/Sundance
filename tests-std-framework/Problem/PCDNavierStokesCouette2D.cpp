@@ -51,8 +51,8 @@ int main( int argc , char **argv )
     Expr upNewt = List(uNewt, pNewt);
 
     Expr nu = 1.0;
-    double C1 = 20.0;
-    double C2 = 20.0;
+    double C1 = 25.0;
+    double C2 = 25.0;
 
     /* Navier-Stokes equations */
     Expr eqn = Integral(interior, 
@@ -174,6 +174,7 @@ int main( int argc , char **argv )
     w.addMesh(mesh);
     w.addField( "ux" , new ExprFieldWrapper( ux_P1 ) );
     w.addField( "uy" , new ExprFieldWrapper( uy_P1 ) );
+    w.addField( "p" , new ExprFieldWrapper( pSoln ) );
     w.addField( "uxEx" , new ExprFieldWrapper( uxEx_P1 ) );
     w.addField( "uyEx" , new ExprFieldWrapper( uyEx_P1 ) );
     w.write();
