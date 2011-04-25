@@ -113,6 +113,81 @@ private:
 };
 
 
+/** 
+ * This class bundles together a sequence of uniform meshes
+ * of the 2D rectangle [ax,bx] times [ay,by] with cell
+ * filters defining the interior and boundaries. It is intended for quick 
+ * and reliable setup of 2D test problems.
+ */
+class RectangleDomain
+{
+public:
+  /** Contruct the unit square */
+  RectangleDomain(const Array<int>& n);
+
+  /** Construct */
+  RectangleDomain(
+    double ax, double bx, const Array<int>& nx,
+    double ay, double by, const Array<int>& ny
+    );
+
+  /** */
+  int numMeshes() const {return mesh_.size();}
+
+  /** */
+  const CellFilter& north() const {return north_;}
+
+  /** */
+  const CellFilter& south() const {return south_;}
+
+  /** */
+  const CellFilter& east() const {return east_;}
+
+  /** */
+  const CellFilter& west() const {return west_;}
+
+  /** */
+  const CellFilter& interior() const {return interior_;}
+
+  /** */
+  const Mesh& mesh(int i) const {return mesh_[i];}
+
+  /** */
+  double ax() const {return ax_;}
+
+  /** */
+  double bx() const {return bx_;}
+  
+  /** */
+  int nx(int i) const {return nx_[i];}
+
+  /** */
+  double ay() const {return ay_;}
+
+  /** */
+  double by() const {return by_;}
+  
+  /** */
+  int ny(int i) const {return ny_[i];}
+
+private:
+  void init();
+
+  double ax_;
+  double bx_;
+  Array<int> nx_;
+  double ay_;
+  double by_;
+  Array<int> ny_;
+  CellFilter interior_;
+  CellFilter north_;
+  CellFilter south_;
+  CellFilter east_;
+  CellFilter west_;
+  Array<Mesh> mesh_;
+};
+
+
 
 /** */
 class LPTestSpec
@@ -240,6 +315,14 @@ public:
    */
   virtual Array<int> pExpected() const = 0 ;
 
+  /** 
+   * Hook for a user-defined operation after each run. This can be used,
+   * for example, to write viz output. Default is a no-op.
+   */
+  virtual void postRunCallback(int meshID, const Mesh& mesh,
+    const string& solverFile,
+    const Expr& soln) const {} 
+
 private:
   /** */
   bool runSingleTest(const std::string& solverFile, const double& tol) const ;
@@ -291,6 +374,30 @@ public:
   
 private:
   LineDomain domain_;
+};
+
+
+/** */
+class LPRectTestBase : public LPTestBase
+{
+public:
+  /** */
+  LPRectTestBase(const Array<int>& n);
+
+  /** */
+  CellFilter interior() const {return domain_.interior();}
+
+  /** */
+  Mesh getMesh(int i) const {return domain_.mesh(i);}
+
+  /** */
+  const RectangleDomain& domain() const {return domain_;}
+
+  /** */
+  int numMeshes() const {return domain_.numMeshes();}
+  
+private:
+  RectangleDomain domain_;
 };
 
 

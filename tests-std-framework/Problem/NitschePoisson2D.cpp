@@ -1,179 +1,132 @@
 #include "Sundance.hpp"
-#include "SundanceCellDiameterExpr.hpp"
-#include "SundanceEvaluator.hpp"
+#include "SundanceProblemTesting.hpp"
 
 
-NEW_CELL_PREDICATE(LeftPointTest)
-{return fabs(x[0]) < 1.0e-10;}
-
-NEW_CELL_PREDICATE(BottomPointTest)
-{return fabs(x[1]) < 1.0e-10;}
-
-NEW_CELL_PREDICATE(RightPointTest)
-{return fabs(x[0]-1.0) < 1.0e-10;}
-
-NEW_CELL_PREDICATE(TopPointTest)
-{return fabs(x[1]-1.0) < 1.0e-10;}
-
-
-void balanceXY(int n, int* npx, int* npy)
+class NitschePoisson2DTest : public LPRectTestBase
 {
-  int m = (int) floor(sqrt(n));
-  for (int i=m; i>=1; i--)
-  {
-    if (n % i == 0) 
+public:
+  /** */
+  NitschePoisson2DTest(const Array<int>& n, int k, double C)
+    : LPRectTestBase(n), k_(k), C_(C) {}
+
+  /** */
+  std::string name() const {return "NitschePoisson2D";}
+
+  /** */
+  Expr exactSoln() const 
     {
-      *npx = i;
-      *npy = n/i;
-      return ;
+      Expr x = new CoordExpr(0);
+      Expr y = new CoordExpr(1);
+      const double pi = 4.0*atan(1.0);
+      return cos(pi*x/2.0)*sin(pi*y);    
     }
-  }
 
-  *npx = n;
-  *npy = 1;
-}
+  /** */
+  Array<int> pExpected() const {return tuple<int>(k_+1);}
 
-/* weak form of poisson with Nitsche-type weak BC's */
-Expr poissonEquationNitsche( bool splitBC, 
-  Expr u ,
-  Expr v ,
-  Expr alpha ,
-  QuadratureFamily quad )
-{
-  CellFilter interior = new MaximalCellFilter();
-  CellFilter boundary = new BoundaryCellFilter();
-  CellFilter left = boundary.subset( new LeftPointTest() );
-  CellFilter right = boundary.subset( new RightPointTest() );
-  CellFilter top = boundary.subset( new TopPointTest() );
-  CellFilter bottom = boundary.subset( new BottomPointTest() );
+  /** */
+  LinearProblem prob(const Mesh& mesh) const
+    {
+      Expr dx = new Derivative(0);
+      Expr dy = new Derivative(1);
+      Expr x = new CoordExpr(0);
+      Expr y = new CoordExpr(1);
+      Expr grad = List( dx , dy );
 
-  CellFilter allBdry = left+right+top+bottom;
+      CellFilter allBdry = domain().north() + domain().south() 
+        + domain().east() + domain().west();
 
-  Expr dx = new Derivative(0);
-  Expr dy = new Derivative(1);
-  Expr x = new CoordExpr(0);
-  Expr y = new CoordExpr(1);
-  Expr grad = List( dx , dy );
+      BasisFamily L = new Lagrange( k_ );
 
-  Expr uvTerm;
-  if (splitBC)
-  {
-    Out::os() << "BC expressions split over domains" << std::endl;
-    uvTerm = Integral( left , alpha*u * v , quad )
-      + Integral( right , alpha*u * v , quad )
-      + Integral( top , alpha*u * v , quad )
-      + Integral( bottom , alpha*u * v , quad );
-  }
-  else
-  {
-    Out::os() << "BC expressions not split over domains" << std::endl;
-    uvTerm = Integral( allBdry , alpha*u * v , quad );
-  }
+      Expr u = new UnknownFunction( L , "u" );
+      Expr v = new TestFunction( L , "v" );
+      QuadratureFamily quad = new GaussianQuadrature( 2 * k_ );
+      
+      const double pi = 4.0*atan(1.0);
+      Expr force = 1.25*pi*pi*cos(pi*x/2.0)*sin(pi*y);
+      Expr eqn = Integral( interior(), 
+        (grad*v) * (grad*u) - force * v , quad )
+        + NitschePoissonDirichletBC(2, allBdry, quad, 
+          1.0, v, u, exactSoln(), C_);
+      
+
+      Expr bc;
+
+      return LinearProblem(mesh, eqn, bc, v, u, vecType());
+    }
+
+  /**
+   * Specify which linear solvers are to be used.
+   */
+  Array<LPTestSpec> specs() const
+    {
+      double tol = 0.05;
+      return tuple(
+        LPTestSpec("amesos.xml", tol, makeSet<int>(1))/*,
+                                                        LPTestSpec("aztec-ifpack.xml", tol), 
+                                                        LPTestSpec("aztec-ml.xml", tol),
+                                          LPTestSpec("belos-ml.xml", tol),
+                                          LPTestSpec("bicgstab.xml", tol) */
+        );
+    }
+
+  void postRunCallback(int meshID, const Mesh& mesh,
+    const string& solverFile,
+    const Expr& soln) const
+    {
+      string solverName = StrUtils::before(solverFile, ".");
+      string file = "NitschePoisson2D-mesh-" + Teuchos::toString(meshID)
+        + "-" + solverName + "-p-" + Teuchos::toString(k_)
+        + "-C-" + Teuchos::toString(C_);
+
+      DiscreteSpace discSpace(mesh, new Lagrange(1), vecType());
+      Expr uEx = exactSoln();
+      L2Projector proj(discSpace, soln - uEx);
+      Expr err = proj.project();
+
+      FieldWriter w = new VTKWriter(file);
+      w.addMesh(mesh);
+      w.addField("soln", new ExprFieldWrapper(soln));
+      w.addField("error", new ExprFieldWrapper(err));
+      w.write();
+    }
+private:
+  int k_;
+  double C_;
   
-
-  const double pi = 4.0*atan(1.0);
-  Expr force = 2.0*pi*pi*sin(pi*x)*sin(pi*y);
-  return Integral( interior , (grad*v) * (grad*u) - force * v , quad )
-    /* du/dn term */
-    - Integral( left , -(dx*u)*v , quad )
-    - Integral( top , (dy*u)*v , quad )
-    - Integral( right , (dx*u)*v , quad )
-    - Integral( bottom , -(dy*u)*v , quad )
-    /* dv/dn term */
-    - Integral( left , -(dx*v)*u , quad )
-    - Integral( top , (dy*v)*u , quad )
-    - Integral( right , (dx*v)*u , quad )
-    - Integral( bottom , -(dy*v)*u , quad )
-    /* u,v term  -- alpha = C / h */
-    + uvTerm;
-}
+};
 
 
 int main( int argc , char **argv )
 {
-  try {
-    int nx = 128;
-    double C = 4.0;
-    std::string solverFile = "aztec-ml.xml";
-    Sundance::setOption("nx", nx, "number of elements in x");
-    Sundance::setOption("C", C, "Nitsche penalty");
-    Sundance::setOption("solver", solverFile, "name of XML file for solver");
-    
-    Sundance::init( &argc , &argv );
+
+  try
+  {
+    Sundance::init(&argc, &argv);
+    Tabs::showDepth() = false;
+    LinearSolveDriver::solveFailureIsFatal() = false;
     int np = MPIComm::world().getNProc();
-    int npx = -1;
-    int npy = -1;
-    balanceXY(np, &npx, &npy);
-    TEST_FOR_EXCEPT(npx < 1);
-    TEST_FOR_EXCEPT(npy < 1);
-    TEST_FOR_EXCEPT(npx * npy != np);
 
-    VectorType<double> vecType = new EpetraVectorType();
+    LPTestSuite tests;
 
-    const int k = 1;
-    const int splitBC = 1;
+    Array<int> nx = tuple(4, 8, 16, 32, 64);
+    double C = 100.0;
 
-    MeshType meshType = new BasicSimplicialMeshType();
-    MeshSource mesher = new PartitionedRectangleMesher( 0.0 , 1.0 , nx , npx ,
-      0.0 , 1.0 , nx , npy,
-      meshType );
-    Mesh mesh = mesher.getMesh();
+    for (int p=1; p<=3; p++)
+    {
+      tests.registerTest(rcp(new NitschePoisson2DTest(nx, p, C)));
+    }
 
-    BasisFamily L = new Lagrange( k );
+    bool pass = tests.run();
 
-    Expr u = new UnknownFunction( L , "u" );
-    Expr v = new TestFunction( L , "v" );
-    QuadratureFamily quad = new GaussianQuadrature( 2 * k );
-    
-    Expr h = new CellDiameterExpr();
-    Expr alpha = C / h; 
-    Expr eqn = poissonEquationNitsche( splitBC, u , v , alpha , quad );
-    Expr bc;
+    Out::root() << "total test status: " << pass << std::endl;
 
-
-    LinearProblem prob( mesh , eqn , bc , v , u , vecType);
-
-#ifdef HAVE_CONFIG_H
-    ParameterXMLFileReader reader(searchForFile("SolverParameters/" + solverFile));
-#else
-      ParameterXMLFileReader reader(solverFile);
-#endif
-    ParameterList solverParams = reader.getParameters();
-    LinearSolver<double> solver 
-      = LinearSolverBuilder::createSolver(solverParams);
-
-
-    Expr soln = prob.solve( solver );
-
-
-    FieldWriter w = new VTKWriter( "NitschePoisson2D" );
-    w.addMesh( mesh );
-    w.addField( "u" , new ExprFieldWrapper( soln ) );
-    w.write();
-
-    Expr x = new CoordExpr(0);
-    Expr y = new CoordExpr(1);
-    QuadratureFamily quad4 = new GaussianQuadrature(4);
-    
-    CellFilter interior = new MaximalCellFilter();
-    const double pi = 4.0*atan(1.0);
-    Expr exactSoln = sin(pi*x)*sin(pi*y);    
-    Expr err = exactSoln - soln;
-    Expr errExpr = Integral(interior, 
-      err*err,
-      quad4);
-    FunctionalEvaluator errInt(mesh, errExpr);
-
-    double errorSq = errInt.evaluate();
-    cout << "error norm = " << sqrt(errorSq) << std::endl << std::endl;
-    
-
-    Sundance::passFailTest(sqrt(errorSq), 1.0e-4);
+    Sundance::passFailTest(pass);
   }
-  catch (std::exception &e) 
+	catch(std::exception& e)
   {
     Sundance::handleException(e);
   }
   Sundance::finalize(); 
-  return Sundance::testStatus();
+  return Sundance::testStatus(); 
 }

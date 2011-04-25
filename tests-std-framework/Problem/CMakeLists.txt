@@ -27,6 +27,7 @@ SET(SerialTests
   EdgeDFTest
   Kepler 
   Stokes2D 
+  NitschePoisson2D 
   PCDStokesCouette2D
   PCDNavierStokesCouette2D
   LinearPartialDomain 
@@ -74,7 +75,7 @@ SET(MPITests
              SpectralPoisson1D 
              SpectralSqrt 
              SteadyBurgers1D
-             NitschePoisson2D 
+             #NitschePoisson2D 
              #HelmholtzEigen2D
              MixedTest_HN
              NavStok_Chanel_stat_HN

@@ -148,7 +148,65 @@ void LineDomain::init()
   right_ = points.subset(new CoordinateValueCellPredicate(0,b_));
 }
 
+/* -------- RectangleDomain ----------------- */
 
+RectangleDomain::RectangleDomain(const Array<int>& n)
+  : ax_(0.0), bx_(1.0), nx_(n), 
+    ay_(0.0), by_(1.0), ny_(n), 
+    interior_(new MaximalCellFilter()),
+    north_(), south_(), east_(), west_(),
+    mesh_()
+{init();}
+
+RectangleDomain::RectangleDomain(
+  double ax, double bx, const Array<int>& nx,
+  double ay, double by, const Array<int>& ny
+  )
+  : ax_(ax), bx_(bx), nx_(nx), 
+    ay_(ay), by_(by), ny_(ny), 
+    interior_(new MaximalCellFilter()),
+    north_(), south_(), east_(), west_(),
+    mesh_()
+{init();}
+
+
+void RectangleDomain::init()
+{
+  TEST_FOR_EXCEPT(nx_.size() != ny_.size());
+  int np = MPIComm::world().getNProc();
+  int npx = -1;
+  int npy = -1;
+
+  PartitionedRectangleMesher::balanceXY(np, &npx, &npy);
+  TEST_FOR_EXCEPT(npx < 1);
+  TEST_FOR_EXCEPT(npy < 1);
+  TEST_FOR_EXCEPT(npx * npy != np);
+
+  MeshType meshType = new BasicSimplicialMeshType();
+  mesh_.resize(nx_.size());
+
+  for (int i=0; i<nx_.size(); i++)
+  {
+    MeshSource mesher 
+      = new PartitionedRectangleMesher(
+        ax_, bx_, nx_[i], npx,
+        ay_, by_, ny_[i], npy,
+        meshType);
+    mesh_[i] = mesher.getMesh();
+  }
+  
+  CellFilter edges = new DimensionalCellFilter(1);
+  north_ = edges.subset(new CoordinateValueCellPredicate(1,by_));
+  south_ = edges.subset(new CoordinateValueCellPredicate(1,ay_));
+  west_ = edges.subset(new CoordinateValueCellPredicate(0,ax_));
+  east_ = edges.subset(new CoordinateValueCellPredicate(0,bx_));
+}
+
+
+
+
+
+/* -------- norm calculators ----------------- */
 
 Array<double> L2NormCalculator::computeNorms(
   const ForwardProblemTestBase* prob,
@@ -313,6 +371,8 @@ bool ForwardProblemTestBase::runTestSequence(const std::string& solverFile,
     bool solveOK = solve(getMesh(i), solver, soln);
     if (!solveOK) return false;
 
+    postRunCallback(i, getMesh(i), solverFile, soln);
+
     double h = cellSize(i);
     Array<double> err = normCalculator()->computeNorms(
       this, i, soln, exact);
@@ -404,4 +464,6 @@ LP1DTestBase::LP1DTestBase(const Array<int>& nx)
 LP1DTestBase::LP1DTestBase(double a, double b, const Array<int>& nx)
   : domain_(a, b, nx) {}
 
+LPRectTestBase::LPRectTestBase(const Array<int>& n)
+  : domain_(n) {}
 }
