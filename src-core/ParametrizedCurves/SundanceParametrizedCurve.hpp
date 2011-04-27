@@ -80,6 +80,11 @@ public:
 		return ptr()->getControlPoints();
 	}
 
+	/** update the state of the curve of the control point were changed */
+	void update() {
+		ptr()->update();
+	}
+
 	/** List integration parameters for the FCM method*/
 	void getIntegrationParams(Array<double>& alphas) const {
 		return ptr()->getIntegrationParams(alphas);

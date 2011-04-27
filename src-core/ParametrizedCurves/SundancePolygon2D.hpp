@@ -63,6 +63,9 @@ public:
 	/** return the points of the polygon */
 	virtual Array<Point>& getControlPoints() { return polyPoints_; }
 
+	/** update the state of the curve of the control point were changed */
+	virtual void update();
+
 protected:
 	/**
 	 * This function should be implemented
@@ -120,6 +123,12 @@ private:
 	/** looks for each point in which cell it is contained (later for evaluation purposes)*/
 	void computeMaxCellLIDs();
 
+	/** */
+	bool shortDistanceCalculation(const Point& p, double &res) const;
+
+	/** */
+	bool shortIntersectCalculation(const Point& st, const Point& end) const;
+
 	/** indicates weather we have a mesh or not */
 	bool hasMesh_;
 
@@ -136,7 +145,14 @@ private:
 	/** each points should know in which cell is evaluable (DiscreteSpace)*/
 	Array<int> pointsMaxCellLID_;
 
-	/** the index of the line which is at last the intersection point */
+	/** coordinates to store the bounding box*/
+	double minX_;
+	double maxX_;
+	double minY_;
+	double maxY_;
+
+	/** the index of the line which is at last the intersection point,
+	 * used only in the union of two polygons */
 	static int intersectionEdge_;
 
 };

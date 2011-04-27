@@ -79,6 +79,9 @@ public:
 		TEST_FOR_EXCEPTION( true , std::runtime_error, " getControlPoints() method is not overwritten ");
 	}
 
+	/** update the state of the curve of the control point were changed*/
+	virtual void update() {;}
+
 	/**
 	 * Return the integration parameters
 	 * @param alphas, integration parameters, first one corresponds to Equation > 0

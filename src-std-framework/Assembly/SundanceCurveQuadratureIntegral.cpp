@@ -360,22 +360,54 @@ void CurveQuadratureIntegral
   const Array<double>& w = W_;
   double curveDerivNorm = 0.0;
 
+  if ( (int)isLocalFlag.size() == 0 )
+  {
+	 for (int c=0; c<JVol.numCells(); c++)
+	 {
+  	   // get the points on the reference cell, instead of "quadPts_" ,  and update "quadCurveDerivs_"
+	   updateRefCellInformation( (*cellLIDs)[c] , globalCurve() );
+
+       // here we do not have to update W_ since it is only the weight of the quadrature points
+	   for (int q=0; q<nQuad; q++, coeffPtr++)
+	   {
+	   	  // no multiplication with the Jacobian!!!
+	   	  // multiply with the norm of the derivative of the curve (this should be stored in the mesh)
+	   	  curveDerivNorm = sqrt(quadCurveDerivs_[q]*quadCurveDerivs_[q]);
+	      a += w[q]*(*coeffPtr)*curveDerivNorm;
+	    }
+	  }
+  }
+  else
+  {
+	TEST_FOR_EXCEPTION( (int) isLocalFlag.size() != JVol.numCells(),
+		  std::runtime_error,
+	      "mismatch between isLocalFlag.size()="
+	      << isLocalFlag.size()
+	      << " and JVol.numCells()=" << JVol.numCells());
 
     for (int c=0; c<JVol.numCells(); c++)
     {
-
-  	  // get the points on the reference cell, instead of "quadPts_" ,  and update "quadCurveDerivs_"
-  	  updateRefCellInformation( (*cellLIDs)[c] , globalCurve() );
+      // only if this cell is local on the processor
+  	  if ( isLocalFlag[c] )
+  	  {
+  	    // get the points on the reference cell, instead of "quadPts_" ,  and update "quadCurveDerivs_"
+  	    updateRefCellInformation( (*cellLIDs)[c] , globalCurve() );
       
-      // here we do not have to update W_ since it is only the weight of the quadrature points
-      for (int q=0; q<nQuad; q++, coeffPtr++)
-      {
-    	// no multiplication with the Jacobian!!!
-    	// multiply with the norm of the derivative of the curve (this should be stored in the mesh)
-    	curveDerivNorm = sqrt(quadCurveDerivs_[q]*quadCurveDerivs_[q]);
-        a += w[q]*(*coeffPtr)*curveDerivNorm;
-      }
+        // here we do not have to update W_ since it is only the weight of the quadrature points
+        for (int q=0; q<nQuad; q++, coeffPtr++)
+        {
+    	  // no multiplication with the Jacobian!!!
+    	  // multiply with the norm of the derivative of the curve (this should be stored in the mesh)
+    	  curveDerivNorm = sqrt(quadCurveDerivs_[q]*quadCurveDerivs_[q]);
+          a += w[q]*(*coeffPtr)*curveDerivNorm;
+        }
+  	  }
+  	  else {
+  		 // increment the coeff vector, if this cell does not count
+  		 coeffPtr += nQuad;
+  	  }
     }
+  }
 
   SUNDANCE_MSG5(integrationVerb(), tabs << "output A = ");
   if (integrationVerb() >= 5) writeTable(Out::os(), tabs, *A, 6);

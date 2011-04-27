@@ -834,8 +834,9 @@ void CurveIntegralCalc::getCurveQuadPoints_polygon(
 	//try to convert the quadrature to a polygon curve integral class
 	// this quadrature class is special for polygon curve integrals
 	const PolygonQuadrature* polyquad = dynamic_cast<const PolygonQuadrature*> (quad.ptr().get());
-	if ( polygon == 0 ) {
-		TEST_FOR_EXCEPTION( true , std::runtime_error , " getCurveQuadPoints_polygon , Quadrature must be PolygonQuadrature" );
+	if ( polyquad == 0 ) {
+		TEST_FOR_EXCEPTION( true , std::runtime_error ,
+			" getCurveQuadPoints_polygon , Quadrature for a polygon curve must be PolygonQuadrature" );
 		return;
 	}
 

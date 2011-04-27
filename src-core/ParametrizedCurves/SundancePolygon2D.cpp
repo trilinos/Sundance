@@ -47,9 +47,15 @@ Polygon2D::Polygon2D(const Mesh& mesh , const Array<Point>& points , double a1, 
 	// just store the input points
 	polyPoints_.resize(points.size());
 	SUNDANCE_MSG3( verb , "Polygon2D() Ctor nrPoints=" << points.size() );
+	maxX_ = minX_ = points[0][0];
+	maxY_ = minY_ = points[0][1];
 	for (int j = 0 ; j < points.size() ; j++ ){
 		polyPoints_[j] = points[j];
 		SUNDANCE_MSG3( verb , " point[" << j << "] = " << polyPoints_[j]);
+		maxX_ = (maxX_ > points[j][0]) ? maxX_ : points[j][0];
+		minX_ = (minX_ < points[j][0]) ? minX_ : points[j][0];
+		maxY_ = (maxY_ > points[j][1]) ? maxY_ : points[j][1];
+		minY_ = (minY_ < points[j][1]) ? minY_ : points[j][1];
 	}
     // get the maxCellsLID for each point
 	computeMaxCellLIDs();
@@ -62,9 +68,15 @@ Polygon2D::Polygon2D(const Array<Point>& points , double a1, double a2, bool clo
 	// just store the input points
 	polyPoints_.resize(points.size());
 	SUNDANCE_MSG3( verb , "Polygon2D() Ctor nrPoints=" << points.size() );
+	maxX_ = minX_ = points[0][0];
+	maxY_ = minY_ = points[0][1];
 	for (int j = 0 ; j < points.size() ; j++ ){
 		polyPoints_[j] = points[j];
 		SUNDANCE_MSG3( verb , " point[" << j << "] = " << polyPoints_[j]);
+		maxX_ = (maxX_ > points[j][0]) ? maxX_ : points[j][0];
+		minX_ = (minX_ < points[j][0]) ? minX_ : points[j][0];
+		maxY_ = (maxY_ > points[j][1]) ? maxY_ : points[j][1];
+		minY_ = (minY_ < points[j][1]) ? minY_ : points[j][1];
 	}
     // get the maxCellsLID for each point
 	computeMaxCellLIDs();
@@ -105,6 +117,17 @@ CurveBase(1, a2, a1, flipD), hasMesh_(true), closedPolygon_(closedPolygon) , mes
 		if (str_tmp.size() < 2 ) break;
 		d1 = strtod (str_tmp.c_str() , &pEnd);
 		d2 = strtod (pEnd , NULL);
+
+		// look for the bounding box
+		if (index_tmp == 0){
+			maxX_ = minX_ = tmpP[0];
+			maxY_ = minY_ = tmpP[1];
+		}else{
+			maxX_ = (maxX_ > tmpP[0]) ? maxX_ : tmpP[0];
+			minX_ = (minX_ < tmpP[0]) ? minX_ : tmpP[0];
+			maxY_ = (maxY_ > tmpP[1]) ? maxY_ : tmpP[1];
+			minY_ = (minY_ < tmpP[1]) ? minY_ : tmpP[1];
+		}
     }
 
 	// close the file
@@ -148,6 +171,17 @@ CurveBase(1, a2, a1, flipD), hasMesh_(false), closedPolygon_(closedPolygon), mes
 		if (str_tmp.size() < 2 ) break;
 		d1 = strtod (str_tmp.c_str() , &pEnd);
 		d2 = strtod (pEnd , NULL);
+
+		// look for the bounding box
+		if (index_tmp == 0){
+			maxX_ = minX_ = tmpP[0];
+			maxY_ = minY_ = tmpP[1];
+		}else{
+			maxX_ = (maxX_ > tmpP[0]) ? maxX_ : tmpP[0];
+			minX_ = (minX_ < tmpP[0]) ? minX_ : tmpP[0];
+			maxY_ = (maxY_ > tmpP[1]) ? maxY_ : tmpP[1];
+			minY_ = (minY_ < tmpP[1]) ? minY_ : tmpP[1];
+		}
     }
 
 	// close the file
@@ -215,11 +249,47 @@ void Polygon2D::computeMaxCellLIDs(){
 	} // - from the for loop
 }
 
+// update the state of the curve of the control point were changed
+void Polygon2D::update() {
+	maxX_ = minX_ = polyPoints_[0][0];
+	maxY_ = minY_ = polyPoints_[0][1];
+	// get the maximum and minimum values
+	for (int j = 0 ; j < polyPoints_.size() ; j++ ){
+		maxX_ = (maxX_ > polyPoints_[j][0]) ? maxX_ : polyPoints_[j][0];
+		minX_ = (minX_ < polyPoints_[j][0]) ? minX_ : polyPoints_[j][0];
+		maxY_ = (maxY_ > polyPoints_[j][1]) ? maxY_ : polyPoints_[j][1];
+		minY_ = (minY_ < polyPoints_[j][1]) ? minY_ : polyPoints_[j][1];
+	}
+	// computes the cellLIDs
+	computeMaxCellLIDs();
+}
+
 Expr Polygon2D::getParams() const
 {
 	//todo: return the points of the polygon, only later for the optimization
 	// if necessary at all ...
 	return Expr(List(0.0));
+}
+
+
+bool Polygon2D::shortDistanceCalculation(const Point& p, double &res) const{
+	double px = minX_;
+	double ox = maxX_ - minX_;
+	double py = minY_;
+	double oy = maxY_ - minY_;
+
+	px = px + 0.5*ox;
+	py = py + 0.5*oy;
+	double r = (1.0 + 1e-9)*(::sqrt( (ox/2)*(ox/2) + (oy/2)*(oy/2) ));
+
+	double d = ( (p[0]-px)*(p[0]-px) + (p[1]-py)*(p[1]-py) - r * r);
+
+	if (d > 1e-14){
+		res = d;
+		return true;
+	}else{
+		return false;
+	}
 }
 
 double Polygon2D::curveEquation_intern(const Point& evalPoint) const
@@ -231,6 +301,12 @@ double Polygon2D::curveEquation_intern(const Point& evalPoint) const
 	Point p0 , p1;
 	double eps = 1e-14;
 
+
+	// make a shorter version of distance calculation
+	if ( shortDistanceCalculation(evalPoint, dist) == true ) { return dist; }
+
+
+	// for each line segment
     for (int ii = 0 ; ii < polyPoints_.size() ; ii++)
     {
     	if (ii < polyPoints_.size() - 1)
@@ -304,6 +380,59 @@ double Polygon2D::curveEquation_intern(const Point& evalPoint) const
 	return dist;
 }
 
+
+bool Polygon2D::shortIntersectCalculation(const Point& st, const Point& end) const{
+	double px = minX_;
+	double ox = maxX_ - minX_;
+	double py = minY_;
+	double oy = maxY_ - minY_;
+
+	px = px + 0.5*ox;
+	py = py + 0.5*oy;
+	double r = (1.0 + 1e-9)*(::sqrt( (ox/2)*(ox/2) + (oy/2)*(oy/2) ));
+
+	double d1 = ( (st[0]-px)*(st[0]-px) + (st[1]-py)*(st[1]-py) - r * r);
+	double d2 = ( (end[0]-px)*(end[0]-px) + (end[1]-py)*(end[1]-py) - r * r);
+
+	// if both are inside then we can exit here
+	if ( (d1 < -1e-14) && ((d2 < -1e-14)) ) { return false; }
+
+	// direction vector; line == start + t * vec
+	Point vec = end - st;
+
+	// center point of circle
+	Point center( px, py );
+
+	// intersection of circle and line leads to
+	// norm(start + t * vec - center) == r
+	// i.e. following coefficients of quadratic equation
+	double a = vec * vec;
+	double b = 2 * ((st - center) * vec);
+	double c = ((st - center) * (st - center)) - r * r;
+
+	double det = b * b - 4 * a * c;
+	if (det < 0.0) { return false; } // no solution
+	det = ::sqrt(det);
+
+	// numerically more favorable than usual usage of solution formula
+	int sign = b < 0.0 ? -1 : 1;
+	double q = -0.5 * (b + sign * det);
+
+	// first solution
+	double t = c / q;
+
+	// Only consider intersection points between 'start' and 'end'
+	if (t >= 0.0 && t <= 1.0) return true;
+
+	// second solution (only considered if different from first)
+	if (det < 1.e-14) return false;
+	t = q / a;
+	if (t >= 0.0 && t <= 1.0) return true;
+
+	return false;
+}
+
+
 void Polygon2D::returnIntersectPoints(const Point& start, const Point& end, int& nrPoints,
 		Array<Point>& result) const
 {
@@ -315,6 +444,11 @@ void Polygon2D::returnIntersectPoints(const Point& start, const Point& end, int&
 
 	// the edge index which will be intersecting as last
 	intersectionEdge_ = -1;
+
+
+	// make a shorter version of distance calculation
+	if ( shortIntersectCalculation(start, end) == true ) { return; }
+
 
 	SUNDANCE_MSG3( verb , "returnIntersectPoints() start= " << start << " end="<< end );
     for (int ii = 0 ; ii < polyPoints_.size() ; ii++)
@@ -371,7 +505,7 @@ void Polygon2D::returnIntersectPoints(const Point& start, const Point& end, int&
         		result.resize(nrPoints+1);
         		result[nrPoints] = intP;
                	nrPoints++;
-               	// store the line index which
+               	// store the line index which was intersected at last
                	intersectionEdge_ = ii;
         }
     }// from the for loop

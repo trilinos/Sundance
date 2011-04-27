@@ -61,6 +61,9 @@ public:
 	/** return the control points of the parameterized curve */
 	virtual Array<Point>& getControlPoints() { return paramcurve_.getControlPoints(); }
 
+	/** updates the state of the curve if the control parameters are changed */
+	virtual void update() { return paramcurve_.update(); }
+
 protected:
 	/** See upper class */
 	virtual double curveEquation_intern(const Point& evaluationPoint) const { return paramcurve_.curveEquation(evaluationPoint); }
