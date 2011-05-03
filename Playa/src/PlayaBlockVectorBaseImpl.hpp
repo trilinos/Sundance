@@ -60,6 +60,65 @@ void BlockVectorBase<Scalar>::rewind() const
 }
 
 template <class Scalar> inline
+void BlockVectorBase<Scalar>::update(const Scalar& alpha, 
+  const VectorBase<Scalar>* other,
+  const Scalar& gamma)
+{
+  const BlockVectorBase<Scalar>* bvo 
+    = dynamic_cast<const BlockVectorBase<Scalar>* >(other);
+  for (int b=0; b<this->numBlocks(); b++)
+  {
+    this->getNonConstBlock(b).update(alpha, bvo->getBlock(b), gamma);
+  }
+}
+
+template <class Scalar> inline
+void BlockVectorBase<Scalar>::update(
+  const Scalar& alpha, const VectorBase<Scalar>* x,
+  const Scalar& beta, const VectorBase<Scalar>* y,
+  const Scalar& gamma)
+{
+  const BlockVectorBase<Scalar>* bx
+    = dynamic_cast<const BlockVectorBase<Scalar>* >(x);
+  const BlockVectorBase<Scalar>* by 
+    = dynamic_cast<const BlockVectorBase<Scalar>* >(y);
+
+  for (int b=0; b<this->numBlocks(); b++)
+  {
+    this->getNonConstBlock(b).ptr()->update(
+      alpha, bx->getBlock(b).ptr().get(), 
+      beta, by->getBlock(b).ptr().get(),
+      gamma);
+  }
+}
+
+
+template <class Scalar> inline
+void BlockVectorBase<Scalar>::update(
+  const Scalar& alpha, const VectorBase<Scalar>* x,
+  const Scalar& beta, const VectorBase<Scalar>* y,
+  const Scalar& gamma, const VectorBase<Scalar>* z,
+  const Scalar& delta)
+{
+  const BlockVectorBase<Scalar>* bx
+    = dynamic_cast<const BlockVectorBase<Scalar>* >(x);
+  const BlockVectorBase<Scalar>* by 
+    = dynamic_cast<const BlockVectorBase<Scalar>* >(y);
+  const BlockVectorBase<Scalar>* bz 
+    = dynamic_cast<const BlockVectorBase<Scalar>* >(z);
+
+  for (int b=0; b<this->numBlocks(); b++)
+  {
+    this->getNonConstBlock(b).ptr()->update(
+      alpha, bx->getBlock(b).ptr().get(), 
+      beta, by->getBlock(b).ptr().get(),
+      gamma, bz->getBlock(b).ptr().get(),
+      delta);
+  }
+}
+
+
+template <class Scalar> inline
 std::string BlockVectorBase<Scalar>::description() const
 {
   std::ostringstream oss;

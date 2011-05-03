@@ -59,16 +59,20 @@ LinearOperator<double>
 PoissonBoltzmannOp::computeJacobianAndFunction(Vector<double>& functionValue) const 
 {
   Tabs tab;
-  Out::os() << tab << "in PBOp::computeJacAndVec" << std::endl;
-  J_.setEvalPoint(currentEvalPt());
+  Out::root() << tab << "in PBOp::computeJacAndVec" << std::endl;
+  Vector<double> x = currentEvalPt() ;
+  Out::root() << tab << "eval pt = " << std::endl;
+  Out::os() << x << std::endl;
+  J_.setEvalPoint(x);
+  
 
   RCP<GhostView<double> > u;
-  Out::os() << tab << "importing view" << std::endl;
+  Out::root() << tab << "importing view" << std::endl;
   importer_->importView(currentEvalPt(), u);
-  Out::os() << tab << "done importing view" << std::endl;
+  Out::root() << tab << "done importing view" << std::endl;
   int low = J_.domain().baseGlobalNaturalIndex();
   int high = low + J_.domain().numLocalElements();
-  Out::os() << tab << "my indices are: " << low << ", " << high << std::endl;
+  Out::os() << tab << "my indices are: " << low << ", " << high-1 << std::endl;
 
   functionValue = J_.range().createMember();
   double h= J_.h();
@@ -77,7 +81,6 @@ PoissonBoltzmannOp::computeJacobianAndFunction(Vector<double>& functionValue) co
   {
     Tabs tab1;
     double u_i = u->getElement(r);
-    Out::os() << tab1 << r << " " << u_i << std::endl;
     double f = 0.0;
     if (r==0) 
     {
@@ -96,14 +99,14 @@ PoissonBoltzmannOp::computeJacobianAndFunction(Vector<double>& functionValue) co
     functionValue[r-low] = f;
   }
 
-  Out::os() << tab << "done PBOp::computeJacAndVec" << std::endl;
+  Out::root() << tab << "done PBOp::computeJacAndVec" << std::endl;
   return J_.getOp();
 }
 
 Vector<double> PoissonBoltzmannOp::exactSoln() const
 {
   Tabs tab;
-  Out::os() << tab << "in PBOp::exactSoln" << std::endl;
+  Out::root() << tab << "in PBOp::exactSoln" << std::endl;
   Vector<double> rtn = J_.domain().createMember();
 
   int low = J_.domain().baseGlobalNaturalIndex();

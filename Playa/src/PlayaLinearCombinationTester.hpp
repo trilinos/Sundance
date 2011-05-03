@@ -11,6 +11,7 @@
 #include "PlayaSimpleComposedOpDecl.hpp"
 #include "PlayaSimpleScaledOpDecl.hpp"
 #include "PlayaSimpleAddedOpDecl.hpp"
+#include "PlayaSimpleIdentityOpDecl.hpp"
 #include "PlayaOut.hpp"
 #include "PlayaVectorDecl.hpp"
 #include "PlayaTesterBase.hpp"
@@ -25,6 +26,7 @@
 #include "PlayaSimpleComposedOpImpl.hpp"
 #include "PlayaSimpleScaledOpImpl.hpp"
 #include "PlayaSimpleAddedOpImpl.hpp"
+#include "PlayaSimpleIdentityOpDecl.hpp"
 #endif
 
 using namespace Playa;
@@ -133,8 +135,6 @@ inline bool LinearCombinationTester<Scalar>
 
 
   LinearOperator<double> A = ABuilder.getOp();
-
-    
   LinearOperator<Scalar> B = BBuilder.getOp();
   LinearOperator<Scalar> C = CBuilder.getOp();
 
@@ -152,6 +152,10 @@ inline bool LinearCombinationTester<Scalar>
   TESTER(2.0*(x + y), 2.0*x + 2.0*y);
 
   TESTER(2.0*(x - y), 2.0*x - 2.0*y);
+
+  TESTER((2.0*x + y) - y, 2.0*x);
+
+  TESTER(-1.0*y + (2.0*x + y), 2.0*x);
 
   TESTER((x + y)*2.0, 2.0*x + 2.0*y);
 
@@ -246,9 +250,15 @@ inline bool LinearCombinationTester<Scalar>
     onProcDensity_, offProcDensity_, 
     vecType_);
 
+
   LinearOperator<double> A = ABuilder.getOp();
   LinearOperator<double> B = BBuilder.getOp();
   LinearOperator<double> C = CBuilder.getOp();
+
+  VectorSpace<Scalar> vs = A.domain();
+  A = identityOperator(vs);
+  B = identityOperator(vs);
+  C = identityOperator(vs);
 
   Vector<Scalar> x = A.domain().createMember();
   Vector<Scalar> y = A.domain().createMember();
@@ -319,8 +329,32 @@ inline bool LinearCombinationTester<Scalar>
   err = (v - (2.0*x + 3.0*y)).norm2();
   if (!checkTest(spec_, err, "(non-empty) v=2*x + 3*y")) pass = false;
 
+  /* test assignment of LC3 into empty and non-empty vectors */
+  Vector<Scalar> w;
+  w = 2.0*x + 3.0*y + 5.0*z;
+  err = (w - (2.0*x + 3.0*y + 5.0*z)).norm2();
+  if (!checkTest(spec_, err, "(empty) w=2*x + 3*y + 5*z")) pass = false;
 
-    
+  w = 2.0*x + 3.0*y + 5.0*z;
+  err = (w - (2.0*x + 3.0*y + 5.0*z)).norm2();
+  if (!checkTest(spec_, err, "(non-empty) w=2*x + 3*y + 5*z")) pass = false;
+
+  /* test assignment of LC4 into empty and non-empty vectors */
+  Vector<Scalar> w2;
+  w2 = 2.0*x + 3.0*y + 5.0*z + 7.0*u;
+  err = (w2 - (2.0*x + 3.0*y + 5.0*z + 7.0*u)).norm2();
+  if (!checkTest(spec_, err, 
+      "(empty) w2=2*x + 3*y + 5*z + 7*u")) pass = false;
+
+  w2 = 2.0*x + 3.0*y + 5.0*z + 7.0*u;
+  err = (w2 - (2.0*x + 3.0*y + 5.0*z + 7.0*u)).norm2();
+  if (!checkTest(spec_, err, 
+      "(non-empty) w2=2*x + 3*y + 5*z + 7*u")) pass = false;
+
+  /* test assignment of LC3 into one of the operands */
+  x = 2.0*x + 3.0*y + 5.0*z;
+  err = (w - x).norm2(); // Note: w contains 2x + 3y + 5z 
+  if (!checkTest(spec_, err, "x=2*x + 3*y + 5*z")) pass = false;
 
 
   return pass;

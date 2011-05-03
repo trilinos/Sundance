@@ -26,6 +26,11 @@
 
 
 
+extern "C"
+{
+void daxpy_(int*, double*, double*, int*, double*, int*);
+}
+
 
 namespace Playa
 {
@@ -42,6 +47,7 @@ Vector<Scalar>& Vector<Scalar>::operator+=(const Vector<Scalar>& other)
 {
   return update(1.0, other, 1.0);
 }  
+
 
 
 //===========================================================================
@@ -542,9 +548,10 @@ Vector<Scalar>& Vector<Scalar>::randomize()
 //===========================================================================
 template <class Scalar> inline 
 Vector<Scalar>& Vector<Scalar>::update(const Scalar& alpha, 
-  const Vector<Scalar>& x, const Scalar& gamma)
+  const Vector<Scalar>& other, const Scalar& gamma)
 {
-  return applyBinaryFunctor(PlayaFunctors::LC2<Scalar>(gamma, alpha), x);
+  this->ptr()->update(alpha, other.ptr().get(), gamma);
+  return *this;
 }
 
 
@@ -639,7 +646,24 @@ Vector<Scalar>& Vector<Scalar>::update(const Scalar& alpha,
   const Vector<Scalar>& y, 
   const Scalar& gamma)
 {
-  return applyTernaryFunctor(PlayaFunctors::LC3<Scalar>(gamma, alpha, beta), x, y);
+  this->ptr()->update(alpha, x.ptr().get(), beta, y.ptr().get(), gamma);
+  return *this;
+}
+
+
+//===========================================================================
+template <class Scalar> inline
+Vector<Scalar>& Vector<Scalar>::update(const Scalar& alpha, 
+  const Vector<Scalar>& x, 
+  const Scalar& beta, 
+  const Vector<Scalar>& y, 
+  const Scalar& gamma, 
+  const Vector<Scalar>& z, 
+  const Scalar& delta)
+{
+  this->ptr()->update(alpha, x.ptr().get(), beta, y.ptr().get(), 
+    gamma, z.ptr().get(), delta);
+  return *this;
 }
 
 

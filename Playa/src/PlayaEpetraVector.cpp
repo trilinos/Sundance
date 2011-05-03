@@ -153,5 +153,26 @@ Epetra_Vector* EpetraVector::getConcretePtr(Playa::Vector<double>& tsfVec)
 }
 
 
+void EpetraVector::update(const double& alpha, 
+  const VectorBase<double>* other, const double& gamma)
+{
+  const EpetraVector* epv 
+    = dynamic_cast<const EpetraVector*>(other);
+  epetraVec_->Update(alpha, *(epv->epetraVec_), gamma);
+}
 
 
+
+void EpetraVector::update(
+  const double& alpha, const VectorBase<double>* x,
+  const double& beta, const VectorBase<double>* y,
+  const double& gamma)
+{
+  const EpetraVector* epx 
+    = dynamic_cast<const EpetraVector*>(x);
+  const EpetraVector* epy
+    = dynamic_cast<const EpetraVector*>(y);
+
+  epetraVec_->Update(alpha, *(epx->epetraVec_), 
+    beta, *(epy->epetraVec_), gamma);
+}

@@ -271,13 +271,13 @@ public:
       mv.resize(A.size());
       for (int i=0; i<A.size(); i++)
       {
-        if (alpha==zero() && beta != zero()) mv[i].acceptCopyOf( beta*B[i]);
-        else if (beta==zero() && alpha != zero()) mv[i].acceptCopyOf(alpha*A[i]);
+        if (alpha==zero() && beta != zero()) mv[i]=beta*B[i];
+        else if (beta==zero() && alpha != zero()) mv[i]=alpha*A[i];
         else if (alpha!=zero() && beta!=zero())
-          mv[i].acceptCopyOf( (alpha*A[i]) + (beta*B[i]) ) ;
+          mv[i]= alpha*A[i] + beta*B[i] ;
         else
         {
-          mv[i].acceptCopyOf(A[i].copy());
+          mv[i].acceptCopyOf(A[i]);
           mv[i].setToConstant(zero());
         }
       }

@@ -52,6 +52,25 @@ public:
 
   /** */
   virtual std::string description() const ;
+
+  /** */
+  virtual void update(const Scalar& alpha, const VectorBase<Scalar>* other,
+    const Scalar& gamma);
+
+  /** */
+  virtual void update(
+    const Scalar& alpha, const VectorBase<Scalar>* x,
+    const Scalar& beta, const VectorBase<Scalar>* y,
+    const Scalar& gamma) ;
+
+  /** */
+  virtual void update(
+    const Scalar& alpha, const VectorBase<Scalar>* x,
+    const Scalar& beta, const VectorBase<Scalar>* y,
+    const Scalar& gamma, const VectorBase<Scalar>* z,
+    const Scalar& delta) ;
+
+
   
   
 private:

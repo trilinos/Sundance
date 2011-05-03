@@ -106,9 +106,16 @@ public:
   static Epetra_Vector* getConcretePtr(Playa::Vector<double>& tsfVec);
 
   
-
+  /** */
+  virtual void update(const double& alpha, const VectorBase<double>* other,
+    const double& gamma);
     
 
+  /** */
+  virtual void update(
+    const double& alpha, const VectorBase<double>* x,
+    const double& beta, const VectorBase<double>* y,
+    const double& gamma) ;
 protected:    
 
   /** \name Single chunk data access interface */

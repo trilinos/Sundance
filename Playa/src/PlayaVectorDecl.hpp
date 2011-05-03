@@ -12,20 +12,10 @@
 #include "PlayaVectorFunctorsDecl.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
-namespace PlayaExprTemplates
-{
-template <class Scalar, class Node1, class Node2> class LC2;
-template <class Scalar, class Node> class OpTimesLC; 
-/** 
- * 
- */
-enum LCSign {LCAdd = 1, LCSubtract = -1};
-}
-
-
-
 namespace Playa
 {
+
+template <class Scalar, int> class LCN;
   
 /** 
  * User-level vector class. 
@@ -77,21 +67,24 @@ public:
   //@{
   HANDLE_CTORS(Vector<Scalar>, VectorBase<Scalar>);
 
-  /**  \brief Construct a vector from a 2-term LC */
-  template<class Node1, class Node2>
-  Vector(const PlayaExprTemplates::LC2<Scalar, Node1, Node2>& x);
+  /** \brief Construct a vector from an N-term LC */
+  template <int N>
+  Vector<Scalar>(const LCN<Scalar, N>& x);
 
-  /**  \brief Construct a vector from an operator times a linear combination */
-  template<class Node>
-  Vector(const PlayaExprTemplates::OpTimesLC<Scalar, Node>& x);
 
-  /**  \brief Assign a linear combination of vectors to this vector */
-  template<class Node1, class Node2>
-  Vector<Scalar>& operator=(const PlayaExprTemplates::LC2<Scalar, Node1, Node2>& x);
+  /**  \brief Assign a one-term LC to this vector */
+  Vector<Scalar>& operator=(const LCN<Scalar, 1>& x);
 
-  /**  \brief Assign a scaled linear combination to this vector */
-  template<class Node>
-  Vector<Scalar>& operator=(const PlayaExprTemplates::OpTimesLC<Scalar, Node>& x);
+  /**  \brief Assign a two-term LC to this vector */
+  Vector<Scalar>& operator=(const LCN<Scalar, 2>& x);
+
+  /**  \brief Assign a three-term LC to this vector */
+  Vector<Scalar>& operator=(const LCN<Scalar, 3>& x);
+
+  /**  \brief Assign an N-term LC to this vector */
+  template <int N>
+  Vector<Scalar>& operator=(const LCN<Scalar, N>& x);
+
   //@}
 
   /** \name Operators with assignment */
@@ -99,27 +92,33 @@ public:
   /** Add a vector into this vector */
   Vector<Scalar>& operator+=(const Vector<Scalar>& other);
 
-  /** Add a linear combination of vectors into this vector */
-  template<class Node1, class Node2>
-  Vector<Scalar>& operator+=(const PlayaExprTemplates::LC2<Scalar, Node1, Node2>& x);
+  /** Add a one-term LC into this vector */
+  Vector<Scalar>& operator+=(const LCN<Scalar, 1>& x);
 
-  /** Add an operator times a linear combination into this vector */
-  template <class Node>
-  Vector<Scalar>& operator+=(const PlayaExprTemplates::OpTimesLC<Scalar, Node>& x);
+  /** Add a two-term LC into this vector */
+  Vector<Scalar>& operator+=(const LCN<Scalar, 2>& x);
+
+  /** Add an N-term LC into this vector */
+  template <int N>
+  Vector<Scalar>& operator+=(const LCN<Scalar, N>& x);
 
   /** Subtract a vector from this vector */
   Vector<Scalar>& operator-=(const Vector<Scalar>& other);
 
-  /** Subtract a linear combination of vectors from this vector */
-  template<class Node1, class Node2>
-  Vector<Scalar>& operator-=(const PlayaExprTemplates::LC2<Scalar, Node1, Node2>& x);
+  /** Subtract a one-term LC from this vector */
+  Vector<Scalar>& operator-=(const LCN<Scalar, 1>& x);
 
-  /** Subtract operator times a linear combination from this vector */
-  template <class Node>
-  Vector<Scalar>& operator-=(const PlayaExprTemplates::OpTimesLC<Scalar, Node>& x);
+  /** Subtract a two-term LC from this vector */
+  Vector<Scalar>& operator-=(const LCN<Scalar, 2>& x);
 
+  /** Subtract an N-term LC from this vector */
+  template <int N>
+  Vector<Scalar>& operator-=(const LCN<Scalar, N>& x);
+
+  /** Scale by a constant */
   Vector<Scalar>& operator*=(const Scalar& a);
 
+  /** Divide by a constant */
   Vector<Scalar>& operator/=(const Scalar& a);
   //@}
 
@@ -249,6 +248,14 @@ public:
   Vector<Scalar>& update(const Scalar& alpha, const Vector<Scalar>& x, 
     const Scalar& beta, const Vector<Scalar>& y, 
     const Scalar& gamma);
+  /** 
+   * \brief  Add three scaled vectors to this vector times a constant:
+   * \f$ this=\alpha x + \beta y + \gamma x + \delta \, this. \f$
+   */
+  Vector<Scalar>& update(const Scalar& alpha, const Vector<Scalar>& x, 
+    const Scalar& beta, const Vector<Scalar>& y, 
+    const Scalar& gamma, const Vector<Scalar>& z, 
+    const Scalar& delta);
 
   /** 
    *  \brief Copy the values of another vector into this vector
@@ -370,18 +377,6 @@ public:
       static RCP<Time> rtn 
         = TimeMonitor::getNewTimer("Low-level vector operations");
       return rtn;
-    }
-
-  Vector<Scalar> eval() const {return copy();}
-
-  bool containsVector(const VectorBase<Scalar>* vec) const
-    {return this->ptr().get()==vec;}
-
-  void evalInto(Vector<Scalar>& other) const {other.acceptCopyOf(*this);}
-
-  void addInto(Vector<Scalar>& other, PlayaExprTemplates::LCSign sign) const
-    {
-      other.update(sign, *this);
     }
 
   /** \name Functor application */

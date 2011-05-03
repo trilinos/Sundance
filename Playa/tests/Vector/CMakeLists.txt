@@ -14,3 +14,9 @@ PACKAGE_ADD_EXECUTABLE_AND_TEST(
         SOURCES BlockVectorTest.cpp
         COMM serial mpi
 )
+
+PACKAGE_ADD_EXECUTABLE_AND_TEST(
+  LCTest
+  SOURCES LCTest.cpp
+  COMM serial mpi
+)

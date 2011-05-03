@@ -53,11 +53,13 @@ int main(int argc, char *argv[])
     TEST_FOR_EXCEPTION(stat != NOX::StatusTest::Converged,
       runtime_error, "solve failed");
 
-    Out::root() << "solution = " << std::endl << soln << std::endl;
+    Out::root() << "numerical solution = " << std::endl;
+    Out::os() << soln << std::endl;
 
     Vector<double> exact = prob->exactSoln();
 
-    Out::root() << "exact solution = " << std::endl << exact << std::endl;
+    Out::root() << "exact solution = " << std::endl;
+    Out::os() << exact << std::endl;
 
 //bvbw reddish port hack
     double temp_val = nLocalRows*nProc;

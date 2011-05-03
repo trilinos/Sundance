@@ -108,8 +108,10 @@ int main(int argc, char *argv[])
     LinearSolver<double> belos_ifpack = LinearSolverBuilder::createSolver("belos-ifpack.xml");
     LinearSolver<double> aztec_ml = LinearSolverBuilder::createSolver("aztec-ml.xml");
     LinearSolver<double> aztec_ifpack = LinearSolverBuilder::createSolver("aztec-ifpack.xml");
+    LinearSolver<double> bicgstab = LinearSolverBuilder::createSolver("bicgstab.xml");
 
     bool allOK = true;
+
     Out::root() << "Running Belos/ML" << std::endl;
     allOK = runit(epetra, belos_ml) && allOK;
 
@@ -122,6 +124,11 @@ int main(int argc, char *argv[])
     Out::root() << "Running Aztec/Ifpack" << std::endl;
     allOK = runit(epetra, aztec_ifpack) && allOK;
 
+
+    Out::root() << "Running BICGSTAB" << std::endl;
+    allOK = runit(epetra, bicgstab) && allOK;
+
+#ifdef BLAH
     if (nProc == 1)
     {
       Out::root() << "Running Amesos (serial)" << std::endl;
@@ -133,7 +140,7 @@ int main(int argc, char *argv[])
       Out::root() << "Running dense LU (serial)" << std::endl;
       allOK = runit(serial, denseLU) && allOK;
     }
-
+#endif
     allOK = globalAnd(allOK);
 
     if (allOK) 

@@ -9,6 +9,7 @@
 #include "PlayaOut.hpp"
 #include "PlayaTabs.hpp"
 #include "PlayaLinearCombinationDecl.hpp"
+#include "PlayaLinearOperatorDecl.hpp"
 
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
@@ -17,133 +18,285 @@
 #endif
 
 
-namespace PlayaExprTemplates
+namespace Playa
 {
 
 using Playa::Out;
 using Playa::Tabs;
+using std::endl;
+
+/*=========================================================================
+ * Copy constructors
+ * ======================================================================== */
 
 
-/* -------- methods of OpTimesLC ------ */
-
-template <class Scalar, class Node> inline
-OpTimesLC<Scalar, Node>::OpTimesLC(const Scalar& alpha, 
-  const Node& x)
-  : alpha_(alpha), op_(), x_(x) 
-{;}
-
-template <class Scalar, class Node> inline
-OpTimesLC<Scalar, Node>
-::OpTimesLC(const Scalar& alpha,
-  const Playa::LinearOperator<Scalar>& op, 
-  const Node& x)
-  : alpha_(alpha), op_(op), x_(x) 
-{;}
-  
-  
-template <class Scalar, class Node> inline
-void OpTimesLC<Scalar, Node>::evalInto(Playa::Vector<Scalar>& result) const
+template <class Scalar> 
+template <int N>
+inline
+Vector<Scalar>::Vector(const LCN<Scalar, N>& x)
+  : Playa::Handle<VectorBase<Scalar> >()
 {
-  if (op_.ptr().get() != 0)
+  this->ptr() = x.eval().ptr();
+}
+
+/*=========================================================================
+ * Assignment operators
+ * ======================================================================== */
+
+template <class Scalar> inline
+Vector<Scalar>& Vector<Scalar>::operator=(const LCN<Scalar, 1>& lc)
+{
+  const Vector<Scalar>& other = lc.vec(0);
+  const Scalar& alpha = lc.coeff(0);
+
+  if (this->ptr().get() == other.ptr().get())
   {
-    op_.apply(x_.eval(), result);
+    /* If LHS and RHS vectors are identical, simply multiply LHS
+     * by the scalar constant */
+    if (alpha == 0.0) this->zero();
+    else if (alpha != 1.0) this->scale(alpha);
+  }
+  else if (this->ptr().get() != 0 && this->space() == other.space())
+  {
+    /* If the vectors are distinct but from the same space, use the
+     * update operation to compute (*this) = 0.0*(*this) + alpha*other */ 
+    this->ptr()->update(alpha, other.ptr().get(), 0.0);
   }
   else
   {
-    x_.evalInto(result);
+    /* If the vectors are from different spaces, or if the LHS is null,
+     * copy the RHS vector into the LHS and scale */
+    Vector<Scalar> cp = other.copy();
+    this->ptr() = cp.ptr();
+    this->scale(alpha);
+    
   }
-  if (alpha_ != one()) result.scale(alpha_);
-}
+  return *this;
+}  
 
-template <class Scalar, class Node> inline
-void OpTimesLC<Scalar, Node>::addInto(Playa::Vector<Scalar>& result,
-  LCSign sign) const
+
+template <class Scalar> inline
+Vector<Scalar>& Vector<Scalar>::operator=(const LCN<Scalar, 2>& lc)
 {
-  if (op_.ptr().get() != 0)
+  const Vector<Scalar>& x = lc.vec(0);
+  const Scalar& alpha = lc.coeff(0);
+  const Vector<Scalar>& y = lc.vec(1);
+  const Scalar& beta = lc.coeff(1);
+
+  TEST_FOR_EXCEPTION(!y.space().isCompatible(x.space()),
+    std::runtime_error,
+    "Spaces x=" << x.space() << " and y="
+    << y.space() << " are not compatible in operator=(a*x + b*y)");
+
+  if (this->ptr().get() != 0 &&  this->space() == x.space())
   {
-    Vector<Scalar> tmp;
-    op_.apply(x_.eval(), tmp);
-    result.update(sign*alpha_, tmp);
+    /* If the LHS exists and is from the same space as the RHS vectors, use the
+     * update operation to compute 
+     *      (*this) = 0.0*(*this) + alpha*x + beta*y 
+     */ 
+    this->update(alpha, x, beta, y, 0.0);
   }
   else
   {
-    result.update(sign*alpha_, x_.eval());
+    /* If the vectors are from different spaces, or if the LHS is null,
+     * form the RHS vector and overwrite the LHS's ptr with it. */
+    Vector e = lc.eval();
+    this->ptr() = e.ptr();
   }
-} 
 
-template <class Scalar, class Node> inline
-Playa::Vector<Scalar> OpTimesLC<Scalar, Node>::eval() const 
+  return *this;
+}  
+
+template <class Scalar> inline
+Vector<Scalar>& Vector<Scalar>::operator=(const LCN<Scalar, 3>& lc)
 {
-  Playa::Vector<Scalar> result;
-  if (op_.ptr().get() != 0)
+  const Vector<Scalar>& x = lc.vec(0);
+  const Scalar& alpha = lc.coeff(0);
+  const Vector<Scalar>& y = lc.vec(1);
+  const Scalar& beta = lc.coeff(1);
+  const Vector<Scalar>& z = lc.vec(2);
+  const Scalar& gamma = lc.coeff(2);
+
+  TEST_FOR_EXCEPTION(!y.space().isCompatible(x.space()),
+    std::runtime_error,
+    "Spaces x=" << x.space() << " and y="
+    << y.space() << " are not compatible in operator=(a*x + b*y + c*z)");
+
+  TEST_FOR_EXCEPTION(!z.space().isCompatible(x.space()),
+    std::runtime_error,
+    "Spaces x=" << x.space() << " and z="
+    << z.space() << " are not compatible in operator=(a*x + b*y + c*z)");
+
+  if (this->ptr().get() != 0 &&  this->space() == x.space())
   {
-    result = op_.range().createMember();
-    op_.apply(x_.eval(), result);
+    /* If the LHS exists and is from the same space as the RHS vectors, use the
+     * update operation to compute 
+     *      (*this) = 0.0*(*this) + alpha*x + beta*y + c*z
+     */ 
+    this->update(alpha, x, beta, y, gamma, z, 0.0);
   }
   else
   {
-    result = x_.eval();
+    /* If the vectors are from different spaces, or if the LHS is null,
+     * form the RHS vector and overwrite the LHS's ptr with it. */
+    Vector e = lc.eval();
+    this->ptr() = e.ptr();
   }
 
-  if (alpha_ != one()) result.scale(alpha_);    
-  return result;
-}
+  return *this;
+}  
 
-
-template <class Scalar, class Node> inline
-bool OpTimesLC<Scalar, Node>::containsVector(const VectorBase<Scalar>* vec) const 
-{return x_.containsVector(vec);}
-
-
-
-
+template <class Scalar> 
+template <int N> inline
+Vector<Scalar>& Vector<Scalar>::operator=(const LCN<Scalar, N>& lc)
+{
+  Vector e = lc.eval();
+  this->ptr() = e.ptr();
+    
+  return *this;
+}  
 
   
-/* ------------------------ methods of LC2 --------------------------- */
+/*=========================================================================
+ * Reflexive addition operators
+ * ======================================================================== */
+
+
+
+template <class Scalar> inline
+Vector<Scalar>& Vector<Scalar>::operator+=(const LCN<Scalar, 1>& lc)
+{
+  const Vector<Scalar>& other = lc.vec(0);
+  const Scalar& alpha = lc.coeff(0);
+
+  TEST_FOR_EXCEPTION(!this->space().isCompatible(other.space()),
+    std::runtime_error,
+    "Spaces this=" << this->space() << " and other="
+    << other.space() << " are not compatible in operator+=()");
+
+  this->ptr()->update(alpha, other.ptr().get(), 1.0);
+
+  return *this;
+}  
+
+
+template <class Scalar> inline
+Vector<Scalar>& Vector<Scalar>::operator+=(const LCN<Scalar, 2>& lc)
+{
+  const Vector<Scalar>& x = lc.vec(0);
+  const Scalar& alpha = lc.coeff(0);
+  const Vector<Scalar>& y = lc.vec(1);
+  const Scalar& beta = lc.coeff(1);
+
+  TEST_FOR_EXCEPTION(!this->space().isCompatible(x.space()),
+    std::runtime_error,
+    "Spaces this=" << this->space() << " and other="
+    << x.space() << " are not compatible in operator+=()");
+
+  this->update(alpha, x, beta, y, 1.0);
+
+  return *this;
+}  
+
+
+template <class Scalar> 
+template <int N> inline 
+Vector<Scalar>& Vector<Scalar>::operator+=(const LCN<Scalar, N>& lc)
+{
+  Vector<Scalar> e = lc.eval();
+  *this += e;
+  return *this;
+}  
+
   
-template <class Scalar, class Node1, class Node2> inline
-LC2<Scalar, Node1, Node2>::LC2(const Node1& x1, const Node2& x2, LCSign sign)
-  : x1_(x1), x2_(x2), sign_(sign) 
-{;}
 
-template <class Scalar, class Node1, class Node2> inline
-bool LC2<Scalar, Node1, Node2>::containsVector(const VectorBase<Scalar>* vec) const
-{return x1_.containsVector(vec) || x2_.containsVector(vec);}
+/*=========================================================================
+ * Reflexive subtraction operators
+ * ======================================================================== */
 
-template <class Scalar, class Node1, class Node2> inline
-void LC2<Scalar, Node1, Node2>::evalInto(Playa::Vector<Scalar>& result) const
+
+
+template <class Scalar> inline
+Vector<Scalar>& Vector<Scalar>::operator-=(const LCN<Scalar, 1>& lc)
 {
-  Tabs tab;
-  x1_.evalInto(result);
-  x2_.addInto(result, sign_);
-} 
+  const Vector<Scalar>& other = lc.vec(0);
+  const Scalar& alpha = -lc.coeff(0);
 
-template <class Scalar, class Node1, class Node2> inline
-void LC2<Scalar, Node1, Node2>::addInto(Playa::Vector<Scalar>& result,
-  PlayaExprTemplates::LCSign sign) const
+  TEST_FOR_EXCEPTION(!this->space().isCompatible(other.space()),
+    std::runtime_error,
+    "Spaces this=" << this->space() << " and other="
+    << other.space() << " are not compatible in operator+=()");
+
+  this->ptr()->update(alpha, other.ptr().get(), 1.0);
+
+  return *this;
+}  
+
+
+template <class Scalar> inline
+Vector<Scalar>& Vector<Scalar>::operator-=(const LCN<Scalar, 2>& lc)
 {
-  x1_.addInto(result, sign);
-  if (sign_*sign < 0) x2_.addInto(result, LCSubtract);
-  else x2_.addInto(result, LCAdd);
+
+  const Vector<Scalar>& x = lc.vec(0);
+  const Scalar& alpha = -lc.coeff(0);
+  const Vector<Scalar>& y = lc.vec(1);
+  const Scalar& beta = -lc.coeff(1);
+
+  TEST_FOR_EXCEPTION(!this->space().isCompatible(x.space()),
+    std::runtime_error,
+    "Spaces this=" << this->space() << " and other="
+    << x.space() << " are not compatible in operator+=()");
+
+  this->update(alpha, x, beta, y, 1.0);
+
+  return *this;
+}  
+
+
+template <class Scalar> 
+template <int N> inline 
+Vector<Scalar>& Vector<Scalar>::operator-=(const LCN<Scalar, N>& lc)
+{
+  Vector<Scalar> e = lc.eval();
+  *this -= e;
+
+  return *this;
+}  
+
+/*======================================================================
+ *
+ *    operator times vector or LC
+ *
+ *======================================================================*/
+
+/* */
+template <class Scalar> 
+Vector<Scalar> operator*(const LinearOperator<Scalar>& A,
+  const Vector<Scalar>& x)
+{
+  Vector<Scalar> rtn;
+  A.apply(x, rtn);
+  return rtn;
 }
 
-template <class Scalar, class Node1, class Node2> inline
-Playa::Vector<Scalar> LC2<Scalar, Node1, Node2>::eval() const
-{
-  Playa::Vector<Scalar> result = x1_.eval();
-  x2_.addInto(result, sign_);
-  return result;
-}
-}
 
-namespace Playa
+/* */
+template <class Scalar, int N> 
+Vector<Scalar> operator*(const LinearOperator<Scalar>& A,
+  const LCN<Scalar, N>& x)
 {
-using PlayaExprTemplates::OpTimesLC;
-using PlayaExprTemplates::LC2;
-using PlayaExprTemplates::LCAdd;
-using PlayaExprTemplates::LCSubtract;
-
-/* ------------------------ global methods ----------------------- */
+  return A*x.eval();
+}
+  
+/* */
+template <class Scalar> 
+Vector<Scalar> operator*(const LinearOperator<Scalar>& A,
+  const LCN<Scalar, 1>& x)
+{
+  Vector<Scalar> rtn = A*x.vec(0);
+  if (x.coeff(0)!=1.0) rtn.scale(x.coeff(0));
+  return rtn;
+}
 
 
 /*======================================================================
@@ -152,481 +305,288 @@ using PlayaExprTemplates::LCSubtract;
  *
  *======================================================================*/
 
-/* scalar * vec */
+/* \relates LCN scalar * vec */
 template <class Scalar> inline
-OpTimesLC<Scalar, Vector<Scalar> > operator*(const Scalar& alpha, 
+LCN<Scalar, 1> operator*(const Scalar& alpha, 
   const Vector<Scalar>& x)
 {
-  return OpTimesLC<Scalar, Vector<Scalar> >(alpha, x);
-} 
+  return LCN<Scalar, 1>(alpha, x);
+}
 
-/* vec * scalar */
+/* \relates LCN vec * scalar */
 template <class Scalar> inline
-OpTimesLC<Scalar, Vector<Scalar> > operator*(const Vector<Scalar>& x, 
+LCN<Scalar, 1> operator*(const Vector<Scalar>& x, 
   const Scalar& alpha)
 {
-  return OpTimesLC<Scalar, Vector<Scalar> >(alpha, x);
+  return LCN<Scalar, 1>(alpha, x);
 }
 
 
-/*======================================================================
- *
- *    scalar times OpTimesLC
- *
- *======================================================================*/
-
-/* scalar * OpTimesLC */
-template <class Scalar, class Node> inline
-OpTimesLC<Scalar, Node> 
-operator*(const Scalar& alpha, 
-  const OpTimesLC<Scalar, Node>& x)
-{
-  return OpTimesLC<Scalar, Node>(alpha * x.alpha(), x.op(), x.node());
-}
-
-/* OpTimesLC * scalar */
-template <class Scalar, class Node> inline
-OpTimesLC<Scalar, Node> 
-operator*(const OpTimesLC<Scalar, Node>& x, const Scalar& alpha)
-{
-  return alpha * x;
-}
-
-
-/*======================================================================
- *
- *    scalar times LC2
- *
- *======================================================================*/
-
-/* scalar * LC2 */
-template <class Scalar, class Node1, class Node2> inline
-OpTimesLC<Scalar, LC2<Scalar, Node1, Node2> > 
-operator*(const Scalar& alpha, 
-  const LC2<Scalar, Node1, Node2>& x)
-{
-  return OpTimesLC<Scalar, LC2<Scalar, Node1, Node2> >(alpha, x);
-}
-
-/* LC2 * scalar */
-template <class Scalar, class Node1, class Node2> inline
-OpTimesLC<Scalar, LC2<Scalar, Node1, Node2> > 
-operator*(const LC2<Scalar, Node1, Node2>& x, const Scalar& alpha)
-{
-  return alpha * x;
-}
-  
-
-
-/*======================================================================
- *
- *    operator times [vectors, OpTimesLC, LC2]
- *
- *======================================================================*/
-
-/* op * vec */
+/* \relates LCN vec / scalar */
 template <class Scalar> inline
-OpTimesLC<Scalar, Vector<Scalar> > 
-operator*(const LinearOperator<Scalar>& op, 
-  const Vector<Scalar>& x)
+LCN<Scalar, 1> operator/(const Vector<Scalar>& x, 
+  const Scalar& alpha)
 {
-  return OpTimesLC<Scalar, Vector<Scalar> >(Teuchos::ScalarTraits<Scalar>::one(), op, x);
-}
-
-
-/* op * OpTimesLC */
-template <class Scalar, class Node> inline
-OpTimesLC<Scalar, Node> 
-operator*(const LinearOperator<Scalar>& op, 
-  const OpTimesLC<Scalar, Node>& x)
-{
-  TEST_FOR_EXCEPTION(op.ptr().get()==0, std::runtime_error,
-    "null operator in LinearOperator * ( OpTimesLC )");
-  if (x.op().ptr().get()==0)
-  {
-    return OpTimesLC<Scalar, Node>(x.alpha(), op, x.node());
-  }
-  else
-  {
-    return OpTimesLC<Scalar, Node>(x.alpha(), op * x.op(), x.node());
-  }
-}
-
-
-/* op * LC2 */
-template <class Scalar, class Node1, class Node2> inline
-OpTimesLC<Scalar, LC2<Scalar, Node1, Node2> > 
-operator*(const LinearOperator<Scalar>& op, 
-  const LC2<Scalar, Node1, Node2>& x)
-{
-  return OpTimesLC<Scalar, LC2<Scalar, Node1, Node2> >(Teuchos::ScalarTraits<Scalar>::one(), op, x);
+  return LCN<Scalar, 1>(1.0/alpha, x);
 }
 
 
 /*======================================================================
  *
- *    add/subtract vector, vector
+ *    scalar times LC
  *
  *======================================================================*/
+
+
+/* */
+template <class Scalar, int N> inline
+LCN<Scalar, N> operator*(const LCN<Scalar, N>& lc, const Scalar& beta)
+{
+  LCN<Scalar, N> rtn(lc);
+  rtn.multiply(beta);
+  return rtn;
+}
+
+/* */
+template <class Scalar, int N> inline
+LCN<Scalar, N> operator*(const Scalar& beta, const LCN<Scalar, N>& lc)
+{
+  LCN<Scalar, N> rtn(lc);
+  rtn.multiply(beta);
+  return rtn;
+}
+
+/* */
+template <class Scalar, int N> inline
+LCN<Scalar, N> operator/(const LCN<Scalar, N>& lc, const Scalar& beta)
+{
+  LCN<Scalar, N> rtn(lc);
+  rtn.multiply(1.0/beta);
+  return rtn;
+}
+
+
   
-/* vec + vec */
+/*======================================================================
+ *
+ *  vector plus/minus vector
+ *
+ *======================================================================*/
+
+
+/* */
 template <class Scalar> inline
-LC2<Scalar, Vector<Scalar>, Vector<Scalar> >
-operator+(const Vector<Scalar>& x1, 
-  const Vector<Scalar>& x2)
+LCN<Scalar, 2> operator+(const Vector<Scalar>& x, 
+  const Vector<Scalar>& y)
 {
-  return LC2<Scalar, Vector<Scalar>, Vector<Scalar> >(x1, x2);
+  return LCN<Scalar, 2>(1.0, x, 1.0, y);
 }
-  
-/* vec - vec */
+
+/* */
 template <class Scalar> inline
-LC2<Scalar, Vector<Scalar>, Vector<Scalar> >
-operator-(const Vector<Scalar>& x1, 
-  const Vector<Scalar>& x2)
+LCN<Scalar, 2> operator-(const Vector<Scalar>& x, 
+  const Vector<Scalar>& y)
 {
-  return LC2<Scalar, Vector<Scalar>, Vector<Scalar> >(x1, x2, LCSubtract);
-}
-
-/*======================================================================
- *
- *    add/subtract vector, OpTimesLC
- *
- *======================================================================*/
-
-
-/* vec + OpTimesLC */
-template <class Scalar, class Node> inline
-LC2<Scalar, Vector<Scalar>, OpTimesLC<Scalar, Node> >
-operator+(const Vector<Scalar>& x1, 
-  const OpTimesLC<Scalar, Node>& x2)
-{
-  return LC2<Scalar, Vector<Scalar>, OpTimesLC<Scalar, Node> >(x1, x2);
-}
-
-
-/* vec - OpTimesLC */
-template <class Scalar, class Node> inline
-LC2<Scalar, Vector<Scalar>, OpTimesLC<Scalar, Node> >
-operator-(const Vector<Scalar>& x1, 
-  const OpTimesLC<Scalar, Node>& x2)
-{
-  return LC2<Scalar, Vector<Scalar>, OpTimesLC<Scalar, Node> >(x1, x2, 
-    LCSubtract);
-}
-
-/* OpTimesLC + vec */
-template <class Scalar, class Node> inline
-LC2<Scalar, OpTimesLC<Scalar, Node>, Vector<Scalar> >
-operator+(const OpTimesLC<Scalar, Node>& x1, 
-  const Vector<Scalar>& x2)
-{
-  return LC2<Scalar, OpTimesLC<Scalar, Node>, Vector<Scalar> >(x1, x2);
-}
-  
-/* OpTimesLC - vec */
-template <class Scalar, class Node> inline
-LC2<Scalar, OpTimesLC<Scalar, Node>, Vector<Scalar> >
-operator-(const OpTimesLC<Scalar, Node>& x1, 
-  const Vector<Scalar>& x2)
-{
-  return LC2<Scalar, OpTimesLC<Scalar, Node>, Vector<Scalar> >(x1, x2,
-    LCSubtract);
-}
-
-  
-/*======================================================================
- *
- *    add/subtract OpTimesLC, OpTimesLC
- *
- *======================================================================*/
-  
-/* OpTimesLC + OpTimesLC */
-template <class Scalar, class Node1, class Node2> inline
-LC2<Scalar, OpTimesLC<Scalar, Node1>, OpTimesLC<Scalar, Node2> >
-operator+(const OpTimesLC<Scalar, Node1>& x1, 
-  const OpTimesLC<Scalar, Node2>& x2)
-{
-  return LC2<Scalar, OpTimesLC<Scalar, Node1>, 
-    OpTimesLC<Scalar, Node2> >(x1, x2);
-}
-  
-/* OpTimesLC - OpTimesLC */
-template <class Scalar, class Node1, class Node2> inline
-LC2<Scalar, OpTimesLC<Scalar, Node1>, OpTimesLC<Scalar, Node2> >
-operator-(const OpTimesLC<Scalar, Node1>& x1, 
-  const OpTimesLC<Scalar, Node2>& x2)
-{
-  return LC2<Scalar, OpTimesLC<Scalar, Node1>, 
-    OpTimesLC<Scalar, Node2> >(x1, x2, LCSubtract);
-}
-  
-
-  
-/*======================================================================
- *
- *    add/subtract Vector, LC2
- *
- *======================================================================*/
-
-  
-/* vec + LC2 */
-template <class Scalar, class Node1, class Node2> inline
-LC2<Scalar, Vector<Scalar>, LC2<Scalar, Node1, Node2> >
-operator+(const Vector<Scalar>& x1, 
-  const LC2<Scalar, Node1, Node2>& x2)
-{
-  return LC2<Scalar, Vector<Scalar>, LC2<Scalar, Node1, Node2> >(x1, x2);
-}
-
-/* vec - LC2 */
-template <class Scalar, class Node1, class Node2> inline
-LC2<Scalar, Vector<Scalar>, LC2<Scalar, Node1, Node2> >
-operator-(const Vector<Scalar>& x1, 
-  const LC2<Scalar, Node1, Node2>& x2)
-{
-  return LC2<Scalar, Vector<Scalar>, LC2<Scalar, Node1, Node2> >(x1, x2,
-    LCSubtract);
-}
-
-
-/* LC2 + vec */
-template <class Scalar, class Node1, class Node2> inline
-LC2<Scalar, LC2<Scalar, Node1, Node2>, Vector<Scalar> >
-operator+(const LC2<Scalar, Node1, Node2>& x1, 
-  const Vector<Scalar>& x2)
-{
-  return LC2<Scalar, LC2<Scalar, Node1, Node2>, Vector<Scalar> >(x1, x2);
-}
-
-/* LC2 - vec */
-template <class Scalar, class Node1, class Node2> inline
-LC2<Scalar, LC2<Scalar, Node1, Node2>, Vector<Scalar> >
-operator-(const LC2<Scalar, Node1, Node2>& x1, 
-  const Vector<Scalar>& x2)
-{
-  return LC2<Scalar, LC2<Scalar, Node1, Node2>, Vector<Scalar> >(x1, x2,
-    LCSubtract);
+  return LCN<Scalar, 2>(1.0, x, -1.0, y);
 }
 
 
 /*======================================================================
  *
- *    add/subtract OpTimesLC, LC2
+ *  LC plus LC
  *
  *======================================================================*/
 
 
-/* OpTimesLC + LC2 */
-template <class Scalar, class Node0, class Node1, class Node2> inline
-LC2<Scalar, OpTimesLC<Scalar, Node0>, LC2<Scalar, Node1, Node2> > 
-operator+(const OpTimesLC<Scalar, Node0>& x1, 
-  const LC2<Scalar, Node1, Node2>& x2)
+/* */
+template <class Scalar, int N, int M> inline
+LCN<Scalar, N+M> operator+(const LCN<Scalar, N>& f, const LCN<Scalar, M>& g)
 {
-  return LC2<Scalar, OpTimesLC<Scalar, Node0>,
-    LC2<Scalar, Node1, Node2> >(x1, x2);
+  LCN<Scalar, N+M> rtn;
+  for (int i=0; i<N; i++) rtn.set(i, f.coeff(i), f.vec(i));
+  for (int i=0; i<M; i++) rtn.set(i+N, g.coeff(i), g.vec(i));
+  return rtn;
 }
 
-/* OpTimesLC - LC2 */
-template <class Scalar, class Node0, class Node1, class Node2> inline
-LC2<Scalar, OpTimesLC<Scalar, Node0>, LC2<Scalar, Node1, Node2> > 
-operator-(const OpTimesLC<Scalar, Node0>& x1, 
-  const LC2<Scalar, Node1, Node2>& x2)
+/* */
+template <class Scalar, int N> inline
+LCN<Scalar, N+1> operator+(const LCN<Scalar, N>& f, const Vector<Scalar>& g)
 {
-  return LC2<Scalar, OpTimesLC<Scalar, Node0>,
-    LC2<Scalar, Node1, Node2> >(x1, x2, LCSubtract);
+  LCN<Scalar, N+1> rtn;
+  for (int i=0; i<N; i++) rtn.set(i, f.coeff(i), f.vec(i));
+  rtn.set(N, 1.0, g);
+  return rtn;
+}
+
+/* */
+template <class Scalar, int N> inline
+LCN<Scalar, N+1> operator+(const Vector<Scalar>& f, const LCN<Scalar, N>& g)
+{
+  LCN<Scalar, N+1> rtn;
+  rtn.set(0, 1.0, f);
+  for (int i=0; i<N; i++) rtn.set(i+1, g.coeff(i), g.vec(i));
+
+  return rtn;
+}
+
+/* */
+
+template <class Scalar> inline
+LCN<Scalar, 2> operator+(const LCN<Scalar, 1>& lc, const Vector<Scalar>& x)
+{
+  return LCN<Scalar, 2>(lc, 1.0, x);
 }
 
 
-/* LC2 + OpTimesLC */
-template <class Scalar, class Node1, class Node2, class Node3> inline
-LC2<Scalar, LC2<Scalar, Node1, Node2>, OpTimesLC<Scalar, Node3> > 
-operator+(const LC2<Scalar, Node1, Node2>& x1, 
-  const OpTimesLC<Scalar, Node3>& x2)
+/* */
+
+template <class Scalar> inline
+LCN<Scalar, 2> operator+(const Vector<Scalar>& x, const LCN<Scalar, 1>& lc)
 {
-  return LC2<Scalar, LC2<Scalar, Node1, Node2>, 
-    OpTimesLC<Scalar, Node3> >(x1, x2);
+  return LCN<Scalar, 2>(1.0, x, lc);
 }
 
-/* LC2 - OpTimesLC */
-template <class Scalar, class Node1, class Node2, class Node3> inline
-LC2<Scalar, LC2<Scalar, Node1, Node2>, OpTimesLC<Scalar, Node3> > 
-operator-(const LC2<Scalar, Node1, Node2>& x1, 
-  const OpTimesLC<Scalar, Node3>& x2)
+/* */
+
+template <class Scalar> inline
+LCN<Scalar, 2> operator+(const LCN<Scalar, 1>& ax, const LCN<Scalar, 1>& by)
 {
-  return LC2<Scalar, LC2<Scalar, Node1, Node2>, 
-    OpTimesLC<Scalar, Node3> >(x1, x2, LCSubtract);
+  return LCN<Scalar, 2>(ax, by);
 }
+
+
+/* */
+
+template <class Scalar> inline
+LCN<Scalar, 3> operator+(const LCN<Scalar, 1>& ax, const LCN<Scalar, 2>& bycz)
+{
+  return LCN<Scalar, 3>(ax, bycz);
+}
+
+/* */
+
+template <class Scalar> inline
+LCN<Scalar, 3> operator+(const Vector<Scalar>& x, const LCN<Scalar, 2>& bycz)
+{
+  return LCN<Scalar, 3>(LCN<Scalar, 1>(1.0, x), bycz);
+}
+
+
+/* */
+
+template <class Scalar> inline
+LCN<Scalar, 3> operator+(const LCN<Scalar, 2>& axby, const LCN<Scalar, 1>& cz)
+{
+  return LCN<Scalar, 3>(axby, cz);
+}
+
+
+/* */
+
+template <class Scalar> inline
+LCN<Scalar, 3> operator+(const LCN<Scalar, 2>& axby, const Vector<Scalar>& z)
+{
+  return LCN<Scalar, 3>(axby, LCN<Scalar,1>(1.0,z));
+}
+
 
 
 /*======================================================================
  *
- *    add/subtract LC2, LC2
+ *  LC minus LC
  *
  *======================================================================*/
-  
-/* LC2 + LC2 */
-template <class Scalar, class Node1, class Node2, 
-          class Node3, class Node4> inline
-LC2<Scalar, LC2<Scalar, Node1, Node2>, LC2<Scalar, Node3, Node4> >
-operator+(const LC2<Scalar, Node1, Node2>& x1, 
-  const LC2<Scalar, Node3, Node4>& x2)
+
+
+/* */
+template <class Scalar, int N, int M> inline
+LCN<Scalar, N+M> operator-(const LCN<Scalar, N>& f, const LCN<Scalar, M>& g)
 {
-  return LC2<Scalar, LC2<Scalar, Node1, Node2>, 
-    LC2<Scalar, Node3, Node4> >(x1, x2);
+  LCN<Scalar, N+M> rtn;
+  for (int i=0; i<N; i++) rtn.set(i, f.coeff(i), f.vec(i));
+  for (int i=0; i<M; i++) rtn.set(i+N, -g.coeff(i), g.vec(i));
+  return rtn;
 }
 
-/* LC2 - LC2 */
-template <class Scalar, class Node1, class Node2, 
-          class Node3, class Node4> inline
-LC2<Scalar, LC2<Scalar, Node1, Node2>, LC2<Scalar, Node3, Node4> >
-operator-(const LC2<Scalar, Node1, Node2>& x1, 
-  const LC2<Scalar, Node3, Node4>& x2)
+/* */
+template <class Scalar, int N> inline
+LCN<Scalar, N+1> operator-(const LCN<Scalar, N>& f, const Vector<Scalar>& g)
 {
-  return LC2<Scalar, LC2<Scalar, Node1, Node2>, 
-    LC2<Scalar, Node3, Node4> >(x1, x2, LCSubtract);
+  LCN<Scalar, N+1> rtn;
+  for (int i=0; i<N; i++) rtn.set(i, f.coeff(i), f.vec(i));
+  rtn.set(N, -1.0, g);
+  return rtn;
 }
 
-
-/*======================================================================
- *
- *    assignment of [OpTimesLC, LC2] to vector
- *
- *======================================================================*/
-  
-  
-/* definition of assignment from 1-term linear combination to a vector */
-template <class Scalar> 
-template <class Node> inline
-Vector<Scalar>& Vector<Scalar>::operator=(const PlayaExprTemplates::OpTimesLC<Scalar, Node>& x)
+/* */
+template <class Scalar, int N> inline
+LCN<Scalar, N+1> operator-(const Vector<Scalar>& f, const LCN<Scalar, N>& g)
 {
-  if (this->ptr().get()==0)
-  {
-    *this = x.eval();
-  }
-  else if (x.containsVector(this->ptr().get()))
-  {
-    Vector<Scalar> rtn = x.eval();
-    acceptCopyOf(rtn);
-  }
-  else
-  {
-    x.evalInto(*this);
-  }
-  return *this;
+  LCN<Scalar, N+1> rtn;
+  rtn.set(0, 1.0, f);
+  for (int i=0; i<N; i++) rtn.set(i+1, -g.coeff(i), g.vec(i));
+
+  return rtn;
 }
 
- 
-/* definition of assignment from N-term linear combination to a vector */
-template <class Scalar>
-template <class Node1, class Node2> inline
-Vector<Scalar>& Vector<Scalar>::operator=(const PlayaExprTemplates::LC2<Scalar, Node1, Node2>& x)
-{
-  if (this->ptr().get()==0)
-  {
-    *this = x.eval();
-  }
-  else if (x.containsVector(this->ptr().get()))
-  {
-    Vector<Scalar> rtn = x.eval();
-    acceptCopyOf(rtn);
-  }
-  else
-  {
-    x.evalInto(*this);
-  }
-  return *this;
-}
+/* */
 
- 
-/* definition of sum-assignment from 1-term linear combination to a vector */
-template <class Scalar> 
-template <class Node> inline
-Vector<Scalar>& Vector<Scalar>::operator+=(const PlayaExprTemplates::OpTimesLC<Scalar, Node>& x)
+template <class Scalar> inline
+LCN<Scalar, 2> operator-(const LCN<Scalar, 1>& lc, const Vector<Scalar>& x)
 {
-  if (this->ptr().get()==0)
-  {
-    *this = x.eval();
-  }
-  else if (x.containsVector(this->ptr().get()))
-  {
-    Vector<Scalar> rtn = x.eval();
-    update(1.0, rtn);
-  }
-  else
-  {
-    x.addInto(*this);
-  }
-  return *this;
+  return LCN<Scalar, 2>(lc, -1.0, x);
 }
 
 
-/* definition of subtraction-assignment from 
- * 1-term linear combination to a vector */
-template <class Scalar> 
-template <class Node> inline
-Vector<Scalar>& Vector<Scalar>::operator-=(const PlayaExprTemplates::OpTimesLC<Scalar, Node>& x)
+/* */
+
+template <class Scalar> inline
+LCN<Scalar, 2> operator-(const Vector<Scalar>& x, const LCN<Scalar, 1>& lc)
 {
-  if (this->ptr().get()==0)
-  {
-    *this = -x.eval();
-  }
-  else if (x.containsVector(this->ptr().get()))
-  {
-    Vector<Scalar> rtn = x.eval();
-    update(-1.0, rtn);
-  }
-  else
-  {
-    x.addInto(*this, LCSubtract);
-  }
-  return *this;
+  return LCN<Scalar, 2>(1.0, x, -lc.coeff(0), lc.vec(0));
+}
+
+/* */
+
+template <class Scalar> inline
+LCN<Scalar, 2> operator-(const LCN<Scalar, 1>& ax, const LCN<Scalar, 1>& by)
+{
+  return LCN<Scalar, 2>(ax, -by);
 }
 
 
- 
-/* definition of sum-assignment from N-term linear combination to a vector */
-template <class Scalar>
-template <class Node1, class Node2> inline
-Vector<Scalar>& Vector<Scalar>::operator+=(const PlayaExprTemplates::LC2<Scalar, Node1, Node2>& x)
+/* */
+
+template <class Scalar> inline
+LCN<Scalar, 3> operator-(const LCN<Scalar, 1>& ax, const LCN<Scalar, 2>& bycz)
 {
-  if (this->ptr().get()==0)
-  {
-    *this = x.eval();
-  }
-  else if (x.containsVector(this->ptr().get()))
-  {
-    Vector<Scalar> rtn = x.eval();
-    update(1.0, rtn);
-  }
-  else
-  {
-    x.addInto(*this);
-  }
-  return *this;
+  return LCN<Scalar, 3>(ax, -bycz);
+}
+
+/* */
+
+template <class Scalar> inline
+LCN<Scalar, 3> operator-(const Vector<Scalar>& x, const LCN<Scalar, 2>& bycz)
+{
+  return LCN<Scalar, 3>(LCN<Scalar, 1>(1.0, x), -bycz);
 }
 
 
- 
-/* definition of subtract-assignment from N-term linear combination 
- * to a vector */
-template <class Scalar>
-template <class Node1, class Node2> inline
-Vector<Scalar>& Vector<Scalar>::operator-=(const PlayaExprTemplates::LC2<Scalar, Node1, Node2>& x)
+/* */
+
+template <class Scalar> inline
+LCN<Scalar, 3> operator-(const LCN<Scalar, 2>& axby, const LCN<Scalar, 1>& cz)
 {
-  if (this->ptr().get()==0)
-  {
-    *this = -x.eval();
-  }
-  else if (x.containsVector(this->ptr().get()))
-  {
-    Vector<Scalar> rtn = x.eval();
-    update(-1.0, rtn);
-  }
-  else
-  {
-    x.addInto(*this, LCSubtract);
-  }
-  return *this;
+  return LCN<Scalar, 3>(axby, -cz);
+}
+
+
+/* */
+
+template <class Scalar> inline
+LCN<Scalar, 3> operator-(const LCN<Scalar, 2>& axby, const Vector<Scalar>& z)
+{
+  return LCN<Scalar, 3>(axby, LCN<Scalar,1>(-1.0,z));
 }
 
 
@@ -634,28 +594,61 @@ Vector<Scalar>& Vector<Scalar>::operator-=(const PlayaExprTemplates::LC2<Scalar,
 
 /*======================================================================
  *
- *    construction of vectors from [OpTimesLC, LC2]
+ *  Operations on LC
  *
  *======================================================================*/
-   
 
-template <class Scalar>
-template <class Node1, class Node2> inline
-Vector<Scalar>::Vector(const PlayaExprTemplates::LC2<Scalar, Node1, Node2>& x)
-  : Handle<VectorBase<Scalar> >(x.eval().ptr())
-{;}
+/* */
+template <class Scalar, int N> inline
+Scalar norm1(const LCN<Scalar, N>& lc) 
+{
+  return lc.norm1();
+}
 
-template <class Scalar> 
-template <class Node> inline
-Vector<Scalar>::Vector(const PlayaExprTemplates::OpTimesLC<Scalar, Node>& x)
-  : Handle<VectorBase<Scalar> >(x.eval().ptr())
-{;}
+/* */
+template <class Scalar, int N> inline
+Scalar norm2(const LCN<Scalar, N>& lc) 
+{
+  return lc.norm2();
+}
 
+/* */
+template <class Scalar, int N> inline
+Scalar normInf(const LCN<Scalar, N>& lc) 
+{
+  return lc.normInf();
+}
 
+/* */
+template <class Scalar, int N> inline
+Vector<Scalar> abs(const LCN<Scalar, N>& lc) 
+{
+  return lc.abs();
+}
+
+/* */
+template <class Scalar, int N> inline
+Scalar min(const LCN<Scalar, N>& lc) 
+{
+  return lc.min();
+}
+
+/* */
+template <class Scalar, int N> inline
+Scalar max(const LCN<Scalar, N>& lc) 
+{
+  return lc.max();
+}
+
+/* */
+template <class Scalar, int N> inline
+Vector<Scalar> reciprocal(const LCN<Scalar, N>& lc) 
+{
+  return lc.reciprocal();
+}
 
 
   
-
 }
 
 

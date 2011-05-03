@@ -11,6 +11,8 @@
 
 namespace Playa
 {
+template <class Scalar> class Vector;
+
 /**
  * 
  * @author Kevin Long (kevin.long@ttu.edu)
@@ -40,6 +42,28 @@ public:
   /** */
   virtual int numBlocks() const {return 1;}
 
+  /** Carry out the operation
+   * (*this) = gamma*(*this) + alpha*x ;
+   */
+  virtual void update(const Scalar& alpha, const VectorBase<Scalar>* x,
+    const Scalar& gamma) = 0;
+
+  /** Carry out the operation
+   * (*this) = gamma*(*this) + alpha*x + beta*y;
+   */
+  virtual void update(
+    const Scalar& alpha, const VectorBase<Scalar>* x,
+    const Scalar& beta, const VectorBase<Scalar>* y,
+    const Scalar& gamma) = 0 ;
+
+  /** */
+  virtual void update(
+    const Scalar& alpha, const VectorBase<Scalar>* x,
+    const Scalar& beta, const VectorBase<Scalar>* y,
+    const Scalar& gamma, const VectorBase<Scalar>* z,
+    const Scalar& delta) = 0 ;
+
+    
 };
 
 

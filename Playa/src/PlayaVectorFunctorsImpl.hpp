@@ -158,6 +158,29 @@ public:
   std::string description() const {return "dotSlash()";}
 };
 
+/** \brief x + b*y */
+template <class Scalar>
+class XPlusBetaY
+{
+public:
+  /** */
+  XPlusBetaY(const Scalar& b) : b_(b) {}
+
+  /** */
+  Scalar operator()(const Scalar& x, const Scalar& y) const 
+    {return x + b_*y;}
+
+  /** */
+  std::string description() const 
+    {
+      std::ostringstream oss;
+      oss << "XPlusBetaY(b=" << b_ << ")";
+      return oss.str();
+    }
+private:
+  Scalar b_;
+};
+
 /** \brief Linear combination of two vectors */
 template <class Scalar>
 class LC2

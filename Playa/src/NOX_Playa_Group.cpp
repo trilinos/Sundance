@@ -9,8 +9,10 @@
 #include "NOX_Playa_Group.hpp"	// class definition
 #include "Teuchos_MPIComm.hpp"
 #include "PlayaOut.hpp"
+#include "PlayaTabs.hpp"
 
 using Playa::Out;
+using Playa::Tabs;
 using Teuchos::RCP;
 
 
@@ -210,7 +212,13 @@ void NOX::NOXPlaya::Group::computeX(const NOX::Abstract::Group& grp,
 
 void NOX::NOXPlaya::Group::computeX(const Group& grp, const Vector& d, double step) 
 {
+  Tabs tab;
   resetIsValid();
+  Out::root() << tab << "updating x: step=" << step << std::endl;
+  Out::root() << tab << "dir: " << std::endl;
+  Out::os() << d.getPlayaVector() << std::endl;
+  Out::root() << tab << "x0: " << std::endl;
+  Out::os() << grp.xVector->getPlayaVector() << std::endl;
   xVector->update(1.0, *(grp.xVector), step, d);
 }
 

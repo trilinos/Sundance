@@ -164,7 +164,9 @@ SolverState<Scalar> BICGSTABSolver<Scalar>
     }
     Scalar beta = a0*(r.dot(r0Hat))/den;
 
-    p0 = r + beta*p0 - beta*w*ap;
+    s = p0 - w*ap;
+    p0 = r + beta*s;
+//    p0 = r + beta*p0 - beta*w*ap;
     //s.axpy(-w, ap, p0);
     //p0.axpy(beta, s, r);
 

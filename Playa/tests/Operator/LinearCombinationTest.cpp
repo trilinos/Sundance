@@ -47,7 +47,16 @@ int main(int argc, char *argv[])
 
       
       bool allPass = tester.runAllTests();
-      if (!allPass) stat = -1;
+      
+      if (!allPass) 
+      {
+        stat = -1;
+        Out::root() << "errors detected: test FAILED!" << endl;
+      }
+      else
+      {
+        Out::root() << "all tests PASSED!" << endl;
+      }
     }
   catch(std::exception& e)
     {
