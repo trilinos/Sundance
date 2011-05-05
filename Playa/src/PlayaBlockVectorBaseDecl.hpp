@@ -70,8 +70,11 @@ public:
     const Scalar& gamma, const VectorBase<Scalar>* z,
     const Scalar& delta) ;
 
+  /** */
+  virtual Scalar dot(const VectorBase<Scalar>* other) const ;
 
-  
+  /** */
+  virtual Scalar norm2() const ;
   
 private:
   mutable int currentBlock_;

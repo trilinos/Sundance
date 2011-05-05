@@ -63,6 +63,11 @@ public:
     const Scalar& gamma, const VectorBase<Scalar>* z,
     const Scalar& delta) = 0 ;
 
+  /** */
+  virtual Scalar dot(const VectorBase<Scalar>* other) const = 0 ;
+
+  /** */
+  virtual Scalar norm2() const = 0 ;
     
 };
 

@@ -163,6 +163,35 @@ public:
       }
     }
 
+  
+
+  /** */
+  virtual Scalar dot(const VectorBase<Scalar>* other) const 
+    {
+      const SingleChunkVector<Scalar>* const sco 
+        = dynamic_cast<const SingleChunkVector<Scalar>* >(other);    
+      TEST_FOR_EXCEPT(sco==0);  
+
+      const Scalar* const yourVals = sco->dataPtr();
+      const Scalar* const myVals = this->dataPtr();
+
+      Scalar rtn = 0.0;
+      int n = this->chunkSize();
+      for (int i=0; i<n; i++) rtn += myVals[i]*yourVals[i];
+      return rtn;
+    }
+
+  /** */
+  virtual Scalar norm2() const 
+    {
+      const Scalar* const myVals = this->dataPtr();
+
+      Scalar rtn = 0.0;
+      int n = this->chunkSize();
+      for (int i=0; i<n; i++) rtn += myVals[i]*myVals[i];
+      return ::sqrt(rtn);
+    }
+
 private:
   mutable bool rewound_;
 };

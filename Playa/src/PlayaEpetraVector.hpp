@@ -116,6 +116,12 @@ public:
     const double& alpha, const VectorBase<double>* x,
     const double& beta, const VectorBase<double>* y,
     const double& gamma) ;
+
+  /** */
+  virtual double dot(const VectorBase<double>* other) const ;
+
+  /** */
+  virtual double norm2() const ;
 protected:    
 
   /** \name Single chunk data access interface */

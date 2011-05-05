@@ -176,3 +176,22 @@ void EpetraVector::update(
   epetraVec_->Update(alpha, *(epx->epetraVec_), 
     beta, *(epy->epetraVec_), gamma);
 }
+
+
+double EpetraVector::dot(const VectorBase<double>* other) const 
+{
+  double rtn = 0.0;
+  const EpetraVector* epv 
+    = dynamic_cast<const EpetraVector*>(other);
+  epetraVec_->Dot(*(epv->epetraVec_), &rtn);
+
+  return rtn;
+}
+
+double EpetraVector::norm2() const 
+{
+  double rtn = 0.0;
+  epetraVec_->Norm2(&rtn);
+
+  return rtn;
+}

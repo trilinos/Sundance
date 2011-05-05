@@ -672,8 +672,8 @@ Vector<Scalar>& Vector<Scalar>::update(const Scalar& alpha,
 template <class Scalar> inline 
 Scalar Vector<Scalar>::dot(const Vector<Scalar>& other) const 
 {
-  return applyBinaryReductionFunctor(
-    PlayaFunctors::DotProduct<Scalar>(this->comm()), other);
+  PLAYA_CHECK_SPACES(this->space(), other.space());
+  return this->ptr()->dot(other.ptr().get());
 }
 
 
@@ -681,7 +681,8 @@ Scalar Vector<Scalar>::dot(const Vector<Scalar>& other) const
 template <class Scalar> inline 
 Scalar Vector<Scalar>::operator*(const Vector<Scalar>& other) const 
 {
-  return dot(other);
+  PLAYA_CHECK_SPACES(this->space(), other.space());
+  return this->ptr()->dot(other.ptr().get());
 }
 
 
@@ -701,7 +702,7 @@ Scalar Vector<Scalar>::norm1() const
 template <class Scalar> inline 
 Scalar Vector<Scalar>::norm2() const 
 {
-  return applyUnaryReductionFunctor(PlayaFunctors::Norm2<Scalar>(this->comm()));
+  return this->ptr()->norm2();
 }
 
 

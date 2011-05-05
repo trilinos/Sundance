@@ -117,6 +117,36 @@ void BlockVectorBase<Scalar>::update(
   }
 }
 
+template <class Scalar> inline
+Scalar BlockVectorBase<Scalar>::dot(
+  const VectorBase<Scalar>* other) const 
+{
+  const BlockVectorBase<Scalar>* bx
+    = dynamic_cast<const BlockVectorBase<Scalar>* >(other);
+
+  Scalar rtn = 0.0;
+
+  for (int b=0; b<this->numBlocks(); b++)
+  {
+    rtn += this->getBlock(b).ptr()->dot(bx->getBlock(b).ptr().get());
+  }
+  return rtn;
+}
+
+template <class Scalar> inline
+Scalar BlockVectorBase<Scalar>::norm2() const 
+{
+  Scalar rtn = 0.0;
+
+  for (int b=0; b<this->numBlocks(); b++)
+  {
+    Scalar tmp = 0.0;
+    tmp = this->getBlock(b).ptr()->norm2();
+    rtn += tmp*tmp;
+  }
+  return sqrt(rtn);
+}
+
 
 template <class Scalar> inline
 std::string BlockVectorBase<Scalar>::description() const
