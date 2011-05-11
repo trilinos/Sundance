@@ -4,7 +4,7 @@
   <Parameter name="Type" type="string" value="Basic LMBFGS"/>
   <Parameter name="Verbosity" type="int" value="0"/>
 
-  <Parameter name="Max Memory Size" type="int" value="10"/>
+  <Parameter name="Max Memory Size" type="int" value="20"/>
 
   <!-- Specify the line search -->
   <ParameterList name="Line Search">
@@ -22,10 +22,10 @@
      <Parameter name="Type"  type="string" value="Default"/>
 
      <!-- Minimum number of iterations to take before starting test -->
-     <Parameter name="Min Iterations"       type="int" value="0"/>
+     <Parameter name="Min Iterations"       type="int" value="5"/>
 
      <!-- Maximum number of iterations to allow -->
-     <Parameter name="Max Iterations"       type="int" value="50"/>
+     <Parameter name="Max Iterations"       type="int" value="500"/>
 
      <!-- Number of criteria that must be met before deciding        -->
      <!-- convergence has occurred. The three possible criteria are  -->
@@ -36,13 +36,13 @@
      <Parameter name="Num Required Passes"  type="int" value="2"/>
 
      <!-- Tolerance in change in objective function value            -->
-     <Parameter name="Objective Tolerance" type="double" value="1.0e-5"/>
+     <Parameter name="Objective Tolerance" type="double" value="1.0e-8"/>
 
      <!-- Tolerance in 2-norm of gradient                            -->
-     <Parameter name="Gradient Tolerance" type="double" value="1.0e-5"/>
+     <Parameter name="Gradient Tolerance" type="double" value="1.0e-8"/>
 
      <!-- Tolerance in scaled max norm of step                       -->
-     <Parameter name="Step Tolerance" type="double" value="1.0e-5"/>
+     <Parameter name="Step Tolerance" type="double" value="1.0e-8"/>
 
      <!-- Verbosity level: 0 is silent, larger values mean  more output -->
      <Parameter name="Verbosity"     type="int" value="0"/>

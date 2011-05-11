@@ -125,6 +125,11 @@ ADD_SUBDIRECTORY(src-std-framework)
 MESSAGE("adding tests-std-fwk")
 PACKAGE_ADD_TEST_DIRECTORIES(tests-std-framework)
 
+MESSAGE("adding src-pdeopt")
+ADD_SUBDIRECTORY(src-pdeopt)
+MESSAGE("adding tests-pdeopt")
+PACKAGE_ADD_TEST_DIRECTORIES(tests-pdeopt)
+
 IF(Sundance_ENABLE_Python)
   MESSAGE("adding python")
   ADD_SUBDIRECTORY(python)

@@ -27,7 +27,7 @@ class ObjectiveBase : public ObjectWithVerbosity,
 {
 public:
   /** */
-  ObjectiveBase() : contextString_() {;}
+  ObjectiveBase(int verb=0) : ObjectWithVerbosity(verb), contextString_() {;}
 
   /** virtual dtor */
   virtual ~ObjectiveBase(){;}

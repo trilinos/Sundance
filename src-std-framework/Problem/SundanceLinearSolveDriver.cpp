@@ -189,6 +189,6 @@ void LinearSolveDriver::writeIntoSolutionExpr(
   for (int i=0; i<solnVector.size(); i++)
   {
     Expr u = soln[i];
-    DiscreteFunction::discFunc(u)->setVector(solnVector[i]);
+    setDiscreteFunctionVector(u, solnVector[i]);
   }
 }

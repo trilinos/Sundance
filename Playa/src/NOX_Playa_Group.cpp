@@ -214,11 +214,6 @@ void NOX::NOXPlaya::Group::computeX(const Group& grp, const Vector& d, double st
 {
   Tabs tab;
   resetIsValid();
-  Out::root() << tab << "updating x: step=" << step << std::endl;
-  Out::root() << tab << "dir: " << std::endl;
-  Out::os() << d.getPlayaVector() << std::endl;
-  Out::root() << tab << "x0: " << std::endl;
-  Out::os() << grp.xVector->getPlayaVector() << std::endl;
   xVector->update(1.0, *(grp.xVector), step, d);
 }
 
