@@ -15,6 +15,7 @@
 #include "PlayaLinearSolverBaseImpl.hpp"
 #include "PlayaSimpleScaledOpImpl.hpp"
 #include "PlayaSimpleComposedOpImpl.hpp"
+#include "PlayaSimpleTransposedOpImpl.hpp"
 #endif
 
 

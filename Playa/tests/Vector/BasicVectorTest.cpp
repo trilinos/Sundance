@@ -19,6 +19,7 @@
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
 #include "PlayaVectorImpl.hpp"
 #include "PlayaBlockIteratorImpl.hpp"
+#include "PlayaSimpleTransposedOpImpl.hpp"
 #endif
 
 using namespace Playa;

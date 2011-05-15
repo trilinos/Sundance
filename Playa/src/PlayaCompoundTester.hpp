@@ -17,6 +17,7 @@
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
 #include "PlayaSimpleComposedOpImpl.hpp"
+#include "PlayaSimpleTransposedOpImpl.hpp"
 #include "PlayaSimpleScaledOpImpl.hpp"
 #include "PlayaSimpleAddedOpImpl.hpp"
 #include "PlayaSimpleDiagonalOpImpl.hpp"

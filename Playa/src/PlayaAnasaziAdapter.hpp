@@ -12,6 +12,7 @@
 
 #include "PlayaVectorImpl.hpp"
 #include "PlayaLinearOperatorImpl.hpp"
+#include "PlayaSimpleTransposedOpImpl.hpp"
 #include "PlayaLinearCombinationImpl.hpp"
 
 #include "Teuchos_Array.hpp"

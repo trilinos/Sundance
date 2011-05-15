@@ -15,6 +15,7 @@
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
 #include "PlayaVectorImpl.hpp"
 #include "PlayaLinearOperatorImpl.hpp"
+#include "PlayaSimpleTransposedOpImpl.hpp"
 #endif
 
 

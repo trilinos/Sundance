@@ -19,6 +19,7 @@
 #include "PlayaSimpleScaledOpImpl.hpp"
 #include "PlayaSimpleAddedOpImpl.hpp"
 #include "PlayaSimpleDiagonalOpImpl.hpp"
+#include "PlayaSimpleTransposedOpImpl.hpp"
 #include "PlayaRandomSparseMatrixBuilderImpl.hpp"
 #endif
 

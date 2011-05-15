@@ -26,6 +26,7 @@
 #include "PlayaSimpleComposedOpImpl.hpp"
 #include "PlayaSimpleScaledOpImpl.hpp"
 #include "PlayaSimpleAddedOpImpl.hpp"
+#include "PlayaSimpleTransposedOpImpl.hpp"
 #include "PlayaSimpleIdentityOpDecl.hpp"
 #endif
 
