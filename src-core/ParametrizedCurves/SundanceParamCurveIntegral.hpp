@@ -98,6 +98,37 @@ public:
 		return rcp(this);
 	}
 
+	/** function which will be called for curve/surface Integral evaluation */
+	virtual void eval0(const double* vars, double* f , int scalarFieldIndex ) const {
+		paramcurve_.eval0( vars, f , scalarFieldIndex );
+	}
+
+	/** adds new scalar field to the interface */
+	virtual int addNewScalarField(std::string fieldName , double initialValue){
+		return paramcurve_.addNewScalarField( fieldName , initialValue);
+	}
+
+	/** returns one array of doubles which contain the values of the scalar field (for each point, nodal basis) */
+	virtual Array<double>& getScalarFieldValues(int scalarFieldIndex) {
+		return paramcurve_.getScalarFieldValues(scalarFieldIndex);
+	}
+
+	/** function to set the values of one specified scalar field <br>
+	 * it is important that the Functional will be defined on a curve, otherwise the value will stay zero */
+	virtual void setSpaceValues(const FunctionalEvaluatorBase& scalarFunctional , int fieldIndex ){
+		paramcurve_.setSpaceValues( scalarFunctional , fieldIndex );
+	}
+
+	/** function to record the function values along one curve. <br>
+	 * This function will be called from the integration routine.  */
+	virtual void addEvaluationPointValues(const Mesh& mesh ,
+			int maxCellLID , int nQuad ,
+			const double* coeffPtr ,
+			const Array<Point>& quadPts) const {
+		paramcurve_.addEvaluationPointValues( mesh , maxCellLID , nQuad , coeffPtr , quadPts);
+	}
+
+
 private:
 
 

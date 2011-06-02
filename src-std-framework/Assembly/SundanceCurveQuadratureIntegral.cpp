@@ -198,7 +198,7 @@ void CurveQuadratureIntegral::updateRefCellInformation(int maxCellLID , const Pa
 	//get the points on the reference cell, instead of "quadPts_" ,  and update "quadCurveDerivs_"
 	Tabs tabs;
     SUNDANCE_MSG3(integrationVerb(), tabs << "CurveQuadratureIntegral::updateRefCellInformation, "
-  		  "Update Cell LID: " << maxCellLID);
+  		  "Update Cell LID: " << maxCellLID << "  curve.myID():" << curve.myID());
 
 	if ( mesh().hasCurvePoints( maxCellLID , curve.myID() ))
 	{
@@ -338,7 +338,7 @@ void CurveQuadratureIntegral
 {
   TimeMonitor timer(maxCellQuadratureTimer());
   Tabs tabs;
-  SUNDANCE_MSG1(integrationVerb(), tabs << "doing zero form by quadrature");
+  SUNDANCE_MSG1(integrationVerb(), tabs << "doing zero form by quadrature , isLocalFlag.size():" << isLocalFlag.size() );
 
   TEST_FOR_EXCEPTION(order() != 0, std::logic_error,
     "CurveQuadratureIntegral::transformZeroForm() called "
@@ -392,6 +392,11 @@ void CurveQuadratureIntegral
   	  {
   	    // get the points on the reference cell, instead of "quadPts_" ,  and update "quadCurveDerivs_"
   	    updateRefCellInformation( (*cellLIDs)[c] , globalCurve() );
+
+  	    // here we pass the evaluated points(coeffPtr) for the interface (polygon or 3D surface), in case to set the values on the interface
+  	    // in this place it should be only evaluated for functional, since isLocalFlag.size() > 0
+  	    SUNDANCE_MSG1(integrationVerb(), " call .addEvaluationPointValues for cellLID: " << (*cellLIDs)[c] << " curveID:" << globalCurve().myID() );
+  	    globalCurve().addEvaluationPointValues( mesh() , (*cellLIDs)[c] , nQuad , coeffPtr , quadPts_ );
       
         // here we do not have to update W_ since it is only the weight of the quadrature points
         for (int q=0; q<nQuad; q++, coeffPtr++)

@@ -68,11 +68,9 @@ public:
 
   /** */
   virtual Scalar norm2() const = 0 ;
-    
+
 };
 
-
-  
   
 }
 

@@ -688,7 +688,7 @@ void CurveIntegralCalc::getCurveQuadPoints_polygon(
 	    		}
 	    		// add only if this point does not exist in the list
 	    		if (!pointExists){
-	    			SUNDANCE_MSG3(verb, tabs << "getCurveQuadPoints_line  ADD  Intersect point:" << result[ptmp]);
+	    			//SUNDANCE_MSG3(verb, tabs << "getCurveQuadPoints_line  ADD  Intersect point:" << result[ptmp]);
 	    			allIntPoints.resize( total_points + 1 );
 	    			allIntPointsEdge.resize( total_points + 1 );
 	    			allIntPoints[total_points] = result[ptmp];

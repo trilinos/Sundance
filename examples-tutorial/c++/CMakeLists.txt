@@ -9,10 +9,10 @@ SET(MPITests
   Example4-TransientNonlinear1D
   Example5-PoissonBoltzmann2D
   Example6-TransientTwoZoneHeat2D
-  
-
+  Example7-NonlinearPeriodicCoupled
 )
 
+  
 
 
 SET(SolverParamPath ${PACKAGE_SOURCE_DIR}/etc/SolverParameters)

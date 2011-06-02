@@ -35,6 +35,7 @@
 #include "SundancePoint.hpp"
 #include "SundanceDefs.hpp"
 #include "PlayaHandleable.hpp"
+#include "SundanceFunctionalEvaluatorBase.hpp"
 
 namespace Sundance
 {
@@ -74,13 +75,55 @@ public:
 	 * @return Expr The parameters of the curve which uniquely defines the curve*/
 	virtual Expr getParams() const = 0 ;
 
+	/** update the state of the curve of the control point were changed*/
+	virtual void update() {;}
+
 	/** function to return the control points of a given curve */
 	virtual Array<Point>& getControlPoints() {
 		TEST_FOR_EXCEPTION( true , std::runtime_error, " getControlPoints() method is not overwritten ");
 	}
 
-	/** update the state of the curve of the control point were changed*/
-	virtual void update() {;}
+	/** function which will be called for curve/surface Integral evaluation
+	 * @param vars [IN] coordinates
+	 * @param f [OUT] the output of the expression
+	 * @param scalarFieldIndex [IN] scalar field index */
+	virtual void eval0(const double* vars, double* f , int scalarFieldIndex ) const {
+		TEST_FOR_EXCEPTION( true , std::runtime_error, " eval0() method is not overwritten ");
+	}
+
+	/** adds new scalar field to the interface
+	 * @param fieldName [IN] the new name of the field
+	 * @param initialValue [IN] initial value of the scalar field
+	 * @return the scalar field index */
+	virtual int addNewScalarField(std::string fieldName , double initialValue){
+		TEST_FOR_EXCEPTION( true , std::runtime_error, " addNewScalarField() method is not overwritten ");
+	}
+
+	/** returns one array of doubles which contain the values of the scalar field (for each point, nodal basis)
+	 * @param scalarFieldIndex [IN] the index
+	 * @return array with the scalar field values */
+	virtual Array<double>& getScalarFieldValues(int scalarFieldIndex) {
+		TEST_FOR_EXCEPTION( true , std::runtime_error, " getScalarFieldValues() method is not overwritten ");
+	}
+
+	/** function to set the values of one specified scalar field <br>
+	 * it is important that the Functional will be defined on a curve, otherwise the value will stay zero
+	 * @param scalarFunctional [IN] , the scalar functions*/
+	virtual void setSpaceValues(const FunctionalEvaluatorBase& scalarFunctional , int fieldIndex ){
+		TEST_FOR_EXCEPTION( true , std::runtime_error, " setSpaceValues() method is not overwritten ");
+	}
+
+	/** function to record the function values along one curve. <br>
+	 * This function will be called from the integration routine.
+	 * @param mesh [IN] the mesh (only for consistency test if the curve mesh is the same as the integral mesh)
+	 * @param maxCellLID [IN] the max dim cell LID on which is currently integrated
+	 * @param nQuad [IN] number of quadrature points (and implicitly evaluation point)
+	 * @param coeffPtr [IN] the values of the expression at the quadrature points
+	 * @param quadPts [IN] the evaluation points in the reference coordinates */
+	virtual void addEvaluationPointValues(const Mesh& mesh ,
+			int maxCellLID , int nQuad ,
+			const double* coeffPtr ,
+			const Array<Point>& quadPts) const { /*std::cout << " dummy addEvaluationPointValues" << std::endl*/;}
 
 	/**
 	 * Return the integration parameters

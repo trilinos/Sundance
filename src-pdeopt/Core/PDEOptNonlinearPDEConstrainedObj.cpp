@@ -69,6 +69,7 @@ void NonlinearPDEConstrainedObj::initEquations(
     PLAYA_MSG3(verb(), tab1 << "setting up state equation #" << i);
     Expr fixedVars = new ListExpr(fixedVarsInStateEqns[i]);
     Expr fixedVarVals = new ListExpr(fixedVarsInStateEqnsVals[i]);
+    PLAYA_MSG3(verb(), tab1 << "Fixed vars are: " << fixedVars);
     NonlinearProblem stateProb 
       = Lagrangian().nonlinearVariationalProb(adjointVars[i], 
         adjointVarVals(i),
@@ -84,6 +85,7 @@ void NonlinearPDEConstrainedObj::initEquations(
     PLAYA_MSG3(verb(), tab1 << "setting up adjoint equation #" << i);
     Expr fixedVars = new ListExpr(fixedVarsInAdjointEqns[i]);
     Expr fixedVarVals = new ListExpr(fixedVarsInAdjointEqnsVals[i]);
+    PLAYA_MSG3(verb(), tab1 << "Fixed vars are: " << fixedVars);
     LinearProblem adjointProb 
       = Lagrangian().linearVariationalProb(stateVars[i], stateVarVals(i),
         adjointVars[i],
@@ -109,6 +111,7 @@ void NonlinearPDEConstrainedObj::solveState(const Vector<double>& x) const
   /* solve the state equations in order */
   for (int i=0; i<stateProbs_.size(); i++)
   {
+    PLAYA_MSG3(verb(), tab << "state eqn=" << i); 
     NOX::StatusTest::StatusType status 
       = stateProbs_[i].solve(solver_);
     TEST_FOR_EXCEPTION(status != NOX::StatusTest::Converged,
@@ -139,6 +142,7 @@ void NonlinearPDEConstrainedObj
   /* solve the state equations in order */
   for (int i=0; i<stateProbs_.size(); i++)
   {
+    PLAYA_MSG3(verb(), tab << "state eqn=" << i); 
     NOX::StatusTest::StatusType status 
       = stateProbs_[i].solve(solver_);
 
@@ -178,6 +182,7 @@ void NonlinearPDEConstrainedObj
   /* solve the adjoint equations in reverse order */
   for (int i=adjointProbs_.size()-1; i>=0; i--)
   {
+    PLAYA_MSG3(verb(), tab << "adjoint eqn=" << i); 
     SolverState<double> status 
       = adjointProbs_[i].solve(adjSolver_, adjointVarVals(i));
 

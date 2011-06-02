@@ -37,6 +37,8 @@
 namespace Sundance
 {
 
+ //class FunctionalEvaluator;
+
 /**  */
 class Polygon2D: public Sundance::CurveBase
 {
@@ -65,14 +67,6 @@ public:
 
 	/** update the state of the curve of the control point were changed */
 	virtual void update();
-
-protected:
-	/**
-	 * This function should be implemented
-	 * @param evalPoint point where the polygon equation is evaluated <br>
-	 * @return double the value of the curve equation at the evaluation point  */
-	virtual double curveEquation_intern(const Point& evalPoint) const;
-public:
 
 	/**
 	 * This function is important for nonstructural mesh integration.<br>
@@ -115,9 +109,55 @@ public:
 	/** returns the points which are inside one maxCell */
 	void getCellsPolygonesPoint( int maxCellLID , Array<Point>& points) const ;
 
+	/** see super class */
+	virtual int addNewScalarField(std::string fieldName , double initialValue){
+		polygonSpaceValues_.resize(nrScalarField_+1);
+		polygonSpaceNames_.resize(nrScalarField_+1);
+		polygonSpaceValues_[nrScalarField_].resize(polyPoints_.size() , initialValue);
+		polygonSpaceNames_[nrScalarField_] = fieldName;
+		nrScalarField_ = nrScalarField_ + 1;
+		return nrScalarField_ - 1;
+	}
+
+	/** returns one array of doubles which contain the values of the scalar field (for each point, nodal basis)
+	 * @param scalarFieldIndex [IN] the index
+	 * @return array with the scalar field values */
+	virtual Array<double>& getScalarFieldValues(int scalarFieldIndex) { return polygonSpaceValues_[scalarFieldIndex]; }
+
+	/** function to set the values of one specified scalar field <br>
+	 * it is important that the Functional will be defined on a curve, otherwise the value will stay zero
+	 * @param scalarFunctional [IN] , the scalar functions*/
+	virtual void setSpaceValues(const FunctionalEvaluatorBase& scalarFunctional , int fieldIndex );
+
+	/** function to record the function values along one interface. <br>
+	 * This function will be called from the integration routine.*/
+	virtual void addEvaluationPointValues(const Mesh& mesh ,
+			int maxCellLID , int nQuad ,
+			const double* coeffPtr ,
+			const Array<Point>& quadPts) const ;
+
+	/** function which will be called for curve Integral evaluation
+	 * @param vars [IN] coordinates
+	 * @param f [OUT] the output of the expression
+	 * @param scalarFieldIndex [IN] scalar field index */
+	virtual void eval0(const double* vars, double* f , int scalarFieldIndex ) const;
+
+	/** create the twin polygon and then also scale and shift the polygon
+	 * @param shiftX
+	 * @param shiftY
+	 * @param scaleX
+	 * @param scaleY */
+	Polygon2D* createTwinPolygon(double shiftX , double shiftY , double scaleX , double scaleY);
+
 	/** generate the polygon which is the unification (not intersection) of two polygons */
     static RCP<CurveBase> unite(ParametrizedCurve& c1 , ParametrizedCurve& c2);
 
+protected:
+	/**
+	 * This function should be implemented
+	 * @param evalPoint point where the polygon equation is evaluated <br>
+	 * @return double the value of the curve equation at the evaluation point  */
+	virtual double curveEquation_intern(const Point& evalPoint) const;
 private:
 
 	/** looks for each point in which cell it is contained (later for evaluation purposes)*/
@@ -151,6 +191,27 @@ private:
 	double minY_;
 	double maxY_;
 
+// ----------- values on the polygon ----------------
+	/** values created on the polygon */
+	mutable Array< Array<double> > polygonSpaceValues_;
+
+	/** values created on the polygon */
+	mutable Array< std::string > polygonSpaceNames_;
+
+	/** number of scalar fields*/
+	int nrScalarField_;
+
+	/** variable needed for setting the values on the polygon*/
+	mutable bool isRecording_;
+
+	/** store which field are we recording */
+	mutable int recordedScalarField_;
+
+// -------------- twin polygon for Lagrange - Euler framework interface ----------
+	/** pointer to the polygon to which this is coupled (like a twin)*/
+	mutable Polygon2D* twinPolygon_;
+
+// ------------- tmp variable for polygon union ----------
 	/** the index of the line which is at last the intersection point,
 	 * used only in the union of two polygons */
 	static int intersectionEdge_;

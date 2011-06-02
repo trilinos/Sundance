@@ -306,6 +306,7 @@ private:
 
   Map<ComputationType, Array<IntegrationCellSpecifier> > rqcRequiresMaximalCofacets_;
 
+
 };
 
 }

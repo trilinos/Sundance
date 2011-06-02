@@ -50,6 +50,8 @@ APPEND_SET(HEADERS
   UserExprs/SundanceUserDefFunctor.hpp
   UserExprs/SundanceUserDefOp.hpp 
   UserExprs/SundanceVectorCalculus.hpp 
+  UserExprs/SundanceCurveExpr.hpp
+  UserExprs/SundanceFunctionalEvaluatorBase.hpp
   )
 
 APPEND_SET(SOURCES

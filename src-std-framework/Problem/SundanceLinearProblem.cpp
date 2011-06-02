@@ -77,7 +77,8 @@ LinearProblem::LinearProblem(const Mesh& mesh,
     A_(),
     rhs_(1),
     names_(1),
-    solveDriver_()
+    solveDriver_(),
+    params_()
 {
   bool partitionBCs = false;
   TimeMonitor timer(lpCtorTimer());
@@ -117,21 +118,24 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   const Expr& bc,
   const Expr& test, 
   const Expr& unk, 
-  const Expr& unkParams, 
-  const Expr& unkParamVals, 
+  const Expr& params, 
+  const Expr& paramVals, 
   const VectorType<double>& vecType)
   : assembler_(),
     A_(),
     rhs_(1),
     names_(1),
-    solveDriver_()
+    solveDriver_(),
+    params_(params)
 {
   bool partitionBCs = false;
   TimeMonitor timer(lpCtorTimer());
   Expr u = unk.flattenSpectral();
   Expr v = test.flattenSpectral();
-  Expr alpha = unkParams.flattenSpectral();
-  Expr alpha0 = unkParamVals.flattenSpectral();
+
+  Expr dumParams;
+  Expr alpha = params.flattenSpectral();
+  Expr alpha0 = paramVals.flattenSpectral();
   Array<Expr> zero(u.size());
   for (int i=0; i<u.size(); i++) 
   {
@@ -143,12 +147,12 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   Expr u0 = new ListExpr(zero);
 
   Array<Expr> fixedFields;
-  Expr fixedParams;
+
   
   RCP<EquationSet> eqnSet 
     = rcp(new EquationSet(eqn, bc, tuple(v), tuple(u), tuple(u0),
+        dumParams, dumParams, 
         alpha, alpha0,
-        fixedParams, fixedParams, 
         fixedFields, fixedFields));
 
   assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vecType), tuple(vecType), partitionBCs));
@@ -165,7 +169,8 @@ LinearProblem::LinearProblem(const Mesh& mesh,
     A_(),
     rhs_(1),
     names_(unk.size()),
-    solveDriver_()
+    solveDriver_(),
+    params_()
 {
   bool partitionBCs = false;
   TimeMonitor timer(lpCtorTimer());
@@ -225,7 +230,8 @@ LinearProblem::LinearProblem(const Mesh& mesh,
     A_(),
     rhs_(1),
     names_(unk.size()),
-    solveDriver_()
+    solveDriver_(),
+    params_(unkParams)
 {
   bool partitionBCs = false;
   TimeMonitor timer(lpCtorTimer());
@@ -274,7 +280,8 @@ LinearProblem::LinearProblem(const RCP<Assembler>& assembler)
   : assembler_(assembler),
     A_(),
     rhs_(1),
-    names_()
+    names_(),
+    params_()
 {  
   TimeMonitor timer(lpCtorTimer());
   const RCP<EquationSet>& eqn = assembler->eqnSet();
@@ -383,7 +390,6 @@ SolverState<double> LinearProblem
   
   return solveDriver_.solve(solver, A_, rhs_, solnSpace(), names_, verb, soln);
 }
-
 
 
 Expr LinearProblem::formSolutionExpr(const Array<Vector<double> >& vec) const

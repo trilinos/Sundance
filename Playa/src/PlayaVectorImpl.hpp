@@ -1,6 +1,6 @@
 /* @HEADER@ */
 //   
- /* @HEADER@ */
+/* @HEADER@ */
 
 #ifndef PLAYA_VECTORIMPL_HPP
 #define PLAYA_VECTORIMPL_HPP
@@ -308,12 +308,19 @@ Vector<Scalar>& Vector<Scalar>::applyUnaryFunctor(const UF& func)
 {
   TimeMonitor t(*opTimer());
 
-  for (BlockIterator<Scalar> b=this->space().beginBlock(); b!=this->space().endBlock(); b++)
+  if (this->numBlocks() > 1)
   {
-    Vector<Scalar> xBlock = this->getNonConstBlock(b);
-    while(xBlock.hasMoreChunks())
+    for (int b=0; b<numBlocks(); b++)
     {
-      NonConstDataChunk<Scalar> myChunk = xBlock.nextChunk();
+      Vector<Scalar> xBlock = this->getNonConstBlock(b);
+      xBlock.applyUnaryFunctor(func);
+    }
+  }
+  else
+  {
+    while(this->hasMoreChunks())
+    {
+      NonConstDataChunk<Scalar> myChunk = this->nextChunk();
       Scalar* me = myChunk.values();
       for (int i=0; i<myChunk.size(); i++)
       {
@@ -336,14 +343,27 @@ Vector<Scalar>& Vector<Scalar>::acceptUnaryFunctor(const UF& func,
 {
   TimeMonitor t(*opTimer());
 
-  for (BlockIterator<Scalar> b=this->space().beginBlock(); b!=this->space().endBlock(); b++)
+  TEST_FOR_EXCEPTION(!this->space().isCompatible(other.space()),
+    std::runtime_error,
+    "Spaces this=" << this->space() << " and other="
+    << other.space() << " are not compatible in unary accept-operation "
+    << func.description());
+
+  if (this->numBlocks() > 1)
   {
-    Vector<Scalar> myBlock = this->getNonConstBlock(b);
-    Vector<Scalar> yourBlock = other.getBlock(b);
-    while(myBlock.hasMoreChunks())
+    for (int b=0; b<this->numBlocks(); b++)
     {
-      NonConstDataChunk<Scalar> myChunk = myBlock.nextChunk();
-      ConstDataChunk<Scalar> yourChunk = yourBlock.nextConstChunk();
+      Vector<Scalar> myBlock = this->getNonConstBlock(b);
+      Vector<Scalar> yourBlock = other.getBlock(b);
+      myBlock.acceptUnaryFunctor(func, yourBlock);
+    }
+  }
+  else
+  {
+    while(this->hasMoreChunks())
+    {
+      NonConstDataChunk<Scalar> myChunk = this->nextChunk();
+      ConstDataChunk<Scalar> yourChunk = other.nextConstChunk();
       Scalar* me = myChunk.values();
       const Scalar* you = yourChunk.values();
       for (int i=0; i<myChunk.size(); i++)
@@ -351,10 +371,9 @@ Vector<Scalar>& Vector<Scalar>::acceptUnaryFunctor(const UF& func,
         me[i] = func(you[i]);
       }
     }
+    other.rewind();
+    this->rewind();
   }
-
-  other.rewind();
-  this->rewind();
 
   return *this;
 }
@@ -374,14 +393,21 @@ Vector<Scalar>& Vector<Scalar>::applyBinaryFunctor(const VF& func,
     << other.space() << " are not compatible in binary operation "
     << func.description());
 
-  for (BlockIterator<Scalar> b=this->space().beginBlock(); b!=this->space().endBlock(); b++)
+  if (this->numBlocks() > 1)
   {
-    Vector<Scalar> myBlock = this->getNonConstBlock(b);
-    Vector<Scalar> yourBlock = other.getBlock(b);
-    while(myBlock.hasMoreChunks())
+    for (int b=0; b<this->numBlocks(); b++)
     {
-      NonConstDataChunk<Scalar> myChunk = myBlock.nextChunk();
-      ConstDataChunk<Scalar> yourChunk = yourBlock.nextConstChunk();
+      Vector<Scalar> myBlock = this->getNonConstBlock(b);
+      Vector<Scalar> yourBlock = other.getBlock(b);
+      myBlock.applyBinaryFunctor(func, yourBlock);
+    }
+  }
+  else
+  {
+    while(this->hasMoreChunks())
+    {
+      NonConstDataChunk<Scalar> myChunk = this->nextChunk();
+      ConstDataChunk<Scalar> yourChunk = other.nextConstChunk();
       Scalar* me = myChunk.values();
       const Scalar* you = yourChunk.values();
       for (int i=0; i<myChunk.size(); i++)
@@ -389,10 +415,9 @@ Vector<Scalar>& Vector<Scalar>::applyBinaryFunctor(const VF& func,
         me[i] = func(me[i], you[i]);
       }
     }
+    other.rewind();
+    this->rewind();
   }
-
-  other.rewind();
-  this->rewind();
 
   return *this;
 }
@@ -415,30 +440,35 @@ Vector<Scalar>& Vector<Scalar>::applyTernaryFunctor(
     << " are not compatible in ternary operation "
     << func.description());
 
-  for (BlockIterator<Scalar> b=this->space().beginBlock(); b!=this->space().endBlock(); b++)
+  if (this->numBlocks() > 1)
   {
-    Vector<Scalar> xBlock = this->getNonConstBlock(b);
-    Vector<Scalar> yBlock = y.getBlock(b);
-    Vector<Scalar> zBlock = z.getBlock(b);
-    while(xBlock.hasMoreChunks())
+    for (int b=0; b<this->numBlocks(); b++)
     {
-      NonConstDataChunk<Scalar> xChunk = xBlock.nextChunk();
-      ConstDataChunk<Scalar> yChunk = yBlock.nextConstChunk();
-      ConstDataChunk<Scalar> zChunk = zBlock.nextConstChunk();
-      Scalar* xv = xChunk.values();
-      const Scalar* yv = yChunk.values();
-      const Scalar* zv = zChunk.values();
-      for (int i=0; i<xChunk.size(); i++)
-      {
-        xv[i] = func(xv[i], yv[i], zv[i]);
-      }
+      Vector<Scalar> xBlock = this->getNonConstBlock(b);
+      Vector<Scalar> yBlock = y.getBlock(b);
+      Vector<Scalar> zBlock = z.getBlock(b);
+      xBlock.applyTernaryFunctor(func, yBlock, zBlock);
     }
   }
-
-  this->rewind();
-  y.rewind();
-  z.rewind();
-
+  else
+  {
+    while(this->hasMoreChunks())
+      {
+        NonConstDataChunk<Scalar> xChunk = this->nextChunk();
+        ConstDataChunk<Scalar> yChunk = y.nextConstChunk();
+        ConstDataChunk<Scalar> zChunk = z.nextConstChunk();
+        Scalar* xv = xChunk.values();
+        const Scalar* yv = yChunk.values();
+        const Scalar* zv = zChunk.values();
+        for (int i=0; i<xChunk.size(); i++)
+        {
+          xv[i] = func(xv[i], yv[i], zv[i]);
+        }
+      }
+    this->rewind();
+    y.rewind();
+    z.rewind();
+  }
   return *this;
 }
 

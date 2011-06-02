@@ -34,25 +34,25 @@ Drag: c_D(u,p) = 5.55722
 Lift: c_L(u,p) = 0.0107113
 */
 
-#define RefLevel 0
+#define RefLevel 1
 
 // Will be used to select the left, bottom, right, and top boundary
 CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
 CELL_PREDICATE(BottomPointTest, {return fabs(x[1]) < 1.0e-10;})
-CELL_PREDICATE(RightPointTest, {return fabs(x[0]-2.5) < 1.0e-10;})
+CELL_PREDICATE(RightPointTest, {return fabs(x[0]-2.2) < 1.0e-10;})
 CELL_PREDICATE(TopPointTest, {return fabs(x[1]-0.41) < 1.0e-10;})
 
 REFINE_MESH_ESTIMATE(MeshRefEst , { \
     // this is the refinement function
-        if ((cellPos[0] < 0.45) && (cellPos[0] > 0.0) && (cellPos[1] < 0.30) && (cellPos[1] > 0.10) && (cellLevel < RefLevel)) \
+        if ((cellPos[0] < 0.26) && (cellPos[0] > 0.14) && (cellPos[1] < 0.26) && (cellPos[1] > 0.14) && (cellLevel < RefLevel)) \
+//           ||((cellPos[0] < 0.32) && (cellPos[0] > 0.12) && (cellPos[1] < 0.28) && (cellPos[1] > 0.12) && (cellLevel < 2)))
                                       return 1;\
                                  else return 0; } ,
   // this is the coarse load estimator
-  { if (cellPos[0] < 0.5) {return 10;} else {return 1;} } )
+  { if (cellPos[0] < 0.7) {return 20;} else {return 1;} } )
   
 
 MESH_DOMAIN( MeshDomain , {return true;})
-
 
 int main(int argc, char** argv)
 {
@@ -60,6 +60,7 @@ int main(int argc, char** argv)
   try
 	{
       Sundance::init(&argc, &argv);
+      int np = MPIComm::world().getNProc();
       int myrank = MPIComm::world().getRank();
  
       /* We will do our linear algebra using Epetra */
@@ -67,23 +68,25 @@ int main(int argc, char** argv)
       
       /* refinement criterion object */
       RefinementClass refCl1 = new MeshRefEst();
-      /* Create one circle */
-      ParametrizedCurve curve_r = new Circle( 0.2 , 0.2 , 0.05+1e-8 , 1.0 , 1e-10 );
+
+      ParametrizedCurve curve_c = new Circle( 0.2 , 0.2 , 0.05 , 1 , 1e-7 );
+      //ParametrizedCurve curve = new Polygon2D( "wing.txt" , 1.0 , 1e-7 );
             
       /* mesh domain estimation */
-      MeshDomainDef meshDom_circl = new CurveDomain( curve_r , Outside_Curve );
+      MeshDomainDef meshDom_circl = new CurveDomain( curve_c , Outside_Curve );
 
       /* mesh domain, dummy class */
       MeshDomainDef meshDom = new MeshDomain();
 
       MeshType meshType = new HNMeshType2D();
-      MeshSource mesher = new HNMesher2D(0.0, 0.0, 2.2 , 0.41 , 110 , 21 , meshType , refCl1 , meshDom );
+      MeshSource mesher = new HNMesher2D(0.0, 0.0, 2.2 , 0.41 , 51 , 11 , meshType , refCl1 , meshDom_circl );
       Mesh mesh = mesher.getMesh();
+      //curve.setMesh( mesh );
       
       // write circle to VTK 
-      PolygonQuadrature::setNrMaxLinePerCell(15);
-      ParametrizedCurve curve = curve_r.getPolygon(mesh, 0.01);
-      curve.writeToVTK("p_circle.vtk");
+      PolygonQuadrature::setNrMaxLinePerCell(6);
+      ParametrizedCurve curve = curve_c.getPolygon(mesh, 0.07);
+      curve.writeToVTK("p_wing.vtk");
             
       /* Object needed for curve integral calculation */
       ParametrizedCurve curveIntegral = new ParamCurveIntegral(curve);
@@ -134,8 +137,8 @@ int main(int argc, char** argv)
 
       // We need a quadrature rule for doing the integrations 
       QuadratureFamily quad2 = new GaussianQuadrature(4);
-      QuadratureFamily quad4 = new GaussianQuadrature(4);
-      QuadratureFamily quad_hi = new GaussLobattoQuadrature(4);
+      QuadratureFamily quad4 = new GaussianQuadrature(6);
+      QuadratureFamily quad_hi = new GaussLobattoQuadrature(6);
       QuadratureFamily quad_c12 = new GaussianQuadrature(12);
       QuadratureFamily quad_c = new PolygonQuadrature( quad_c12 );
       
@@ -155,11 +158,20 @@ int main(int argc, char** argv)
       Expr h = new CellDiameterExpr();
       Expr nx = new CurveNormExpr(0);
       Expr ny = new CurveNormExpr(1);
-      double ux_Dirichlet = 0.0; //0.04;
-      double uy_Dirichlet = 0.0; //0.01;
-      double ga1=5000;
-      double ga2=5000;
+      Expr c1 = new UserDefOp(List(x,y), rcp(new CurveExpr(curve,0)) );
+      curve.addNewScalarField( "fx" , 1.0 );
+      curve.addNewScalarField( "fy" , 1.0 );
+//      Expr nx = -(x-0.2)/sqrt((x-0.2)*(x-0.2)+(y-0.2)*(y-0.2));
+//      Expr ny = -(y-0.2)/sqrt((x-0.2)*(x-0.2)+(y-0.2)*(y-0.2));
+      double ux_Dirichlet = 0.0 , velx = 0.0; //0.04;
+      double uy_Dirichlet = 0.0 , vely = 0.0; //0.01;
+      double ga1=1000;
+      double ga2=1000;
       double beta = 1e-5;
+
+      Expr chix = 1.0/((1.0+exp(-200*(x-0.075)))*(1.0+exp(-15*(1.225-x))));
+      Expr chiy = 1.0/((1.0+exp(-200*(y-0.075)))*(1.0+exp(-200*(0.33-y))));
+      Expr chi=chix*chiy;
 
       // initial value 
       L2Projector projectorupar(VelSpace, List(0.0,0.0)); 
@@ -169,27 +181,32 @@ int main(int argc, char** argv)
       // Define the Dirichlet BC 
       double hflow = 0.41;
       double Um = 0.3;
-      double Umean = 2*(4*Um*((hflow-0.5*0.41)*0.5*0.41)/(hflow*hflow))/3;
+      double Umean = 2.0*(4.0*Um*((hflow-0.5*0.41)*0.5*0.41)/(hflow*hflow))/3.0;
       double rho = 1.0;
       double D = 0.1;
       double mu = 0.001;
       
       Expr uInflow = 4*Um*((hflow-y)*y)/(hflow*hflow);
       // if we add the edges then we can make sure that no fluid is escaping
-      CellFilter walls = bottom + top;
-      Expr bc = EssentialBC(walls , v*u, quad4 ) 
-              + EssentialBC(left, vx*(ux-uInflow)+vy*uy, quad4 );
+      CellFilter walls = bottom + top; //+ curveFilt;
+      Expr bc = EssentialBC(walls , (1.0/h)*v*u, quad4 )  //curveFilt
+              + EssentialBC(left, (1.0/h)*(vx*(ux-uInflow)+vy*uy), quad4 );
 
+/*
       Expr un = ux*nx+uy*ny;
       Expr unm = 0.5*(un-fabs(un));
       Expr udln = ux_Dirichlet*nx+uy_Dirichlet*ny;
       Expr udlnm = 0.5*(udln-fabs(udln));
-	      
+*/
+      Expr unm=1e-12*x;
+      Expr udlnm=1e-12*x;
       Expr eqn = Integral(OutsideCurve, nu*(grad*vx)*(grad*ux)  
                           + nu*(grad*vy)*(grad*uy)
                           + vx*(ux*(dx*ux)+uy*(dy*ux))
                           + vy*(ux*(dx*uy)+uy*(dy*uy))
-                          + (h*beta)*(grad*q)*(grad*p)
+			  + 1e-2 * (grad*p)*(grad*q)
+                          // symmetrization
+//                          +0.5*(dx*ux+dy*uy)*(vx*ux+vy*uy)
                           - p*(dx*vx+dy*vy)
                           + q*(dx*ux+dy*uy),
                           quad4)
@@ -197,21 +214,31 @@ int main(int argc, char** argv)
                           + nu*(grad*vy)*(grad*uy)
                           + vx*(ux*(dx*ux)+uy*(dy*ux))
                           + vy*(ux*(dx*uy)+uy*(dy*uy))
-                          + (h*beta)*(grad*q)*(grad*p)
+			  + 1e-2 * (grad*p)*(grad*q)
+                          // symmetrization
+//                          +0.5*(dx*ux+dy*uy)*(vx*ux+vy*uy)
                           - p*(dx*vx+dy*vy)
                           + q*(dx*ux+dy*uy),
                           quad_hi , curve)
                  + Integral(OnCurve,
+                            -nu*(dx*ux*nx+dy*ux*ny)*vx
+                            -nu*(dx*uy*nx+dy*uy*ny)*vy
                             -nu*(dx*vx*nx+dy*vx*ny)*(ux-ux_Dirichlet)
                             -nu*(dx*vy*nx+dy*vy*ny)*(uy-uy_Dirichlet)
+                            +p*(nx*vx+ny*vy)
                             -q*(nx*(ux-ux_Dirichlet)+ny*(uy-uy_Dirichlet))
                             +nu*ga1/h*((ux-ux_Dirichlet)*vx+(uy-uy_Dirichlet)*vy)
-                            +ga2/h*((ux-ux_Dirichlet)*nx+(uy-uy_Dirichlet)*ny)*(vx*nx+vy*ny)
-			    -unm*(ux*vx+uy*vy)
+                            +ga2/h*((ux-ux_Dirichlet)*nx+(uy-uy_Dirichlet)*ny)
+                            *(vx*nx+vy*ny)
+                            -unm*(ux*vx+uy*vy)
                             +udlnm*(ux_Dirichlet*vx+uy_Dirichlet*vy),
                             quad_c , curveIntegral )
-                 + Integral( InCurve , 1e-9*( (grad*ux)*(grad*vx) + (grad*uy)*(grad*vy) + (grad*p)*(grad*q)) , quad4 );
-			    
+// New
+// good: 1e-7, also OK: 1e-6
+                   + Integral(InCurve+OnCurve, 1e-7*nu*(grad*vx)*(grad*ux)+1e-7*vx*ux
+                                      +1e-7*nu*(grad*vy)*(grad*uy)+1e-7*vy*uy+1e-7*p*q,quad4)
+                   - Integral(OnCurve, 1e-7*nu*(grad*vx)*(grad*ux)+1e-7*vx*ux
+                                      +1e-7*nu*(grad*vy)*(grad*uy)+1e-7*vy*uy+1e-7*p*q,quad_hi, curve);
       // Create a TSF NonlinearOperator object 
       NonlinearProblem prob(mesh, eqn , bc, List(v, q),
                                List(u, p), up, vecType );
@@ -237,7 +264,7 @@ int main(int argc, char** argv)
       Expr uy_grad = projectorUY.project();
             
       // Write the field in VTK format
-      FieldWriter w = new VTKWriter("NavStok_Benchmark_polyg");
+      FieldWriter w = new VTKWriter("NavStok_Benchmark");
       w.addMesh(mesh);
 
       // this is what should be passed for vector field plotting
@@ -281,11 +308,11 @@ int main(int argc, char** argv)
       Out::os() << "Curve Integration Y error = " << errorSqY << "  , sqrt(error)=" << sqrt(errorSqY) <<std::endl;
       Sundance::passFailTest( sqrt(errorSqY) , 0.01);
       
-      Expr tmpExpr = Integral( OnCurve ,up[2] , quad_c , curveIntegral );
+      Expr tmpExpr = Integral( OnCurve ,up[2] , quad_c , curveIntegral ); //, watchMe );
       FunctionalEvaluator tmpInt( mesh , tmpExpr );
-      double tmpVal = tmpInt.evaluate();
-      Out::os() << "tmpVal = " << tmpVal << std::endl;
-      
+      //double tmpVal = tmpInt.evaluate();
+      //Out::os() << "tmpVal = " << tmpVal << std::endl;
+
       Expr dragExpr_V = Integral( OnCurve ,
 	  - rho*mu*ny*( nx*dx*(ny*up[0] - nx*up[1]) + ny*dy*(ny*up[0] - nx*up[1]) ) , quad_c , curveIntegral );
       FunctionalEvaluator dragInt_V( mesh , dragExpr_V );
@@ -297,7 +324,24 @@ int main(int argc, char** argv)
       Out::os() << "Drag_V = " << 2*dragVal_Vel/(rho*Umean*Umean*D) << std::endl;
       Out::os() << "Drag_P = " << 2*dragVal_Pres/(rho*Umean*Umean*D) << std::endl;
       Out::os() << "Drag = " << 2*dragVal/(rho*Umean*Umean*D) << std::endl;
+
+      // =========== POLYGON EVAL ==============================
+      Polygon2D* polyg = dynamic_cast<Polygon2D*>(curve.ptr().get());
+      ParametrizedCurve curve_twin = polyg->createTwinPolygon( 0.1 , 0.1 , 0.5 , 0.5 );
+      curve_twin.setMesh(mesh);
       
+      Expr dragExpr_Curve = Integral( OnCurve , - rho*mu*ny*( nx*dx*(ny*up[0] - nx*up[1]) + ny*dy*(ny*up[0] - nx*up[1]) )
+                    + nx*up[2] , quad_c , curveIntegral );
+      FunctionalEvaluator dragInt_Curve( mesh , dragExpr_Curve );
+      Expr liftExpr_Curve = Integral( OnCurve , rho*mu*nx*( nx*dx*(ny*up[0] - nx*up[1]) + ny*dy*(ny*up[0] - nx*up[1]))
+                    + ny*up[2], quad_c , curveIntegral );
+      FunctionalEvaluator liftInt_Curve( mesh , liftExpr_Curve );
+      curve.setSpaceValues( dragInt_Curve , 0 );
+      curve.setSpaceValues( liftInt_Curve , 1 );
+      curve.writeToVTK("p_wing_withvalue.vtk");
+      curve_twin.writeToVTK("p_wing_twin_withvalue.vtk");
+      // =========== END POLYGON EVAL ==============================
+
       Expr liftExpr_V = Integral( OnCurve ,
 	  rho*mu*nx*( nx*dx*(ny*up[0] - nx*up[1]) + ny*dy*(ny*up[0] - nx*up[1])) , quad_c , curveIntegral ); 
       FunctionalEvaluator liftInt_V( mesh , liftExpr_V );
@@ -310,11 +354,84 @@ int main(int argc, char** argv)
       Out::os() << "Lift_P = " << 2*liftVal_P/(rho*Umean*Umean*D) << std::endl;
       Out::os() << "Lift = " << 2*liftVal/(rho*Umean*Umean*D) << std::endl;
       
-      double c_D = 2*dragVal/(rho*Umean*Umean*D);
-      double c_L = 2*liftVal/(rho*Umean*Umean*D);
+// -------------- Other lift and drag coefficient calculation ----------------
+      Expr ncx=-nx;
+      Expr ncy=-ny;
+      Expr tcx=ncy;
+      Expr tcy=-ncx;
+      Expr FDragExpr = Integral(OnCurve,
+                          nu*((dx*up[0]*tcx+dx*up[1]*tcy)*ncx
+                              +(dy*up[0]*tcx+dy*up[1]*tcy)*ncy)*ncy
+                          -up[2]*ncx,
+                              quad_c , curveIntegral);
+      double c_D = 2.0*evaluateIntegral(mesh,FDragExpr)/(Umean*Umean*D);
+      cerr << "Drag: c_D(u,p) = " << c_D << endl << endl;
+      Sundance::passFailTest( ::fabs(c_D - 5.57) , 1.0);
 
-      Sundance::passFailTest( fabs( c_D - 5.58 ), 0.3 );
-      Sundance::passFailTest( fabs( c_L - 0.0107 ), 0.07 );
+      Expr Phix=chi;
+      Expr Phiy=0.0;
+
+      Expr FDragExprOm = Integral(OutsideCurve,
+                          - Phix*(up[0]*(dx*up[0])+up[1]*(dy*up[0]))
+                          - Phiy*(up[0]*(dx*up[1])+up[1]*(dy*up[1]))
+                          // symmetrization
+////                          -0.5*(dx*up[0]+dy*up[1])*(Phix*up[0]+Phiy*up[1])
+                          - nu*(2.0*(dx*up[0])*(dx*Phix)
+                               +(dy*up[0]+dx*up[1])*(dy*Phix+dx*Phiy)
+                               +2.0*(dy*up[1])*(dy*Phiy))
+                          + up[2]*(dx*Phix+dy*Phiy),
+                          quad4)
+                 + Integral(OnCurve,
+                          - Phix*(up[0]*(dx*up[0])+up[1]*(dy*up[0]))
+                          - Phiy*(up[0]*(dx*up[1])+up[1]*(dy*up[1]))
+                          // symmetrization
+////                          -0.5*(dx*up[0]+dy*up[1])*(Phix*up[0]+Phiy*up[1])
+                          - nu*(2.0*(dx*up[0])*(dx*Phix)
+                               +(dy*up[0]+dx*up[1])*(dy*Phix+dx*Phiy)
+                               +2.0*(dy*up[1])*(dy*Phiy))
+                          + up[2]*(dx*Phix+dy*Phiy),
+                          quad_hi , curve);
+      double c_D_Om = 2.0*evaluateIntegral(mesh,FDragExprOm)/(Umean*Umean*D);
+      cerr << "Drag: c_D_Om(u,p) = " << c_D_Om << endl << endl;
+      Sundance::passFailTest( ::fabs(c_D_Om - 5.57) , 1.0);
+
+      Expr FLiftExpr = Integral(OnCurve,
+                          -nu*((dx*up[0]*tcx+dx*up[1]*tcy)*ncx
+                               +(dy*up[0]*tcx+dy*up[1]*tcy)*ncy)*ncx
+                          -up[2]*ncy,
+                              quad_c , curveIntegral);
+
+      double c_L = 2.0*evaluateIntegral(mesh,FLiftExpr)/(Umean*Umean*D);
+
+      cerr << "Lift: c_L(u,p) = " << c_L << endl << endl;
+      Sundance::passFailTest( ::fabs(c_L - 0.0107) , 0.2);
+
+      Expr Psix=0.0;
+      Expr Psiy=chi;
+
+      Expr FLiftExprOm = Integral(OutsideCurve,
+                          - Psix*(up[0]*(dx*up[0])+up[1]*(dy*up[0]))
+                          - Psiy*(up[0]*(dx*up[1])+up[1]*(dy*up[1]))
+                          // symmetrization
+//                          -0.5*(dx*up[0]+dy*up[1])*(Psix*up[0]+Psiy*up[1])
+                          - nu*(2.0*(dx*up[0])*(dx*Psix)
+                               +(dy*up[0]+dx*up[1])*(dy*Psix+dx*Psiy)
+                               +2.0*(dy*up[1])*(dy*Psiy))
+                          + up[2]*(dx*Psix+dy*Psiy),
+                          quad4)
+                 + Integral(OnCurve,
+                          - Psix*(up[0]*(dx*up[0])+up[1]*(dy*up[0]))
+                          - Psiy*(up[0]*(dx*up[1])+up[1]*(dy*up[1]))
+                          // symmetrization
+//                          -0.5*(dx*up[0]+dy*up[1])*(Psix*up[0]+Psiy*up[1])
+                          - nu*(2.0*(dx*up[0])*(dx*Psix)
+                               +(dy*up[0]+dx*up[1])*(dy*Psix+dx*Psiy)
+                               +2.0*(dy*up[1])*(dy*Psiy))
+                          + up[2]*(dx*Psix+dy*Psiy),
+                          quad_hi , curve);
+      double c_L_Om = 2.0*evaluateIntegral(mesh,FLiftExprOm)/(Umean*Umean*D);
+      cerr << "Lift: c_L_Om(u,p) = " << c_L_Om << endl << endl;
+      Sundance::passFailTest( ::fabs(c_L_Om - 0.0107) , 0.2);
       
     }
 	catch(exception& e)

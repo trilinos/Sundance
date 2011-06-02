@@ -85,6 +85,7 @@ public:
   SolverState<double> solve(const LinearSolver<double>& solver,
     Expr& soln) const ;
 
+
   /** Return the multivector on the right-hand side of the linear equation */
   Array<Vector<double> > getRHS() const ;
 
@@ -157,8 +158,12 @@ private:
 
   /** */
   LinearSolveDriver solveDriver_;
-    
+
+  /** */
+  Expr params_;
+
 };
+
 }
 
 

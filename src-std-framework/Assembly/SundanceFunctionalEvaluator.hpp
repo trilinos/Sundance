@@ -35,6 +35,7 @@
 #include "SundanceExpr.hpp"
 #include "PlayaVectorImpl.hpp"
 #include "PlayaVectorType.hpp"
+#include "SundanceFunctionalEvaluatorBase.hpp"
 
 namespace Sundance
 {
@@ -46,9 +47,9 @@ class Mesh;
 class Assembler;
 
 /** 
- * 
+ *
  */
-class FunctionalEvaluator 
+class FunctionalEvaluator : public FunctionalEvaluatorBase
 {
 public:
   /** */

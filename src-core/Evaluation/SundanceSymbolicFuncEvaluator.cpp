@@ -59,6 +59,8 @@ SymbolicFuncElementEvaluator
     paramValuePtrs_(),
     df_(dynamic_cast<const DiscreteFuncElement*>(expr->evalPt())),
     p_(dynamic_cast<const Parameter*>(expr->evalPt())),
+    dfEval_(0),
+    pEval_(0),
     stringReps_()
 {
   
@@ -234,3 +236,9 @@ void SymbolicFuncElementEvaluator
 }
 
 
+void SymbolicFuncElementEvaluator::resetNumCalls() const
+{
+  if (pEval_) pEval_->resetNumCalls();
+  if (dfEval_) dfEval_->resetNumCalls();
+  Evaluator::resetNumCalls();
+}

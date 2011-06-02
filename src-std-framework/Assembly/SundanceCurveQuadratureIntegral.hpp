@@ -190,7 +190,7 @@ private:
   inline double& wValue(int q, int testDerivDir, int testNode) const
     {return W_[testNode + nNodesTest()*(testDerivDir + nRefDerivTest()*q)];}
 
-  /** The quadrature family needed for special integration (ACI)*/
+  /** The quadrature family needed for curve integration */
   QuadratureFamily quad_;
 
   /** The quadrature points*/

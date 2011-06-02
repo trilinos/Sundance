@@ -36,10 +36,6 @@
 
 
 using namespace Sundance;
-using namespace Sundance;
-
-using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
 
 UnknownParameterElement

@@ -41,7 +41,8 @@ using namespace Sundance;
 int Polygon2D::intersectionEdge_ = -1;
 
 Polygon2D::Polygon2D(const Mesh& mesh , const Array<Point>& points , double a1, double a2, bool closedPolygon ,bool flipD ) :
-	CurveBase(1, a2, a1, flipD), hasMesh_(true), closedPolygon_(closedPolygon) , mesh_(&(mesh)) // here we twist the alpha parameters for the polygon convention
+	CurveBase(1, a2, a1, flipD), hasMesh_(true), closedPolygon_(closedPolygon) , mesh_(&(mesh)) ,
+	polygonSpaceValues_() , polygonSpaceNames_() , nrScalarField_(0) , isRecording_(false),twinPolygon_(0) // here we twist the alpha parameters for the polygon convention
 {
 	int verb = 0;
 	// just store the input points
@@ -62,7 +63,8 @@ Polygon2D::Polygon2D(const Mesh& mesh , const Array<Point>& points , double a1, 
 }
 
 Polygon2D::Polygon2D(const Array<Point>& points , double a1, double a2, bool closedPolygon , bool flipD ) :
-	CurveBase(1, a2, a1, flipD), hasMesh_(false), closedPolygon_(closedPolygon), mesh_(0)// here we twist the alpha parameters for the polygon convention
+	CurveBase(1, a2, a1, flipD), hasMesh_(false), closedPolygon_(closedPolygon), mesh_(0),
+	polygonSpaceValues_() , polygonSpaceNames_() , nrScalarField_(0) , isRecording_(false) ,twinPolygon_(0) // here we twist the alpha parameters for the polygon convention
 {
 	int verb = 0;
 	// just store the input points
@@ -83,7 +85,8 @@ Polygon2D::Polygon2D(const Array<Point>& points , double a1, double a2, bool clo
 }
 
 Polygon2D::Polygon2D(const Mesh& mesh , const std::string& filename , double a1, double a2, bool closedPolygon ,bool flipD ) :
-CurveBase(1, a2, a1, flipD), hasMesh_(true), closedPolygon_(closedPolygon) , mesh_(&(mesh))// here we twist the alpha parameters for the polygon convention
+CurveBase(1, a2, a1, flipD), hasMesh_(true), closedPolygon_(closedPolygon) , mesh_(&(mesh)),
+polygonSpaceValues_() , polygonSpaceNames_() , nrScalarField_(0) , isRecording_(false), twinPolygon_(0) // here we twist the alpha parameters for the polygon convention
 {
 	std::string str_tmp;
 	std::ifstream myfile;
@@ -137,7 +140,8 @@ CurveBase(1, a2, a1, flipD), hasMesh_(true), closedPolygon_(closedPolygon) , mes
 }
 
 Polygon2D::Polygon2D( const std::string& filename , double a1, double a2, bool closedPolygon ,bool flipD ) :
-CurveBase(1, a2, a1, flipD), hasMesh_(false), closedPolygon_(closedPolygon), mesh_(0)// here we twist the alpha parameters for the polygon convention
+CurveBase(1, a2, a1, flipD), hasMesh_(false), closedPolygon_(closedPolygon), mesh_(0),
+polygonSpaceValues_() , polygonSpaceNames_() , nrScalarField_(0) , isRecording_(false), twinPolygon_(0)// here we twist the alpha parameters for the polygon convention
 {
 	std::string str_tmp;
 	std::ifstream myfile;
@@ -394,8 +398,8 @@ bool Polygon2D::shortIntersectCalculation(const Point& st, const Point& end) con
 	double d1 = ( (st[0]-px)*(st[0]-px) + (st[1]-py)*(st[1]-py) - r * r);
 	double d2 = ( (end[0]-px)*(end[0]-px) + (end[1]-py)*(end[1]-py) - r * r);
 
-	// if both are inside then we can exit here
-	if ( (d1 < -1e-14) && ((d2 < -1e-14)) ) { return false; }
+	// if one is inside then we can exit here
+	if ( (d1 < -1e-14) || ((d2 < -1e-14)) ) { return false; }
 
 	// direction vector; line == start + t * vec
 	Point vec = end - st;
@@ -411,7 +415,7 @@ bool Polygon2D::shortIntersectCalculation(const Point& st, const Point& end) con
 	double c = ((st - center) * (st - center)) - r * r;
 
 	double det = b * b - 4 * a * c;
-	if (det < 0.0) { return false; } // no solution
+	if (det < 0.0) { return false; } // no solution, both are outside and no intersection with the circle
 	det = ::sqrt(det);
 
 	// numerically more favorable than usual usage of solution formula
@@ -440,17 +444,16 @@ void Polygon2D::returnIntersectPoints(const Point& start, const Point& end, int&
 	nrPoints = 0;
 	result.resize(nrPoints);
 	Point p0 , p1;
-	double eps = 1e-14;
+	double eps = 1e-11;
 
 	// the edge index which will be intersecting as last
 	intersectionEdge_ = -1;
 
 
+	SUNDANCE_MSG3( verb , "returnIntersectPoints() start= " << start << " end="<< end );
 	// make a shorter version of distance calculation
 	if ( shortIntersectCalculation(start, end) == true ) { return; }
 
-
-	SUNDANCE_MSG3( verb , "returnIntersectPoints() start= " << start << " end="<< end );
     for (int ii = 0 ; ii < polyPoints_.size() ; ii++)
     {
     	if (ii < polyPoints_.size() - 1)
@@ -487,8 +490,21 @@ void Polygon2D::returnIntersectPoints(const Point& start, const Point& end, int&
            	intP[1] = (b[1] + fakt*b[0])/(a[3] + fakt*a[1]);
            	intP[0] = (b[0] - a[1]*intP[1]) / a[0];
         }
+/*
+       	bool between1 = (    ((intP[0] >= p0[0]-eps) && (intP[0] <= p1[0]+eps))
+   		     || ((intP[0] <= p0[0]+eps) && (intP[0] >= p1[0]-eps)) )
+   		&& (    ((intP[1] >= p0[1]-eps) && (intP[1] <= p1[1]+eps))
+       		 || ((intP[1] <= p0[1]+eps) && (intP[1] >= p1[1]-eps)) ) ;
+       	bool between2 = (    ((intP[0] >= start[0]-eps) && (intP[0] <= end[0]+eps))
+      		     || ((intP[0] <= start[0]+eps) && (intP[0] >= end[0]-eps)) )
+      		&& (    ((intP[1] >= start[1]-eps) && (intP[1] <= end[1]+eps))
+          		 || ((intP[1] <= start[1]+eps) && (intP[1] >= end[1]-eps)) );
+       	bool between21 = ((intP[0] >= start[0]-eps) && (intP[0] <= end[0]+eps)) || ((intP[0] <= start[0]+eps) && (intP[0] >= end[0]-eps));
+        bool between22 = ((intP[1] >= start[1]-eps) && (intP[1] <= end[1]+eps)) || ((intP[1] <= start[1]+eps) && (intP[1] >= end[1]-eps));*/
         // now we have the intersection point
-        //SUNDANCE_MSG3( verb , "returnIntersectPoints() intP= " << intP << " p0= " << p0 << " p1= " << p1);
+        //SUNDANCE_MSG3( verb , "returnIntersectPoints() for line ii= " << ii << " , intP= " << intP << " , p0= " << p0 << " , p1= " << p1
+        //		<< " I1:" << between1 << " I2:" << between2 );
+        //SUNDANCE_MSG3( verb , " I21:" << between21 << " I22:" << between22);
 
        	if  (      (    ((intP[0] >= p0[0]-eps) && (intP[0] <= p1[0]+eps))
         		     || ((intP[0] <= p0[0]+eps) && (intP[0] >= p1[0]-eps)) )
@@ -509,6 +525,7 @@ void Polygon2D::returnIntersectPoints(const Point& start, const Point& end, int&
                	intersectionEdge_ = ii;
         }
     }// from the for loop
+    //SUNDANCE_MSG3( verb , "returnIntersectPoints() start= " << start << " , end="<< end << " , nrPoints=" << nrPoints);
 }
 
 
@@ -574,10 +591,298 @@ void Polygon2D::writeToVTK(const std::string& filename) const
      }
      myfile << "\n";
 
-	 // later eventually there could be data on the polygon
+     if ( nrScalarField_ > 0) {
+    	 myfile << "POINT_DATA " << polyPoints_.size() << "\n";
+     }
+
+     // first plot everything in a scalar field
+     for (int s = 0 ; s < nrScalarField_ ; s++)
+     {
+    	 // plot each scalar field as a scalar field
+    	 myfile << "SCALARS " << polygonSpaceNames_[s] << " float \n";
+    	 myfile << "LOOKUP_TABLE default \n";
+    	 for (int ii = 0 ; ii < polygonSpaceValues_[s].size() ; ii++){
+    		 myfile << polygonSpaceValues_[s][ii] << " \n";
+    	 }
+         myfile << "\n";
+     }
+
+     // since this is in 2D we could pair 2X to plot these 2 pairs as vectors
+     // then plot 2 by the the scalar fields as vectors
+     if ( nrScalarField_ > 1 ) {
+         for (int s = 0 ; s < nrScalarField_ ; s = s + 2)
+         {
+        	 myfile << "VECTORS " << polygonSpaceNames_[s] << polygonSpaceNames_[s+1] << "_vect float \n";
+        	 for (int ii = 0 ; ii < polygonSpaceValues_[s].size() ; ii++){
+        		 myfile << polygonSpaceValues_[s][ii] <<  " " <<  polygonSpaceValues_[s+1][ii] << " 0.0\n";
+        	 }
+             myfile << "\n";
+         }
+     }
+
      myfile.close();
 }
 
+void Polygon2D::addEvaluationPointValues(const Mesh& mesh ,
+		int maxCellLID , int nQuad ,
+		const double* coeffPtr ,
+		const Array<Point>& quadPts) const{
+	// - only when we want to record the information only then go into the routine
+	// - look for the points which are in the same cell
+	// - for the found points and for the chosen polygon space add the mean value of the nearest point
+
+	//SUNDANCE_MSG3( 5 , "addEvaluationPointValues() isRecording_= " << isRecording_ << " recordedScalarField_="<< recordedScalarField_ );
+	if (isRecording_)
+	{ // only if the flag is set, then move to the recording
+		Array<int> pointsToLookAt(0);
+		int nrPointsLookAt = 0;
+		int nrQuadPoint = quadPts.size();
+		int verb = 0;
+
+		SUNDANCE_MSG3( verb , "addEvaluationPointValues() maxCellLID= " << maxCellLID << " nQuad="<< nQuad );
+
+		// if the polygon has no Mesh then throw an error
+		TEST_FOR_EXCEPTION(  hasMesh_ == false , std::runtime_error,
+			      " Polygon2D::addEvaluationPointValues , Polygon must have a valid mesh");
+
+		// look for the impacted points from the polygon
+		for (int ii = 0 ; ii < pointsMaxCellLID_.size() ; ii++){
+			// test if the polygon point "ii" is inside the "maxCellLID" cell
+			if ( maxCellLID == pointsMaxCellLID_[ii] ){
+				pointsToLookAt.push_back( ii );
+				nrPointsLookAt = nrPointsLookAt + 1;
+			}
+		}
+
+		// transform all the points into real coordinates
+		// then look for the two nearest one, and take the average one
+		// we could also take the nearest one, but the average one
+		Array<Point> realCoordPoints(quadPts.size());
+		Array<Point> cellsPoint(4);
+		int tmp;
+		cellsPoint[0] = mesh_->nodePosition( mesh_->facetLID( mesh_->spatialDim() ,maxCellLID,0,0,tmp) );
+		//cellsPoint[1] = mesh_->nodePosition( mesh_->facetLID( mesh_->spatialDim() ,maxCellLID,0,1,tmp) );
+		//cellsPoint[2] = mesh_->nodePosition( mesh_->facetLID( mesh_->spatialDim() ,maxCellLID,0,2,tmp) );
+		cellsPoint[3] = mesh_->nodePosition( mesh_->facetLID( mesh_->spatialDim() ,maxCellLID,0,3,tmp) );
+		for (int p = 0 ; p < nrQuadPoint ; p++){
+			// calculate the real coordinated
+			realCoordPoints[p] = cellsPoint[0] + Point( (cellsPoint[3][0] - cellsPoint[0][0])*quadPts[p][0]  ,
+					(cellsPoint[3][1] - cellsPoint[0][1])*quadPts[p][1] );
+			//SUNDANCE_MSG3( verb , "transformed reference coords= " << quadPts[p] << " to real coords="<< realCoordPoints[p] );
+		}
+
+		// for each polygon point inside this cell
+		for ( int polyP = 0 ; polyP < nrPointsLookAt ; polyP++)
+		{
+			// for this polygon point look for the 2 nearest point
+			int firstI = -1 , secondI = -1;
+			double dist = 1e+100 , dist_tmp =0.0;
+			// look for the nearest point
+			for( int p = 0 ; p < nrQuadPoint ; p++){
+				dist_tmp = (realCoordPoints[p] - polyPoints_[pointsToLookAt[polyP]])*(realCoordPoints[p] - polyPoints_[pointsToLookAt[polyP]]);
+				if ( dist_tmp < dist ) {
+					dist = dist_tmp;
+					firstI = p;
+				}
+			}
+			// look for the second nearest point
+			dist = 1e+100;
+			for( int p = 0 ; p < nrQuadPoint ; p++){
+				dist_tmp = (realCoordPoints[p] - polyPoints_[pointsToLookAt[polyP]])*(realCoordPoints[p] - polyPoints_[pointsToLookAt[polyP]]);
+				if ( (dist_tmp < dist) && ( p != firstI ) ) {
+					dist = dist_tmp;
+					secondI = p;
+				}
+			}
+			//having the two nearest point we add the average value
+			SUNDANCE_MSG3( verb , "pointsToLookAt["<<polyP<<"]=" << pointsToLookAt[polyP] << " , v1="
+					<< coeffPtr[firstI] << " , v2="<< coeffPtr[secondI]);
+			SUNDANCE_MSG3( verb , " Set Point =" << polyPoints_[pointsToLookAt[polyP]] << " , p0="
+					<< realCoordPoints[firstI] << " , p1="<< realCoordPoints[secondI]);
+			// here we just set the value since one point should be set only once
+			polygonSpaceValues_[recordedScalarField_][pointsToLookAt[polyP]] = 0.5*(coeffPtr[firstI] + coeffPtr[secondI]);
+		}
+	}
+}
+
+
+void Polygon2D::setSpaceValues(const FunctionalEvaluatorBase& scalarFunctional , int fieldIndex ){
+
+	int verb = 0;
+	SUNDANCE_MSG3( verb , "setSpaceValues() fieldIndex= " << fieldIndex );
+
+	// signaling that we are starting recording values
+	isRecording_ = true;
+	recordedScalarField_ = fieldIndex;
+	SUNDANCE_MSG3( verb , " set values to zero " );
+	// set all values to zero because now the recorded values will be added to the vector elements
+	for (int ii = 0 ; ii < polygonSpaceValues_[fieldIndex].size() ; ii++ ){
+		polygonSpaceValues_[fieldIndex][ii] = 0.0;
+	}
+
+	SUNDANCE_MSG3( verb , " BEFORE evaluate the FunctionalEvaluator object curveID:" );
+	// --- evaluate the scalar function ---
+	// this function has to be a curve integral of a scalar function
+	// and this polygon has to be the argument for the curve integral
+	scalarFunctional.evaluate();
+
+	SUNDANCE_MSG3( verb , " AFTER evaluate the FunctionalEvaluator object  curveID:" );
+
+	// in parallal case make a vector reduction
+	if ( this->mesh_ != 0 ){
+		  if (mesh_->comm().getNProc() > 1)
+		  {
+			  SUNDANCE_MSG3( verb , " make array vector reduction for parallel case " );
+			  // create one temporary vector
+			  Array<double> reduceVector( polygonSpaceValues_[fieldIndex].size() , 0.0 );
+			  // call the MPI function to reduce the vector
+			  SUNDANCE_MSG3( verb , " call the reduce function " );
+			  mesh_->comm().allReduce((void*) &(polygonSpaceValues_[fieldIndex][0]), (void*) &(reduceVector[0]),
+			    polygonSpaceValues_[fieldIndex].size() ,MPIComm::DOUBLE, MPIComm::SUM);
+			  // copy the reduced vector back
+			  SUNDANCE_MSG3( verb , " copy the reduced values back " );
+			  for (int ii = 0 ; ii < polygonSpaceValues_[fieldIndex].size() ; ii++ ){
+				  polygonSpaceValues_[fieldIndex][ii] = reduceVector[ii];
+			  }
+		  }
+	}
+
+	// if the twin polygon exists then copy also there the value
+	if (twinPolygon_ != 0){
+		SUNDANCE_MSG3( verb , " update twin polygon " );
+		// copy the recorded values to the twin polygon
+		for (int ii = 0 ; ii < polygonSpaceValues_[fieldIndex].size() ; ii++ ){
+			twinPolygon_->polygonSpaceValues_[fieldIndex][ii] = this->polygonSpaceValues_[fieldIndex][ii];
+		}
+	}
+
+	// we set the flags so that we stop recording
+	recordedScalarField_ = -1;
+	isRecording_ = false;
+}
+
+void Polygon2D::eval0(const double* vars, double* f , int scalarFieldIndex ) const {
+	  double x = vars[0];
+	  double y = vars[1];
+	  Point inCoord(x,y);
+	  double eps = 1e-14;
+	  int verb = 0;
+
+	  SUNDANCE_MSG3( verb , "eval0() x= " << x << " y=" << y);
+	  // just look for the two nearest point, then look which neighbor point is the nearest
+	  // calculate the projection of that point to the line
+	  int nrPolygonPoints = polyPoints_.size() , pointIndex = -1;
+	  double dist = 1e+100 , dist_tmp;
+	  for (int ii = 0 ; ii < nrPolygonPoints ; ii++){
+		  dist_tmp = (inCoord - polyPoints_[ii])*(inCoord - polyPoints_[ii]);
+		  //SUNDANCE_MSG4( verb ,"polyPoints_["<<ii<<"]="<<polyPoints_[ii]<< "  ,  dist["<<ii<<"]= " << dist_tmp);
+		  if ( dist_tmp < dist ) {
+			  dist = dist_tmp;
+			  pointIndex = ii;
+		  }
+	  }
+
+	  // get the two neighbor point candidate
+	  int pointL = -1 , pointR = -1;
+	  if ( pointIndex == nrPolygonPoints-1 ) {
+		  if ( closedPolygon_ ){
+			  pointL = pointIndex-1 , pointR = 0;
+		  } else {
+			  pointL = pointIndex-1 , pointR = pointIndex-1;
+		  }
+	  }
+	  else {
+		  if ( pointIndex == 0 ) {
+			  if ( closedPolygon_ ){
+				  pointL = nrPolygonPoints-1 , pointR = pointIndex+1;
+			  } else {
+				  pointL = pointIndex+1 , pointR = pointIndex+1;
+			  }
+		  }
+		  else {
+			  pointL = pointIndex-1 , pointR = pointIndex+1;
+		  }
+	  }
+
+	  double distL = (inCoord - polyPoints_[pointL])*(inCoord - polyPoints_[pointL]);
+	  double distR = (inCoord - polyPoints_[pointR])*(inCoord - polyPoints_[pointR]);
+
+	  int pointIndexN = ( distL > distR) ? pointR : pointL;
+
+	  // now calculate the projection of the point inCoord on the line [pointIndex , pointIndexN]
+	  // and then limit the contribution of the two points between [0,1] (make a saturation to 0 or 1)
+
+	  Point p0 = polyPoints_[pointIndex];
+	  Point p1 = polyPoints_[pointIndexN];
+	  SUNDANCE_MSG3( verb , "pI0 = " << pointIndex << " pI1=" << pointIndexN );
+	  SUNDANCE_MSG3( verb , "p0 = " << p0 << " p1=" << p1);
+	  double oneDimScale = 0.0;
+	  Point intP(0.0,0.0);
+	  // to calculate the projection of a point on a line we set up a system with two equations (for more detail see the PDF)
+	  // we solve this system and we get the intersection point (if the system is not singular)
+	  double a[4] = { p1[0]-p0[0] , p1[1]-p0[1] ,
+				      p0[1]-p1[1] , p1[0]-p0[0] };
+	  double b[2] = { - inCoord[0]*(p1[0]-p0[0]) - inCoord[1]*(p1[1]-p0[1]),
+					  - p0[1]*(p1[0]-p0[0]) + p0[0]*(p1[1]-p0[1]) };
+	  if ( ::fabs( a[0]*a[3]-a[1]*a[2]) < eps){
+		  // matrix is singular det|A|~0, no solution, so the point must be on the line
+		  if ( ::fabs(p1[0] - p0[0]) > eps )
+			  { oneDimScale = (p1[0] - inCoord[0])/(p1[0] - p0[0]); }
+		  else
+			  { oneDimScale = (p1[1] - inCoord[1])/(p1[1] - p0[1]); }
+	  }
+	  else
+	  {   // simple Gauss elimination
+		  if (::fabs(a[0]) < eps ){
+         	double fakt = -a[0]/a[2];
+         	intP[1] = (b[0] + fakt*b[1])/(a[1] + fakt*a[3]);
+         	intP[0] = (b[1] - a[3]*intP[1]) / a[2];
+         	intP = (-1)*intP;
+		  }
+		  else
+		  {
+         	double fakt = -a[2]/a[0];
+         	intP[1] = (b[1] + fakt*b[0])/(a[3] + fakt*a[1]);
+         	intP[0] = (b[0] - a[1]*intP[1]) / a[0];
+         	intP = (-1)*intP;
+		  }
+		  if ( ::fabs(p1[0] - p0[0]) > eps )
+			  { oneDimScale = (p1[0] - intP[0])/(p1[0] - p0[0]); }
+		  else
+			  { oneDimScale = (p1[1] - intP[1])/(p1[1] - p0[1]); }
+	  }
+	  // limit this factor to [0,1] and then calculate the value and return it back in f[0]
+	  SUNDANCE_MSG3( verb , "intP = " << intP << " oneDimScale=" << oneDimScale);
+	  oneDimScale = ( oneDimScale > 1.0 ) ? 1.0 : oneDimScale;
+	  oneDimScale = ( oneDimScale < 0.0 ) ? 0.0 : oneDimScale;
+	  f[0] = oneDimScale*polygonSpaceValues_[scalarFieldIndex][pointIndex] +
+			  (1.0-oneDimScale)*polygonSpaceValues_[scalarFieldIndex][pointIndexN];
+	  SUNDANCE_MSG3( verb , "eval0() ret = " << f[0] << " oneDimScale=" << oneDimScale);
+}
+
+Polygon2D* Polygon2D::createTwinPolygon(double shiftX , double shiftY , double scaleX , double scaleY) {
+
+	Array<Point> points(polyPoints_.size());
+
+	// make the shift and the scaling
+	for (int j = 0 ; j < polyPoints_.size() ; j++ ){
+		points[j] = Point( shiftX + scaleX*polyPoints_[j][0] , shiftY + scaleY*polyPoints_[j][1] );
+	}
+
+	// create the polygon
+	Polygon2D* polyg = new Polygon2D( points , this->_alpha1 , this->_alpha2 , closedPolygon_ , flipDomains_ );
+
+	// add all the scalar fields in the same order
+	for (int j = 0 ; j < nrScalarField_ ; j++){
+		polyg->addNewScalarField( polygonSpaceNames_[j], 0.0 );
+	}
+
+	// store the twin polygon mutually
+	twinPolygon_ = polyg;
+	polyg->twinPolygon_ = this;
+
+	return polyg;
+}
 
 RCP<CurveBase> Polygon2D::unite(ParametrizedCurve& c1 , ParametrizedCurve& c2)
 {

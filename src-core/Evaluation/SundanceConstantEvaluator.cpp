@@ -90,6 +90,7 @@ void ConstantEvaluator::internalEval(const EvalManager& mgr,
   {
     constantResults.resize(1);
     constantResults[0] = expr()->value();
+    
     SUNDANCE_MSG2(mgr.verb(), tabs << "result=" << constantResults[0]);
   }
   else

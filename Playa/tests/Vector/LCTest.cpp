@@ -65,7 +65,7 @@ bool runTest(int nProc, int n, int rank, const VectorType<double>& vecType,
   const Epetra_Vector& epY = EpetraVector::getConcrete(y);
 
 
-  int nReps = 100;
+  int nReps = 20;
   int nOutReps = 5;
 
   Time tEp("epetra time");
@@ -76,7 +76,7 @@ bool runTest(int nProc, int n, int rank, const VectorType<double>& vecType,
   double res1 = 0.0;  
   double res2 = 0.0;  
 
-  for (int k=0; k<100; k++)
+  for (int k=0; k<nOutReps; k++)
   {
     tEp.start();
     for (int i=0; i<nReps; i++)
@@ -145,12 +145,12 @@ int main(int argc, char *argv[])
 
     int n = 1;
     int i=0;
-    while (n < 40000)
+    while (n*nProc < 40000)
     {
       Out::root() << "running n=" << n << endl;
       allPass = runTest(nProc, n, rank, type1, tList) && allPass;
       Out::root() << tList[i] << endl;
-      n = (int) ceil(1.25 * n);
+      n = (int) ceil(1.8 * n);
       i++;
     }
 

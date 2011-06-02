@@ -85,6 +85,36 @@ public:
 		ptr()->update();
 	}
 
+	/** function which will be called for curve/surface Integral evaluation */
+	void eval0(const double* vars, double* f , int scalarFieldIndex ) const {
+		ptr()->eval0(vars, f , scalarFieldIndex );
+	}
+
+	/** adds new scalar field to the interface*/
+	int addNewScalarField(std::string fieldName , double initialValue){
+		return ptr()->addNewScalarField(fieldName , initialValue);
+	}
+
+	/** returns one array of doubles which contain the values of the scalar field (for each point, nodal basis)*/
+	Array<double>& getScalarFieldValues(int scalarFieldIndex) {
+		return ptr()->getScalarFieldValues(scalarFieldIndex);
+	}
+
+	/** function to set the values of one specified scalar field <br>
+	 * it is important that the Functional will be defined on a curve, otherwise the value will stay zero */
+	void setSpaceValues(const FunctionalEvaluatorBase& scalarFunctional , int fieldIndex ){
+		ptr()->setSpaceValues(scalarFunctional , fieldIndex );
+	}
+
+	/*Function to record the function values along one curve. <br>
+	 *This function will be called from the integration routine.*/
+	void addEvaluationPointValues(const Mesh& mesh ,
+			int maxCellLID , int nQuad ,
+			const double* coeffPtr ,
+			const Array<Point>& quadPts) const {
+		ptr()->addEvaluationPointValues( mesh , maxCellLID , nQuad , coeffPtr , quadPts);
+	}
+
 	/** List integration parameters for the FCM method*/
 	void getIntegrationParams(Array<double>& alphas) const {
 		return ptr()->getIntegrationParams(alphas);

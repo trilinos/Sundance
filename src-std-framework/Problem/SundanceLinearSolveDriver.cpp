@@ -185,7 +185,11 @@ void LinearSolveDriver::writeIntoSolutionExpr(
   Expr soln,
   int verb) const 
 {
-  TEST_FOR_EXCEPT(soln.size() != solnVector.size());
+#ifdef BLAH
+  TEST_FOR_EXCEPTION(soln.size() != solnVector.size(),
+    std::runtime_error,
+    "soln=" << soln << " soln.size()=" << soln.size() << " while solnVector.size()=" << solnVector.size());
+#endif
   for (int i=0; i<solnVector.size(); i++)
   {
     Expr u = soln[i];

@@ -71,6 +71,10 @@ public:
   /** */
   const ConstantEvaluator* pEval() const {return pEval_;}
 
+
+  /** Reset the number of calls to zero. This should be called
+   * at the beginning of every new evaluation cycle. */
+  virtual void resetNumCalls() const ;
 private:
   Array<MultiIndex> mi_;
   Array<int> spatialDerivPtrs_;

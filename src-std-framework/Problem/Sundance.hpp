@@ -45,6 +45,7 @@
 /* Symbolics */
 #include "SundanceTestFunction.hpp"
 #include "SundanceUnknownFunction.hpp"
+#include "SundanceUnknownParameter.hpp"
 #include "SundanceDiscreteSpace.hpp"
 #include "SundanceDiscreteFunction.hpp"
 #include "SundanceEssentialBC.hpp"
@@ -60,6 +61,7 @@
 #include "SundanceUserDefFunctor.hpp"
 #include "SundanceUserDefOp.hpp"
 #include "SundanceVectorCalculus.hpp"
+#include "SundanceCurveExpr.hpp"
 
 /* Parametrized Curves */
 #include "SundanceCircle.hpp"

@@ -184,6 +184,7 @@ void CellCurvePredicate::testBatch(const Array<int>& cellLID,
 	        	} // for loop over cells
 
 	        	// for each cell cell overwrite the result if there are intersection points
+	        	int count = 0;
 	        	switch (filterMode_){
 	        	case Outside_Curve:{
 	        	  for (int c=0; c<cellLID.size(); c++){
@@ -210,8 +211,10 @@ void CellCurvePredicate::testBatch(const Array<int>& cellLID,
 	        		  //SUNDANCE_MSG3( 4 , "filterMode_ :" << filterMode_ << " , BEFORE result:" << results[c] );
 	        		  if (hasIntersectionPoints[c]) results[c] = true;
 	        		  else results[c] = false;
-	        		  //SUNDANCE_MSG3( 4 , "filterMode_ :" << filterMode_ << " , result:" << results[c] << " , equSum[c]:" << equSum[c]
-	        		  //                   << " , hasIntersectionPoints[c]:" << hasIntersectionPoints[c]);
+	        		  if (results[c]) {count++;}
+	        		  //SUNDANCE_MSG3( 4 , "filterMode_ :" << filterMode_ << " cellLID["<<c<<"]=" << cellLID[c] <<
+	        			//	  " , result:" << results[c] << " , equSum[c]:" << equSum[c]
+	        		    //      << " , hasIntersectionPoints[c]:" << hasIntersectionPoints[c] << " cellNr=" << count);
 	        	  } }
 	        	  break;
 	        	}
