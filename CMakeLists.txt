@@ -43,9 +43,9 @@ ADD_OPTION_AND_DEFINE(${PACKAGE_NAME}_ENABLE_BROKEN_CODE
   OFF )
 
 IF(TPL_ENABLE_Netcdf)
-ADD_OPTION_AND_DEFINE(Sundance_ENABLE_Trios
+ADD_OPTION_AND_DEFINE(Sundance_ENABLE_SEACAS
   HAVE_SUNDANCE_EXODUS
-  "Enable ExodusII reader in Sundance (via Trios package)."
+  "Enable ExodusII reader in Sundance (via SEACAS package)."
   ON )
 ENDIF()
 
