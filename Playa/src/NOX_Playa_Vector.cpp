@@ -157,7 +157,7 @@ NOX::Abstract::Vector& NOX::NOXPlaya::Vector::abs(
 					     const NOX::NOXPlaya::Vector& base)
 {
   x.acceptCopyOf(base.x);
-  x.abs();
+  x.selfAbs();
   return *this;
 }
 
@@ -171,7 +171,7 @@ NOX::Abstract::Vector& NOX::NOXPlaya::Vector::reciprocal(
 					    const NOX::NOXPlaya::Vector& base)
 {
   x.acceptCopyOf(base.x);
-  x.reciprocal();
+  x.selfReciprocal();
   return *this;
 }
 
@@ -228,7 +228,7 @@ NOX::Abstract::Vector& NOX::NOXPlaya::Vector::scale(
 
 NOX::Abstract::Vector& NOX::NOXPlaya::Vector::scale(const NOX::NOXPlaya::Vector& a)
 {  
-  x.dotStar(a.x);
+  x.selfDotStar(a.x);
   return *this;
 }
 

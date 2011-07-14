@@ -553,7 +553,7 @@ Vector<Scalar>& Vector<Scalar>::scale(const Scalar& alpha)
 
 //===========================================================================
 template <class Scalar> inline 
-Vector<Scalar>& Vector<Scalar>::reciprocal()
+Vector<Scalar>& Vector<Scalar>::selfReciprocal()
 {
   return applyUnaryFunctor(PlayaFunctors::Reciprocal<Scalar>());
 }
@@ -561,7 +561,7 @@ Vector<Scalar>& Vector<Scalar>::reciprocal()
 
 //===========================================================================
 template <class Scalar> inline 
-Vector<Scalar>& Vector<Scalar>::abs()
+Vector<Scalar>& Vector<Scalar>::selfAbs()
 {
   return applyUnaryFunctor(PlayaFunctors::Abs<Scalar>());
 }
@@ -608,14 +608,14 @@ Vector<Scalar> Vector<Scalar>::copy() const
 
 //===========================================================================
 template <class Scalar> inline 
-Vector<Scalar>& Vector<Scalar>::dotStar(const Vector<Scalar>& other) 
+Vector<Scalar>& Vector<Scalar>::selfDotStar(const Vector<Scalar>& other) 
 {
   return applyBinaryFunctor(PlayaFunctors::DotStar<Scalar>(), other);
 }
 
 //===========================================================================
 template <class Scalar> inline 
-Vector<Scalar>& Vector<Scalar>::dotSlash(const Vector<Scalar>& other) 
+Vector<Scalar>& Vector<Scalar>::selfDotSlash(const Vector<Scalar>& other) 
 {
   return applyBinaryFunctor(PlayaFunctors::DotSlash<Scalar>(), other);
 }
@@ -627,7 +627,7 @@ Vector<Scalar> Vector<Scalar>::dotStar(const Vector<Scalar>& other) const
 {
   Vector<Scalar> rtn = space().createMember();
   rtn.acceptCopyOf(*this);
-  rtn.dotStar(other);
+  rtn.selfDotStar(other);
   return rtn;
 }
 
@@ -637,7 +637,7 @@ Vector<Scalar> Vector<Scalar>::dotSlash(const Vector<Scalar>& other) const
 {
   Vector<Scalar> rtn = space().createMember();
   rtn.acceptCopyOf(*this);
-  rtn.dotSlash(other);
+  rtn.selfDotSlash(other);
   return rtn;
 }
 
@@ -648,7 +648,7 @@ Vector<Scalar> Vector<Scalar>::abs() const
 {
   Vector<Scalar> rtn = space().createMember();
   rtn.acceptCopyOf(*this);
-  rtn.abs();
+  rtn.selfAbs();
   return rtn;
 }
 
@@ -662,7 +662,7 @@ Vector<Scalar> Vector<Scalar>::reciprocal() const
 {
   Vector<Scalar> rtn = space().createMember();
   rtn.acceptCopyOf(*this);
-  rtn.reciprocal();
+  rtn.selfReciprocal();
   return rtn;
 }
 

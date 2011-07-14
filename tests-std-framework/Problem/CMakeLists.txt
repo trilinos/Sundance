@@ -33,6 +33,7 @@ SET(SerialTests
   LinearPartialDomain 
   NonlinearPartialDomain 
   AToCDensitySample
+  DuffingFloquet
   NonlinearPDECOTest1D
   NonlinearPDECOTest2D
   FunctionalTest 

@@ -273,12 +273,12 @@ public:
   /** 
    * \brief  In-place element-by-element product (Matlab dot-star operator)
    */
-  Vector<Scalar>& dotStar(const Vector<Scalar>& other) ;
+  Vector<Scalar>& selfDotStar(const Vector<Scalar>& other) ;
 
   /** 
    * \brief  In-place element-by-element division (Matlab dot-slash operator)
    */
-  Vector<Scalar>& dotSlash(const Vector<Scalar>& other) ;
+  Vector<Scalar>& selfDotSlash(const Vector<Scalar>& other) ;
 
   /** 
    * \brief  Element-by-element product (Matlab dot-star operator)
@@ -304,12 +304,12 @@ public:
   /** 
    * \brief  Overwrite self with element-by-element reciprocal
    */
-  Vector<Scalar>& reciprocal() ;
+  Vector<Scalar>& selfReciprocal() ;
 
   /** 
    *  \brief Overwrite self with element-by-element absolute value 
    */
-  Vector<Scalar>& abs() ;
+  Vector<Scalar>& selfAbs() ;
 
   /** 
    *  \brief Overwrite self with random values

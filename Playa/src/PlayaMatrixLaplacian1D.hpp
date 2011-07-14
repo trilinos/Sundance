@@ -33,6 +33,24 @@ private:
   LinearOperator<double> op_;
 };
 
+/** */
+class MassMatrix1D : public OperatorBuilder<double>
+{
+public:
+    
+  /** */
+  MassMatrix1D(int nLocal, const VectorType<double>& vecType);
+
+  /** */
+  LinearOperator<double> getOp() const {return op_;}
+
+private:
+  /** */
+  void init(int nLocal, const VectorType<double>& vecType);
+  
+  LinearOperator<double> op_;
+};
+
 }
 
 #endif

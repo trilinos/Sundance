@@ -443,6 +443,27 @@ int main(int argc, char** argv)
         List(u0, zero),
         context);
     }
+
+    std::cerr << std::endl << "=================== ALL-AT-ONCE ====================" << std::endl;
+    for (int i=0; i<tests.length(); i++)
+    {
+      RegionQuadCombo rqc(rcp(new CellFilterStub()), 
+        rcp(new QuadratureFamilyStub(1)));
+      EvalContext context(rqc, makeSet(1,2), EvalContext::nextID());
+      testVariations(tests[i], 
+        List(lambda_u, u, alpha), 
+        List(zero, zero, zero), 
+        List(lambda_u, u, alpha), 
+        List(lambda_u0, u0, alpha0), 
+        empty,
+        empty,
+        empty,
+        empty,
+        empty,
+        empty,
+        context);
+      
+    }
     TimeMonitor::summarize();
   }
 	catch(std::exception& e)

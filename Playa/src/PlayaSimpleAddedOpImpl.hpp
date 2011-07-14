@@ -60,12 +60,12 @@ void SimpleAddedOp<Scalar>::apply(Teuchos::ETransp transApplyType,
   for (int i=0; i<ops_.size(); i++)
   {
     Tabs tab1;
-    Out::os() << tab1 << "applying term i=" << i << " of " 
-              << ops_.size() << std::endl;
+    PLAYA_MSG3(this->verb(), tab1 << "applying term i=" << i << " of " 
+      << ops_.size());
     if (transApplyType == Teuchos::NO_TRANS)
-      tmp = tmp + ops_[i] * in;
+      tmp += ops_[i] * in;
     else if (transApplyType == Teuchos::TRANS)
-      tmp = tmp + ops_[i].transpose() * in;
+      tmp += ops_[i].transpose() * in;
     else 
       TEST_FOR_EXCEPT(transApplyType != Teuchos::TRANS && transApplyType != Teuchos::NO_TRANS);
   }

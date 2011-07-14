@@ -11,11 +11,22 @@
 #include "PlayaLinearOperatorImpl.hpp"
 #endif
 
-using namespace Playa;
+namespace Playa
+{
+
 using namespace Teuchos;
 
 
 MatrixLaplacian1D::MatrixLaplacian1D(int nLocalRows, 
+  const VectorType<double>& type)
+  : OperatorBuilder<double>(nLocalRows, type), op_()
+{
+  init(nLocalRows, type);
+}
+
+
+
+MassMatrix1D::MassMatrix1D(int nLocalRows, 
   const VectorType<double>& type)
   : OperatorBuilder<double>(nLocalRows, type), op_()
 {
@@ -97,4 +108,82 @@ void MatrixLaplacian1D::init(int nLocalRows,
     mat->addToRow(row, colIndices.size(), 
       &(colIndices[0]), &(colVals[0]));
   }
+}
+
+
+void MassMatrix1D::init(int nLocalRows, 
+  const VectorType<double>& type)
+{
+  int rank = MPIComm::world().getRank();
+  int nProc = MPIComm::world().getNProc();
+  RCP<MatrixFactory<double> > mFact;
+  mFact = vecType().createMatrixFactory(domain(), range());
+
+  if (domain().dim() == domain().numLocalElements())
+  {
+    rank = 0;
+    nProc = 1;
+  }
+
+  int lowestLocalRow = nLocalRows * rank;
+
+  IncrementallyConfigurableMatrixFactory* icmf 
+    = dynamic_cast<IncrementallyConfigurableMatrixFactory*>(mFact.get());
+  if (icmf)
+  {
+    for (int i=0; i<nLocalRows; i++)
+    {
+      int row = lowestLocalRow + i;
+      Array<int> colIndices;
+      if (rank==0 && i==0)
+      {
+        colIndices = tuple(row, row+1);
+      }
+      else if (rank==nProc-1 && i==nLocalRows-1)
+      {
+        colIndices = tuple(row-1, row);
+      }
+      else
+      {
+        colIndices = tuple(row-1, row, row+1);
+      }
+      icmf->initializeNonzerosInRow(row, colIndices.size(),
+        &(colIndices[0]));
+    }
+    icmf->finalize();
+  }
+      
+  op_ = mFact->createMatrix();
+
+  double h = 1.0/((double) domain().dim() + 1);
+      
+  RCP<LoadableMatrix<double> > mat = op_.matrix();
+
+  /* fill in with the mass operator */
+  for (int i=0; i<nLocalRows; i++)
+  {
+    int row = lowestLocalRow + i;
+    Array<int> colIndices;
+    Array<double> colVals;
+    if (rank==0 && i==0)
+    {
+      colIndices = tuple(row, row+1);
+      colVals = tuple(2.0/3.0, 1.0/3.0);
+    }
+    else if (rank==nProc-1 && i==nLocalRows-1)
+    {
+      colIndices = tuple(row-1, row);
+      colVals = tuple(1.0/3.0, 2.0/3.0);
+    }
+    else
+    {
+      colIndices = tuple(row-1, row, row+1);
+      colVals = tuple(1.0/3.0, 2.0/3.0, 1.0/3.0);
+    }
+    mat->addToRow(row, colIndices.size(), 
+      &(colIndices[0]), &(colVals[0]));
+  }
+}
+
+
 }

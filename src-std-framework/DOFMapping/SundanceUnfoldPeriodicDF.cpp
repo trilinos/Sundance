@@ -82,7 +82,7 @@ DiscreteSpace unfoldPeriodicDiscreteSpace(const DiscreteSpace& space)
   return DiscreteSpace(mesh, basis, vecType);
 }
 
-Expr unfoldPeriodicDiscreteFunction(const Expr& f)
+Expr unfoldPeriodicDiscreteFunction(const Expr& f, const string& name)
 {
   const DiscreteFunction* df = DiscreteFunction::discFunc(f);
   TEST_FOR_EXCEPT(df==0);
@@ -194,7 +194,7 @@ Expr unfoldPeriodicDiscreteFunction(const Expr& f)
     }
   }
 
-  return new DiscreteFunction(space, newVec);
+  return new DiscreteFunction(space, newVec, name);
 }
 
 

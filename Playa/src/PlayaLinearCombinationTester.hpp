@@ -208,6 +208,12 @@ inline bool LinearCombinationTester<Scalar>
 
   TESTER(2.0*A*y + x, 2.0*(A*y) + x);
 
+  TESTER(2.0*A*(3.0*B)*y, 6.0*(A*B*y));
+
+  TESTER(2.0*A*(3.0*B)*y, 6.0*(A*(B*y)));
+
+  TESTER(2.0*A*(3.0*B + 2.0*A)*x, 6.0*A*B*x + 4.0*A*A*x );
+
   TESTER(2.0*(A*x + B*y), 2.0*A*x + 2.0*B*y);
 
   TESTER(2.0*(A*x - B*y), 2.0*A*x - 2.0*B*y);
