@@ -36,24 +36,19 @@ IF(${PACKAGE_NAME}_ENABLE_Stokhos)
 ELSE()
   SET(HAVE_SUNDANCE_STOKHOS_DEFAULT OFF)
 ENDIF()
-ADD_OPTION_AND_DEFINE(Sundance_ENABLE_Stokhos
-  HAVE_SUNDANCE_STOKHOS
-  "Enable Sundance/Stokhos."
-  ${HAVE_SUNDANCE_STOKHOS_DEFAULT} )
-
+#Adding a define for when Stokhos is enabled.
+#This replaces an option that was reusing an existing name.
+SET(HAVE_SUNDANCE_STOKHOS ${HAVE_SUNDANCE_STOKHOS_DEFAULT})
 
 ADD_OPTION_AND_DEFINE(${PACKAGE_NAME}_ENABLE_BROKEN_CODE
   HAVE_SUNDANCE_BROKEN_CODE
   "Enable broken code. For expert developer use only."
   OFF )
 
-IF( ${PACKAGE_NAME}_ENABLE_SEACASExodus)
-  ADD_OPTION_AND_DEFINE(Sundance_ENABLE_SEACAS
-    HAVE_SUNDANCE_EXODUS
-    "Enable ExodusII reader in Sundance (via SEACAS package)."
-    ON )
-ENDIF()
-
+#Enable ExodusII reader in Sundance (via SEACAS package).
+#Adding a define for when SEACASExodus is enabled.
+#This replaces an option that was reusing an existing name.
+SET(HAVE_SUNDANCE_EXODUS "${${PACKAGE_NAME}_ENABLE_SEACASExodus}")
 
 ADD_OPTION_AND_DEFINE(Sundance_ENABLE_EXTERNAL_CHACO
   HAVE_SUNDANCE_CHACO
@@ -62,10 +57,10 @@ ADD_OPTION_AND_DEFINE(Sundance_ENABLE_EXTERNAL_CHACO
 
 # ========== Peano configuration ===============
 IF(TPL_ENABLE_Peano)
-  ADD_OPTION_AND_DEFINE(TPL_ENABLE_Peano
-     HAVE_SUNDANCE_PEANO
-    "Enable Peano Mesh in Sundance (requires Peano TPL)."
-    OFF )  
+  #Adding a define for when the TPL Peano is enabled.
+  #This replaces an option that was reusing an existing name.
+  SET(HAVE_SUNDANCE_PEANO "${${PACKAGE_NAME}_ENABLE_Peano}")
+
   INCLUDE_DIRECTORIES(${Peano_INCLUDE_DIRS}) 
   
   IF (TPL_ENABLE_Peano_NO_2D)
