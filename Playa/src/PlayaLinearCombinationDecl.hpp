@@ -110,7 +110,7 @@ public:
 };
 
 
-template<>
+//template<>
 template <class Scalar>
 class LCN<Scalar, 1> : public LCNBase<Scalar, 1>
 {
@@ -140,7 +140,7 @@ public:
 };
 
 
-template<>
+//template<>
 template <class Scalar>
 class LCN<Scalar, 2> : public LCNBase<Scalar, 2>
 {
@@ -205,7 +205,7 @@ public:
 };
 
 
-template<>
+//template<>
 template <class Scalar>
 class LCN<Scalar, 3> : public LCNBase<Scalar, 3>
 {

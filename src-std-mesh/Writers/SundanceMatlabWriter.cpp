@@ -55,7 +55,7 @@ void MatlabWriter::write() const
     {
       const Point& x = mesh().nodePosition(i);
       for (int d=0; d<x.dim(); d++) 
-        os << setw(8) << x[d];
+        os << setw(16) << x[d];
 
       for (int j=0; j<pointScalarFields().size(); j++)
         {
