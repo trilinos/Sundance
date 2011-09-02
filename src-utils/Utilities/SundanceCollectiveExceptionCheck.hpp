@@ -32,12 +32,12 @@
 #define SUNDANCE_COLLECTIVEEXCEPTIONCHECK_H
 
 #include "SundanceDefs.hpp"
-#include "Teuchos_MPIComm.hpp"
+#include "PlayaMPIComm.hpp"
 
 
 namespace Sundance
 {
-  using namespace Teuchos;
+using Playa::MPIComm;
 
 
   /** Call this function upon catching an exception at a point before a collective

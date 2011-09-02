@@ -6,7 +6,7 @@
 #define PLAYA_VECTORFUNCTORDECL_HPP
 
 #include "PlayaDefs.hpp"
-#include "Teuchos_MPIComm.hpp"
+#include "PlayaMPIComm.hpp"
 #include "Teuchos_RCP.hpp"
 #include "PlayaGeneralizedIndex.hpp"
 
@@ -15,7 +15,7 @@ namespace PlayaFunctors
 
 using Playa::GeneralizedIndex;
 using Teuchos::RCP;
-using Teuchos::MPIComm;
+using Playa::MPIComm;
 
 /**
  * \brief This traits class specifies the return type of a reduction functor. 

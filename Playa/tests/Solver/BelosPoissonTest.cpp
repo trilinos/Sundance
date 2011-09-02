@@ -14,7 +14,7 @@
 #include "PlayaVectorType.hpp"
 #include "PlayaEpetraVectorType.hpp"
 #include "Teuchos_Time.hpp"
-#include "Teuchos_MPIComm.hpp"
+#include "PlayaMPIComm.hpp"
 #include "PlayaLinearSolverDecl.hpp"
 #include "PlayaAztecSolver.hpp"
 #include "PlayaMatrixLaplacian1D.hpp"

@@ -8,7 +8,7 @@
 #include "PlayaVectorSpaceDecl.hpp"  
 #include "PlayaVectorDecl.hpp"
 #include "Teuchos_Array.hpp"
-#include "Teuchos_MPIComm.hpp"
+#include "PlayaMPIComm.hpp"
 #include "PlayaLinearOperatorDecl.hpp"
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION

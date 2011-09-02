@@ -34,7 +34,7 @@ namespace Playa
     /** */
     VectorTester(const VectorSpace<Scalar>& space,
                  const TestSpecifier<Scalar>& spec,
-                 const Teuchos::MPIComm& comm = Teuchos::MPIComm::world());
+                 const Playa::MPIComm& comm = Playa::MPIComm::world());
 
     /** */
     bool runAllTests() const ;
@@ -64,7 +64,7 @@ namespace Playa
 
     VectorSpace<Scalar> space_;
 
-    Teuchos::MPIComm comm_;
+    Playa::MPIComm comm_;
 
   };
 
@@ -72,7 +72,7 @@ namespace Playa
   inline VectorTester<Scalar>
   ::VectorTester(const VectorSpace<Scalar>& space,
                  const TestSpecifier<Scalar>& spec,
-                 const Teuchos::MPIComm& comm)
+                 const Playa::MPIComm& comm)
     : spec_(spec), space_(space), comm_(comm)
   {;}
 

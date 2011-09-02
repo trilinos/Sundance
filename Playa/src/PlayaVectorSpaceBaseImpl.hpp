@@ -7,7 +7,7 @@
 
 #include "PlayaVectorSpaceBaseDecl.hpp"
 #include "PlayaExceptions.hpp"
-#include "Teuchos_MPIContainerComm.hpp"
+#include "PlayaMPIContainerComm.hpp"
 #include "Teuchos_Array.hpp"
 
 namespace Playa
@@ -19,7 +19,7 @@ int VectorSpaceBase<Scalar>::accumulateBaseGNI() const
   int nLocal = this->numLocalElements();
   Teuchos::Array<int> sums;
   int total = 0;
-  Teuchos::MPIContainerComm<int>::accumulate(nLocal, sums, 
+  Playa::MPIContainerComm<int>::accumulate(nLocal, sums, 
     total, this->comm());
   int rank = this->comm().getRank();
   return sums[rank];

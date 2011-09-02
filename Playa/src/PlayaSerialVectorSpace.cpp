@@ -4,7 +4,7 @@
 
 #include "PlayaSerialVectorSpace.hpp"
 #include "PlayaSerialVector.hpp"
-#include "Teuchos_MPIComm.hpp"
+#include "PlayaMPIComm.hpp"
 #include "PlayaOut.hpp"
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
@@ -17,7 +17,7 @@
 namespace Playa
 {
 using Teuchos::RCP;
-using Teuchos::MPIComm;
+
 
 SerialVectorSpace::SerialVectorSpace(int dim)
   : dim_(dim), comm_(MPIComm::self())

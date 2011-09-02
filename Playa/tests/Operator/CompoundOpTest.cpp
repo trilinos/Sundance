@@ -10,7 +10,7 @@
 #include "PlayaVectorType.hpp"
 #include "PlayaEpetraVectorType.hpp"
 #include "Teuchos_Time.hpp"
-#include "Teuchos_MPIComm.hpp"
+#include "PlayaMPIComm.hpp"
 #include "PlayaRandomSparseMatrixBuilderDecl.hpp"
 #include "PlayaCompoundTester.hpp"
 #include "PlayaMatrixMatrixTester.hpp"

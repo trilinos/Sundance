@@ -1,5 +1,5 @@
 #include "SundanceCollectiveExceptionCheck.hpp"
-#include "Teuchos_MPIComm.hpp"
+#include "PlayaMPIComm.hpp"
 
 using namespace Sundance;
 using namespace Teuchos;

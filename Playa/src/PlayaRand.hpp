@@ -7,14 +7,10 @@
 
 #include "PlayaDefs.hpp"
 
-namespace Teuchos
-{
-class MPIComm;
-}
 
 namespace Playa
 {
-using Teuchos::MPIComm;
+class MPIComm;
 
 /** */
 class Rand

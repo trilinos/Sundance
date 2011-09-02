@@ -9,7 +9,7 @@
 #include "PlayaVectorOpsImpl.hpp"
 
 #include "Teuchos_GlobalMPISession.hpp"
-#include "Teuchos_MPIComm.hpp"
+#include "PlayaMPIComm.hpp"
 
 
 /* ------------------------------------------------------------------------

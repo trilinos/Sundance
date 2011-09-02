@@ -33,7 +33,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceAssemblyKernelBase.hpp"
-#include "Teuchos_MPIComm.hpp"
+#include "PlayaMPIComm.hpp"
 
 namespace Sundance
 {

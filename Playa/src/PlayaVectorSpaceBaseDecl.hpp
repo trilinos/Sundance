@@ -9,21 +9,19 @@
 #include "Teuchos_RCP.hpp"
 #include "Teuchos_Describable.hpp"
 
-namespace Teuchos
-{
-class MPIComm;
-}
+
 
 namespace Playa
 {
 using Teuchos::RCP;
-using Teuchos::MPIComm;
+
 using Teuchos::Describable;
 
 template <class Scalar> class VectorSpace;
 template <class Scalar> class VectorBase;
 template <class Scalar> class BlockIterator;
 
+class MPIComm;
 
 /**
  * 

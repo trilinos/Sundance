@@ -35,7 +35,7 @@
 #include "SundanceMeshSource.hpp"
 #include "SundanceDebug.hpp"
 #include "SundanceOut.hpp"
-#include "Teuchos_MPIContainerComm.hpp"
+#include "PlayaMPIContainerComm.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
@@ -46,6 +46,8 @@
 
 using namespace Sundance;
 using namespace Teuchos;
+using Playa::MPIComm;
+using Playa::MPIContainerComm;
 
 using std::endl;
 

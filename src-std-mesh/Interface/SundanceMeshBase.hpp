@@ -38,7 +38,7 @@
 #include "SundanceCellType.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
 #include "SundanceObjectWithInstanceID.hpp"
-#include "Teuchos_MPIComm.hpp"
+#include "PlayaMPIComm.hpp"
 #include "Teuchos_Array.hpp"
 #include "SundanceCellReorderer.hpp"
 #include "SundanceCellReordererImplemBase.hpp"
@@ -52,6 +52,7 @@ enum MeshEntityOrder {UFCMeshOrder, ExodusMeshOrder};
 class MaximalCofacetBatch;
 
 using namespace Teuchos;
+using Playa::MPIComm;
 
 class CellJacobianBatch;
 

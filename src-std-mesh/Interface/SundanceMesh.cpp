@@ -36,13 +36,14 @@
 #include "SundanceSet.hpp"
 #include "SundanceMap.hpp"
 #include "PlayaTabs.hpp"
-#include "Teuchos_MPIContainerComm.hpp"
+#include "PlayaMPIContainerComm.hpp"
 
 using namespace Teuchos;
 using namespace Sundance;
 using Playa::Handle;
 using Playa::Handleable;
-
+using Playa::MPIComm;
+using Playa::MPIContainerComm;
 
 
 IncrementallyCreatableMesh* Mesh::creatableMesh()

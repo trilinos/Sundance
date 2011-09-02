@@ -34,11 +34,13 @@
 #include "SundanceOrderedTuple.hpp"
 #include "SundancePartialElementDOFMap.hpp"
 #include "SundanceLagrange.hpp"
-#include "Teuchos_MPIContainerComm.hpp"
+#include "PlayaMPIContainerComm.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
 using namespace Sundance;
 using namespace Teuchos;
+using Playa::MPIComm;
+using Playa::MPIContainerComm;
 
 PartialElementDOFMap::PartialElementDOFMap(const Mesh& mesh, 
   const CellFilter& subdomain,

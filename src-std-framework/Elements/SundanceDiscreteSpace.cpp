@@ -34,7 +34,7 @@
 #include "SundanceOut.hpp"
 #include "SundanceMaximalCellFilter.hpp"
 #include "PlayaDefaultBlockVectorSpaceDecl.hpp"
-#include "Teuchos_MPIContainerComm.hpp"
+#include "PlayaMPIContainerComm.hpp"
 
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
@@ -46,6 +46,8 @@
 using namespace Sundance;
 using namespace Teuchos;
 using Playa::blockSpace;
+using Playa::MPIComm;
+using Playa::MPIContainerComm;
 
 const int* vecPtr(const Array<int>& x)
 {

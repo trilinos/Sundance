@@ -8,7 +8,7 @@
 
 #include "PlayaDefs.hpp"
 #include "PlayaVectorFunctorsDecl.hpp"
-#include "Teuchos_MPIComm.hpp"
+#include "PlayaMPIComm.hpp"
 #include "PlayaRand.hpp"
 
 namespace PlayaFunctors

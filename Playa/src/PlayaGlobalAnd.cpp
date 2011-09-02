@@ -4,7 +4,7 @@
 
 
 #include "PlayaGlobalAnd.hpp"
-#include "Teuchos_MPIComm.hpp"
+#include "PlayaMPIComm.hpp"
 #include "Teuchos_TestForException.hpp"
 #include "PlayaOut.hpp"
 #ifdef HAVE_MPI

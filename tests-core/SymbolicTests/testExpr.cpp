@@ -1,4 +1,4 @@
-#include "Teuchos_MPISession.hpp"
+#include "PlayaMPISession.hpp"
 #include "SundanceExpr.hpp"
 #include "SundanceCoordExpr.hpp"
 #include "SundanceIntegral.hpp"
@@ -15,6 +15,7 @@ using std::cout;
 using std::cerr;
 using std::exception;
 using namespace Teuchos;
+using namespace Playa;
 using namespace Sundance;
 
 int main(int argc, char** argv)

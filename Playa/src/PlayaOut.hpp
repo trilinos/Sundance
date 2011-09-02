@@ -9,7 +9,7 @@
 #include "Teuchos_TestForException.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 #include "Teuchos_FancyOStream.hpp"
-#include "Teuchos_MPIComm.hpp"
+#include "PlayaMPIComm.hpp"
 
 namespace Teuchos
 {

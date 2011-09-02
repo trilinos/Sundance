@@ -11,7 +11,7 @@
 #include "PlayaEpetraVectorType.hpp"
 #include "PlayaSerialVectorType.hpp"
 #include "Teuchos_Time.hpp"
-#include "Teuchos_MPIComm.hpp"
+#include "PlayaMPIComm.hpp"
 #include "PlayaLinearSolverDecl.hpp"
 #include "PlayaLinearSolverBuilder.hpp"
 #include "PlayaDenseLUSolver.hpp"

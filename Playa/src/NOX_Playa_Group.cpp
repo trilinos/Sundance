@@ -7,7 +7,7 @@
 
 #include "NOX_Common.H"
 #include "NOX_Playa_Group.hpp"	// class definition
-#include "Teuchos_MPIComm.hpp"
+#include "PlayaMPIComm.hpp"
 #include "PlayaOut.hpp"
 #include "PlayaTabs.hpp"
 

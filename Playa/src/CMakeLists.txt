@@ -82,6 +82,7 @@ APPEND_SET(HEADERS
   PlayaEpetraVector.hpp
   PlayaEpetraVectorSpace.hpp
   PlayaEpetraVectorType.hpp
+  PlayaErrorPolling.hpp
   PlayaExceptions.hpp
   PlayaGeneralizedIndex.hpp
   PlayaGenericLeftPreconditioner.hpp
@@ -122,6 +123,9 @@ APPEND_SET(HEADERS
   PlayaMatrixLaplacian1D.hpp
   PlayaMatrixMatrixTester.hpp
   PlayaMLOperator.hpp
+  PlayaMPIComm.hpp
+  PlayaMPIContainerComm.hpp
+  PlayaMPISession.hpp
   PlayaMultiVectorOperatorDecl.hpp
   PlayaMultiVectorOperatorImpl.hpp
   PlayaNonlinearOperator.hpp
@@ -230,6 +234,7 @@ APPEND_SET(SOURCES
   PlayaEpetraVector.cpp
   PlayaEpetraVectorSpace.cpp
   PlayaEpetraVectorType.cpp
+  PlayaErrorPolling.cpp
   PlayaExceptions.cpp
   PlayaGlobalAnd.cpp
   PlayaHeatOperator1D.cpp
@@ -245,6 +250,8 @@ APPEND_SET(SOURCES
   PlayaLineSearchBuilder.cpp
   PlayaMatrixLaplacian1D.cpp
   PlayaMLOperator.cpp
+  PlayaMPIComm.cpp
+  PlayaMPISession.cpp
   PlayaMultiVectorOperator.cpp
   PlayaNOXSolver.cpp
   PlayaOut.cpp

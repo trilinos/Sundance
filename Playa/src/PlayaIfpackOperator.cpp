@@ -4,7 +4,7 @@
 
 #include "PlayaIfpackOperator.hpp"
 #include "Teuchos_Array.hpp"
-#include "Teuchos_MPIComm.hpp"
+#include "PlayaMPIComm.hpp"
 #include "PlayaEpetraVector.hpp"
 
 

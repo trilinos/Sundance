@@ -4,13 +4,12 @@
 
 
 #include "PlayaRand.hpp"
-#include "Teuchos_MPIComm.hpp"
+#include "PlayaMPIComm.hpp"
 #include "Teuchos_TestForException.hpp"
 #include "PlayaOut.hpp"
 
 namespace Playa
 {
-using Teuchos::MPIComm;
 
 void Rand::setLocalSeed(const MPIComm& comm, int seed)
 {

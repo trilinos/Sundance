@@ -8,7 +8,7 @@
 #include "PlayaDefs.hpp"
 #include "Epetra_Map.h"
 #include "Teuchos_RefCountPtr.hpp"
-#include "Teuchos_MPIComm.hpp"
+#include "PlayaMPIComm.hpp"
 #include "PlayaVectorSpaceBaseDecl.hpp"
 
 namespace Playa

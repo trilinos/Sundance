@@ -30,8 +30,8 @@
 
 #include "Sundance.hpp"
 #include "Teuchos_CommandLineProcessor.hpp"
-#include "Teuchos_MPIComm.hpp"
-#include "Teuchos_MPISession.hpp"
+#include "PlayaMPIComm.hpp"
+#include "PlayaMPISession.hpp"
 #include "SundanceAssembler.hpp"
 #include "SundanceQuadratureIntegral.hpp"
 #include "SundanceQuadratureEvalMediator.hpp"

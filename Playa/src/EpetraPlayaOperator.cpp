@@ -8,7 +8,7 @@
 #include "PlayaVectorDecl.hpp"
 #include "PlayaLinearOperatorDecl.hpp"  // changed from Impl
 #include "Teuchos_Array.hpp"
-#include "Teuchos_MPIComm.hpp"
+#include "PlayaMPIComm.hpp"
 #include "PlayaIfpackOperator.hpp"
 #include "PlayaGenericLeftPreconditioner.hpp"
 #include "PlayaGenericRightPreconditioner.hpp"

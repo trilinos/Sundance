@@ -42,7 +42,7 @@
 #include "SundanceMeshSource.hpp"
 #include "SundanceDebug.hpp"
 #include "SundanceOut.hpp"
-#include "Teuchos_MPIContainerComm.hpp"
+#include "PlayaMPIContainerComm.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
@@ -51,6 +51,8 @@
 using namespace Sundance;
 using namespace Teuchos;
 using namespace std;
+using Playa::MPIComm;
+using Playa::MPIContainerComm;
 
 int HNMesh3D::offs_Points_x_[8] = {0, 1, 0, 1 , 0 , 1 , 0 , 1};
 

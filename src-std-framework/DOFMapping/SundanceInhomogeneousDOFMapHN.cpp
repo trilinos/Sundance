@@ -32,7 +32,7 @@
 #include "SundanceBasisDOFTopologyBase.hpp"
 #include "SundanceCellFilter.hpp"
 #include "SundanceMaximalCellFilter.hpp"
-#include "Teuchos_MPIContainerComm.hpp"
+#include "PlayaMPIContainerComm.hpp"
 #include "SundanceOut.hpp"
 #include "PlayaTabs.hpp"
 #include "Teuchos_Time.hpp"
@@ -40,6 +40,8 @@
 
 using namespace Sundance;
 using namespace Teuchos;
+using Playa::MPIComm;
+using Playa::MPIContainerComm;
 
 static Time& mixedHNDOFCtorTimer()
 {

@@ -16,7 +16,7 @@
 #include "Teuchos_GlobalMPISession.hpp"
 
 #include "Teuchos_Time.hpp"
-#include "Teuchos_MPIComm.hpp"
+#include "PlayaMPIComm.hpp"
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
 #include "PlayaVectorImpl.hpp"

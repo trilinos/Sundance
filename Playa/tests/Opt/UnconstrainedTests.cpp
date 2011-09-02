@@ -15,7 +15,7 @@
 #include "Teuchos_GlobalMPISession.hpp"
 
 #include "Teuchos_Time.hpp"
-#include "Teuchos_MPIComm.hpp"
+#include "PlayaMPIComm.hpp"
 
 #include <fstream>
 

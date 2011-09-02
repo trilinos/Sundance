@@ -12,7 +12,7 @@
 #include "PlayaEpetraVectorType.hpp"
 #include "PlayaSerialVectorType.hpp"
 #include "Teuchos_Time.hpp"
-#include "Teuchos_MPIComm.hpp"
+#include "PlayaMPIComm.hpp"
 #include "PlayaLinearOperatorDecl.hpp"
 #include "PlayaMultiVectorOperatorDecl.hpp"
 

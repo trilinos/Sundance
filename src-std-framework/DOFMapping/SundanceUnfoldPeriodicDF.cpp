@@ -37,7 +37,7 @@
 #include "SundanceMeshSource.hpp"
 #include "SundanceBasicSimplicialMeshType.hpp"
 #include "SundanceDOFMapBase.hpp"
-#include "Teuchos_MPIContainerComm.hpp"
+#include "PlayaMPIContainerComm.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 #include "PlayaLoadableVector.hpp"
 
