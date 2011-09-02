@@ -423,6 +423,8 @@ MPI_Op MPIComm::getOp(int op)
 }
 
 
-}
+
 
 #endif
+
+}
