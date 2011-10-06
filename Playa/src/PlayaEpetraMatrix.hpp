@@ -19,6 +19,8 @@ namespace Playa
 using namespace Teuchos;
 
 
+
+/** Playa wrapper for epetra matrix */
 class EpetraMatrix : public LinearOpWithSpaces<double>,
                      public LoadableMatrix<double>,
                      public RowAccessibleOp<double>,
