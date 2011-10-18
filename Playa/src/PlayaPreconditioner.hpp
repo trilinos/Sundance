@@ -57,7 +57,7 @@ namespace Playa
   template <class Scalar> inline 
   LinearOperator<Scalar> Preconditioner<Scalar>::left() const 
   {
-    TEST_FOR_EXCEPTION(this->ptr().get()==0, std::runtime_error,
+    TEUCHOS_TEST_FOR_EXCEPTION(this->ptr().get()==0, std::runtime_error,
                        "null pointer in Preconditioner<Scalar>::left()");
     return this->ptr()->left();
   }
@@ -65,7 +65,7 @@ namespace Playa
   template <class Scalar> inline 
   LinearOperator<Scalar> Preconditioner<Scalar>::right() const 
   {
-    TEST_FOR_EXCEPTION(this->ptr().get()==0, std::runtime_error,
+    TEUCHOS_TEST_FOR_EXCEPTION(this->ptr().get()==0, std::runtime_error,
                        "null pointer in Preconditioner<Scalar>::right()");
     return this->ptr()->right();
   }

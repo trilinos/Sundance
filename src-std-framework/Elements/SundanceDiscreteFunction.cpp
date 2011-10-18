@@ -164,7 +164,7 @@ const DiscreteFunction* DiscreteFunction::discFunc(const Expr& expr)
   const DiscreteFunction* df 
     = dynamic_cast<const DiscreteFunction*>(e);
 
-  TEST_FOR_EXCEPTION(df==0, runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(df==0, runtime_error,
     "failed to cast " << expr << " to a discrete function. "
     "It appears to be of type " << e->typeName());
 
@@ -178,7 +178,7 @@ DiscreteFunction* DiscreteFunction::discFunc(Expr& expr)
   DiscreteFunction* df 
     = dynamic_cast<DiscreteFunction*>(expr.ptr().get());
 
-  TEST_FOR_EXCEPTION(df==0, runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(df==0, runtime_error,
     "failed to cast " << expr << " to a discrete function. "
     "It appears to be of type " << expr.ptr()->typeName());
 
@@ -227,7 +227,7 @@ Expr copyDiscreteFunction(const Expr& u0, const string& name)
    * wrapper has gotten lost in dereferencing. */
   const DiscreteFuncElement* dfe 
     = dynamic_cast<const DiscreteFuncElement*>(u0.ptr().get());
-  TEST_FOR_EXCEPTION(dfe!=0 && u0.size() > 1, runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(dfe!=0 && u0.size() > 1, runtime_error,
     "attempt to access vector of a single element of a multicomponent "
     "DiscreteFunction");
   if (dfe != 0)
@@ -265,7 +265,7 @@ void setDiscreteFunctionVector(Expr u, const Vector<double>& v)
    * wrapper has gotten lost in list element dereferencing. */
   DiscreteFuncElement* dfe 
     = dynamic_cast<DiscreteFuncElement*>(u.ptr().get());
-  TEST_FOR_EXCEPTION(dfe!=0 && u.size() > 1, runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(dfe!=0 && u.size() > 1, runtime_error,
     "attempt to set vector of a single element of a multicomponent "
     "DiscreteFunction");
   if (dfe != 0)
@@ -275,7 +275,7 @@ void setDiscreteFunctionVector(Expr u, const Vector<double>& v)
   }
 
   /* At this point, the vector should be a block vector */
-  TEST_FOR_EXCEPTION((df==0 && dfe==0) && u.size()==1, 
+  TEUCHOS_TEST_FOR_EXCEPTION((df==0 && dfe==0) && u.size()==1, 
     runtime_error,
     "non-block vector should be a discrete function in setDFVector()");
 
@@ -301,7 +301,7 @@ Vector<double> getDiscreteFunctionVector(const Expr& u)
    * wrapper has gotten lost in dereferencing. */
   const DiscreteFuncElement* dfe 
     = dynamic_cast<const DiscreteFuncElement*>(u.ptr().get());
-  TEST_FOR_EXCEPTION(dfe!=0 && u.size() > 1, runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(dfe!=0 && u.size() > 1, runtime_error,
     "attempt to access vector of a single element of a multicomponent "
     "DiscreteFunction");
   if (dfe != 0)
@@ -310,7 +310,7 @@ Vector<double> getDiscreteFunctionVector(const Expr& u)
   }
 
   /* Case 3: u is a list of discrete functions */
-  TEST_FOR_EXCEPTION(df==0 && u.size()==1, runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(df==0 && u.size()==1, runtime_error,
     "non-block vector should be a discrete function in getDiscreteFunctionVector()");
   Array<Vector<double> > vec(u.size());
   for (int b=0; b<u.size(); b++)

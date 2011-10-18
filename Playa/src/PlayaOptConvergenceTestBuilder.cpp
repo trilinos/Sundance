@@ -16,7 +16,7 @@ OptConvergenceTestBuilder::createConvTest(const ParameterList& params,
   Tabs tab1;
   PLAYA_MSG2(verb, tab1 << "params=" << params);
   
-  TEST_FOR_EXCEPTION(params.name() != "Convergence Test",
+  TEUCHOS_TEST_FOR_EXCEPTION(params.name() != "Convergence Test",
     std::runtime_error, 
     "OptConvTestBuilder::createConvTest() expected parameter list named "
     "\"Convergence Test\", got name [" << params.name() << "]");
@@ -31,7 +31,7 @@ OptConvergenceTestBuilder::createConvTest(const ParameterList& params,
     ct = rcp(new DefaultOptConvergenceTest(params));
   }
 
-  TEST_FOR_EXCEPTION(ct.get()==0, 
+  TEUCHOS_TEST_FOR_EXCEPTION(ct.get()==0, 
     std::runtime_error, 
     "OptConvTestBuilder::createConvTest() could not construct a valid "
     "convergence test object from parameter list " << params);

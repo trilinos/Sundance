@@ -4,7 +4,7 @@
 
 #include "PlayaEpetraVector.hpp"
 #include "PlayaEpetraVectorSpace.hpp"
-#include "Teuchos_TestForException.hpp"
+#include "Teuchos_Assert.hpp"
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
 #include "PlayaVectorImpl.hpp"
@@ -22,7 +22,7 @@ EpetraVector::EpetraVector(const VectorSpace<double>& vs)
 {
   const EpetraVectorSpace* epvs 
     = dynamic_cast<const EpetraVectorSpace*>(vs.ptr().get());
-  TEST_FOR_EXCEPTION(epvs==0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(epvs==0, std::runtime_error,
     "could not cast vector space to EpetraVectorSpace in "
     "EpetraVector ctor");
 
@@ -41,7 +41,7 @@ EpetraVector
 {
   const EpetraVectorSpace* epvs 
     = dynamic_cast<const EpetraVectorSpace*>(vs.ptr().get());
-  TEST_FOR_EXCEPTION(epvs==0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(epvs==0, std::runtime_error,
     "could not cast vector space to EpetraVectorSpace in "
     "EpetraVector ctor");
 }
@@ -95,7 +95,7 @@ void EpetraVector::setElements(int numElems, const int* globalIndices,
 {
   Epetra_FEVector* vec = dynamic_cast<Epetra_FEVector*>(epetraVec().get());
   int ierr = vec->ReplaceGlobalValues(numElems, globalIndices, values);
-  TEST_FOR_EXCEPTION(ierr < 0, std::runtime_error, "ReplaceGlobalValues returned "
+  TEUCHOS_TEST_FOR_EXCEPTION(ierr < 0, std::runtime_error, "ReplaceGlobalValues returned "
     "ierr=" << ierr << " in EpetraVector::setElements()");
 }
 
@@ -104,7 +104,7 @@ void EpetraVector::addToElements(int numElems, const int* globalIndices,
 {
   Epetra_FEVector* vec = dynamic_cast<Epetra_FEVector*>(epetraVec().get());
   int ierr = vec->SumIntoGlobalValues(numElems, globalIndices, values);
-  TEST_FOR_EXCEPTION(ierr < 0, std::runtime_error, "SumIntoGlobalValues returned "
+  TEUCHOS_TEST_FOR_EXCEPTION(ierr < 0, std::runtime_error, "SumIntoGlobalValues returned "
     "ierr=" << ierr << " in EpetraVector::addToElements()");
 }
 
@@ -125,7 +125,7 @@ const Epetra_Vector& EpetraVector::getConcrete(const Playa::Vector<double>& tsfV
 {
   const EpetraVector* epv 
     = dynamic_cast<const EpetraVector*>(tsfVec.ptr().get());
-  TEST_FOR_EXCEPTION(epv==0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(epv==0, std::runtime_error,
     "EpetraVector::getConcrete called on a vector that "
     "could not be cast to an EpetraVector");
   return *(epv->epetraVec());
@@ -135,7 +135,7 @@ Epetra_Vector& EpetraVector::getConcrete(Playa::Vector<double>& tsfVec)
 {
   EpetraVector* epv 
     = dynamic_cast<EpetraVector*>(tsfVec.ptr().get());
-  TEST_FOR_EXCEPTION(epv==0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(epv==0, std::runtime_error,
     "EpetraVector::getConcrete called on a vector that "
     "could not be cast to an EpetraVector");
   return *(epv->epetraVec());
@@ -146,7 +146,7 @@ Epetra_Vector* EpetraVector::getConcretePtr(Playa::Vector<double>& tsfVec)
 {
   EpetraVector* epv 
     = dynamic_cast<EpetraVector*>(tsfVec.ptr().get());
-  TEST_FOR_EXCEPTION(epv==0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(epv==0, std::runtime_error,
     "EpetraVector::getConcrete called on a vector that "
     "could not be cast to an EpetraVector");
   return epv->epetraVec().get();

@@ -33,7 +33,7 @@ IQI_HdivLF_VN_Facet::IQI_HdivLF_VN_Facet( int spatialDim ,
 				  quad ,
 				  verbParams )
 {
-  TEST_FOR_EXCEPTION(true,
+  TEUCHOS_TEST_FOR_EXCEPTION(true,
 		     InternalError,
 		     "IQI_HdivLF_VN_Facet is not implemented" );
 }
@@ -44,7 +44,7 @@ void IQI_HdivLF_VN_Facet::evaluate( CellJacobianBatch& JTrans,
 				    const double* const coeff,
 				    RefCountPtr<Array<double> >& A) const
 {
-  TEST_FOR_EXCEPTION(true,
+  TEUCHOS_TEST_FOR_EXCEPTION(true,
 		     InternalError,
 		     "IQI_HdivLF_VN_Facet is not implemented" );
 }

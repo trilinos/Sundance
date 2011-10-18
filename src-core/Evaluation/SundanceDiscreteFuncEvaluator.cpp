@@ -82,7 +82,7 @@ DiscreteFuncElementEvaluator
       else 
         {
       
-          TEST_FOR_EXCEPTION(!this->sparsity()->isSpatialDeriv(i), std::logic_error,
+          TEUCHOS_TEST_FOR_EXCEPTION(!this->sparsity()->isSpatialDeriv(i), std::logic_error,
                              "DiscreteFuncElementEvaluator ctor found "
                              "an entry in the sparsity superset that is not "
                              "a spatial derivative. "
@@ -93,7 +93,7 @@ DiscreteFuncElementEvaluator
           mi_[i] = this->sparsity()->multiIndex(i);
         }
       addVectorIndex(i,i);
-      TEST_FOR_EXCEPTION(miToIndexMap_.containsKey(mi_[i]), std::logic_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(miToIndexMap_.containsKey(mi_[i]), std::logic_error,
                          "DiscreteFuncElementEvaluator ctor detected a "
                          "duplicate multiindex");
 
@@ -147,7 +147,7 @@ void DiscreteFuncElementEvaluator
     {
       Tabs tab2;
       vectorResults[i] = mgr.popVector();
-      TEST_FOR_EXCEPTION(!vectorResults[i]->isValid(), 
+      TEUCHOS_TEST_FOR_EXCEPTION(!vectorResults[i]->isValid(), 
                          std::logic_error,
                          "invalid evaluation vector allocated in "
                          "DiscreteFuncElementEvaluator::internalEval()");

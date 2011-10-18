@@ -68,11 +68,11 @@ ParameterList mergeParamLists(const ParameterList& pDef,
       }
       else
       {
-        TEST_FOR_EXCEPTION(eIn->isList() && !eDef.isList(), 
+        TEUCHOS_TEST_FOR_EXCEPTION(eIn->isList() && !eDef.isList(), 
           std::runtime_error, "mismatched parameters in mergeParams()");
-        TEST_FOR_EXCEPTION(!eIn->isList() && eDef.isList(), 
+        TEUCHOS_TEST_FOR_EXCEPTION(!eIn->isList() && eDef.isList(), 
           std::runtime_error, "mismatched parameters in mergeParams()");
-        TEST_FOR_EXCEPT(1);
+        TEUCHOS_TEST_FOR_EXCEPT(1);
       }
     }
     else

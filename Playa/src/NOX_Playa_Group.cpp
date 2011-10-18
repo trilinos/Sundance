@@ -497,7 +497,7 @@ const NOX::Abstract::Vector& NOX::NOXPlaya::Group::getF() const
   {
     Out::os() << "calling getF()" << std::endl;
   }
-  TEST_FOR_EXCEPTION(!isF(), runtime_error, 
+  TEUCHOS_TEST_FOR_EXCEPTION(!isF(), runtime_error, 
     "calling getF() with invalid function value");
   return *fVector;
 }
@@ -508,7 +508,7 @@ double NOX::NOXPlaya::Group::getNormF() const
   {
     Out::os() << "normF = " << normF << std::endl;
   }
-  TEST_FOR_EXCEPTION(!isF(), runtime_error, 
+  TEUCHOS_TEST_FOR_EXCEPTION(!isF(), runtime_error, 
     "calling normF() with invalid function value");
   return normF;
 }

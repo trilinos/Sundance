@@ -51,7 +51,7 @@ Expr Plane3D::getParams() const
 
 double Plane3D::curveEquation_intern(const Point& evalPoint) const
 {
-	TEST_FOR_EXCEPTION(evalPoint.dim() != 3, std::runtime_error,
+	TEUCHOS_TEST_FOR_EXCEPTION(evalPoint.dim() != 3, std::runtime_error,
 			"Plane3D::curveEquation() evaluation point dimension must be 3");
 
 	// z = a*x + b*y + c

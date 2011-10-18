@@ -49,7 +49,7 @@ Mesh ExodusMeshReader::fillMesh() const
 {
   Mesh mesh;
 #ifndef HAVE_SUNDANCE_EXODUS
-  TEST_FOR_EXCEPTION(true, std::runtime_error, 
+  TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, 
     "ExodusMeshReader called for a build without ExodusII");
 #else
 
@@ -70,10 +70,10 @@ Mesh ExodusMeshReader::fillMesh() const
   int exoID = ex_open(resolvedName.c_str(), EX_READ, 
     &CPU_word_size, &IO_word_size, &version);
 
-  TEST_FOR_EXCEPTION(exoID < 0, std::runtime_error, "ExodusMeshReader unable to "
+  TEUCHOS_TEST_FOR_EXCEPTION(exoID < 0, std::runtime_error, "ExodusMeshReader unable to "
     "open file: " << exoFilename_);
 
-  TEST_FOR_EXCEPT(IO_word_size != 8 || CPU_word_size != 8);
+  TEUCHOS_TEST_FOR_EXCEPT(IO_word_size != 8 || CPU_word_size != 8);
 
   char title[MAX_LINE_LENGTH+1];
 
@@ -87,9 +87,9 @@ Mesh ExodusMeshReader::fillMesh() const
   int ierr = ex_get_init(exoID, title, &dim, &numNodes, &numElems,
     &numElemBlocks, &numNodeSets, &numSideSets);
 
-  TEST_FOR_EXCEPTION(numNodes <= 0, std::runtime_error, "invalid numNodes=" 
+  TEUCHOS_TEST_FOR_EXCEPTION(numNodes <= 0, std::runtime_error, "invalid numNodes=" 
     << numNodes);
-  TEST_FOR_EXCEPTION(numElems <= 0, std::runtime_error, "invalid numElems=" 
+  TEUCHOS_TEST_FOR_EXCEPTION(numElems <= 0, std::runtime_error, "invalid numElems=" 
     << numElems);
 
   /* */
@@ -107,7 +107,7 @@ Mesh ExodusMeshReader::fillMesh() const
   {
     /* If we're running in parallel, we'd better have consistent numbers
      * of points in the .exo and .pex files. */
-    TEST_FOR_EXCEPTION((int)ptGID.size() != numNodes, std::runtime_error,
+    TEUCHOS_TEST_FOR_EXCEPTION((int)ptGID.size() != numNodes, std::runtime_error,
       "ExodusMeshReader::getMesh() found inconsistent "
       "numbers of points in .exo file and .pex files. Exo "
       "file " << exoFilename_ << " had nPoints=" 
@@ -127,17 +127,17 @@ Mesh ExodusMeshReader::fillMesh() const
   if (dim == 2)
   {
     ierr = ex_get_coord(exoID, &(x[0]), &(y[0]), (void*) 0);
-    TEST_FOR_EXCEPT(ierr < 0);
-    TEST_FOR_EXCEPT(ierr > 0);
+    TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
+    TEUCHOS_TEST_FOR_EXCEPT(ierr > 0);
   }
   else if (dim==3)
   {
     ierr = ex_get_coord(exoID, (void*) &(x[0]), (void*) &(y[0]), (void*) &(z[0]));
-    TEST_FOR_EXCEPT(ierr < 0);
+    TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
   }
   else 
   {
-    TEST_FOR_EXCEPTION(dim < 2 || dim > 3, std::runtime_error, 
+    TEUCHOS_TEST_FOR_EXCEPTION(dim < 2 || dim > 3, std::runtime_error, 
       "invalid dimension=" << dim << " in ExodusMeshReader");
   }
 
@@ -172,7 +172,7 @@ Mesh ExodusMeshReader::fillMesh() const
   {
     /* If we're running in parallel, we'd better have consistent numbers
      * of elements in the .exo and .pex files. */
-    TEST_FOR_EXCEPTION((int)elemGID.size() != numElems, std::runtime_error,
+    TEUCHOS_TEST_FOR_EXCEPTION((int)elemGID.size() != numElems, std::runtime_error,
       "ExodusMeshReader::readElems() found inconsistent "
       "numbers of elements in .exo file and .pex files. Exodus "
       "file " << exoFilename_ << " had nElems=" 
@@ -187,7 +187,7 @@ Mesh ExodusMeshReader::fillMesh() const
   {
     ierr = ex_get_elem_blk_ids(exoID, &(blockIDs[0]));
   }
-  TEST_FOR_EXCEPT(ierr < 0);
+  TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
   int count = 0;
   Array<int> permKey;
   permKey.resize(numElems);
@@ -205,7 +205,7 @@ Mesh ExodusMeshReader::fillMesh() const
     
     ierr = ex_get_elem_block(exoID, bid, elemType, &elsInBlock,
       &nodesPerEl, &numAttrs);
-    TEST_FOR_EXCEPT(ierr < 0);
+    TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
 
     bool blockIsSimplicial = true;
     if (nodesPerEl != dim+1) 
@@ -217,7 +217,7 @@ Mesh ExodusMeshReader::fillMesh() const
     Array<int> connect(elsInBlock * nodesPerEl);
 
     ierr = ex_get_elem_conn(exoID, bid, &(connect[0]));
-    TEST_FOR_EXCEPT(ierr < 0);
+    TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
     int n=0;
     Array<int> orderedVerts(nodesPerEl);
     Array<int> exVerts(nodesPerEl);
@@ -256,17 +256,17 @@ Mesh ExodusMeshReader::fillMesh() const
   {
     ierr = ex_get_node_set_ids(exoID, &(nsIDs[0]));
   }
-  TEST_FOR_EXCEPT(ierr < 0);
+  TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
   for (int ns=0; ns<numNodeSets; ns++)
   {
     int nNodes;
     int nDist;
     int nsID = nsIDs[ns];
     ierr = ex_get_node_set_param(exoID, nsID, &nNodes, &nDist);
-    TEST_FOR_EXCEPT(ierr < 0);
+    TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
     Array<int> nodes(nNodes);
     ierr = ex_get_node_set(exoID, nsID, &(nodes[0]));
-    TEST_FOR_EXCEPT(ierr < 0);
+    TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
     for (int n=0; n<nNodes; n++)
     {
       mesh.setLabel(0, nodes[n]-1, nsID);
@@ -280,18 +280,18 @@ Mesh ExodusMeshReader::fillMesh() const
   {
     ierr = ex_get_side_set_ids(exoID, &(ssIDs[0]));
   }
-  TEST_FOR_EXCEPT(ierr < 0);
+  TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
   for (int ss=0; ss<numSideSets; ss++)
   {
     int nSides;
     int nDist;
     int ssID = ssIDs[ss];
     ierr = ex_get_side_set_param(exoID, ssID, &nSides, &nDist);
-    TEST_FOR_EXCEPT(ierr < 0);
+    TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
     Array<int> sides(nSides);
     Array<int> elems(nSides);
     ierr = ex_get_side_set(exoID, ssID, &(elems[0]), &(sides[0]));
-    TEST_FOR_EXCEPT(ierr < 0);
+    TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
     for (int n=0; n<nSides; n++)
     {
       int elemID = elems[n]-1;
@@ -312,7 +312,7 @@ Mesh ExodusMeshReader::fillMesh() const
   /* Read the nodal attributes */
   int nNodalVars = 0;
   ierr = ex_get_var_param(exoID, "N", &nNodalVars);
-  TEST_FOR_EXCEPT(ierr < 0);
+  TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
 
   Array<Array<double> >& funcVals = *nodeAttributes();
   funcVals.resize(nNodalVars);
@@ -322,13 +322,13 @@ Mesh ExodusMeshReader::fillMesh() const
     int t = 1;
     funcVals[i].resize(mesh.numCells(0));
     ierr = ex_get_nodal_var(exoID, t, i+1, mesh.numCells(0), &(funcVals[i][0]));
-    TEST_FOR_EXCEPT(ierr < 0);
+    TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
   }
 
   /* Read the element attributes */
   int nElemVars = 0;
   ierr = ex_get_var_param(exoID, "E", &nElemVars);
-  TEST_FOR_EXCEPT(ierr < 0);
+  TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
 
   Array<Array<double> >& eFuncVals = *elemAttributes();
   eFuncVals.resize(nElemVars);
@@ -338,11 +338,11 @@ Mesh ExodusMeshReader::fillMesh() const
     int t = 1;
     eFuncVals[i].resize(mesh.numCells(mesh.spatialDim()));
     ierr = ex_get_elem_var(exoID, t, i+1, 1, mesh.numCells(mesh.spatialDim()), &(eFuncVals[i][0]));
-    TEST_FOR_EXCEPT(ierr < 0);
+    TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
   }
 
   ierr = ex_close(exoID);
-  TEST_FOR_EXCEPT(ierr < 0);
+  TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
 
 #endif
 	return mesh;
@@ -379,7 +379,7 @@ void ExodusMeshReader::readParallelInfo(Array<int>& ptGID,
        * processors and the current rank */
       getNextLine(*parStream, line, tokens, '#');
       
-      TEST_FOR_EXCEPTION(tokens.length() != 2, std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(tokens.length() != 2, std::runtime_error,
         "ExodusMeshReader::getMesh() expects 2 entries "
         "on the first line of .par file. In " 
         << parFilename_ << " I found \n[" << line << "]\n");
@@ -390,14 +390,14 @@ void ExodusMeshReader::readParallelInfo(Array<int>& ptGID,
       /* check consistency with the current number of
        * processors and the current rank */
       
-      TEST_FOR_EXCEPTION(np != nProc(), std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(np != nProc(), std::runtime_error,
         "ExodusMeshReader::getMesh() found "
         "a mismatch between the current number of processors="
         << nProc() << 
         "and the number of processors=" << np
         << "in the file " << parFilename_);
 
-      TEST_FOR_EXCEPTION(pid != myRank(), std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(pid != myRank(), std::runtime_error,
         "ExodusMeshReader::getMesh() found "
         "a mismatch between the current processor rank="
         << myRank() << "and the processor rank="
@@ -406,7 +406,7 @@ void ExodusMeshReader::readParallelInfo(Array<int>& ptGID,
       /* read the number of points */
       getNextLine(*parStream, line, tokens, '#');
 
-      TEST_FOR_EXCEPTION(tokens.length() != 1, std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(tokens.length() != 1, std::runtime_error,
         "ExodusMeshReader::getMesh() requires 1 entry "
         "on the second line of .pxo file. Found line \n[" 
         << line << "]\n in file " << parFilename_);
@@ -421,7 +421,7 @@ void ExodusMeshReader::readParallelInfo(Array<int>& ptGID,
       {
         getNextLine(*parStream, line, tokens, '#');
 
-        TEST_FOR_EXCEPTION(tokens.length() != 3, std::runtime_error,
+        TEUCHOS_TEST_FOR_EXCEPTION(tokens.length() != 3, std::runtime_error,
           "ExodusMeshReader::getMesh() requires 3 "
           "entries on each line of the point section in "
           "the .pxo file. Found line \n[" << line
@@ -436,7 +436,7 @@ void ExodusMeshReader::readParallelInfo(Array<int>& ptGID,
 
       getNextLine(*parStream, line, tokens, '#');
 
-      TEST_FOR_EXCEPTION(tokens.length() != 1, std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(tokens.length() != 1, std::runtime_error,
         "ExodusMeshReader::getMesh() requires 1 entry "
         "on the cell count line of .pxo file. Found line \n[" 
         << line << "]\n in file " << parFilename_);
@@ -455,7 +455,7 @@ void ExodusMeshReader::readParallelInfo(Array<int>& ptGID,
       {
         getNextLine(*parStream, line, tokens, '#');
 
-        TEST_FOR_EXCEPTION(tokens.length() != 3, std::runtime_error,
+        TEUCHOS_TEST_FOR_EXCEPTION(tokens.length() != 3, std::runtime_error,
           "ExodusMeshReader::getMesh() requires 3 "
           "entries on each line of the element section in "
           "the .pxo file. Found line \n[" << line

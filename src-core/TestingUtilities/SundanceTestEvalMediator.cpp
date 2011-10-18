@@ -71,7 +71,7 @@ TestEvalMediator::TestEvalMediator(const Expr& fields)
     {
       const DiscreteFuncElement* u0 
         = dynamic_cast<const DiscreteFuncElement*>(f[i].ptr().get());
-      TEST_FOR_EXCEPTION(u0 == 0, std::logic_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(u0 == 0, std::logic_error,
                          "TestEvalMediator ctor: field argument "
                          << f[i] << " is not a discrete function");
       funcIdToFieldNumberMap_.put(u0->fid().dofID(), i);
@@ -80,9 +80,9 @@ TestEvalMediator::TestEvalMediator(const Expr& fields)
       const TestDiscreteFuncData* tdfd  
         = dynamic_cast<const TestDiscreteFuncData*>(data.get());
 
-      TEST_FOR_EXCEPTION(tdfd==0, std::logic_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(tdfd==0, std::logic_error,
                          "df " << f[i] << " is not a TestDiscreteFunction");
-      TEST_FOR_EXCEPTION(tdfd==0, std::logic_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(tdfd==0, std::logic_error,
                          "TestEvalMediator ctor: field argument "
                          << f[i] << " is not a TestDiscreteFunction");
       fields_[i] = tdfd->field();
@@ -159,7 +159,7 @@ void TestEvalMediator::evalCellVectorExpr(const CellVectorExpr* expr,
 	  else xx[0] = ::sqrt(3.0)/2.0 * ::sqrt(3.0)/2.0;
 	}
     }
-  TEST_FOR_EXCEPT(expr->isTangent());
+  TEUCHOS_TEST_FOR_EXCEPT(expr->isTangent());
   SUNDANCE_MSG2(verb(), tabs << "results: " << *vec);
 }
 
@@ -191,7 +191,7 @@ void TestEvalMediator
 
   std::string funcName = expr->name();
   
-  TEST_FOR_EXCEPTION(!funcIdToFieldNumberMap_.containsKey(expr->fid().dofID()),
+  TEUCHOS_TEST_FOR_EXCEPTION(!funcIdToFieldNumberMap_.containsKey(expr->fid().dofID()),
                      std::logic_error, "funcID " << expr->fid().dofID()
                      << " not found in TestEvalMediator funcID to field "
                      "map" << funcIdToFieldNumberMap_);
@@ -230,7 +230,7 @@ void TestEvalMediator
 
 double TestEvalMediator::evalDummyBasis(int m, const MultiIndex& mi) const
 {
-  TEST_FOR_EXCEPTION(mi.order() > 1, std::runtime_error, 
+  TEUCHOS_TEST_FOR_EXCEPTION(mi.order() > 1, std::runtime_error, 
                      "TestEvalMediator::evalDummyBasis found multiindex "
                      "order > 1. The bad multiindex was " << mi.toString());
 

@@ -66,7 +66,7 @@ int PeriodicSingleCellMesh1D::numCells(int cellDim) const
     case 1:
       return 1;
     default:
-      TEST_FOR_EXCEPT(true);
+      TEUCHOS_TEST_FOR_EXCEPT(true);
   }
   return -1; // -Wall
 }
@@ -74,21 +74,21 @@ int PeriodicSingleCellMesh1D::numCells(int cellDim) const
 
 Point PeriodicSingleCellMesh1D::nodePosition(int i) const 
 {
-  TEST_FOR_EXCEPT(i != 0);
+  TEUCHOS_TEST_FOR_EXCEPT(i != 0);
   return xMin_;
 }
 
 
 const double* PeriodicSingleCellMesh1D::nodePositionView(int i) const 
 {
-  TEST_FOR_EXCEPT(i != 0);
+  TEUCHOS_TEST_FOR_EXCEPT(i != 0);
   return &(xMin_);
 }
 
 void PeriodicSingleCellMesh1D::getJacobians(int cellDim, const Array<int>& cellLID,
     CellJacobianBatch& jBatch) const
 {
-  TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), std::logic_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), std::logic_error,
     "cellDim=" << cellDim 
     << " is not in expected range [0, " << spatialDim()
     << "]");
@@ -97,7 +97,7 @@ void PeriodicSingleCellMesh1D::getJacobians(int cellDim, const Array<int>& cellL
 
   int nCells = cellLID.size();
 
-  TEST_FOR_EXCEPT(nCells != 1);
+  TEUCHOS_TEST_FOR_EXCEPT(nCells != 1);
 
   if (cellDim==0)
   {
@@ -123,7 +123,7 @@ void PeriodicSingleCellMesh1D::getCellDiameters(int cellDim, const Array<int>& c
 {
   cellDiameters.resize(1);
   
-  TEST_FOR_EXCEPT(cellDim != 1);
+  TEUCHOS_TEST_FOR_EXCEPT(cellDim != 1);
 
   cellDiameters[0] = ::fabs(xMax_-xMin_);
 }
@@ -132,9 +132,9 @@ void PeriodicSingleCellMesh1D::pushForward(int cellDim, const Array<int>& cellLI
     const Array<Point>& refQuadPts,
     Array<Point>& physQuadPts) const
 {
-  TEST_FOR_EXCEPT(cellDim < 0 || cellDim > 1);
+  TEUCHOS_TEST_FOR_EXCEPT(cellDim < 0 || cellDim > 1);
 
-  TEST_FOR_EXCEPT(cellLID.size() > 1);
+  TEUCHOS_TEST_FOR_EXCEPT(cellLID.size() > 1);
 
   if (cellDim==1)
   {
@@ -162,7 +162,7 @@ void PeriodicSingleCellMesh1D::pushForward(int cellDim, const Array<int>& cellLI
 int PeriodicSingleCellMesh1D::numFacets(int cellDim, int cellLID,
     int facetDim) const
 {
-  TEST_FOR_EXCEPT(cellLID != 0);
+  TEUCHOS_TEST_FOR_EXCEPT(cellLID != 0);
   if (cellDim == 1 && facetDim==0) return 1;
   return 0;
 }
@@ -173,12 +173,12 @@ int PeriodicSingleCellMesh1D::facetLID(int cellDim, int cellLID,
   int facetDim, int facetIndex,
   int& facetOrientation) const
 {
-  TEST_FOR_EXCEPT(cellLID < 0 || cellLID >= 1);
+  TEUCHOS_TEST_FOR_EXCEPT(cellLID < 0 || cellLID >= 1);
 
-  TEST_FOR_EXCEPT(cellDim != 1);
-  TEST_FOR_EXCEPT(facetDim != 0);
-  TEST_FOR_EXCEPT(facetIndex < 0);
-  TEST_FOR_EXCEPT(facetIndex > 1);
+  TEUCHOS_TEST_FOR_EXCEPT(cellDim != 1);
+  TEUCHOS_TEST_FOR_EXCEPT(facetDim != 0);
+  TEUCHOS_TEST_FOR_EXCEPT(facetIndex < 0);
+  TEUCHOS_TEST_FOR_EXCEPT(facetIndex > 1);
 
   return vert_;
 }
@@ -202,14 +202,14 @@ void PeriodicSingleCellMesh1D::getFacetLIDs(int cellDim,
 
 const int* PeriodicSingleCellMesh1D::elemZeroFacetView(int cellLID) const
 {
-  TEST_FOR_EXCEPT(cellLID != 0);
+  TEUCHOS_TEST_FOR_EXCEPT(cellLID != 0);
   return &vert_;
 }
 
 
 int PeriodicSingleCellMesh1D::numMaxCofacets(int cellDim, int cellLID) const
 {
-  TEST_FOR_EXCEPT(cellDim != 0);
+  TEUCHOS_TEST_FOR_EXCEPT(cellDim != 0);
   return 1;
 }
 
@@ -217,7 +217,7 @@ int PeriodicSingleCellMesh1D::maxCofacetLID(int cellDim, int cellLID,
     int cofacetIndex,
     int& facetIndex) const
 {
-  TEST_FOR_EXCEPT(cellDim != 0 || cellLID != 0);
+  TEUCHOS_TEST_FOR_EXCEPT(cellDim != 0 || cellLID != 0);
   facetIndex = 0;
   return 0;
 }
@@ -225,14 +225,14 @@ int PeriodicSingleCellMesh1D::maxCofacetLID(int cellDim, int cellLID,
 void PeriodicSingleCellMesh1D::getMaxCofacetLIDs(const Array<int>& cellLIDs,
     MaximalCofacetBatch& cofacets) const
 {
-  TEST_FOR_EXCEPT(true);
+  TEUCHOS_TEST_FOR_EXCEPT(true);
 }
 
 void PeriodicSingleCellMesh1D::getCofacets(int cellDim, int cellLID,
     int cofacetDim, Array<int>& cofacetLIDs) const
 {
-  TEST_FOR_EXCEPT(cellDim != 0);
-  TEST_FOR_EXCEPT(cofacetDim != 1);
+  TEUCHOS_TEST_FOR_EXCEPT(cellDim != 0);
+  TEUCHOS_TEST_FOR_EXCEPT(cofacetDim != 1);
 
   cofacetLIDs.resize(1);
   cofacetLIDs[0] = 0;

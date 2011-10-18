@@ -25,7 +25,7 @@ template <class Scalar> inline
 const VectorSpace<Scalar>&  
 DefaultBlockVectorSpace<Scalar>::getBlock(int b) const 
 {
-  TEST_FOR_EXCEPTION(b < 0 || b >= this->numBlocks(),
+  TEUCHOS_TEST_FOR_EXCEPTION(b < 0 || b >= this->numBlocks(),
     RuntimeError, "block index b=" << b << " into vector space "
     << this->description() << " out of range [0,"
     << this->numBlocks() << ")");
@@ -37,7 +37,7 @@ template <class Scalar> inline
 RCP<VectorBase<Scalar> > DefaultBlockVectorSpace<Scalar>
 ::createMember(const VectorSpace<Scalar>& self) const
 {
-  TEST_FOR_EXCEPTION(this != self.ptr().get(), RuntimeError,
+  TEUCHOS_TEST_FOR_EXCEPTION(this != self.ptr().get(), RuntimeError,
     "inconsistent self-reference in DefaultBlockVectorSpace::"
     "createMember()");
   return rcp(new DefaultBlockVector<Scalar>(self));

@@ -56,9 +56,9 @@ int main(int argc, char** argv)
       int npx = -1;
       int npy = -1;
       PartitionedRectangleMesher::balanceXY(np, &npx, &npy);
-      TEST_FOR_EXCEPT(npx < 1);
-      TEST_FOR_EXCEPT(npy < 1);
-      TEST_FOR_EXCEPT(npx * npy != np);
+      TEUCHOS_TEST_FOR_EXCEPT(npx < 1);
+      TEUCHOS_TEST_FOR_EXCEPT(npy < 1);
+      TEUCHOS_TEST_FOR_EXCEPT(npx * npy != np);
       MeshType meshType = new BasicSimplicialMeshType();
       MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx, npx,
                                                          0.0, 1.0, ny, npy,

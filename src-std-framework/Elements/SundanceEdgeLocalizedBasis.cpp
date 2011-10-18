@@ -107,7 +107,7 @@ void EdgeLocalizedBasis::getReferenceDOFs(
       dofs[2] = tuple(Array<int>());
       return;
     default:
-      TEST_FOR_EXCEPTION(true, std::runtime_error, "Cell type "
+      TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Cell type "
         << cellType << " not implemented in EdgeLocalizedBasis basis");
   }
 }
@@ -121,7 +121,7 @@ void EdgeLocalizedBasis::refEval(
   Array<Array<Array<double> > >& result,
   int verbosity) const
 {
-  TEST_FOR_EXCEPTION(!(sds.isPartial() || sds.isIdentity()), 
+  TEUCHOS_TEST_FOR_EXCEPTION(!(sds.isPartial() || sds.isIdentity()), 
     std::runtime_error,
     "cannot evaluate spatial derivative " << sds << " on EdgeLocalizedBasis basis");
   const MultiIndex& deriv = sds.mi();
@@ -199,11 +199,11 @@ void EdgeLocalizedBasis::evalOnTriangle(const Point& pt,
   bool onEdge0 = std::fabs(1.0-pt[0]-pt[1]) < 1.0e-14;
   bool onEdge1 = std::fabs(pt[0]) < 1.0e-14;
   
-  TEST_FOR_EXCEPTION(!(onEdge0 || onEdge1 || onEdge2),
+  TEUCHOS_TEST_FOR_EXCEPTION(!(onEdge0 || onEdge1 || onEdge2),
     std::runtime_error,
     "EdgeLocalizedBasis should not be evaluated at points not on edges");
   
-  TEST_FOR_EXCEPTION((onEdge0 && onEdge1) || (onEdge1 && onEdge2)
+  TEUCHOS_TEST_FOR_EXCEPTION((onEdge0 && onEdge1) || (onEdge1 && onEdge2)
     || (onEdge2 && onEdge0), std::runtime_error,
     "Ambiguous edge in EdgeLocalizedBasis::evalOnTriangle()");
 
@@ -246,6 +246,6 @@ void EdgeLocalizedBasis::evalOnTet(const Point& pt,
   const MultiIndex& deriv,
   Array<double>& result) const
 {
-  TEST_FOR_EXCEPTION(true, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error,
     "EdgeLocalizedBasis::evalOnTet not implemented");
 }

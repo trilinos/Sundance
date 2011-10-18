@@ -103,7 +103,7 @@ int CubicHermite::nReferenceDOFsWithoutFacets(
         case LineCell:
           return 0;
         default:
-          TEST_FOR_EXCEPTION( true , std::invalid_argument , "illegal combination of cell type and maximal cell type" );
+          TEUCHOS_TEST_FOR_EXCEPTION( true , std::invalid_argument , "illegal combination of cell type and maximal cell type" );
           return -1;
       }
       break;
@@ -117,12 +117,12 @@ int CubicHermite::nReferenceDOFsWithoutFacets(
         case TriangleCell:
           return 1;
         default:
-          TEST_FOR_EXCEPTION( true , std::invalid_argument , "illegal combination of cell type and maximal cell type" );
+          TEUCHOS_TEST_FOR_EXCEPTION( true , std::invalid_argument , "illegal combination of cell type and maximal cell type" );
           return -1;
       }
       break;
     default:
-      TEST_FOR_EXCEPTION( true , std::invalid_argument , "illegal combination of cell type and maximal cell type" );
+      TEUCHOS_TEST_FOR_EXCEPTION( true , std::invalid_argument , "illegal combination of cell type and maximal cell type" );
       return -1;
   }
   
@@ -143,7 +143,7 @@ void CubicHermite::getReferenceDOFs(
         dofs[0] = tuple<Aint>(tuple(0,1));
       else if (maximalCellType==TriangleCell)
         dofs[0] = tuple<Aint>(tuple(0,1,2));
-      else TEST_FOR_EXCEPT(1);
+      else TEUCHOS_TEST_FOR_EXCEPT(1);
       return;
     }
     break;
@@ -173,7 +173,7 @@ void CubicHermite::getReferenceDOFs(
       }
       else
       {
-        TEST_FOR_EXCEPT(1);
+        TEUCHOS_TEST_FOR_EXCEPT(1);
       }
       dofs[1].resize(1);
       dofs[1][0].resize(0);
@@ -197,7 +197,7 @@ void CubicHermite::getReferenceDOFs(
     }
     break;
     default:
-      TEST_FOR_EXCEPTION(true, std::runtime_error, "Cell type "
+      TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Cell type "
         << cellType << " not implemented in CubicHermite basis");
   }
 }
@@ -210,7 +210,7 @@ void CubicHermite::refEval(
   Array<Array<Array<double> > >& result,
   int verbosity) const
 {
-  TEST_FOR_EXCEPTION(!(sds.isPartial() || sds.isIdentity()), 
+  TEUCHOS_TEST_FOR_EXCEPTION(!(sds.isPartial() || sds.isIdentity()), 
     std::runtime_error,
     "cannot evaluate spatial derivative " << sds << " on CubicHermite basis");
   const MultiIndex& deriv = sds.mi();
@@ -236,7 +236,7 @@ void CubicHermite::refEval(
       }
       return;
     default:
-      TEST_FOR_EXCEPTION(true, std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error,
         "CubicHermite::refEval() unimplemented for cell type "
         << cellType);
 
@@ -315,7 +315,7 @@ void CubicHermite::evalOnTet(const Point& pt,
   ADReal z = ADReal(pt[2], 2, 3);
   ADReal one(1.0, 3);
   
-  TEST_FOR_EXCEPT(true);
+  TEUCHOS_TEST_FOR_EXCEPT(true);
 }
 
 void CubicHermite::preApplyTransformation( const CellType &maxCellType ,
@@ -330,7 +330,7 @@ void CubicHermite::preApplyTransformation( const CellType &maxCellType ,
 	preApplyTransformationTriangle( mesh , cellLIDs, JVol , A );
 	break;
       default:
-	TEST_FOR_EXCEPT(1);
+	TEUCHOS_TEST_FOR_EXCEPT(1);
 	break;
       }
     return;
@@ -348,7 +348,7 @@ void CubicHermite::postApplyTransformation( const CellType &maxCellType ,
 	postApplyTransformationTriangle( mesh , cellLIDs, JVol , A );
 	break;
       default:
-	TEST_FOR_EXCEPT(1);
+	TEUCHOS_TEST_FOR_EXCEPT(1);
 	break;
       }
     return;
@@ -366,7 +366,7 @@ void CubicHermite::preApplyTransformationTranspose( const CellType &maxCellType 
       preApplyTransformationTransposeTriangle( mesh , cellLIDs, JVol , A );
       break;
     default:
-      TEST_FOR_EXCEPT(1);
+      TEUCHOS_TEST_FOR_EXCEPT(1);
       break;
     }
   return;

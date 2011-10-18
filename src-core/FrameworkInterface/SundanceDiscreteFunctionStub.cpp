@@ -74,7 +74,7 @@ void DiscreteFunctionStub::initTensor(const std::string& name,
   }
   else 
   {
-    TEST_FOR_EXCEPTION(true, std::runtime_error, "tensor order = " << tensorOrder
+    TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "tensor order = " << tensorOrder
       << " not supported");
   }
 }
@@ -124,7 +124,7 @@ void DiscreteFunctionStub::initTensorSpectral(const std::string& name,
   }
   else 
   {
-    TEST_FOR_EXCEPTION(true, std::runtime_error, "tensor order = " << tensorOrder
+    TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "tensor order = " << tensorOrder
       << " not supported");
   }
 }
@@ -137,7 +137,7 @@ DiscreteFunctionStub::DiscreteFunctionStub(const Array<string>& name,
   const RCP<DiscreteFuncDataStub>& data)
   : ListExpr(), data_(data)
 {
-  TEST_FOR_EXCEPT(name.size() != tensorStructure.size() && name.size()!=1);
+  TEUCHOS_TEST_FOR_EXCEPT(name.size() != tensorStructure.size() && name.size()!=1);
 
   if (tensorStructure.size()==1)
   {
@@ -180,7 +180,7 @@ DiscreteFunctionStub::DiscreteFunctionStub(const Array<string>& name,
   const RCP<DiscreteFuncDataStub>& data)
   : ListExpr(), data_(data)
 {
-  TEST_FOR_EXCEPT(name.size() != tensorStructure.size());
+  TEUCHOS_TEST_FOR_EXCEPT(name.size() != tensorStructure.size());
    if (tensorStructure.size()==1)
   {
     int tensorOrder = tensorStructure[0].first;

@@ -25,14 +25,14 @@ Deriv funcDeriv(const Expr& u, const MultiIndex& mi = MultiIndex(0,0,0))
   {
     const SymbolicFuncElement* sfe 
       = dynamic_cast<const SymbolicFuncElement*>(u[0].ptr().get());
-    TEST_FOR_EXCEPT(sfe==0);
+    TEUCHOS_TEST_FOR_EXCEPT(sfe==0);
     return Sundance::funcDeriv(sfe, mi);
   }
   else
   {
     const SymbolicFunc* sf 
       = dynamic_cast<const SymbolicFunc*>(u.ptr().get());
-    TEST_FOR_EXCEPT(sf==0);
+    TEUCHOS_TEST_FOR_EXCEPT(sf==0);
     return Sundance::funcDeriv(sf);
   }
 }
@@ -41,7 +41,7 @@ Deriv normalDeriv(const Expr& u)
 {
   const SymbolicFuncElement* sfe 
     = dynamic_cast<const SymbolicFuncElement*>(u[0].ptr().get());
-  TEST_FOR_EXCEPT(sfe==0);
+  TEUCHOS_TEST_FOR_EXCEPT(sfe==0);
   return normalDeriv(sfe);
 }
 
@@ -49,7 +49,7 @@ Deriv divergenceDeriv(const Expr& u)
 {
   const SymbolicFunc* sf 
     = dynamic_cast<const SymbolicFunc*>(u.ptr().get());
-  TEST_FOR_EXCEPT(sf==0);
+  TEUCHOS_TEST_FOR_EXCEPT(sf==0);
   return divergenceDeriv(sf);
 }
 
@@ -59,7 +59,7 @@ FunctionIdentifier fid(const Expr& u)
     = dynamic_cast<const SymbolicFuncElement*>(u[0].ptr().get());
   const SymbolicFunc* sf 
     = dynamic_cast<const SymbolicFunc*>(u.ptr().get());
-  TEST_FOR_EXCEPT(sf==0 && sfe==0);
+  TEUCHOS_TEST_FOR_EXCEPT(sf==0 && sfe==0);
   if (sf) return sf->fid();
   else return sfe->fid();
 

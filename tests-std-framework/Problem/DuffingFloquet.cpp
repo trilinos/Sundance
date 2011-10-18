@@ -47,7 +47,7 @@ int main(int argc, char** argv)
 		{
       Sundance::init(&argc, &argv);
       int np = MPIComm::world().getNProc();
-      TEST_FOR_EXCEPT(np != 1);
+      TEUCHOS_TEST_FOR_EXCEPT(np != 1);
 
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
@@ -192,7 +192,7 @@ int main(int argc, char** argv)
         a.size(), &(ew_r[0]), &(ew_i[0]), 0, 1, 0, 1, &(work[0]), lWork,
         &info);
 
-      TEST_FOR_EXCEPTION(info != 0,
+      TEUCHOS_TEST_FOR_EXCEPTION(info != 0,
         std::runtime_error,
         "LAPACK GEEV returned error code =" << info);
       

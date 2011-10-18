@@ -92,7 +92,7 @@ bool StokhosBasisWrapper::lessThan(const SpectralBasisBase* other) const
    * fail */
   const StokhosBasisWrapper* otherGuy 
     = dynamic_cast<const StokhosBasisWrapper*>(other);
-  TEST_FOR_EXCEPTION(otherGuy == 0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(otherGuy == 0, std::runtime_error,
     "unexpected cast failure");
 
   const PolyBasis* you = otherGuy->basis_.ptr().get();

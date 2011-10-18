@@ -121,7 +121,7 @@ int main( int argc , char **argv )
       SolverState<double> solveState 
         = outerSolver.solve(J, -1.0*resid, newtonStep);
 
-      TEST_FOR_EXCEPTION(solveState.finalState() != SolveConverged,
+      TEUCHOS_TEST_FOR_EXCEPTION(solveState.finalState() != SolveConverged,
         std::runtime_error,
         "linear solve failed!");
 
@@ -135,7 +135,7 @@ int main( int argc , char **argv )
       }
     }
 
-    TEST_FOR_EXCEPTION(!newtonConverged, std::runtime_error,
+    TEUCHOS_TEST_FOR_EXCEPTION(!newtonConverged, std::runtime_error,
       "Newton's method failed to converged after " << maxNewtIters
       << " iterations");
 

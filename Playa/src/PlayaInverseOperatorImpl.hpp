@@ -43,10 +43,10 @@ void InverseOperator<Scalar>::apply(
   Tabs tab(0);
   PLAYA_MSG2(this->verb(), tab << "InverseOperator::generalApply()");
 
-  TEST_FOR_EXCEPTION(dynamic_cast<SimpleZeroOp<Scalar>* >(op_.ptr().get()) != 0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(dynamic_cast<SimpleZeroOp<Scalar>* >(op_.ptr().get()) != 0, std::runtime_error,
     "InverseOperator<Scalar>::apply() called on a zero operator.");
 
-  TEST_FOR_EXCEPTION(op_.domain().dim() != op_.range().dim(), std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(op_.domain().dim() != op_.range().dim(), std::runtime_error,
     "InverseOperator<Scalar>::apply() called on a non-square operator.");
 
   Vector<Scalar> result = out.space().createMember();
@@ -62,7 +62,7 @@ void InverseOperator<Scalar>::apply(
   }
 
 
-  TEST_FOR_EXCEPTION(haveSoln.finalState() != SolveConverged, 
+  TEUCHOS_TEST_FOR_EXCEPTION(haveSoln.finalState() != SolveConverged, 
     std::runtime_error,
     "InverseOperator<Scalar>::apply() " 
     << haveSoln.stateDescription());

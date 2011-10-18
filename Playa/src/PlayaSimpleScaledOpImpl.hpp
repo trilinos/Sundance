@@ -51,7 +51,7 @@ void SimpleScaledOp<Scalar>::apply(Teuchos::ETransp transApplyType,
   else if (transApplyType == Teuchos::TRANS)
     A_.applyTranspose(in, out);
   else 
-    TEST_FOR_EXCEPT(transApplyType !=Teuchos::TRANS && transApplyType != Teuchos::NO_TRANS);
+    TEUCHOS_TEST_FOR_EXCEPT(transApplyType !=Teuchos::TRANS && transApplyType != Teuchos::NO_TRANS);
 
   out.scale(alpha_);
 

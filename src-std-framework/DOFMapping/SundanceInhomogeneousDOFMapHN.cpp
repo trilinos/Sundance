@@ -177,7 +177,7 @@ InhomogeneousDOFMapHN::InhomogeneousDOFMapHN(const Mesh& mesh,
 
   nPoints_ = mesh.numCells(0);
   // this must be satisfied
-  //TEST_FOR_EXCEPTION( nrAllFuncs_ != nBasis , std::runtime_error,
+  //TEUCHOS_TEST_FOR_EXCEPTION( nrAllFuncs_ != nBasis , std::runtime_error,
   //   " nrAllFuncs_ != nBasis , nrAllFuncs_=" <<  nrAllFuncs_ << " , nBasis = " << nBasis );
   if ( nrAllFuncs_ < nBasis) nrAllFuncs_ = nBasis;
 

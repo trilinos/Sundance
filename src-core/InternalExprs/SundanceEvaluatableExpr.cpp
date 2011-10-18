@@ -95,7 +95,7 @@ void EvaluatableExpr::registerSpatialDerivs(const EvalContext& context,
 const Set<MultiIndex>& EvaluatableExpr
 ::activeSpatialDerivs(const EvalContext& context) const
 {
-  TEST_FOR_EXCEPTION(!activeSpatialDerivMap_.containsKey(context),
+  TEUCHOS_TEST_FOR_EXCEPTION(!activeSpatialDerivMap_.containsKey(context),
     std::logic_error,
     "Unknown context " << context);
   return activeSpatialDerivMap_[context];
@@ -143,7 +143,7 @@ EvaluatableExpr::sparsitySuperset(const EvalContext& context) const
 const RCP<Evaluator>&
 EvaluatableExpr::evaluator(const EvalContext& context) const 
 {
-  TEST_FOR_EXCEPTION(!evaluators_.containsKey(context), std::runtime_error, 
+  TEUCHOS_TEST_FOR_EXCEPTION(!evaluators_.containsKey(context), std::runtime_error, 
     "Evaluator not found for context " << context);
   return evaluators_.get(context);
 }
@@ -212,10 +212,10 @@ const EvaluatableExpr* EvaluatableExpr::getEvalExpr(const Expr& expr)
 {
   const EvaluatableExpr* rtn 
     = dynamic_cast<const EvaluatableExpr*>(expr[0].ptr().get());
-  TEST_FOR_EXCEPTION(rtn==0, std::logic_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(rtn==0, std::logic_error,
     "cast of " << expr 
     << " failed in EvaluatableExpr::getEvalExpr()");
-  TEST_FOR_EXCEPTION(expr.size() != 1, std::logic_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(expr.size() != 1, std::logic_error,
     "non-scalar expression " << expr
     << " in EvaluatableExpr::getEvalExpr()");
 
@@ -262,7 +262,7 @@ const Set<MultipleDeriv>&
 EvaluatableExpr::findR(int order,
   const EvalContext& context) const
 {
-  TEST_FOR_EXCEPTION(!rIsReady_, std::logic_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(!rIsReady_, std::logic_error,
     "findR() cannot be used for initial computation of the "
     "R subset. Calling object is " << toString());
   return findDerivSubset(order, RequiredNonzeros, context);
@@ -301,7 +301,7 @@ EvaluatableExpr::findDerivSubset(int order,
         contextToDSSMap_[dss][order].put(context, internalFindC(order, context));
         break;
       default:
-        TEST_FOR_EXCEPTION(true, std::logic_error, "this should never happen");
+        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "this should never happen");
     }
   }
 
@@ -502,7 +502,7 @@ void EvaluatableExpr::displayNonzeros(std::ostream& os, const EvalContext& conte
   const Set<MultipleDeriv>& C = findC(context);
   const Set<MultipleDeriv>& V = findV(context);
 
-  TEST_FOR_EXCEPT(C.intersection(V).size() != 0);
+  TEUCHOS_TEST_FOR_EXCEPT(C.intersection(V).size() != 0);
 
   for (Set<MultipleDeriv>::const_iterator i=W.begin(); i != W.end(); i++)
   {

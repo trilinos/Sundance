@@ -28,7 +28,7 @@ OptBuilder::createOptimizer(const ParameterList& params,
   Tabs tab1;
   PLAYA_MSG2(verb, tab1 << "params=" << params);
   
-  TEST_FOR_EXCEPTION(params.name() != "Optimizer",
+  TEUCHOS_TEST_FOR_EXCEPTION(params.name() != "Optimizer",
     std::runtime_error, 
     "Optimizer::getOptimizer() expected parameter list named "
     "\"Optimizer\", got name [" << params.name() << "]");
@@ -48,7 +48,7 @@ OptBuilder::createOptimizer(const ParameterList& params,
     opt = rcp(new BasicLMBFGS(params));
   }
 
-  TEST_FOR_EXCEPTION(opt.get()==0, 
+  TEUCHOS_TEST_FOR_EXCEPTION(opt.get()==0, 
     std::runtime_error, 
     "OptBuilder::createOptimizer() could not construct a valid "
     "optimizer object from parameter list " << params);

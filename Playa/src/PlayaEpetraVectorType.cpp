@@ -40,7 +40,7 @@ EpetraVectorType::createSpace(int /*dimension*/,
   Epetra_SerialComm epComm;
 #endif
 
-  TEST_FOR_EXCEPTION(nLocal < 0, std::runtime_error, "negative vector size n=" << nLocal);
+  TEUCHOS_TEST_FOR_EXCEPTION(nLocal < 0, std::runtime_error, "negative vector size n=" << nLocal);
 
 	RCP<Epetra_Map> map = rcp(new Epetra_Map(-1, nLocal,
       (int*) localIndices,
@@ -57,7 +57,7 @@ EpetraVectorType::createGhostImporter(const VectorSpace<double>& space,
   const EpetraVectorSpace* p 
     = dynamic_cast<const EpetraVectorSpace*>(space.ptr().get());
 
-  TEST_FOR_EXCEPTION(p==0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(p==0, std::runtime_error,
                      "non-epetra vector space [" << space.description() << "] given as "
                      "argument to EpetraVectorType::createGhostImporter()");
 
@@ -76,11 +76,11 @@ EpetraVectorType::createMatrixFactory(const VectorSpace<double>& domain,
     = rcp_dynamic_cast<const EpetraVectorSpace>(range.ptr());
 
 
-  TEST_FOR_EXCEPTION(pd.get()==0, std::runtime_error, 
+  TEUCHOS_TEST_FOR_EXCEPTION(pd.get()==0, std::runtime_error, 
                      "incompatible domain space given to "
                      "EpetraVectorType::createMatrix()");
 
-  TEST_FOR_EXCEPTION(pr.get()==0, std::runtime_error, 
+  TEUCHOS_TEST_FOR_EXCEPTION(pr.get()==0, std::runtime_error, 
                      "incompatible range space given to "
                      "EpetraVectorType::createMatrix()");
 

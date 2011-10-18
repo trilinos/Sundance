@@ -128,7 +128,7 @@ RCP<DOFMapBase> DOFMapBuilder::makeMap(const Mesh& mesh,
   }
   else if (hasCellBasis(basis) && hasCommonDomain(filters))
   {
-    TEST_FOR_EXCEPTION(filters[0].size() != 1, std::runtime_error,
+    TEUCHOS_TEST_FOR_EXCEPTION(filters[0].size() != 1, std::runtime_error,
       "only a single domain expected in construction of an element "
       "DOF map");
     rtn = rcp(new PartialElementDOFMap(mesh, *filters[0].begin(), basis.size(), verb_));
@@ -553,7 +553,7 @@ CellFilter DOFMapBuilder::getMaxCellFilter(const Array<Set<CellFilter> >& filter
     if (0 != dynamic_cast<const MaximalCellFilter*>(cf.ptr().get()))
       return cf;
   }
-//  TEST_FOR_EXCEPT(true);
+//  TEUCHOS_TEST_FOR_EXCEPT(true);
   return new MaximalCellFilter();
 }
 
@@ -576,7 +576,7 @@ Array<Array<Set<CellFilter> > > DOFMapBuilder::testCellFilters() const
       {
         RCP<CellFilterBase> cfb 
           = rcp_dynamic_cast<CellFilterBase>(j->ptr());
-        TEST_FOR_EXCEPT(cfb.get()==0);
+        TEUCHOS_TEST_FOR_EXCEPT(cfb.get()==0);
         CellFilter cf = j->ptr();
         s.put(cf);
       }
@@ -605,7 +605,7 @@ Array<Array<Set<CellFilter> > > DOFMapBuilder::unkCellFilters() const
       {
         RCP<CellFilterBase> cfb 
           = rcp_dynamic_cast<CellFilterBase>(j->ptr());
-        TEST_FOR_EXCEPT(cfb.get()==0);
+        TEUCHOS_TEST_FOR_EXCEPT(cfb.get()==0);
         CellFilter cf = j->ptr();
         s.put(cf);
       }

@@ -35,7 +35,7 @@ IQI_ScalVecBLF_UVj_Cell::IQI_ScalVecBLF_UVj_Cell( int spatialDim ,
 				   verbParams ),
   j_test_( test_component ) 
 {
-  TEST_FOR_EXCEPTION(true,
+  TEUCHOS_TEST_FOR_EXCEPTION(true,
 		     InternalError,
 		     "IQI_ScalVecBLF_UVj_Cell is not implemented" );
 }
@@ -44,7 +44,7 @@ void IQI_ScalVecBLF_UVj_Cell::evaluate( CellJacobianBatch& JTrans,
 					const double* const coeff,
 					RefCountPtr<Array<double> >& A) const
 {
-  TEST_FOR_EXCEPTION(true,
+  TEUCHOS_TEST_FOR_EXCEPTION(true,
 		     InternalError,
 		     "IQI_ScalVecBLF_UVj_Cell is not implemented" );
 }

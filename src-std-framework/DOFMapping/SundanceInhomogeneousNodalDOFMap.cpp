@@ -381,7 +381,7 @@ void InhomogeneousNodalDOFMap::assignNode(int fLID,
 
 void InhomogeneousNodalDOFMap::computeOffsets(int localCount)
 {
-  TEST_FOR_EXCEPTION(mesh().comm().getNProc() != 1,
+  TEUCHOS_TEST_FOR_EXCEPTION(mesh().comm().getNProc() != 1,
     std::runtime_error,
     "parallel inhomogeneous DOF maps not yet supported");
   
@@ -394,7 +394,7 @@ void InhomogeneousNodalDOFMap::computeOffsets(int localCount)
 
 void InhomogeneousNodalDOFMap::shareRemoteDOFs(const Array<Array<int> >& remoteNodes)
 {
-  TEST_FOR_EXCEPTION(mesh().comm().getNProc() != 1,
+  TEUCHOS_TEST_FOR_EXCEPTION(mesh().comm().getNProc() != 1,
     std::runtime_error,
     "parallel inhomogeneous DOF maps not yet supported");
 }
@@ -475,7 +475,7 @@ InhomogeneousNodalDOFMap::getDOFsForCellBatch(int cellDim,
     if (isHomogeneous)
     {
       const Set<int>& funcSet = nodalFuncSets_[firstFuncSet];
-      TEST_FOR_EXCEPT(requestedFuncSet.setDifference(funcSet).size() != 0);
+      TEUCHOS_TEST_FOR_EXCEPT(requestedFuncSet.setDifference(funcSet).size() != 0);
       Array<int> funcs = funcSet.elements();
       getFunctionDofs(cellDim, cellLID, dummyFacets, funcs, dofs);
       return nodeStructure_[firstFuncSet];
@@ -522,7 +522,7 @@ InhomogeneousNodalDOFMap::getDOFsForCellBatch(int cellDim,
         Out::os() << tab2 << "elem func sets = " << elemFuncSets_ << std::endl;
       }
       const Set<int>& funcSet = elemFuncSets_[firstFuncSet];
-      TEST_FOR_EXCEPT(requestedFuncSet.setDifference(funcSet).size() != 0);
+      TEUCHOS_TEST_FOR_EXCEPT(requestedFuncSet.setDifference(funcSet).size() != 0);
       Array<int> funcs = funcSet.elements();
       getFunctionDofs(cellDim, cellLID, facetLID, funcs, dofs);
       return elemStructure_[firstFuncSet];

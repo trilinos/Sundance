@@ -114,7 +114,7 @@ void NonlinearPDEConstrainedObj::solveState(const Vector<double>& x) const
     PLAYA_MSG3(verb(), tab << "state eqn=" << i); 
     NOX::StatusTest::StatusType status 
       = stateProbs_[i].solve(solver_);
-    TEST_FOR_EXCEPTION(status != NOX::StatusTest::Converged,
+    TEUCHOS_TEST_FOR_EXCEPTION(status != NOX::StatusTest::Converged,
       std::runtime_error,
       "state equation could not be solved: status="
       << status);
@@ -165,7 +165,7 @@ void NonlinearPDEConstrainedObj
       }
       w.write();
     }
-    TEST_FOR_EXCEPTION(status != NOX::StatusTest::Converged,
+    TEUCHOS_TEST_FOR_EXCEPTION(status != NOX::StatusTest::Converged,
       std::runtime_error,
       "state equation " << i 
       << " could not be solved: status="
@@ -216,7 +216,7 @@ void NonlinearPDEConstrainedObj
       w.write();
 
     }
-    TEST_FOR_EXCEPTION(status.finalState() != SolveConverged,
+    TEUCHOS_TEST_FOR_EXCEPTION(status.finalState() != SolveConverged,
       std::runtime_error,
       "adjoint equation " << i 
       << " could not be solved: status="

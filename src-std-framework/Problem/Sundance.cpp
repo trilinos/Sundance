@@ -187,7 +187,7 @@ int SundanceGlobal::init(int* argc, char*** argv)
     CommandLineProcessor::EParseCommandLineReturn rtn 
       = clp().parse(*argc, (char**) *argv);
 
-    TEST_FOR_EXCEPTION(rtn != CommandLineProcessor::PARSE_SUCCESSFUL,
+    TEUCHOS_TEST_FOR_EXCEPTION(rtn != CommandLineProcessor::PARSE_SUCCESSFUL,
       std::runtime_error,
       "Command-line parsing failed");
 

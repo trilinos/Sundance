@@ -38,7 +38,7 @@ using Playa::Handleable;
 
 int QuadratureType::findValidOrder(const CellType& cellType, int requestedOrder) const 
 {
-  TEST_FOR_EXCEPTION(hasLimitedOrder(cellType) 
+  TEUCHOS_TEST_FOR_EXCEPTION(hasLimitedOrder(cellType) 
                      && requestedOrder > maxOrder(cellType),
                      std::runtime_error,
                      "order=" << requestedOrder << " not available on cell type "
@@ -52,7 +52,7 @@ int QuadratureType::findValidOrder(const CellType& cellType, int requestedOrder)
     {
       if (supports(cellType, r)) return r; 
     }
-  TEST_FOR_EXCEPTION(true, std::runtime_error, "Could not find valid quadrature order "
+  TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Could not find valid quadrature order "
                      "greater than " << requestedOrder << " for cell type "
                      << cellType);
   return -1; // -Wall

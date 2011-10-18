@@ -82,7 +82,7 @@ int Fourier::nReferenceDOFsWithoutFacets(
     case LineCell:
       return 2*N_+1;
     default:
-      TEST_FOR_EXCEPTION( true , std::invalid_argument , "illegal combination of cell type and maximal cell type" );
+      TEUCHOS_TEST_FOR_EXCEPTION( true , std::invalid_argument , "illegal combination of cell type and maximal cell type" );
       return -1;
   }
 }
@@ -113,7 +113,7 @@ void Fourier::getReferenceDOFs(
     }
     break;
     default:
-      TEST_FOR_EXCEPTION(true, std::runtime_error, "Cell type "
+      TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Cell type "
         << cellType << " not implemented in Fourier basis");
   }
 }
@@ -126,7 +126,7 @@ void Fourier::refEval(
   Array<Array<Array<double> > >& result,
   int verbosity) const
 {
-  TEST_FOR_EXCEPTION(!(sds.isPartial() || sds.isIdentity()), 
+  TEUCHOS_TEST_FOR_EXCEPTION(!(sds.isPartial() || sds.isIdentity()), 
     std::runtime_error,
     "cannot evaluate spatial derivative " << sds << " on Fourier basis");
   const MultiIndex& deriv = sds.mi();
@@ -143,7 +143,7 @@ void Fourier::refEval(
       }
       break;
     default:
-      TEST_FOR_EXCEPTION(true, std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error,
         "Fourier::refEval() unimplemented for cell type "
         << cellType);
   }
@@ -179,7 +179,7 @@ void Fourier::evalOnLine(const Point& pt,
   }
   else
   {
-    TEST_FOR_EXCEPT(true);
+    TEUCHOS_TEST_FOR_EXCEPT(true);
   }
 
   Out::os() << "quad point=" << x << endl;

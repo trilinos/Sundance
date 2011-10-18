@@ -216,7 +216,7 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
     << fixedParamEvalPts 
     << tab << std::endl);
 
-  TEST_FOR_EXCEPTION(e==0, std::logic_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(e==0, std::logic_error,
     "Non-evaluatable expr " << expr.toString()
     << " given to SymbPreprocessor::setupExpr()");
 

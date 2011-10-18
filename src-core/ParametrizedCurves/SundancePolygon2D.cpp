@@ -642,7 +642,7 @@ void Polygon2D::addEvaluationPointValues(const Mesh& mesh ,
 		SUNDANCE_MSG3( verb , "addEvaluationPointValues() maxCellLID= " << maxCellLID << " nQuad="<< nQuad );
 
 		// if the polygon has no Mesh then throw an error
-		TEST_FOR_EXCEPTION(  hasMesh_ == false , std::runtime_error,
+		TEUCHOS_TEST_FOR_EXCEPTION(  hasMesh_ == false , std::runtime_error,
 			      " Polygon2D::addEvaluationPointValues , Polygon must have a valid mesh");
 
 		// look for the impacted points from the polygon
@@ -893,7 +893,7 @@ RCP<CurveBase> Polygon2D::unite(ParametrizedCurve& c1 , ParametrizedCurve& c2)
    const Polygon2D* pol2 = dynamic_cast<const Polygon2D*>(pb2);
 
    if ( (pol1 == 0) || (pol2 == 0)){
-	   TEST_FOR_EXCEPTION( true , std::runtime_error, "Polygon2D::unite one of the inputs is not a polygon 2D ");
+	   TEUCHOS_TEST_FOR_EXCEPTION( true , std::runtime_error, "Polygon2D::unite one of the inputs is not a polygon 2D ");
    }
 
    // the array where the resulting points will be stored
@@ -982,7 +982,7 @@ RCP<CurveBase> Polygon2D::unite(ParametrizedCurve& c1 , ParametrizedCurve& c2)
 			   }
 			   else
 			   {   // error
-				   TEST_FOR_EXCEPTION( true , std::runtime_error , "Polygon2D::unite nrIntersectPoints == 0");
+				   TEUCHOS_TEST_FOR_EXCEPTION( true , std::runtime_error , "Polygon2D::unite nrIntersectPoints == 0");
 			   }
 		   }
 	   }
@@ -1026,7 +1026,7 @@ RCP<CurveBase> Polygon2D::unite(ParametrizedCurve& c1 , ParametrizedCurve& c2)
 			   }
 			   else
 			   {   // error
-				   TEST_FOR_EXCEPTION( true , std::runtime_error , "Polygon2D::unite nrINtersectPoints == 0");
+				   TEUCHOS_TEST_FOR_EXCEPTION( true , std::runtime_error , "Polygon2D::unite nrINtersectPoints == 0");
 			   }
 		   }
 	   }

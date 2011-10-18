@@ -64,7 +64,7 @@ void VectorAssemblyKernel::fill(
   Tabs tab0;
   SUNDANCE_MSG1(verb(), tab0 << "in VectorAssemblyKernel::fill()");
 
-  TEST_FOR_EXCEPT(!group.isOneForm());
+  TEUCHOS_TEST_FOR_EXCEPT(!group.isOneForm());
 
   bool useCofacets = group.usesMaximalCofacets();
 

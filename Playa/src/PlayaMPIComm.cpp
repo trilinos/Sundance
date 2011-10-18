@@ -385,7 +385,7 @@ void MPIComm::allReduce(void* input, void* result, int inputCount,
 
 MPI_Datatype MPIComm::getDataType(int type)
 {
-  TEST_FOR_EXCEPTION(
+  TEUCHOS_TEST_FOR_EXCEPTION(
     !(type == INT || type==FLOAT 
       || type==DOUBLE || type==CHAR),
     std::range_error,
@@ -401,7 +401,7 @@ MPI_Datatype MPIComm::getDataType(int type)
 
 void MPIComm::errCheck(int errCode, const std::string& methodName)
 {
-  TEST_FOR_EXCEPTION(errCode != 0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(errCode != 0, std::runtime_error,
                      "MPI function MPI_" << methodName 
                      << " returned error code=" << errCode);
 }
@@ -409,7 +409,7 @@ void MPIComm::errCheck(int errCode, const std::string& methodName)
 MPI_Op MPIComm::getOp(int op)
 {
 
-  TEST_FOR_EXCEPTION(
+  TEUCHOS_TEST_FOR_EXCEPTION(
     !(op == SUM || op==MAX 
       || op==MIN || op==PROD),
     std::range_error,

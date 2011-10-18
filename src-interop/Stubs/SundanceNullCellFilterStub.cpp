@@ -44,7 +44,7 @@ NullCellFilterStub::NullCellFilterStub()
 bool NullCellFilterStub::lessThan(const CellFilterStub* other) const
 {
   const NullCellFilterStub* ncf = dynamic_cast<const NullCellFilterStub*>(other);
-  TEST_FOR_EXCEPTION(ncf==0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(ncf==0, std::runtime_error,
     "argument " << other->description() 
     << " to NullCellFilter::lessThan() could not be cast "
     "to a NullCellFilter*");

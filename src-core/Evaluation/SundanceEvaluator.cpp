@@ -99,7 +99,7 @@ void Evaluator::eval(const EvalManager& mgr,
 
 void Evaluator::addConstantIndex(int index, int constantIndex)
 {
-  TEST_FOR_EXCEPTION(constantIndexMap_.containsKey(index), std::logic_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(constantIndexMap_.containsKey(index), std::logic_error,
                      "duplicate index " << index 
                      << " found in Evaluator::addConstantIndex");
   constantIndexMap_.put(index, constantIndex);
@@ -108,7 +108,7 @@ void Evaluator::addConstantIndex(int index, int constantIndex)
 
 void Evaluator::addVectorIndex(int index, int vectorIndex)
 {
-  TEST_FOR_EXCEPTION(vectorIndexMap_.containsKey(index), std::logic_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(vectorIndexMap_.containsKey(index), std::logic_error,
                      "duplicate index " << index 
                      << " found in Evaluator::addVectorIndex");
   vectorIndexMap_.put(index, vectorIndex);

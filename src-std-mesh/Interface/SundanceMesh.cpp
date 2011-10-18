@@ -50,7 +50,7 @@ IncrementallyCreatableMesh* Mesh::creatableMesh()
 {
   IncrementallyCreatableMesh* mci 
     = dynamic_cast<IncrementallyCreatableMesh*>(ptr().get());
-  TEST_FOR_EXCEPTION(mci==0, std::runtime_error, 
+  TEUCHOS_TEST_FOR_EXCEPTION(mci==0, std::runtime_error, 
                      "Mesh::creatableMesh() could not convert mesh to "
                      "a type deriving from IncrementallyCreatableMesh");
 
@@ -103,7 +103,7 @@ bool Mesh::checkConsistency(std::ostream& os) const
 
 bool Mesh::checkCellConsistency(std::ostream& os, int dim) const
 {
-  TEST_FOR_EXCEPTION(dim==0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(dim==0, std::runtime_error,
                      "Mesh::checkCellConsistency called for d=0. "
                      "checkVertexConsistency() should be called instead");
 

@@ -138,7 +138,7 @@ bool MultiIndex::isValid() const
 
 int MultiIndex::firstOrderDirection() const 
 {
-  TEST_FOR_EXCEPTION(order() != 1, std::logic_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(order() != 1, std::logic_error,
                      "bad order in MultiIndex::firstOrderDirection() const");
 	for (int i=0; i<maxDim(); i++)
 		{

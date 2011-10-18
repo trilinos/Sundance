@@ -35,14 +35,14 @@ LinearOperator<double> epetraMatrixMatrixSum(
   bool transA = false;
   bool transB = false;
 
-  TEST_FOR_EXCEPTION(A.range() != B.range(), RuntimeError,
+  TEUCHOS_TEST_FOR_EXCEPTION(A.range() != B.range(), RuntimeError,
     "incompatible operand ranges in epetraMatrixMatrixSum()"
     << std::endl << "A.range()=" << A.range()
     << std::endl << "B.range()=" << B.range()
     );
   
 
-  TEST_FOR_EXCEPTION(A.domain() != B.domain(), RuntimeError,
+  TEUCHOS_TEST_FOR_EXCEPTION(A.domain() != B.domain(), RuntimeError,
     "incompatible operand domains in epetraMatrixMatrixSum()"
     << std::endl << "A.domain()=" << A.domain()
     << std::endl << "B.domain()=" << B.domain()
@@ -62,7 +62,7 @@ LinearOperator<double> epetraMatrixMatrixSum(
     = EpetraExt::MatrixMatrix::Add(
       *A_crs, transA, 1.0, 
       *B_crs, transB, 1.0, CPtr);
-  TEST_FOR_EXCEPTION(ierr != 0, RuntimeError,
+  TEUCHOS_TEST_FOR_EXCEPTION(ierr != 0, RuntimeError,
     "EpetraExt Matrix-matrix add failed with error code ierr=" << ierr);
 
   /* Need to call FillComplete on the result */

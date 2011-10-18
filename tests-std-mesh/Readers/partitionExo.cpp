@@ -56,7 +56,7 @@ int main(int argc, char** argv)
     CommandLineProcessor::EParseCommandLineReturn rtn 
       = clp.parse(argc, (char**) argv);
 
-    TEST_FOR_EXCEPTION(rtn != CommandLineProcessor::PARSE_SUCCESSFUL,
+    TEUCHOS_TEST_FOR_EXCEPTION(rtn != CommandLineProcessor::PARSE_SUCCESSFUL,
       std::runtime_error,
       "Command-line parsing failed");
 
@@ -68,9 +68,9 @@ int main(int argc, char** argv)
     }
     else
     {
-      TEST_FOR_EXCEPT(infile.length()==0);
-      TEST_FOR_EXCEPT(outfile.length()==0);
-      TEST_FOR_EXCEPT(numProc<=1);
+      TEUCHOS_TEST_FOR_EXCEPT(infile.length()==0);
+      TEUCHOS_TEST_FOR_EXCEPT(outfile.length()==0);
+      TEUCHOS_TEST_FOR_EXCEPT(numProc<=1);
 
 
       MeshType meshType = new BasicSimplicialMeshType();

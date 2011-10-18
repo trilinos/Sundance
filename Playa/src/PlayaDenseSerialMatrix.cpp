@@ -104,9 +104,9 @@ void DenseSerialMatrix::print(std::ostream& os) const
 
 void DenseSerialMatrix::setRow(int row, const Array<double>& rowVals)
 {
-  TEST_FOR_EXCEPT(rowVals.size() != numCols());
-  TEST_FOR_EXCEPT(row < 0);
-  TEST_FOR_EXCEPT(row >= numRows());
+  TEUCHOS_TEST_FOR_EXCEPT(rowVals.size() != numCols());
+  TEUCHOS_TEST_FOR_EXCEPT(row < 0);
+  TEUCHOS_TEST_FOR_EXCEPT(row >= numRows());
 
   for (int i=0; i<rowVals.size(); i++)
   {
@@ -125,7 +125,7 @@ SolverState<double> denseSolve(const LinearOperator<double>& A,
 {
   const DenseSerialMatrix* Aptr 
     = dynamic_cast<const DenseSerialMatrix*>(A.ptr().get());
-  TEST_FOR_EXCEPT(Aptr==0);
+  TEUCHOS_TEST_FOR_EXCEPT(Aptr==0);
   /* make a working copy, because dgesv will overwrite the matrix */
   DenseSerialMatrix tmp = *Aptr;
   /* Allocate a vector for the solution */
@@ -166,7 +166,7 @@ void denseSVD(const LinearOperator<double>& A,
 
   const DenseSerialMatrix* Aptr 
     = dynamic_cast<const DenseSerialMatrix*>(A.ptr().get());
-  TEST_FOR_EXCEPT(Aptr==0);
+  TEUCHOS_TEST_FOR_EXCEPT(Aptr==0);
   /* make a working copy, because dgesvd will overwrite the matrix */
   DenseSerialMatrix ATmp = *Aptr;
 
@@ -181,7 +181,7 @@ void denseSVD(const LinearOperator<double>& A,
   Sigma = sSpace.createMember();
   SerialVector* sigPtr
     = dynamic_cast<SerialVector*>(Sigma.ptr().get());
-  TEST_FOR_EXCEPT(sigPtr==0);
+  TEUCHOS_TEST_FOR_EXCEPT(sigPtr==0);
 
   DenseSerialMatrixFactory umf(sSpace, mSpace);
   DenseSerialMatrixFactory vtmf(nSpace, sSpace);
@@ -191,11 +191,11 @@ void denseSVD(const LinearOperator<double>& A,
 
   DenseSerialMatrix* UPtr 
     = dynamic_cast<DenseSerialMatrix*>(U.ptr().get());
-  TEST_FOR_EXCEPT(UPtr==0);
+  TEUCHOS_TEST_FOR_EXCEPT(UPtr==0);
 
   DenseSerialMatrix* VtPtr 
     = dynamic_cast<DenseSerialMatrix*>(Vt.ptr().get());
-  TEST_FOR_EXCEPT(VtPtr==0);
+  TEUCHOS_TEST_FOR_EXCEPT(VtPtr==0);
   
   double* uData = UPtr->dataPtr();
   double* vtData = VtPtr->dataPtr();
@@ -217,7 +217,7 @@ void denseSVD(const LinearOperator<double>& A,
   dgesvd_(&jobu, &jobvt, &M, &N, aData, &LDA, sData, uData, &LDU, 
     vtData, &LDVT, &(work[0]), &LWORK, &info);
 
-  TEST_FOR_EXCEPTION(info != 0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(info != 0, std::runtime_error,
     "dgesvd failed with error code info=" << info);
 
   

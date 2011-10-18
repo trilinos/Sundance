@@ -36,7 +36,7 @@ IQI_VecVecBLF_UiVj_Cell::IQI_VecVecBLF_UiVj_Cell( int spatialDim ,
 				   verbParams ),
   j_test_( test_component ) , i_trial_( unk_component )
 {
-  TEST_FOR_EXCEPTION(true,
+  TEUCHOS_TEST_FOR_EXCEPTION(true,
 		     InternalError,
 		     "IQI_VecVecBLF_UiVj_Cell is not implemented" );
 }
@@ -45,7 +45,7 @@ void IQI_VecVecBLF_UiVj_Cell::evaluate( CellJacobianBatch& JTrans,
 					  const double* const coeff,
 					  RefCountPtr<Array<double> >& A) const
 {
-  TEST_FOR_EXCEPTION(true,
+  TEUCHOS_TEST_FOR_EXCEPTION(true,
 		     InternalError,
 		     "IQI_VecVecBLF_UiVj_Cell is not implemented" );
 }

@@ -49,8 +49,8 @@ UserDefFunctor::UserDefFunctor(const std::string& name,
      domainDim_(domainDim), 
      rangeDim_(rangeDim)
 {
-  TEST_FOR_EXCEPT(domainDim_ <= 0);
-  TEST_FOR_EXCEPT(rangeDim_ <= 0);
+  TEUCHOS_TEST_FOR_EXCEPT(domainDim_ <= 0);
+  TEUCHOS_TEST_FOR_EXCEPT(rangeDim_ <= 0);
 
   elemNames_.resize(rangeDim_);
 
@@ -73,13 +73,13 @@ UserDefFunctor::UserDefFunctor(const std::string& name,
 
 void UserDefFunctor::eval0(const Array<double>& in, double* out) const
 {
-  TEST_FOR_EXCEPTION(true, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error,
                      "eval0() function not supported for functor " << name_);
 }
 
 void UserDefFunctor::eval1(const Array<double>& in, double* out, double* outDerivs) const
 {
-  TEST_FOR_EXCEPTION(true, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error,
                      "eval1() function not supported for functor " << name_);
 }
 

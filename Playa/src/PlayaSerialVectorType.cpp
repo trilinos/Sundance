@@ -26,8 +26,8 @@ SerialVectorType::createSpace(int dimension,
   const int* localIndices,
   const MPIComm& comm) const
 {
-  TEST_FOR_EXCEPTION(nLocal < 0, std::runtime_error, "negative vector size n=" << nLocal);
-  TEST_FOR_EXCEPTION(dimension != nLocal, std::runtime_error, 
+  TEUCHOS_TEST_FOR_EXCEPTION(nLocal < 0, std::runtime_error, "negative vector size n=" << nLocal);
+  TEUCHOS_TEST_FOR_EXCEPTION(dimension != nLocal, std::runtime_error, 
     "nLocal=" << nLocal << " and dimension=" << dimension
     << " should be equal for a replicated space");
 
@@ -39,7 +39,7 @@ SerialVectorType::createGhostImporter(const VectorSpace<double>& space,
                                       int nGhost,
                                       const int* ghostIndices) const
 {
-  TEST_FOR_EXCEPTION(dynamic_cast<const SerialVectorSpace*>(space.ptr().get())==0, std::runtime_error, "expected " 
+  TEUCHOS_TEST_FOR_EXCEPTION(dynamic_cast<const SerialVectorSpace*>(space.ptr().get())==0, std::runtime_error, "expected " 
     << space << " to be a SerialVectorSpace");
   return rcp(new SerialGhostImporter());
 }

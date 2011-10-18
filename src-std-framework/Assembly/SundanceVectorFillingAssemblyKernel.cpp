@@ -84,7 +84,7 @@ VectorFillingAssemblyKernel::VectorFillingAssemblyKernel(
       Vector<double> vecBlock = b[i].getBlock(block);
       vec_[i][block] = rcp_dynamic_cast<LoadableVector<double> >(vecBlock.ptr());
 
-      TEST_FOR_EXCEPTION(vec_[i][block].get()==0, std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(vec_[i][block].get()==0, std::runtime_error,
         "vector block " << block << " is not loadable");
       vecBlock.zero();
     }

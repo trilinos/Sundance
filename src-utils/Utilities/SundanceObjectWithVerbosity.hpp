@@ -106,10 +106,10 @@ public:
       verbControlParams_() 
     {
       RCP<ParameterList> defaults = VerbosityTraits<X>::defaultVerbParams();
-      TEST_FOR_EXCEPTION(defaults->name() != objName, std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(defaults->name() != objName, std::runtime_error,
         "mismatched ParameterList names for verbosity control: expected "
         << defaults->name() << ", got " << objName);
-      TEST_FOR_EXCEPTION(defaults->name() != p.name(), std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(defaults->name() != p.name(), std::runtime_error,
         "mismatched ParameterList names for verbosity control: expected "
         << defaults->name() << ", got " << p.name());
       verbControlParams_ = rcp(new ParameterList(mergeParams(*defaults, p)));
@@ -119,10 +119,10 @@ public:
   int verbLevel(const std::string& context) const 
     {
       const ParameterEntry* pe = verbControlParams_->getEntryPtr(context);
-      TEST_FOR_EXCEPTION(pe==0, std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(pe==0, std::runtime_error,
         "parameter with name \"" << context << "\" not found in verbosity "
         "control parameter list " << verbControlParams_);
-      TEST_FOR_EXCEPTION(pe->getAny().type() != typeid(int),
+      TEUCHOS_TEST_FOR_EXCEPTION(pe->getAny().type() != typeid(int),
         std::runtime_error,
         "context parameter name \"" 
         << context << "\" does not have an integer value in verbosity "
@@ -134,7 +134,7 @@ public:
   /** */
   const ParameterList& verbSublist(const std::string& name) const 
     {
-      TEST_FOR_EXCEPTION(!verbControlParams_->isSublist(name),
+      TEUCHOS_TEST_FOR_EXCEPTION(!verbControlParams_->isSublist(name),
         std::runtime_error,
         "context parameter name \"" 
         << name << "\" is not a sublist in verbosity "

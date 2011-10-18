@@ -84,7 +84,7 @@ Vector<Scalar>& Vector<Scalar>::operator=(const LCN<Scalar, 2>& lc)
   const Vector<Scalar>& y = lc.vec(1);
   const Scalar& beta = lc.coeff(1);
 
-  TEST_FOR_EXCEPTION(!y.space().isCompatible(x.space()),
+  TEUCHOS_TEST_FOR_EXCEPTION(!y.space().isCompatible(x.space()),
     std::runtime_error,
     "Spaces x=" << x.space() << " and y="
     << y.space() << " are not compatible in operator=(a*x + b*y)");
@@ -118,12 +118,12 @@ Vector<Scalar>& Vector<Scalar>::operator=(const LCN<Scalar, 3>& lc)
   const Vector<Scalar>& z = lc.vec(2);
   const Scalar& gamma = lc.coeff(2);
 
-  TEST_FOR_EXCEPTION(!y.space().isCompatible(x.space()),
+  TEUCHOS_TEST_FOR_EXCEPTION(!y.space().isCompatible(x.space()),
     std::runtime_error,
     "Spaces x=" << x.space() << " and y="
     << y.space() << " are not compatible in operator=(a*x + b*y + c*z)");
 
-  TEST_FOR_EXCEPTION(!z.space().isCompatible(x.space()),
+  TEUCHOS_TEST_FOR_EXCEPTION(!z.space().isCompatible(x.space()),
     std::runtime_error,
     "Spaces x=" << x.space() << " and z="
     << z.space() << " are not compatible in operator=(a*x + b*y + c*z)");
@@ -170,7 +170,7 @@ Vector<Scalar>& Vector<Scalar>::operator+=(const LCN<Scalar, 1>& lc)
   const Vector<Scalar>& other = lc.vec(0);
   const Scalar& alpha = lc.coeff(0);
 
-  TEST_FOR_EXCEPTION(!this->space().isCompatible(other.space()),
+  TEUCHOS_TEST_FOR_EXCEPTION(!this->space().isCompatible(other.space()),
     std::runtime_error,
     "Spaces this=" << this->space() << " and other="
     << other.space() << " are not compatible in operator+=()");
@@ -189,7 +189,7 @@ Vector<Scalar>& Vector<Scalar>::operator+=(const LCN<Scalar, 2>& lc)
   const Vector<Scalar>& y = lc.vec(1);
   const Scalar& beta = lc.coeff(1);
 
-  TEST_FOR_EXCEPTION(!this->space().isCompatible(x.space()),
+  TEUCHOS_TEST_FOR_EXCEPTION(!this->space().isCompatible(x.space()),
     std::runtime_error,
     "Spaces this=" << this->space() << " and other="
     << x.space() << " are not compatible in operator+=()");
@@ -223,7 +223,7 @@ Vector<Scalar>& Vector<Scalar>::operator-=(const LCN<Scalar, 1>& lc)
   const Vector<Scalar>& other = lc.vec(0);
   const Scalar& alpha = -lc.coeff(0);
 
-  TEST_FOR_EXCEPTION(!this->space().isCompatible(other.space()),
+  TEUCHOS_TEST_FOR_EXCEPTION(!this->space().isCompatible(other.space()),
     std::runtime_error,
     "Spaces this=" << this->space() << " and other="
     << other.space() << " are not compatible in operator+=()");
@@ -243,7 +243,7 @@ Vector<Scalar>& Vector<Scalar>::operator-=(const LCN<Scalar, 2>& lc)
   const Vector<Scalar>& y = lc.vec(1);
   const Scalar& beta = -lc.coeff(1);
 
-  TEST_FOR_EXCEPTION(!this->space().isCompatible(x.space()),
+  TEUCHOS_TEST_FOR_EXCEPTION(!this->space().isCompatible(x.space()),
     std::runtime_error,
     "Spaces this=" << this->space() << " and other="
     << x.space() << " are not compatible in operator+=()");

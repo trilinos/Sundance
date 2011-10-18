@@ -51,7 +51,7 @@ void SimpleTransposedOp<Scalar>::apply(Teuchos::ETransp transApplyType,
   else if (transApplyType == Teuchos::TRANS)
     A_.apply(in, out);
   else 
-    TEST_FOR_EXCEPT(transApplyType !=Teuchos::TRANS && transApplyType != Teuchos::NO_TRANS);
+    TEUCHOS_TEST_FOR_EXCEPT(transApplyType !=Teuchos::TRANS && transApplyType != Teuchos::NO_TRANS);
 
   PLAYA_MSG2(this->verb(), tab << "done SimpleTransposedOp::apply()");
 }

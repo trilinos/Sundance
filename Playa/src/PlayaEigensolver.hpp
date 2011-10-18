@@ -54,7 +54,7 @@ public:
   /** */
   const ParameterList& params() const 
     {
-      TEST_FOR_EXCEPTION(this->ptr().get()==0, std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(this->ptr().get()==0, std::runtime_error,
                        "null pointer in Eigensolver::parameters()");
       return this->ptr()->params();
     }
@@ -62,7 +62,7 @@ public:
   /** */
   ParameterList& params() 
     {
-      TEST_FOR_EXCEPTION(this->ptr().get()==0, std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(this->ptr().get()==0, std::runtime_error,
                        "null pointer in Eigensolver::parameters()");
       return this->ptr()->params();
     }

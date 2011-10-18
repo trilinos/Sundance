@@ -16,7 +16,7 @@ LineSearchBuilder::createLineSearch(const ParameterList& params,
   Tabs tab1;
   PLAYA_MSG2(verb, tab1 << "params=" << params);
   
-  TEST_FOR_EXCEPTION(params.name() != "Line Search",
+  TEUCHOS_TEST_FOR_EXCEPTION(params.name() != "Line Search",
     std::runtime_error, 
     "LineSearchBuilder::getLineSearch() expected parameter list named "
     "\"Line Search\", got name [" << params.name() << "]");
@@ -31,7 +31,7 @@ LineSearchBuilder::createLineSearch(const ParameterList& params,
     ls = rcp(new SimpleBacktracking(params));
   }
 
-  TEST_FOR_EXCEPTION(ls.get()==0, 
+  TEUCHOS_TEST_FOR_EXCEPTION(ls.get()==0, 
     std::runtime_error, 
     "LineSearchBuilder::getLineSearch() could not construct a valid line "
     "search object from parameter list " << params);

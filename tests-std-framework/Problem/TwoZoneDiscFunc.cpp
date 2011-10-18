@@ -27,9 +27,9 @@ int main(int argc, char** argv)
       int npx = -1;
       int npy = -1;
       PartitionedRectangleMesher::balanceXY(np, &npx, &npy);
-      TEST_FOR_EXCEPT(npx < 1);
-      TEST_FOR_EXCEPT(npy < 1);
-      TEST_FOR_EXCEPT(npx * npy != np);
+      TEUCHOS_TEST_FOR_EXCEPT(npx < 1);
+      TEUCHOS_TEST_FOR_EXCEPT(npy < 1);
+      TEUCHOS_TEST_FOR_EXCEPT(npx * npy != np);
 
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();

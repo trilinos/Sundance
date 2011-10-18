@@ -32,7 +32,7 @@ IQI_VecLF_Vi_Cell::IQI_VecLF_Vi_Cell( int spatialDim ,
 				 quad ,
 				 verbParams )
 {
-  TEST_FOR_EXCEPTION(true,
+  TEUCHOS_TEST_FOR_EXCEPTION(true,
 		     InternalError,
 		     "IQI_VecLF_Vi_Cell is not implemented" );
 }
@@ -41,7 +41,7 @@ void IQI_VecLF_Vi_Cell::evaluate( CellJacobianBatch& JTrans,
 				   const double* const coeff,
 				   RefCountPtr<Array<double> >& A) const
 {
-  TEST_FOR_EXCEPTION(true,
+  TEUCHOS_TEST_FOR_EXCEPTION(true,
 		     InternalError,
 		     "IQI_VecLF_Vi_Cell is not implemented" );
 }

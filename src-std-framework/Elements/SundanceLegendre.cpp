@@ -119,7 +119,7 @@ int Legendre::nReferenceDOFsWithoutFacets(
         case BrickCell:
             return nrDOF_brick_;
         default:
-            TEST_FOR_EXCEPTION( true , std::invalid_argument , "illegal combination of cell type and maximal cell type" );
+            TEUCHOS_TEST_FOR_EXCEPTION( true , std::invalid_argument , "illegal combination of cell type and maximal cell type" );
             return -1;
       }
 }
@@ -201,7 +201,7 @@ void Legendre::getReferenceDOFs(
     }
     break;
     default:
-      TEST_FOR_EXCEPTION(true, std::runtime_error, "Cell type "
+      TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Cell type "
         << cellType << " not implemented in Legendre basis");
   }
 }
@@ -214,7 +214,7 @@ void Legendre::refEval(
   Array<Array<Array<double> > >& result,
   int verbosity) const
 {
-  TEST_FOR_EXCEPTION(!(sds.isPartial() || sds.isIdentity()), 
+  TEUCHOS_TEST_FOR_EXCEPTION(!(sds.isPartial() || sds.isIdentity()), 
     std::runtime_error,
     "cannot evaluate spatial derivative " << sds << " on Legendre basis");
   const MultiIndex& deriv = sds.mi();
@@ -246,7 +246,7 @@ void Legendre::refEval(
       }
       return;
     default:
-      TEST_FOR_EXCEPTION(true, std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error,
         "Legendre::refEval() unimplemented for cell type "
         << cellType);
 
@@ -384,5 +384,5 @@ void Legendre::evalOnBrick(const Point& pt,
   ADReal z = ADReal(pt[2], 2, 3);
   ADReal one(1.0, 3);
   
-  TEST_FOR_EXCEPT(true);
+  TEUCHOS_TEST_FOR_EXCEPT(true);
 }

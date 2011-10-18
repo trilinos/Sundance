@@ -98,7 +98,7 @@ public:
   virtual void evalCurveNormExpr(const CurveNormExpr* expr,
     RCP<EvalVector>& vec) const
     {
-	  TEST_FOR_EXCEPTION( true , std::runtime_error,
+	  TEUCHOS_TEST_FOR_EXCEPTION( true , std::runtime_error,
 		" EvalMediator::evalCurveNormExpr , not possible with the current EvalMediator (only with CurveEvalMediator)");
     }
 

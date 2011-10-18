@@ -52,7 +52,7 @@ XMLObject DimensionalCellFilter::toXML() const
 
 bool DimensionalCellFilter::lessThan(const CellFilterStub* other) const
 {
-  TEST_FOR_EXCEPTION(dynamic_cast<const DimensionalCellFilter*>(other) == 0,
+  TEUCHOS_TEST_FOR_EXCEPTION(dynamic_cast<const DimensionalCellFilter*>(other) == 0,
                      std::logic_error,
                      "argument " << other->toXML() 
                      << " to DimensionalCellFilter::lessThan() should be "

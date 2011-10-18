@@ -66,7 +66,7 @@ ostream& EvalVectorArray::print(std::ostream& os,
                                 const SparsitySuperset* derivs) const
 {
   Tabs tab;
-  TEST_FOR_EXCEPTION(derivs->numDerivs() != this->size(),
+  TEUCHOS_TEST_FOR_EXCEPTION(derivs->numDerivs() != this->size(),
                      std::logic_error,
                      "mismatch between deriv set size=" << derivs->numDerivs()
                      << "and result vector size " << this->size()

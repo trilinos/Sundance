@@ -169,7 +169,7 @@ bool DiscreteFuncElement::lessThan(const ScalarExpr* other) const
 {
   const DiscreteFuncElement* p 
     = dynamic_cast<const DiscreteFuncElement*>(other);
-  TEST_FOR_EXCEPT(p==0);
+  TEUCHOS_TEST_FOR_EXCEPT(p==0);
 
   return fid() < p->fid();
 }

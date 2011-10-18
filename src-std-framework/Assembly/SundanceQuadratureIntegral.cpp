@@ -327,11 +327,11 @@ void QuadratureIntegral::transformZeroForm(const CellJacobianBatch& JTrans,
 {
   TimeMonitor timer(quadratureTimer());
   Tabs tabs;
-  TEST_FOR_EXCEPTION(order() != 0, std::logic_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(order() != 0, std::logic_error,
     "QuadratureIntegral::transformZeroForm() called "
     "for form of order " << order());
 
-  TEST_FOR_EXCEPTION( (int) isLocalFlag.size() != 0 
+  TEUCHOS_TEST_FOR_EXCEPTION( (int) isLocalFlag.size() != 0 
     && (int) isLocalFlag.size() != JVol.numCells(),
     std::runtime_error,
     "mismatch between isLocalFlag.size()=" << isLocalFlag.size()
@@ -495,7 +495,7 @@ void QuadratureIntegral::transformOneForm(const CellJacobianBatch& JTrans,
 {
   TimeMonitor timer(quadratureTimer());
   Tabs tabs;
-  TEST_FOR_EXCEPTION(order() != 1, std::logic_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(order() != 1, std::logic_error,
     "QuadratureIntegral::transformOneForm() called for form "
     "of order " << order());
   SUNDANCE_MSG2(integrationVerb(), tabs << "doing one form by quadrature");
@@ -642,7 +642,7 @@ void QuadratureIntegral::transformTwoForm(const CellJacobianBatch& JTrans,
 {
   TimeMonitor timer(quadratureTimer());
   Tabs tabs;
-  TEST_FOR_EXCEPTION(order() != 2, std::logic_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(order() != 2, std::logic_error,
     "QuadratureIntegral::transformTwoForm() called for form "
     "of order " << order());
   SUNDANCE_MSG2(integrationVerb(), tabs << "doing two form by quadrature");

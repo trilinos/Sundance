@@ -309,7 +309,7 @@ void DiscreteSpace::initVectorSpace(
   const RCP<Array<int> >& isBCIndex, 
   bool partitionBCs)
 {
-  TEST_FOR_EXCEPTION(map_.get()==0, std::logic_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(map_.get()==0, std::logic_error,
     "uninitialized map");
 
   int nDof = map_->numLocalDOFs();
@@ -317,7 +317,7 @@ void DiscreteSpace::initVectorSpace(
 
   if (partitionBCs)
   {
-    TEST_FOR_EXCEPT(isBCIndex.get() == 0);
+    TEUCHOS_TEST_FOR_EXCEPT(isBCIndex.get() == 0);
 
     int nBCDofs = 0;
     for (int i=0; i<nDof; i++)
@@ -360,11 +360,11 @@ void DiscreteSpace::initVectorSpace(
 
 void DiscreteSpace::initImporter()
 {
-  TEST_FOR_EXCEPTION(map_.get()==0, std::logic_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(map_.get()==0, std::logic_error,
     "uninitialized map");
-  TEST_FOR_EXCEPTION(vecSpace_.ptr().get()==0, std::logic_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(vecSpace_.ptr().get()==0, std::logic_error,
     "uninitialized vector space");
-  TEST_FOR_EXCEPTION(vecType_.ptr().get()==0, std::logic_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(vecType_.ptr().get()==0, std::logic_error,
     "uninitialized vector type");
   
   RCP<Array<int> > ghostIndices = map_->ghostIndices();

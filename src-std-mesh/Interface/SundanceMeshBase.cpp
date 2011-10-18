@@ -84,7 +84,7 @@ void MeshBase::outwardNormals(
   for (int c=0; c<cellLIDs.size(); c++)
   {
     int f=-1;
-    TEST_FOR_EXCEPTION(numMaxCofacets(D-1, cellLIDs[c]) > 1, 
+    TEUCHOS_TEST_FOR_EXCEPTION(numMaxCofacets(D-1, cellLIDs[c]) > 1, 
       std::runtime_error,
       "cell #" << cellLIDs[c] << " is not a boundary cell");
     int maxLID = maxCofacetLID(D-1, cellLIDs[c], 0, f);
@@ -127,7 +127,7 @@ void  MeshBase::tangentsToEdges(
   Array<Point>& tangentVectors
   ) const 
 {
-  TEST_FOR_EXCEPT(spatialDim() <= 1);
+  TEUCHOS_TEST_FOR_EXCEPT(spatialDim() <= 1);
 
   tangentVectors.resize(cellLIDs.size());
 

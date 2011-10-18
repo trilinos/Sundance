@@ -38,11 +38,11 @@ SimpleAddedOp<Scalar>::SimpleAddedOp(
     ) 
   , ops_(ops)
 {
-  TEST_FOR_EXCEPT(ops_.size() <= 1);
+  TEUCHOS_TEST_FOR_EXCEPT(ops_.size() <= 1);
   for (int i=1; i<ops_.size(); i++)
   {
-    TEST_FOR_EXCEPT(!(ops[i].range() == ops[0].range()));
-    TEST_FOR_EXCEPT(!(ops[i].domain() == ops[0].domain()));
+    TEUCHOS_TEST_FOR_EXCEPT(!(ops[i].range() == ops[0].range()));
+    TEUCHOS_TEST_FOR_EXCEPT(!(ops[i].domain() == ops[0].domain()));
   }
 }
   
@@ -67,7 +67,7 @@ void SimpleAddedOp<Scalar>::apply(Teuchos::ETransp transApplyType,
     else if (transApplyType == Teuchos::TRANS)
       tmp += ops_[i].transpose() * in;
     else 
-      TEST_FOR_EXCEPT(transApplyType != Teuchos::TRANS && transApplyType != Teuchos::NO_TRANS);
+      TEUCHOS_TEST_FOR_EXCEPT(transApplyType != Teuchos::TRANS && transApplyType != Teuchos::NO_TRANS);
   }
   out.acceptCopyOf(tmp);
 
@@ -110,7 +110,7 @@ LinearOperator<Scalar> addedOperator(
     strippedOps.append(op_i);
   }
   
-  TEST_FOR_EXCEPT(strippedOps.size() < 1);
+  TEUCHOS_TEST_FOR_EXCEPT(strippedOps.size() < 1);
   if (strippedOps.size()==1) return strippedOps[0];
   
   RCP<LinearOperatorBase<Scalar> > op 

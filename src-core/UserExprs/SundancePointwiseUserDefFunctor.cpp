@@ -49,7 +49,7 @@ void PointwiseUserDefFunctor0::evaluationCallback(int nPoints, int maxDiffOrder,
                                     const double** in,
                                     double** out) const 
 {
-  TEST_FOR_EXCEPTION(maxDiffOrder > 0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(maxDiffOrder > 0, std::runtime_error,
                      "diff order = " << maxDiffOrder 
                      << " not supported for functor "
                      << name());
@@ -80,7 +80,7 @@ void PointwiseUserDefFunctor1::evaluationCallback(int nPoints, int maxDiffOrder,
                                     const double** in,
                                     double** out) const 
 {
-  TEST_FOR_EXCEPTION(maxDiffOrder > 1, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(maxDiffOrder > 1, std::runtime_error,
                      "diff order = " << maxDiffOrder 
                      << " not supported for functor "
                      << name());
@@ -129,7 +129,7 @@ void PointwiseUserDefFunctor2::evaluationCallback(int nPoints, int maxDiffOrder,
                                                   const double** in,
                                                   double** out) const 
 {
-  TEST_FOR_EXCEPTION(maxDiffOrder > 2 || maxDiffOrder < 0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(maxDiffOrder > 2 || maxDiffOrder < 0, std::runtime_error,
                      "diff order = " << maxDiffOrder 
                      << " not supported for functor "
                      << name());
@@ -172,7 +172,7 @@ void PointwiseUserDefFunctor2::evaluationCallback(int nPoints, int maxDiffOrder,
         }
       else
         {
-          TEST_FOR_EXCEPT(true);
+          TEUCHOS_TEST_FOR_EXCEPT(true);
         }
       for (int j=0; j<f.size(); j++) out[j][i] = fp[j];
     }

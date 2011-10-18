@@ -1002,7 +1002,7 @@ void EquationSet
     for (MultipleDeriv::const_iterator j=md.begin(); j != md.end(); j++)
     {
       const Deriv& d = *j;
-      TEST_FOR_EXCEPTION(!d.isFunctionalDeriv(), 
+      TEUCHOS_TEST_FOR_EXCEPTION(!d.isFunctionalDeriv(), 
         std::logic_error, "non-functional deriv "
         << d << " detected in EquationSet::"
         "addToVarUnkPairs()");
@@ -1030,7 +1030,7 @@ void EquationSet
       funcPairs->put(OrderedPair<int, int>(varID, unkID));
       gotIt=true;
     }
-    TEST_FOR_EXCEPTION(!gotIt, std::logic_error,
+    TEUCHOS_TEST_FOR_EXCEPTION(!gotIt, std::logic_error,
       "no valid (var,unk) pair could be extracted from "
       "derivative " << md);
   }
@@ -1118,14 +1118,14 @@ Expr EquationSet::flattenSpectral(const Expr& expr) const
 const RCP<Set<OrderedPair<int, int> > >& EquationSet::
 bcVarUnkPairs(const OrderedHandle<CellFilterStub>& domain) const 
 {
-  TEST_FOR_EXCEPTION(!bcVarUnkPairsOnRegions_.containsKey(domain),
+  TEUCHOS_TEST_FOR_EXCEPTION(!bcVarUnkPairsOnRegions_.containsKey(domain),
     std::logic_error,
     "equation set does not have a var-unk pair list for "
     "bc region " << domain);
   const RCP<Set<OrderedPair<int, int> > >& rtn 
     = bcVarUnkPairsOnRegions_.get(domain);
 
-  TEST_FOR_EXCEPTION(rtn.get()==0, std::logic_error, 
+  TEUCHOS_TEST_FOR_EXCEPTION(rtn.get()==0, std::logic_error, 
     "null var-unk pair list for BC region " << domain);
   return rtn;
 }
@@ -1139,11 +1139,11 @@ bool EquationSet::isBCRegion(int d) const
 EvalContext EquationSet::rqcToContext(ComputationType compType, 
   const RegionQuadCombo& r) const 
 {
-  TEST_FOR_EXCEPTION(!rqcToContext_.containsKey(compType),
+  TEUCHOS_TEST_FOR_EXCEPTION(!rqcToContext_.containsKey(compType),
     std::logic_error,
     "EquationSet::rqcToContext() did not find key " 
     << compType);
-  TEST_FOR_EXCEPTION(!rqcToContext_.get(compType).containsKey(r),
+  TEUCHOS_TEST_FOR_EXCEPTION(!rqcToContext_.get(compType).containsKey(r),
     std::logic_error, 
     "EquationSet::rqcToContext(" << compType 
     << ") did not find expected key " 
@@ -1155,11 +1155,11 @@ EvalContext EquationSet::rqcToContext(ComputationType compType,
 EvalContext EquationSet::bcRqcToContext(ComputationType compType, 
   const RegionQuadCombo& r) const 
 {
-  TEST_FOR_EXCEPTION(!bcRqcToContext_.containsKey(compType),
+  TEUCHOS_TEST_FOR_EXCEPTION(!bcRqcToContext_.containsKey(compType),
     std::logic_error,
     "EquationSet::bcRqcToContext() did not find key " 
     << compType);
-  TEST_FOR_EXCEPTION(!bcRqcToContext_.get(compType).containsKey(r),
+  TEUCHOS_TEST_FOR_EXCEPTION(!bcRqcToContext_.get(compType).containsKey(r),
     std::logic_error, 
     "EquationSet::bcRqcToContext(" << compType 
     << ") did not find expected key " 
@@ -1171,7 +1171,7 @@ EvalContext EquationSet::bcRqcToContext(ComputationType compType,
 bool EquationSet::skipRqc(ComputationType compType, 
   const RegionQuadCombo& r) const 
 {
-  TEST_FOR_EXCEPTION(!rqcToSkip_.containsKey(compType),
+  TEUCHOS_TEST_FOR_EXCEPTION(!rqcToSkip_.containsKey(compType),
     std::logic_error,
     "EquationSet::skipRqc() did not find expected key " 
     << compType);
@@ -1182,7 +1182,7 @@ bool EquationSet::skipRqc(ComputationType compType,
 bool EquationSet::skipBCRqc(ComputationType compType, 
   const RegionQuadCombo& r) const 
 {
-  TEST_FOR_EXCEPTION(!bcRqcToSkip_.containsKey(compType),
+  TEUCHOS_TEST_FOR_EXCEPTION(!bcRqcToSkip_.containsKey(compType),
     std::logic_error,
     "EquationSet::skipBCRqc() did not find expected key " 
     << compType);
@@ -1193,7 +1193,7 @@ bool EquationSet::skipBCRqc(ComputationType compType,
 const DerivSet& EquationSet::nonzeroFunctionalDerivs(ComputationType compType,
   const RegionQuadCombo& r) const
 {
-  TEST_FOR_EXCEPTION(!regionQuadComboNonzeroDerivs_.containsKey(compType),
+  TEUCHOS_TEST_FOR_EXCEPTION(!regionQuadComboNonzeroDerivs_.containsKey(compType),
     std::logic_error,
     "EquationSet:nonzeroFunctionalDerivs() did not find key " 
     << compType);
@@ -1203,7 +1203,7 @@ const DerivSet& EquationSet::nonzeroFunctionalDerivs(ComputationType compType,
 const DerivSet& EquationSet::nonzeroBCFunctionalDerivs(ComputationType compType,
   const RegionQuadCombo& r) const
 {
-  TEST_FOR_EXCEPTION(!bcRegionQuadComboNonzeroDerivs_.containsKey(compType),
+  TEUCHOS_TEST_FOR_EXCEPTION(!bcRegionQuadComboNonzeroDerivs_.containsKey(compType),
     std::logic_error,
     "EquationSet:nonzeroBCFunctionalDerivs() did not find key " 
     << compType);

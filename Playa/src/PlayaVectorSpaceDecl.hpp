@@ -91,7 +91,7 @@ protected:
 };
 
 #define PLAYA_CHECK_SPACES(space1, space2) \
-  TEST_FOR_EXCEPTION(!space1.isCompatible(space2), std::runtime_error, \
+  TEUCHOS_TEST_FOR_EXCEPTION(!space1.isCompatible(space2), std::runtime_error, \
     "incompatible spaces " << space1 << " and " << space2)
 
 

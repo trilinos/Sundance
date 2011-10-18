@@ -79,7 +79,7 @@ int VectorSpace<Scalar>::numLocalElements() const
 template <class Scalar> inline
 bool VectorSpace<Scalar>::isCompatible(const VectorSpace<Scalar>& vecSpc) const 
 {
-  TEST_FOR_EXCEPTION(vecSpc.ptr().get() == 0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(vecSpc.ptr().get() == 0, std::runtime_error,
                      "null argument in VectorSpace<Scalar>::isCompatible()");
   return this->ptr().get()->isCompatible(vecSpc.ptr().get());
 }
@@ -119,7 +119,7 @@ const VectorSpace<Scalar>& VectorSpace<Scalar>::getBlock(const int i) const
 {
   const BlockVectorSpaceBase<Scalar>* bvs = 
     dynamic_cast<const BlockVectorSpaceBase<Scalar>* > (this->ptr().get());
-  TEST_FOR_EXCEPTION(bvs == 0 && numBlocks()!=1, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(bvs == 0 && numBlocks()!=1, std::runtime_error,
     "getBlock called for a space that "
     "is not a BlockVectorSpace" << std::endl);
   if (bvs != 0)
@@ -135,7 +135,7 @@ const VectorSpace<Scalar>& VectorSpace<Scalar>
 ::getBlock(const BlockIterator<Scalar>& b) const
 {
   /* Check that the block iterator is valid */
-  TEST_FOR_EXCEPTION(b.atEnd(), RuntimeError, 
+  TEUCHOS_TEST_FOR_EXCEPTION(b.atEnd(), RuntimeError, 
     "Attempt to use a block iterator that's run off end");
 
   return this->getBlock(b.blockIndex());

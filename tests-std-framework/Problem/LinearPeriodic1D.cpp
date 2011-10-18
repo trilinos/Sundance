@@ -48,7 +48,7 @@ int main(int argc, char** argv)
 		{
       Sundance::init(&argc, &argv);
       int np = MPIComm::world().getNProc();
-      TEST_FOR_EXCEPT(np != 1);
+      TEUCHOS_TEST_FOR_EXCEPT(np != 1);
 
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();

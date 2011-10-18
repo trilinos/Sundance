@@ -37,10 +37,10 @@ SimpleComposedOp<Scalar>::SimpleComposedOp(const Array<LinearOperator<Scalar> >&
     ) 
   , ops_(ops)
 {
-  TEST_FOR_EXCEPT(ops_.size() <= 1);
+  TEUCHOS_TEST_FOR_EXCEPT(ops_.size() <= 1);
   for (int i=1; i<ops_.size(); i++)
   {
-    TEST_FOR_EXCEPT(!(ops[i].range() == ops[i-1].domain()));
+    TEUCHOS_TEST_FOR_EXCEPT(!(ops[i].range() == ops[i-1].domain()));
   }
 }
   
@@ -85,7 +85,7 @@ void SimpleComposedOp<Scalar>::apply(Teuchos::ETransp transApplyType,
   }
   else
   {
-    TEST_FOR_EXCEPT(transApplyType != Teuchos::TRANS && transApplyType != Teuchos::NO_TRANS);
+    TEUCHOS_TEST_FOR_EXCEPT(transApplyType != Teuchos::TRANS && transApplyType != Teuchos::NO_TRANS);
   }
   PLAYA_MSG2(this->verb(), tab << "done SimpleComposedOp::apply()");
 }
@@ -159,7 +159,7 @@ LinearOperator<Scalar> composedOperator(
     strippedOps.append(op_i);
   }
   
-  TEST_FOR_EXCEPT(strippedOps.size() < 1);
+  TEUCHOS_TEST_FOR_EXCEPT(strippedOps.size() < 1);
   if (strippedOps.size()==1) return strippedOps[0];
   
   RCP<LinearOperatorBase<Scalar> > op 

@@ -116,7 +116,7 @@ LinearSolveDriver::solve(const LinearSolver<double>& solver,
       }
       
       /* If solve errors are fatal, throw an exception */
-      TEST_FOR_EXCEPTION(solveFailureIsFatal(),
+      TEUCHOS_TEST_FOR_EXCEPTION(solveFailureIsFatal(),
         std::runtime_error, TEUCHOS_OSTRINGSTREAM_GET_C_STR(ss));
 
       /* otherwise, return the state information */
@@ -186,7 +186,7 @@ void LinearSolveDriver::writeIntoSolutionExpr(
   int verb) const 
 {
 #ifdef BLAH
-  TEST_FOR_EXCEPTION(soln.size() != solnVector.size(),
+  TEUCHOS_TEST_FOR_EXCEPTION(soln.size() != solnVector.size(),
     std::runtime_error,
     "soln=" << soln << " soln.size()=" << soln.size() << " while solnVector.size()=" << solnVector.size());
 #endif

@@ -49,7 +49,7 @@ void EpetraMatrix::apply(
   bool trans = applyType == TRANS;
   
   int ierr = matrix_->Multiply(trans, epIn, epOut);
-  TEST_FOR_EXCEPTION(ierr < 0, std::runtime_error, 
+  TEUCHOS_TEST_FOR_EXCEPTION(ierr < 0, std::runtime_error, 
     "EpetraMatrix::generalApply() detected ierr="
     << ierr << " in matrix_->Multiply()");
 }
@@ -66,7 +66,7 @@ void EpetraMatrix::addToRow(int globalRowIndex,
     (double*) elementValues,
     (int*) globalColumnIndices);
 
-  TEST_FOR_EXCEPTION(ierr < 0, std::runtime_error, 
+  TEUCHOS_TEST_FOR_EXCEPTION(ierr < 0, std::runtime_error, 
     "failed to add to row " << globalRowIndex
     << " in EpetraMatrix::addToRow() with nnz="
     << nElemsToInsert 
@@ -99,7 +99,7 @@ void EpetraMatrix::addToElementBatch(int numRows,
         numColumnsPerRow,
         (double*) rowVals,
         (int*) cols);
-      TEST_FOR_EXCEPTION(ierr < 0, std::runtime_error, 
+      TEUCHOS_TEST_FOR_EXCEPTION(ierr < 0, std::runtime_error, 
         "failed to add to row " << globalRowIndices[row]
         << " in EpetraMatrix::addToRow() with nnz="
         << numColumnsPerRow
@@ -197,7 +197,7 @@ void EpetraMatrix::getRow(const int& row,
   double* epValues;
 
   int info = crs->ExtractGlobalRowView(row, numEntries, epValues, epIndices);
-  TEST_FOR_EXCEPTION(info != 0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(info != 0, std::runtime_error,
     "call to ExtractGlobalRowView not successful");
 
   indices.resize(numEntries);

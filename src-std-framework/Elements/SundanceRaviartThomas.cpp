@@ -129,7 +129,7 @@ void RaviartThomas::getReferenceDOFs(
       dofs[3] = tuple(Array<int>());
       return;
     default:
-      TEST_FOR_EXCEPTION(true, std::runtime_error, "Cell type "
+      TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Cell type "
         << cellType << " not implemented in RaviartThomas basis");
   }
 }
@@ -156,7 +156,7 @@ void RaviartThomas::refEval(
   switch(cellType) {
     case PointCell:
     {
-      TEST_FOR_EXCEPTION(true, std::runtime_error, "evaluation of RaviartThomas elements for PointCell not supported");
+      TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "evaluation of RaviartThomas elements for PointCell not supported");
     }
     break;
     case LineCell:
@@ -223,11 +223,11 @@ void RaviartThomas::refEval(
     break;
     case TetCell:
     {
-      TEST_FOR_EXCEPTION(true, std::runtime_error, "evaluation of RaviartThomas elements for TetCell not supported");
+      TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "evaluation of RaviartThomas elements for TetCell not supported");
     }
     break;
     default:
-      TEST_FOR_EXCEPTION(true, std::runtime_error, "evaluation of RaviartThomas elements unknown cell type");
+      TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "evaluation of RaviartThomas elements unknown cell type");
       break;
   }
 

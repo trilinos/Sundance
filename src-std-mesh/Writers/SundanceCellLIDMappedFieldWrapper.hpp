@@ -23,7 +23,7 @@ public:
   /** */
   double getData(int cellDim, int cellID, int elem) const 
     {
-      TEST_FOR_EXCEPT(cellDim != cellDim_);
+      TEUCHOS_TEST_FOR_EXCEPT(cellDim != cellDim_);
       return (*data_)[cellID*nFuncs_ + elem];
     }
   

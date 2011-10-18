@@ -144,7 +144,7 @@ int main(int argc, char** argv)
           std::cerr << "--------------------------------------------------------- " << std::endl;
           // Solve the nonlinear system
           NOX::StatusTest::StatusType status = prob.solve(solver);
-          TEST_FOR_EXCEPTION(status != NOX::StatusTest::Converged,
+          TEUCHOS_TEST_FOR_EXCEPTION(status != NOX::StatusTest::Converged,
             runtime_error, "solve failed");
 
           /* Write the field in VTK format */

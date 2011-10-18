@@ -19,7 +19,7 @@ using namespace Sundance;
 
 Mesh MeshBuilder::createMesh(const ParameterList& params)
 {
-  TEST_FOR_EXCEPTION(!params.isParameter("type"), std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(!params.isParameter("type"), std::runtime_error,
                      "field name 'type' expected but not found in MeshBuilder "
                      "input parameter list: " << params);
 
@@ -44,7 +44,7 @@ Mesh MeshBuilder::createMesh(const ParameterList& params)
       mesher = new TriangleMeshReader(params);
     }
 
-  TEST_FOR_EXCEPTION(mesher.ptr().get()==0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(mesher.ptr().get()==0, std::runtime_error,
                      "null mesh source in MeshBuilder::createMesh()");
 
   return mesher.getMesh();

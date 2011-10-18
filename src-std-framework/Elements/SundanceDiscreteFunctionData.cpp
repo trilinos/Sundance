@@ -78,10 +78,10 @@ DiscreteFunctionData::DiscreteFunctionData(const DiscreteSpace& space,
 
 const DiscreteFunctionData* DiscreteFunctionData::getData(const DiscreteFuncElement* dfe)
 {
-  TEST_FOR_EXCEPTION(dfe==0, std::runtime_error, "null argument to DiscreteFunctionData::getData()");
+  TEUCHOS_TEST_FOR_EXCEPTION(dfe==0, std::runtime_error, "null argument to DiscreteFunctionData::getData()");
   RCP<const DiscreteFunctionData> rtn 
     = rcp_dynamic_cast<const DiscreteFunctionData>(dfe->commonData());
-  TEST_FOR_EXCEPTION(rtn.get()==0, std::runtime_error, 
+  TEUCHOS_TEST_FOR_EXCEPTION(rtn.get()==0, std::runtime_error, 
     "cast to DiscreteFunctionData* failed for "
     "discrete function element " << dfe->toXML());
   return rtn.get();
@@ -89,10 +89,10 @@ const DiscreteFunctionData* DiscreteFunctionData::getData(const DiscreteFuncElem
 
 DiscreteFunctionData* DiscreteFunctionData::getData(DiscreteFuncElement* dfe)
 {
-  TEST_FOR_EXCEPTION(dfe==0, std::runtime_error, "null argument to DiscreteFunctionData::getData()");
+  TEUCHOS_TEST_FOR_EXCEPTION(dfe==0, std::runtime_error, "null argument to DiscreteFunctionData::getData()");
   DiscreteFunctionData* rtn 
     = dynamic_cast<DiscreteFunctionData*>(dfe->commonData());
-  TEST_FOR_EXCEPTION(rtn==0, std::runtime_error, 
+  TEUCHOS_TEST_FOR_EXCEPTION(rtn==0, std::runtime_error, 
     "cast to DiscreteFunctionData* failed for "
     "discrete function element " << dfe->toXML());
   return rtn;

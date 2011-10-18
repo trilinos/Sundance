@@ -65,7 +65,7 @@ KrylovSolver<Scalar>::KrylovSolver(const ParameterList& params,
   const PreconditionerFactory<Scalar>& precond)
   : IterativeSolver<Scalar>(params), precond_(precond)
 {
-  TEST_FOR_EXCEPTION(params.isParameter("Precond"), std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(params.isParameter("Precond"), std::runtime_error,
     "ambiguous preconditioner specification in "
     "KrylovSolver ctor: parameters specify "
     << params.template get<string>("Precond") 

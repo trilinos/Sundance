@@ -20,7 +20,7 @@ UniformRefinementPair::UniformRefinementPair(const MeshType& meshType,
   {
     refineTriMesh();
   }
-  TEST_FOR_EXCEPT(coarse.spatialDim() != 2);
+  TEUCHOS_TEST_FOR_EXCEPT(coarse.spatialDim() != 2);
 }
 
 void UniformRefinementPair::refineTriMesh()
@@ -28,8 +28,8 @@ void UniformRefinementPair::refineTriMesh()
   const MPIComm& comm = coarse_.comm();
   fine_ = meshType_.createEmptyMesh(2, comm);
 
-  TEST_FOR_EXCEPT(fine_.spatialDim() != 2);
-  TEST_FOR_EXCEPT(comm.getNProc() > 1);
+  TEUCHOS_TEST_FOR_EXCEPT(fine_.spatialDim() != 2);
+  TEUCHOS_TEST_FOR_EXCEPT(comm.getNProc() > 1);
 
   int numVerts = coarse_.numCells(0);
   int numEdges = coarse_.numCells(1);
@@ -164,7 +164,7 @@ void UniformRefinementPair::refineTriMesh()
           /* Add to the list of interior edges for this element. This
            * will only happen once per edge thanks to the newEdgeDone check
            * above. */
-          TEST_FOR_EXCEPT(interiorEdgeCount >= 3);
+          TEUCHOS_TEST_FOR_EXCEPT(interiorEdgeCount >= 3);
           interiorEdges_.value(c, interiorEdgeCount++) = newEdge;
           
           /* find the coarse edge parallel to the new interior edge */
@@ -176,7 +176,7 @@ void UniformRefinementPair::refineTriMesh()
             parEdge = edgeLIDs[i];
             break;
           }
-          TEST_FOR_EXCEPT(parEdge==-1);
+          TEUCHOS_TEST_FOR_EXCEPT(parEdge==-1);
           oldEdgeParallels_[parEdge].append(newEdge);
           newEdgeParallels_[newEdge] = parEdge;
         }
@@ -199,7 +199,7 @@ void UniformRefinementPair::refineTriMesh()
     }
   }
 
-  TEST_FOR_EXCEPT(newElemLID != 4*numElems);
+  TEUCHOS_TEST_FOR_EXCEPT(newElemLID != 4*numElems);
 
 
 }
@@ -219,7 +219,7 @@ int UniformRefinementPair::lookupEdge(const Mesh& mesh,
     }
   }
 
-  TEST_FOR_EXCEPTION(true, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error,
     "edge (" << v1 << ", " << v2 << ") not found in mesh");
   return -1;
 }

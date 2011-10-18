@@ -60,7 +60,7 @@ CellVectorEvaluator::CellVectorEvaluator(const CellVectorExpr* expr,
   SUNDANCE_MSG2(verb, tabs << "return sparsity " 
     << std::endl << *(this->sparsity)());
 
-  TEST_FOR_EXCEPTION(this->sparsity()->numDerivs() >1 , std::logic_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(this->sparsity()->numDerivs() >1 , std::logic_error,
     "CellVectorEvaluator ctor found a sparsity table "
     "with more than one entry. The bad sparsity table is "
     << *(this->sparsity)());
@@ -75,7 +75,7 @@ CellVectorEvaluator::CellVectorEvaluator(const CellVectorExpr* expr,
     const MultipleDeriv& d = this->sparsity()->deriv(i);
 
     /* for a zeroth-order derivative, evaluate the coord expr */
-    TEST_FOR_EXCEPTION(d.order() != 0, std::runtime_error, 
+    TEUCHOS_TEST_FOR_EXCEPTION(d.order() != 0, std::runtime_error, 
       "Derivative " << d << " is not valid for "
       "CellVectorEvaluator");
     addVectorIndex(i, 0);

@@ -117,7 +117,7 @@ int CurveEvalMediator::numQuadPts(const CellType& ct) const
 {
 	if (ct != maxCellType_){
 		// throw error
-		TEST_FOR_EXCEPTION(true, std::runtime_error, "CurveEvalMediator::numQuadPts , cellType must be maxCellType_:" << ct);
+		TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "CurveEvalMediator::numQuadPts , cellType must be maxCellType_:" << ct);
 	}
 	return numQuadPtsForMaxCell_;
 }
@@ -174,7 +174,7 @@ void CurveEvalMediator::evalCellVectorExpr(const CellVectorExpr* expr,
   }
   else
   {
-    TEST_FOR_EXCEPTION(cellDim() != 1, std::runtime_error,
+    TEUCHOS_TEST_FOR_EXCEPTION(cellDim() != 1, std::runtime_error,
       "unable to compute tangent vectors for cell dim = " << cellDim());
     mesh().tangentsToEdges(*cellLID(), vectors);
   }
@@ -315,7 +315,7 @@ void CurveEvalMediator
 
 	  const DiscreteFunctionData* f = DiscreteFunctionData::getData(expr);
 
-	  TEST_FOR_EXCEPTION(f==0, std::logic_error,
+	  TEUCHOS_TEST_FOR_EXCEPTION(f==0, std::logic_error,
 	    "QuadratureEvalMediator::evalDiscreteFuncElement() called "
 	    "with expr that is not a discrete function");
 

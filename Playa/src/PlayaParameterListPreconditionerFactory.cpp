@@ -48,7 +48,7 @@ createPreconditioner(const LinearOperator<double>& A) const
   }
   else
   {
-    TEST_FOR_EXCEPTION(true, std::runtime_error,
+    TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error,
       "preconditioner type=[" << pType << "] not recognized");
   }
 

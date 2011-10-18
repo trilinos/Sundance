@@ -82,7 +82,7 @@ int PeriodicMesh1D::numCells(int cellDim) const
     case 1:
       return numElems_;
     default:
-      TEST_FOR_EXCEPT(true);
+      TEUCHOS_TEST_FOR_EXCEPT(true);
   }
   return -1; // -Wall
 }
@@ -102,7 +102,7 @@ const double* PeriodicMesh1D::nodePositionView(int i) const
 void PeriodicMesh1D::getJacobians(int cellDim, const Array<int>& cellLID,
     CellJacobianBatch& jBatch) const
 {
-  TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), std::logic_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), std::logic_error,
     "cellDim=" << cellDim 
     << " is not in expected range [0, " << spatialDim()
     << "]");
@@ -138,7 +138,7 @@ void PeriodicMesh1D::getCellDiameters(int cellDim, const Array<int>& cellLID,
 {
   cellDiameters.resize(cellLID.size());
   
-  TEST_FOR_EXCEPT(cellDim < 0 || cellDim > 1);
+  TEUCHOS_TEST_FOR_EXCEPT(cellDim < 0 || cellDim > 1);
 
   if (cellDim==1)
   {
@@ -162,7 +162,7 @@ void PeriodicMesh1D::pushForward(int cellDim, const Array<int>& cellLID,
     const Array<Point>& refQuadPts,
     Array<Point>& physQuadPts) const
 {
-  TEST_FOR_EXCEPT(cellDim < 0 || cellDim > 1);
+  TEUCHOS_TEST_FOR_EXCEPT(cellDim < 0 || cellDim > 1);
 
   if (cellDim==1)
   {
@@ -191,7 +191,7 @@ void PeriodicMesh1D::pushForward(int cellDim, const Array<int>& cellLID,
 int PeriodicMesh1D::numFacets(int cellDim, int cellLID,
     int facetDim) const
 {
-  TEST_FOR_EXCEPT(cellLID < 0 || cellLID >= numElems_);
+  TEUCHOS_TEST_FOR_EXCEPT(cellLID < 0 || cellLID >= numElems_);
   if (cellDim == 1 && facetDim==0) return 2;
   return 0;
 }
@@ -202,12 +202,12 @@ int PeriodicMesh1D::facetLID(int cellDim, int cellLID,
   int facetDim, int facetIndex,
   int& facetOrientation) const
 {
-  TEST_FOR_EXCEPT(cellLID < 0 || cellLID >= numElems_);
+  TEUCHOS_TEST_FOR_EXCEPT(cellLID < 0 || cellLID >= numElems_);
 
-  TEST_FOR_EXCEPT(cellDim != 1);
-  TEST_FOR_EXCEPT(facetDim != 0);
-  TEST_FOR_EXCEPT(facetIndex < 0);
-  TEST_FOR_EXCEPT(facetIndex > 1);
+  TEUCHOS_TEST_FOR_EXCEPT(cellDim != 1);
+  TEUCHOS_TEST_FOR_EXCEPT(facetDim != 0);
+  TEUCHOS_TEST_FOR_EXCEPT(facetIndex < 0);
+  TEUCHOS_TEST_FOR_EXCEPT(facetIndex > 1);
 
   return verts_[cellLID][facetIndex];
 }
@@ -237,7 +237,7 @@ const int* PeriodicMesh1D::elemZeroFacetView(int cellLID) const
 
 int PeriodicMesh1D::numMaxCofacets(int cellDim, int cellLID) const
 {
-  TEST_FOR_EXCEPT(cellDim != 0);
+  TEUCHOS_TEST_FOR_EXCEPT(cellDim != 0);
   return 2;
 }
 
@@ -245,7 +245,7 @@ int PeriodicMesh1D::maxCofacetLID(int cellDim, int cellLID,
     int cofacetIndex,
     int& facetIndex) const
 {
-  TEST_FOR_EXCEPT(cellDim != 0);
+  TEUCHOS_TEST_FOR_EXCEPT(cellDim != 0);
   if (cofacetIndex==0) return (cellLID-1) % numElems_;
   return cellLID;
 }
@@ -253,14 +253,14 @@ int PeriodicMesh1D::maxCofacetLID(int cellDim, int cellLID,
 void PeriodicMesh1D::getMaxCofacetLIDs(const Array<int>& cellLIDs,
     MaximalCofacetBatch& cofacets) const
 {
-  TEST_FOR_EXCEPT(true);
+  TEUCHOS_TEST_FOR_EXCEPT(true);
 }
 
 void PeriodicMesh1D::getCofacets(int cellDim, int cellLID,
     int cofacetDim, Array<int>& cofacetLIDs) const
 {
-  TEST_FOR_EXCEPT(cellDim != 0);
-  TEST_FOR_EXCEPT(cofacetDim != 1);
+  TEUCHOS_TEST_FOR_EXCEPT(cellDim != 0);
+  TEUCHOS_TEST_FOR_EXCEPT(cofacetDim != 1);
 
   cofacetLIDs.resize(2);
   cofacetLIDs[0] = (cellLID-1) % numElems_;

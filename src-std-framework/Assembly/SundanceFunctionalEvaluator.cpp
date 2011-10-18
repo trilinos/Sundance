@@ -190,9 +190,9 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
   RCP<GhostView<double> > gradF0View = dg->ghostView();
 
 
-  TEST_FOR_EXCEPTION(xView.get() == 0, std::runtime_error, 
+  TEUCHOS_TEST_FOR_EXCEPTION(xView.get() == 0, std::runtime_error, 
     "bad pointer in FunctionalEvaluator::fdGradientCheck");
-  TEST_FOR_EXCEPTION(gradF0View.get() == 0, std::runtime_error, 
+  TEUCHOS_TEST_FOR_EXCEPTION(gradF0View.get() == 0, std::runtime_error, 
     "bad pointer in FunctionalEvaluator::fdGradientCheck");
 
   int nTot = x.space().dim();

@@ -80,7 +80,7 @@ public:
 
 	/** function to return the control points of a given curve */
 	virtual Array<Point>& getControlPoints() {
-		TEST_FOR_EXCEPTION( true , std::runtime_error, " getControlPoints() method is not overwritten ");
+		TEUCHOS_TEST_FOR_EXCEPTION( true , std::runtime_error, " getControlPoints() method is not overwritten ");
 	}
 
 	/** function which will be called for curve/surface Integral evaluation
@@ -88,7 +88,7 @@ public:
 	 * @param f [OUT] the output of the expression
 	 * @param scalarFieldIndex [IN] scalar field index */
 	virtual void eval0(const double* vars, double* f , int scalarFieldIndex ) const {
-		TEST_FOR_EXCEPTION( true , std::runtime_error, " eval0() method is not overwritten ");
+		TEUCHOS_TEST_FOR_EXCEPTION( true , std::runtime_error, " eval0() method is not overwritten ");
 	}
 
 	/** adds new scalar field to the interface
@@ -96,21 +96,21 @@ public:
 	 * @param initialValue [IN] initial value of the scalar field
 	 * @return the scalar field index */
 	virtual int addNewScalarField(std::string fieldName , double initialValue){
-		TEST_FOR_EXCEPTION( true , std::runtime_error, " addNewScalarField() method is not overwritten ");
+		TEUCHOS_TEST_FOR_EXCEPTION( true , std::runtime_error, " addNewScalarField() method is not overwritten ");
 	}
 
 	/** returns one array of doubles which contain the values of the scalar field (for each point, nodal basis)
 	 * @param scalarFieldIndex [IN] the index
 	 * @return array with the scalar field values */
 	virtual Array<double>& getScalarFieldValues(int scalarFieldIndex) {
-		TEST_FOR_EXCEPTION( true , std::runtime_error, " getScalarFieldValues() method is not overwritten ");
+		TEUCHOS_TEST_FOR_EXCEPTION( true , std::runtime_error, " getScalarFieldValues() method is not overwritten ");
 	}
 
 	/** function to set the values of one specified scalar field <br>
 	 * it is important that the Functional will be defined on a curve, otherwise the value will stay zero
 	 * @param scalarFunctional [IN] , the scalar functions*/
 	virtual void setSpaceValues(const FunctionalEvaluatorBase& scalarFunctional , int fieldIndex ){
-		TEST_FOR_EXCEPTION( true , std::runtime_error, " setSpaceValues() method is not overwritten ");
+		TEUCHOS_TEST_FOR_EXCEPTION( true , std::runtime_error, " setSpaceValues() method is not overwritten ");
 	}
 
 	/** function to record the function values along one curve. <br>
@@ -214,7 +214,7 @@ public:
 	 * @param mesh
 	 * @param resolution , the global resolution */
 	virtual const RCP<CurveBase> getPolygon(const Mesh& mesh , double resolution) const {
-		TEST_FOR_EXCEPTION( true , std::runtime_error, " getPolygon() method is not overwritten ");
+		TEUCHOS_TEST_FOR_EXCEPTION( true , std::runtime_error, " getPolygon() method is not overwritten ");
 		return rcp((CurveBase*)0);
 	}
 
@@ -230,7 +230,7 @@ public:
 	/** Writes the geometry into a VTK file for visualization purposes
 	 * @param filename */
 	virtual void writeToVTK(const std::string& filename) const {
-		TEST_FOR_EXCEPTION( true , std::runtime_error, " writeToVTK() method is not overwritten ");
+		TEUCHOS_TEST_FOR_EXCEPTION( true , std::runtime_error, " writeToVTK() method is not overwritten ");
 	}
 
 protected:

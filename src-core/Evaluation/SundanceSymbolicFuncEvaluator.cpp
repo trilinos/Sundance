@@ -75,7 +75,7 @@ SymbolicFuncElementEvaluator
   const ZeroExpr* z 
     = dynamic_cast<const ZeroExpr*>(expr->evalPt());
   
-  TEST_FOR_EXCEPTION(z==0 && df_==0, std::logic_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(z==0 && df_==0, std::logic_error,
     "SymbolicFuncElementEvaluator ctor detected an "
     "evaluation point=" << expr->toString()
     << " that is neither zero nor a discrete "
@@ -101,12 +101,12 @@ SymbolicFuncElementEvaluator
     if (this->sparsity()->isSpatialDeriv(i))
     {
       /* evaluate the spatial deriv applied to the evaluation point */
-      TEST_FOR_EXCEPTION(z != 0, std::logic_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(z != 0, std::logic_error,
         "SymbolicFuncElementEvaluator ctor detected a "
         "spatial derivative of a zero function. All "
         "such expressions should have been "
         "automatically eliminated by this point.");
-      TEST_FOR_EXCEPTION(p_ != 0, std::logic_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(p_ != 0, std::logic_error,
         "SymbolicFuncElementEvaluator ctor detected a "
         "spatial derivative of a constant parameter. All "
         "such expressions should have been "
@@ -122,7 +122,7 @@ SymbolicFuncElementEvaluator
     }
     else
     {
-      TEST_FOR_EXCEPTION(this->sparsity()->deriv(i).order() > 1,
+      TEUCHOS_TEST_FOR_EXCEPTION(this->sparsity()->deriv(i).order() > 1,
         std::logic_error,
         "SymbolicFuncElementEvaluator ctor detected a "
         "nonzero functional derivative of order greater "
@@ -134,7 +134,7 @@ SymbolicFuncElementEvaluator
 
       if (this->sparsity()->deriv(i).order()==0)
       {
-        TEST_FOR_EXCEPTION(z != 0, std::logic_error,
+        TEUCHOS_TEST_FOR_EXCEPTION(z != 0, std::logic_error,
           "SymbolicFuncElementEvaluator ctor detected a "
           "zero-order derivative of a zero function. All "
           "such expressions should have been "
@@ -203,7 +203,7 @@ void SymbolicFuncElementEvaluator
     for (int i=0; i<mi_.size(); i++)
     {
       vectorResults[i] = mgr.popVector();
-      TEST_FOR_EXCEPTION(!vectorResults[i]->isValid(), 
+      TEUCHOS_TEST_FOR_EXCEPTION(!vectorResults[i]->isValid(), 
         std::logic_error,
         "invalid evaluation vector allocated in "
         "SymbolicFuncElementEvaluator::internalEval()");

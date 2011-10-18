@@ -54,7 +54,7 @@ string searchForFile(const std::string& name)
     return path[i] + pathSep + name;
   }
 
-  TEST_FOR_EXCEPTION(true, std::runtime_error, "could not find file "
+  TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "could not find file "
     << name << " in path " << path);
 }
 

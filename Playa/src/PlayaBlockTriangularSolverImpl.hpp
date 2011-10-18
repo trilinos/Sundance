@@ -43,12 +43,12 @@ SolverState<Scalar> BlockTriangularSolver<Scalar>
   soln = op.domain().createMember();
   //    bool converged = false;
 
-  TEST_FOR_EXCEPTION(nRows != rhs.space().numBlocks(), std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(nRows != rhs.space().numBlocks(), std::runtime_error,
     "number of rows in operator " << op
     << " not equal to number of blocks on RHS "
     << rhs);
 
-  TEST_FOR_EXCEPTION(nRows != nCols, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(nRows != nCols, std::runtime_error,
     "nonsquare block structure in block triangular "
     "solver: nRows=" << nRows << " nCols=" << nCols);
 
@@ -62,7 +62,7 @@ SolverState<Scalar> BlockTriangularSolver<Scalar>
       if (op.getBlock(r,c).ptr().get() == 0 ||
         dynamic_cast<const SimpleZeroOp<Scalar>* >(op.getBlock(r,c).ptr().get()))
       {
-        TEST_FOR_EXCEPTION(r==c, std::runtime_error,
+        TEUCHOS_TEST_FOR_EXCEPTION(r==c, std::runtime_error,
           "zero diagonal block (" << r << ", " << c 
           << " detected in block "
           "triangular solver. Operator is " << op);
@@ -76,7 +76,7 @@ SolverState<Scalar> BlockTriangularSolver<Scalar>
     }
   }
 
-  TEST_FOR_EXCEPTION(isUpper && isLower, std::runtime_error, 
+  TEUCHOS_TEST_FOR_EXCEPTION(isUpper && isLower, std::runtime_error, 
     "block triangular solver detected non-triangular operator "
     << op);
 

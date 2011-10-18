@@ -77,7 +77,7 @@ bool CFMeshPair::operator<(const CFMeshPair& other) const
   if (isEmpty()) return true;
   if (other.isEmpty()) return false;
 
-  TEST_FOR_EXCEPTION(mesh_.id() != other.mesh_.id(),
+  TEUCHOS_TEST_FOR_EXCEPTION(mesh_.id() != other.mesh_.id(),
                      std::runtime_error,
                      "mismatched meshes!");
 
@@ -97,7 +97,7 @@ CFMeshPair CFMeshPair::setMinus(const CFMeshPair& other) const
   if (isEmpty()) return CFMeshPair();
   if (other.isEmpty()) return *this;
 
-  TEST_FOR_EXCEPTION(mesh().id() != other.mesh().id(),
+  TEUCHOS_TEST_FOR_EXCEPTION(mesh().id() != other.mesh().id(),
                      std::runtime_error,
                      "mismatched meshes!");
 
@@ -109,7 +109,7 @@ CFMeshPair CFMeshPair::intersection(const CFMeshPair& other) const
 {
   if (isEmpty() || other.isEmpty()) return CFMeshPair();
 
-  TEST_FOR_EXCEPTION(mesh().id() != other.mesh().id(),
+  TEUCHOS_TEST_FOR_EXCEPTION(mesh().id() != other.mesh().id(),
                      std::runtime_error,
                      "mismatched meshes!");
 
@@ -176,7 +176,7 @@ namespace Sundance
     TimeMonitor timer(csPartitionTimer() );
     Array<CFMeshPair> cf(filters.size());
 
-    TEST_FOR_EXCEPT(filters.size() != funcs.size());
+    TEUCHOS_TEST_FOR_EXCEPT(filters.size() != funcs.size());
     for (int i=0; i<filters.size(); i++)
       {
         cf[i] = CFMeshPair(filters[i], mesh, funcs[i]);

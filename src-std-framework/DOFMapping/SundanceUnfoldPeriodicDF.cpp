@@ -57,7 +57,7 @@ Mesh unfoldPeriodicMesh(const Mesh& mesh)
   const MeshBase* mb = mesh.ptr().get();
   const PeriodicMesh1D* pm = dynamic_cast<const PeriodicMesh1D*>(mb);
 
-  TEST_FOR_EXCEPT(pm==0);
+  TEUCHOS_TEST_FOR_EXCEPT(pm==0);
 
   int numElems = mesh.numCells(1);
   double a = mesh.nodePosition(0)[0];
@@ -85,7 +85,7 @@ DiscreteSpace unfoldPeriodicDiscreteSpace(const DiscreteSpace& space)
 Expr unfoldPeriodicDiscreteFunction(const Expr& f, const string& name)
 {
   const DiscreteFunction* df = DiscreteFunction::discFunc(f);
-  TEST_FOR_EXCEPT(df==0);
+  TEUCHOS_TEST_FOR_EXCEPT(df==0);
 
 
   DiscreteSpace perSpace = df->discreteSpace();

@@ -54,7 +54,7 @@ namespace StdFwkEvalMediator
    is >> nNodes;
 
    /* check for consistency between the mesh and the data */
-   TEST_FOR_EXCEPTION(mesh.numCells(0) != nNodes, RuntimeError,
+   TEUCHOS_TEST_FOR_EXCEPTION(mesh.numCells(0) != nNodes, RuntimeError,
 			 "number of nodes in data file fieldData.dat is " 
 			 << nNodes << " but number of nodes in mesh is "
 			 << mesh.numCells(0));

@@ -51,16 +51,16 @@ public:
   /** */
   const T& operator[](int i) const 
     {
-      TEST_FOR_EXCEPT(i<0);
-      TEST_FOR_EXCEPT(i>=N);
+      TEUCHOS_TEST_FOR_EXCEPT(i<0);
+      TEUCHOS_TEST_FOR_EXCEPT(i>=N);
       return data_[i];
     }
 
   /** */
   T& operator[](int i) 
     {
-      TEST_FOR_EXCEPT(i<0);
-      TEST_FOR_EXCEPT(i>=N);
+      TEUCHOS_TEST_FOR_EXCEPT(i<0);
+      TEUCHOS_TEST_FOR_EXCEPT(i>=N);
       return data_[i];
     }
 

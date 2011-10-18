@@ -57,7 +57,7 @@ bool EpetraVectorSpace::isCompatible(const VectorSpaceBase<double>* other) const
 Teuchos::RCP<VectorBase<double> >
 EpetraVectorSpace::createMember(const VectorSpace<double>& self) const
 {
-  TEST_FOR_EXCEPTION(self.ptr().get() != this,
+  TEUCHOS_TEST_FOR_EXCEPTION(self.ptr().get() != this,
     InternalError, 
     "inconsistency between space and self-reference in EpetraVectorSpace::createMember()");
   return rcp(new EpetraVector(self));

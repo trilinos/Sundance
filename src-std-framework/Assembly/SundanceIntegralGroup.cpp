@@ -148,7 +148,7 @@ IntegralGroup
     int nt = integrals[i]->nNodesTest();
     if (i > 0) 
     {
-      TEST_FOR_EXCEPTION(nt != nTestNodes_, std::logic_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(nt != nTestNodes_, std::logic_error,
         "IntegralGroup ctor detected integrals with inconsistent numbers of test nodes");
     }
     Tabs tab1;
@@ -225,9 +225,9 @@ IntegralGroup
     int nu = integrals[i]->nNodesUnk();
     if (i > 0) 
     {
-      TEST_FOR_EXCEPTION(nt != nTestNodes_, std::logic_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(nt != nTestNodes_, std::logic_error,
         "IntegralGroup ctor detected integrals with inconsistent numbers of test nodes");
-      TEST_FOR_EXCEPTION(nu != nUnkNodes_, std::logic_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(nu != nUnkNodes_, std::logic_error,
         "IntegralGroup ctor detected integrals with inconsistent numbers of unk nodes");
     }
     nTestNodes_ = nt;
@@ -329,7 +329,7 @@ bool IntegralGroup
         tab2 << "Integrating term group " << i 
         << " by quadrature");
           
-      TEST_FOR_EXCEPTION(vectorCoeffs[resultIndices_[i]]->length()==0,
+      TEUCHOS_TEST_FOR_EXCEPTION(vectorCoeffs[resultIndices_[i]]->length()==0,
         std::logic_error,
         "zero-length coeff vector detected in "
         "quadrature integration branch of "
@@ -350,7 +350,7 @@ bool IntegralGroup
         tab2 << "Integrating term group " << i 
         << " by quadrature");
           
-      TEST_FOR_EXCEPTION(vectorCoeffs[resultIndices_[i]]->length()==0,
+      TEUCHOS_TEST_FOR_EXCEPTION(vectorCoeffs[resultIndices_[i]]->length()==0,
         std::logic_error,
         "zero-length coeff vector detected in "
         "quadrature integration branch of "
@@ -394,7 +394,7 @@ bool IntegralGroup
     }
     else
     {
-      TEST_FOR_EXCEPT(1);
+      TEUCHOS_TEST_FOR_EXCEPT(1);
     }
 
     SUNDANCE_MSG4(integrationVerb(),

@@ -80,13 +80,13 @@ SolverState<Scalar> LinearSolver<Scalar>
   Vector<Scalar>& soln) const
 {
   Tabs tab;
-  TEST_FOR_EXCEPTION(this->ptr().get()==0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(this->ptr().get()==0, std::runtime_error,
     "null pointer in LinearSolver<Scalar>::solve()");
 
-  TEST_FOR_EXCEPTION(rhs.ptr().get()==0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(rhs.ptr().get()==0, std::runtime_error,
     "null rhs pointer in LinearSolver<Scalar>::solve()");
 
-  TEST_FOR_EXCEPTION(op.ptr().get()==0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(op.ptr().get()==0, std::runtime_error,
     "null op pointer in LinearSolver<Scalar>::solve()");
 
   TimeMonitor timer(solveTimer());
@@ -108,7 +108,7 @@ SolverState<Scalar> LinearSolver<Scalar>
 template <class Scalar> inline 
 const ParameterList& LinearSolver<Scalar>::parameters() const 
 {
-  TEST_FOR_EXCEPTION(this->ptr().get()==0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(this->ptr().get()==0, std::runtime_error,
     "null pointer in LinearSolver<Scalar>::parameters()");
   return this->ptr()->parameters();
 }
@@ -116,7 +116,7 @@ const ParameterList& LinearSolver<Scalar>::parameters() const
 template <class Scalar> inline 
 ParameterList& LinearSolver<Scalar>::parameters() 
 {
-  TEST_FOR_EXCEPTION(this->ptr().get()==0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(this->ptr().get()==0, std::runtime_error,
     "null pointer in LinearSolver<Scalar>::parameters()");
   return this->ptr()->parameters();
 }

@@ -96,12 +96,12 @@ EFDEEvaluator::EFDEEvaluator(
       int argIndex = argSparsitySuperset()->getIndex(dArg);
 
       
-      TEST_FOR_EXCEPTION(argIndex==-1, std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(argIndex==-1, std::runtime_error,
         "Derivative " << dArg << " expected in argument but not found");
 
       
       const DerivState& argState = argSparsitySuperset()->state(argIndex);
-      TEST_FOR_EXCEPTION(argState != myState, std::logic_error, 
+      TEUCHOS_TEST_FOR_EXCEPTION(argState != myState, std::logic_error, 
         "mismatched states");
 
       if (argState==ConstantDeriv)

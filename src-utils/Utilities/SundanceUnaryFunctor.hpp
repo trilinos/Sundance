@@ -168,7 +168,7 @@ namespace Sundance
         for (int i=0; i<nx; i++)                                        \
           {                                                             \
             f[i] = funcDefinition;                                      \
-            TEST_FOR_EXCEPTION(Teuchos::ScalarTraits<double>::isnaninf(f[i]), std::runtime_error, "Non-normal floating point result detected in evaluation of unary functor " << name() << " at argument " << x[i]); \
+            TEUCHOS_TEST_FOR_EXCEPTION(Teuchos::ScalarTraits<double>::isnaninf(f[i]), std::runtime_error, "Non-normal floating point result detected in evaluation of unary functor " << name() << " at argument " << x[i]); \
           }                                                             \
      }                                                                  \
    else                                                                 \
@@ -187,7 +187,7 @@ namespace Sundance
            {                                                            \
              f[i] = funcDefinition;                                     \
              df[i] = firstDerivDefinition;                              \
-             TEST_FOR_EXCEPTION(Teuchos::ScalarTraits<double>::isnaninf(f[i])||Teuchos::ScalarTraits<double>::isnaninf(df[i]), \
+             TEUCHOS_TEST_FOR_EXCEPTION(Teuchos::ScalarTraits<double>::isnaninf(f[i])||Teuchos::ScalarTraits<double>::isnaninf(df[i]), \
                                 std::runtime_error,                           \
                                 "Non-normal floating point result detected in " \
                                 "evaluation of unary functor "          \
@@ -216,7 +216,7 @@ namespace Sundance
              f[i] = funcDefinition;                                     \
               df[i] = firstDerivDefinition;                             \
               d2f[i] = secondDerivDefinition;                           \
-              TEST_FOR_EXCEPTION(Teuchos::ScalarTraits<double>::isnaninf(f[i])||Teuchos::ScalarTraits<double>::isnaninf(df[i])||Teuchos::ScalarTraits<double>::isnaninf(d2f[i]), \
+              TEUCHOS_TEST_FOR_EXCEPTION(Teuchos::ScalarTraits<double>::isnaninf(f[i])||Teuchos::ScalarTraits<double>::isnaninf(df[i])||Teuchos::ScalarTraits<double>::isnaninf(d2f[i]), \
                                  std::runtime_error,                          \
                                  "Non-normal floating point result detected in " \
                                  "evaluation of unary functor "         \
@@ -275,7 +275,7 @@ namespace Sundance
         for (int i=0; i<nx; i++)                                        \
           {                                                             \
             f[i] = funcDefinition;                                      \
-            TEST_FOR_EXCEPTION(Teuchos::ScalarTraits<double>::isnaninf(f[i]), std::runtime_error, "Non-normal floating point result detected in evaluation of unary functor " << name() << " at argument " << x[i]); \
+            TEUCHOS_TEST_FOR_EXCEPTION(Teuchos::ScalarTraits<double>::isnaninf(f[i]), std::runtime_error, "Non-normal floating point result detected in evaluation of unary functor " << name() << " at argument " << x[i]); \
           }                                                             \
      }                                                                  \
    else                                                                 \
@@ -294,7 +294,7 @@ namespace Sundance
            {                                                            \
              f[i] = funcDefinition;                                     \
              df[i] = firstDerivDefinition;                              \
-             TEST_FOR_EXCEPTION(Teuchos::ScalarTraits<double>::isnaninf(f[i])||Teuchos::ScalarTraits<double>::isnaninf(df[i]), \
+             TEUCHOS_TEST_FOR_EXCEPTION(Teuchos::ScalarTraits<double>::isnaninf(f[i])||Teuchos::ScalarTraits<double>::isnaninf(df[i]), \
                                 std::runtime_error,                           \
                                 "Non-normal floating point result detected in " \
                                 "evaluation of unary functor "          \
@@ -323,7 +323,7 @@ namespace Sundance
              f[i] = funcDefinition;                                     \
               df[i] = firstDerivDefinition;                             \
               d2f[i] = secondDerivDefinition;                           \
-              TEST_FOR_EXCEPTION(Teuchos::ScalarTraits<double>::isnaninf(f[i])||Teuchos::ScalarTraits<double>::isnaninf(df[i])||Teuchos::ScalarTraits<double>::isnaninf(d2f[i]), \
+              TEUCHOS_TEST_FOR_EXCEPTION(Teuchos::ScalarTraits<double>::isnaninf(f[i])||Teuchos::ScalarTraits<double>::isnaninf(df[i])||Teuchos::ScalarTraits<double>::isnaninf(d2f[i]), \
                                  std::runtime_error,                          \
                                  "Non-normal floating point result detected in " \
                                  "evaluation of unary functor "         \
@@ -355,7 +355,7 @@ namespace Sundance
               df[i] = firstDerivDefinition;                             \
               d2f[i] = secondDerivDefinition;                           \
               d3f[i] = thirdDerivDefinition;                           \
-              TEST_FOR_EXCEPTION(Teuchos::ScalarTraits<double>::isnaninf(f[i])||Teuchos::ScalarTraits<double>::isnaninf(df[i])||Teuchos::ScalarTraits<double>::isnaninf(d2f[i])||Teuchos::ScalarTraits<double>::isnaninf(d3f[i]), \
+              TEUCHOS_TEST_FOR_EXCEPTION(Teuchos::ScalarTraits<double>::isnaninf(f[i])||Teuchos::ScalarTraits<double>::isnaninf(df[i])||Teuchos::ScalarTraits<double>::isnaninf(d2f[i])||Teuchos::ScalarTraits<double>::isnaninf(d3f[i]), \
                                  std::runtime_error,                          \
                                  "Non-normal floating point result detected in " \
                                  "evaluation of unary functor "         \

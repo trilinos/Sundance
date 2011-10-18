@@ -803,19 +803,19 @@ public:
                                  Vector<double>& soln)
     {
       swig_type_info* opType = SWIG_TypeQuery("Playa::LinearOperator<double>*");
-      TEST_FOR_EXCEPTION(opType==0, runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(opType==0, runtime_error,
                          "swig could not find a match for type name "
                          "[Playa::LinearOperator<double>]");
 
 
       swig_type_info* vecType = SWIG_TypeQuery("Playa::Vector<double>*");
-      TEST_FOR_EXCEPTION(vecType==0, runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(vecType==0, runtime_error,
                          "swig could not find a match for type name "
                          "[Playa::Vector<double>]");
 
 
       swig_type_info* stateType = SWIG_TypeQuery("Playa::SolverState<double>*");
-      TEST_FOR_EXCEPTION(stateType==0, runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(stateType==0, runtime_error,
                          "swig could not find a match for type name "
                          "[Playa::SolverState<double>]");
 
@@ -847,19 +847,19 @@ public:
             {
             case 2:
               stateObj = PyTuple_GetItem(result, 1);
-              TEST_FOR_EXCEPTION(stateObj==0, runtime_error,
+              TEUCHOS_TEST_FOR_EXCEPTION(stateObj==0, runtime_error,
                                  "null solver state in PySundanceLinearSolver_solve()");
               SWIG_Python_ConvertPtr(stateObj, (void**) &state, stateType,  
                                      SWIG_POINTER_EXCEPTION | 0);
             case 1:
               solnObj = PyTuple_GetItem(result, 0);
-              TEST_FOR_EXCEPTION(solnObj==0, runtime_error,
+              TEUCHOS_TEST_FOR_EXCEPTION(solnObj==0, runtime_error,
                                  "null solution object in PySundanceLinearSolver_solve()");
               SWIG_Python_ConvertPtr(solnObj, (void**) &x, vecType,  
                                      SWIG_POINTER_EXCEPTION | 0);
               break;
             default:
-              TEST_FOR_EXCEPTION(size < 1 || size > 2, runtime_error,
+              TEUCHOS_TEST_FOR_EXCEPTION(size < 1 || size > 2, runtime_error,
                                  "invalid return value size " << size 
                                  << " in PySundanceLinearSolver_solve()");
             }
@@ -870,7 +870,7 @@ public:
                                  SWIG_POINTER_EXCEPTION | 0);
         }
 
-      TEST_FOR_EXCEPTION(x==0, runtime_error, "null return vector in "
+      TEUCHOS_TEST_FOR_EXCEPTION(x==0, runtime_error, "null return vector in "
                          " PySundanceLinearSolver_solve()");
       soln = *x;
 

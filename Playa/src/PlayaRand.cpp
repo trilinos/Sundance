@@ -5,7 +5,7 @@
 
 #include "PlayaRand.hpp"
 #include "PlayaMPIComm.hpp"
-#include "Teuchos_TestForException.hpp"
+#include "Teuchos_Assert.hpp"
 #include "PlayaOut.hpp"
 
 namespace Playa

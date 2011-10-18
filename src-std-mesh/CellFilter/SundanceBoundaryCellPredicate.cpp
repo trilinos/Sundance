@@ -37,7 +37,7 @@ using namespace Teuchos;
 
 bool BoundaryCellPredicate::lessThan(const CellPredicateBase* other) const
 {
-  TEST_FOR_EXCEPTION(dynamic_cast<const BoundaryCellPredicate*>(other) == 0,
+  TEUCHOS_TEST_FOR_EXCEPTION(dynamic_cast<const BoundaryCellPredicate*>(other) == 0,
                      std::logic_error,
                      "argument " << other->toXML() 
                      << " to BoundaryCellPredicate::lessThan() should be "

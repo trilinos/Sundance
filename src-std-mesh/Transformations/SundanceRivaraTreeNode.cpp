@@ -67,7 +67,7 @@ const TreeNode* TreeNode::next() const
   if (pos->parent_==0) return pos->parent_;
 
   /* if we get to this point, there's a bug in this code */
-  TEST_FOR_EXCEPT(true);
+  TEUCHOS_TEST_FOR_EXCEPT(true);
 
   return pos->parent_;
 }

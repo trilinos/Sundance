@@ -33,7 +33,7 @@ IQI_HdivScalBLF_DivUV_Cell::IQI_HdivScalBLF_DivUV_Cell( int spatialDim ,
 				   quad ,
 				   verbParams )
 {
-  TEST_FOR_EXCEPTION(true,
+  TEUCHOS_TEST_FOR_EXCEPTION(true,
 		     InternalError,
 		     "IQI_HdivScalBLF_DivUV_Cell is not implemented" );
 }
@@ -42,7 +42,7 @@ void IQI_HdivScalBLF_DivUV_Cell::evaluate( CellJacobianBatch& JTrans,
 					  const double* const coeff,
 					  RefCountPtr<Array<double> >& A) const
 {
-  TEST_FOR_EXCEPTION(true,
+  TEUCHOS_TEST_FOR_EXCEPTION(true,
 		     InternalError,
 		     "IQI_HdivScalBLF_DivUV_Cell is not implemented" );
 }

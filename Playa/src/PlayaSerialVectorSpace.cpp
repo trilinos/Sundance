@@ -29,7 +29,7 @@ SerialVectorSpace::SerialVectorSpace(int dim)
 RCP<VectorBase<double> >
 SerialVectorSpace::createMember(const VectorSpace<double>& self) const
 {
-  TEST_FOR_EXCEPTION(self.ptr().get() != this,
+  TEUCHOS_TEST_FOR_EXCEPTION(self.ptr().get() != this,
     InternalError, 
     "inconsistency between space and self-reference in SerialVectorSpace::createMember()");
 

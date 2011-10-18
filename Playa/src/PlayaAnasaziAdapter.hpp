@@ -100,8 +100,8 @@ public:
   static RCP<_MV> Clone( const  _MV & mv, const int numvecs )
     { 
       //Out::os() << "Clone(nv == " << numvecs << ")" << endl;
-      TEST_FOR_EXCEPT(mv.size() <= 0);
-      TEST_FOR_EXCEPT(numvecs <= 0);
+      TEUCHOS_TEST_FOR_EXCEPT(mv.size() <= 0);
+      TEUCHOS_TEST_FOR_EXCEPT(numvecs <= 0);
 
       RCP<_MV> rtn = rcp(new _MV(numvecs));
       for (int i=0; i<numvecs; i++)
@@ -119,7 +119,7 @@ public:
     { 
       //Out::os() << "CloneCopy()" << endl;
       int numvecs = mv.size();
-      TEST_FOR_EXCEPT(numvecs <= 0);
+      TEUCHOS_TEST_FOR_EXCEPT(numvecs <= 0);
 
       // create the new multivector
       RCP<_MV> rtn = rcp(new _MV(numvecs));
@@ -137,10 +137,10 @@ public:
     { 
       //Out::os() << "CloneCopy() indexed" << endl;
       int numvecs = index.size();
-      TEST_FOR_EXCEPT(numvecs <= 0);
-      TEST_FOR_EXCEPT((int) index.size() > mv.size());
+      TEUCHOS_TEST_FOR_EXCEPT(numvecs <= 0);
+      TEUCHOS_TEST_FOR_EXCEPT((int) index.size() > mv.size());
 
-//      TEST_FOR_EXCEPT(detectRepeatedIndex(index));
+//      TEUCHOS_TEST_FOR_EXCEPT(detectRepeatedIndex(index));
 
       // create the new multivector
       RCP<  _MV  > rtn = rcp(new _MV(numvecs));
@@ -160,10 +160,10 @@ public:
       int numvecs = index.size();
       //Out::os() << "index.size() = " << numvecs << endl;
       //Out::os() << "input size = " << mv.size() << endl;
-      TEST_FOR_EXCEPT(numvecs <= 0);
-      TEST_FOR_EXCEPT((int) index.size() > mv.size());
+      TEUCHOS_TEST_FOR_EXCEPT(numvecs <= 0);
+      TEUCHOS_TEST_FOR_EXCEPT((int) index.size() > mv.size());
 
-//      TEST_FOR_EXCEPT(detectRepeatedIndex(index));
+//      TEUCHOS_TEST_FOR_EXCEPT(detectRepeatedIndex(index));
 
       // create the new multivector
       RCP<  _MV  > rtn = rcp(new _MV(numvecs));
@@ -185,10 +185,10 @@ public:
       int numvecs = index.size();
       //Out::os() << "index size = " << numvecs << endl;
       //Out::os() << "input size = " << mv.size() << endl;
-      TEST_FOR_EXCEPT(numvecs <= 0);
-      TEST_FOR_EXCEPT((int) index.size() > mv.size());
+      TEUCHOS_TEST_FOR_EXCEPT(numvecs <= 0);
+      TEUCHOS_TEST_FOR_EXCEPT((int) index.size() > mv.size());
 
-//      TEST_FOR_EXCEPT(detectRepeatedIndex(index));
+//      TEUCHOS_TEST_FOR_EXCEPT(detectRepeatedIndex(index));
 
       // create the new multivector
       RCP<  const _MV  > rtn = rcp(new _MV(numvecs));
@@ -208,7 +208,7 @@ public:
   /** Obtain the vector length of \c mv. */
   static int GetVecLength( const  _MV & mv )
     {
-      TEST_FOR_EXCEPT(mv.size() <= 0);
+      TEUCHOS_TEST_FOR_EXCEPT(mv.size() <= 0);
       return mv[0].space().dim(); 
     }
 
@@ -234,7 +234,7 @@ public:
       int n = B.numCols();
 //      Out::os() << "B.numCols()=" << n << endl;
 
-      TEST_FOR_EXCEPT(mv.size() != n);
+      TEUCHOS_TEST_FOR_EXCEPT(mv.size() != n);
 
       for (int j=0; j<mv.size(); j++)
       {
@@ -268,7 +268,7 @@ public:
   static void MvAddMv( const double alpha, const  _MV & A, 
     const double beta,  const  _MV & B,  _MV & mv )
     { 
-      TEST_FOR_EXCEPT(A.size() != B.size());
+      TEUCHOS_TEST_FOR_EXCEPT(A.size() != B.size());
       mv.resize(A.size());
       for (int i=0; i<A.size(); i++)
       {
@@ -310,7 +310,7 @@ public:
   static void MvDot( const  _MV & mv, const  _MV & A, std::vector<double> &b )
     {
       //Out::os() << "MvDot()" << endl;
-      TEST_FOR_EXCEPT(mv.size() != A.size());
+      TEUCHOS_TEST_FOR_EXCEPT(mv.size() != A.size());
       b.resize(A.size());
       for (int i=0; i<mv.size(); i++) 
         b[i] = mv[i] * A[i];
@@ -361,9 +361,9 @@ public:
   static void SetBlock( const  _MV & A, const std::vector<int>& index,  _MV & mv )
     { 
       //Out::os() << "SetBlock()" << endl;
-      TEST_FOR_EXCEPT(A.size() < (int) index.size());
+      TEUCHOS_TEST_FOR_EXCEPT(A.size() < (int) index.size());
 //      mv.resize(index.size());
-//      TEST_FOR_EXCEPT(detectRepeatedIndex(index));
+//      TEUCHOS_TEST_FOR_EXCEPT(detectRepeatedIndex(index));
       for (unsigned int i=0; i<index.size(); i++)
       {
         mv[index[i]].acceptCopyOf(A[i]);
@@ -445,7 +445,7 @@ public:
 //        Out::os() << x[i] << endl;
 //        Out::os() << "i=" << i << " y=" << endl;
 //        Out::os() << y[i] << endl;
-//        TEST_FOR_EXCEPT(x[i].norm2() < 1.0e-12);
+//        TEUCHOS_TEST_FOR_EXCEPT(x[i].norm2() < 1.0e-12);
       }
     }
     

@@ -33,16 +33,16 @@ void PDEConstrainedObjBase::init(
   const Array<Expr>& adjointVars,
   const Expr& designVar)
 {
-  TEST_FOR_EXCEPTION(stateVars.size() != adjointVars.size(), 
+  TEUCHOS_TEST_FOR_EXCEPTION(stateVars.size() != adjointVars.size(), 
     RuntimeError,
     "number of state and adjoint variables should be identical");
 
-  TEST_FOR_EXCEPTION(stateVars.size() != stateVarVals_.size(), 
+  TEUCHOS_TEST_FOR_EXCEPTION(stateVars.size() != stateVarVals_.size(), 
     RuntimeError,
     "number of state variables and state values "
     "should be identical");
 
-  TEST_FOR_EXCEPTION(adjointVars.size() != adjointVarVals_.size(), 
+  TEUCHOS_TEST_FOR_EXCEPTION(adjointVars.size() != adjointVarVals_.size(), 
     RuntimeError,
     "number of adjoint variables and adjoint values "
     "should be identical");

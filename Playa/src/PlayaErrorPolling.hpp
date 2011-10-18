@@ -5,7 +5,7 @@
 #define Playa_ERRORPOLLING_H
 
 #include "Teuchos_ConfigDefs.hpp"
-#include "Teuchos_TestForException.hpp"
+#include "Teuchos_Assert.hpp"
 
 /*! \defgroup ErrorPolling_grp Utility code for synchronizing std::exception detection across processors. 
 */
@@ -80,7 +80,7 @@ namespace Playa
    * @param comm [in] The communicator on which polling will be done
    */
 #define TEUCHOS_POLL_FOR_FAILURES(comm)                                  \
-  TEST_FOR_EXCEPTION(Playa::ErrorPolling::pollForFailures(comm), \
+  TEUCHOS_TEST_FOR_EXCEPTION(Playa::ErrorPolling::pollForFailures(comm), \
                      std::runtime_error,                                     \
                      "off-processor error detected by proc=" << (comm).getRank());
 }

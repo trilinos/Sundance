@@ -53,7 +53,7 @@ FunctionalPolynomial::FunctionalPolynomial(const RCP<ScalarExpr>& expr)
     coeffs_(),
     keys_()
 {
-  TEST_FOR_EXCEPTION(!isConvertibleToPoly(expr.get()), std::logic_error, 
+  TEUCHOS_TEST_FOR_EXCEPTION(!isConvertibleToPoly(expr.get()), std::logic_error, 
                      "FunctionalPolynomial ctor called with an argument that "
                      "cannot be converted to a polynomial");
   int funcID;
@@ -96,7 +96,7 @@ FunctionalPolynomial::FunctionalPolynomial(const RCP<ScalarExpr>& expr)
     }
   else
     {
-      TEST_FOR_EXCEPTION(true, std::logic_error, 
+      TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, 
                          "impossible case in FunctionalPolynomial ctor");
     }
 }
@@ -127,7 +127,7 @@ FunctionalPolynomial::FunctionalPolynomial(const Map<int, RCP<ScalarExpr> >& fun
 Set<MultipleDeriv> 
 FunctionalPolynomial::internalFindW(int order, const EvalContext& context) const
 {
-  TEST_FOR_EXCEPTION(true, std::logic_error, 
+  TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, 
                      "FunctionalPolynomial not implemented");
   return Set<MultipleDeriv> ();
 }
@@ -169,7 +169,7 @@ addPoly(const FunctionalPolynomial* other, int sign) const
             }
       
           const ScalarExpr* se = dynamic_cast<const ScalarExpr*>(sum.ptr().get());
-          TEST_FOR_EXCEPTION(se==0, std::logic_error,
+          TEUCHOS_TEST_FOR_EXCEPTION(se==0, std::logic_error,
                              "Sum could not be cast to scalar expression");
           newCoeffs[i].put(key, rcp_dynamic_cast<ScalarExpr>(sum.ptr()));
         }
@@ -228,7 +228,7 @@ multiplyPoly(const FunctionalPolynomial* other) const
                     }
                   const ScalarExpr* se 
                     = dynamic_cast<const ScalarExpr*>(newTerm.ptr().get());
-                  TEST_FOR_EXCEPTION(se==0, std::logic_error,
+                  TEUCHOS_TEST_FOR_EXCEPTION(se==0, std::logic_error,
                                      "New coeff could not be cast to scalar expression");
                   newCoeffs[order].put(newKey, 
                                        rcp_dynamic_cast<ScalarExpr>(newTerm.ptr()));
@@ -296,7 +296,7 @@ multiplyScalar(const RCP<ScalarExpr>& alpha) const
 
           const ScalarExpr* se 
             = dynamic_cast<const ScalarExpr*>(newCoeff.ptr().get());
-          TEST_FOR_EXCEPTION(se==0, std::logic_error,
+          TEUCHOS_TEST_FOR_EXCEPTION(se==0, std::logic_error,
                              "Coefficient could not be cast to "
                              "scalar expression");
       
@@ -311,7 +311,7 @@ multiplyScalar(const RCP<ScalarExpr>& alpha) const
 Evaluator* FunctionalPolynomial::createEvaluator(const EvaluatableExpr* expr,
                                                  const EvalContext& context) const
 {
-  TEST_FOR_EXCEPTION(true, std::runtime_error, "poly eval not ready");
+  TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "poly eval not ready");
   return (Evaluator*) 0;
 }
 
@@ -388,7 +388,7 @@ Set<Deriv> FunctionalPolynomial
          i = prevSet.begin(); i != prevSet.end(); i++)
     {
       const MultipleDeriv& mdPrev = *i;
-      TEST_FOR_EXCEPTION(currentDeriv.size()+1 != mdPrev.size(),
+      TEUCHOS_TEST_FOR_EXCEPTION(currentDeriv.size()+1 != mdPrev.size(),
                          std::logic_error,
                          "deriv orders must differ by 1. Found "
                          "currentDeriv.size()=" << currentDeriv.size()
@@ -477,7 +477,7 @@ void FunctionalPolynomial
           //    continue;
           // }
           prevKey.put(*j);
-          TEST_FOR_EXCEPTION(!sPrev.containsKey(prevKey), std::logic_error,
+          TEUCHOS_TEST_FOR_EXCEPTION(!sPrev.containsKey(prevKey), std::logic_error,
                              "inconsisent key lookup");
           const std::string& prevStr = sPrev.get(prevKey);
           std::string funcStr = (*j).toString();
@@ -511,7 +511,7 @@ string FunctionalPolynomial::evalString() const
         }
     }
 
-  //  TEST_FOR_EXCEPTION(sCurr.size() != 1, std::logic_error,
+  //  TEUCHOS_TEST_FOR_EXCEPTION(sCurr.size() != 1, std::logic_error,
   //                     "final value should have only one element");
 
   return sCurr.begin()->second;
@@ -522,9 +522,9 @@ string FunctionalPolynomial::evalString() const
 bool FunctionalPolynomial::lessThan(const ScalarExpr* other) const
 {
   const FunctionalPolynomial* f = dynamic_cast<const FunctionalPolynomial*>(other);
-  TEST_FOR_EXCEPTION(f==0, std::logic_error, "cast should never fail at this point");
+  TEUCHOS_TEST_FOR_EXCEPTION(f==0, std::logic_error, "cast should never fail at this point");
   
-  TEST_FOR_EXCEPTION(true, std::runtime_error, "FunctionalPolynomial::lessThan() not "
+  TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "FunctionalPolynomial::lessThan() not "
                      "implemented");
 }
 

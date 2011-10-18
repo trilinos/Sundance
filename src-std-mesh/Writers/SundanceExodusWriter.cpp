@@ -65,7 +65,7 @@ void ExodusWriter::write() const
   int ws = 8;
   int exoid = ex_create(exoFile.c_str(), EX_CLOBBER, &ws, &ws);
 
-  TEST_FOR_EXCEPTION(exoid < 0, std::runtime_error, "failure to create file "
+  TEUCHOS_TEST_FOR_EXCEPTION(exoid < 0, std::runtime_error, "failure to create file "
     << filename());
 
 
@@ -105,7 +105,7 @@ void ExodusWriter::write() const
 
   ex_close(exoid);
 #else
-  TEST_FOR_EXCEPTION(true, std::runtime_error, "Exodus not enabled");
+  TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Exodus not enabled");
 #endif
 }
 
@@ -154,7 +154,7 @@ void ExodusWriter::writeMesh(int exoid,
     numNS,
     numSS
     );
-  TEST_FOR_EXCEPT(ierr<0);
+  TEUCHOS_TEST_FOR_EXCEPT(ierr<0);
 
 
   /* write the vertices */
@@ -181,7 +181,7 @@ void ExodusWriter::writeMesh(int exoid,
     ierr = ex_put_coord(exoid, &(x[0]), &(y[0]), &(z[0]));
   }
 
-  TEST_FOR_EXCEPT(ierr < 0);
+  TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
 
   if (dim==2)
   {
@@ -203,7 +203,7 @@ void ExodusWriter::writeMesh(int exoid,
     ierr = ex_put_coord_names(exoid, (char**)&(pp[0]));
   }
 
-  TEST_FOR_EXCEPT(ierr < 0);
+  TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
 
   /* write the element blocks */
 
@@ -226,13 +226,13 @@ void ExodusWriter::writeMesh(int exoid,
       numElemsThisBlock, nodesPerElem, numBlockAttr
       );
 
-    TEST_FOR_EXCEPT(ierr < 0);
+    TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
     ierr = ex_put_elem_conn(exoid, blockLabels[b]+1, &(nodeLIDs[0]));
-    TEST_FOR_EXCEPT(ierr < 0);
+    TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
   }
 //  Out::os() << "done all element blocks" << endl;
 
-  TEST_FOR_EXCEPT(ierr < 0);
+  TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
   
   /* write the side sets */
   
@@ -272,7 +272,7 @@ void ExodusWriter::writeMesh(int exoid,
   }
 //  Out::os() << "done all side sets" << endl;
   
-  TEST_FOR_EXCEPT(ierr < 0);
+  TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
 
 
 //  Out::os() << "writing node sets "<< endl;  
@@ -295,11 +295,11 @@ void ExodusWriter::writeMesh(int exoid,
       &((*allNodes)[0]),
       &(emptyDist[0]));
 
-    TEST_FOR_EXCEPT(ierr < 0);
+    TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
   }
 //  Out::os() << "done all node sets" << endl;
 #else
-  TEST_FOR_EXCEPTION(true, std::runtime_error, "Exodus not enabled");
+  TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Exodus not enabled");
 #endif
 }
 
@@ -343,7 +343,7 @@ void ExodusWriter::writeFields(int exoid,
     }
   }
   Array<int> nsFuncs = nsFuncSet.elements();
-  TEST_FOR_EXCEPT(nsFuncs.size() != nNodesetFuncs);
+  TEUCHOS_TEST_FOR_EXCEPT(nsFuncs.size() != nNodesetFuncs);
 
   Map<int, int > funcIDToNSFuncIndex;
   for (int i=0; i<nNodesetFuncs; i++) funcIDToNSFuncIndex.put(nsFuncs[i],i);
@@ -373,24 +373,24 @@ void ExodusWriter::writeFields(int exoid,
   if (nNodalFuncs > 0)
   {
     ierr = ex_put_var_param(exoid, "N", nNodalFuncs);
-    TEST_FOR_EXCEPT(ierr < 0);
+    TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
   }
 
   if (nElemFuncs > 0)
   {
     ierr = ex_put_var_param(exoid, "E", nElemFuncs);
-    TEST_FOR_EXCEPT(ierr < 0);
+    TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
   }
 
 
   if (nNodesets > 0)
   {
     ierr = ex_put_var_param(exoid, "M", nNodesetFuncs);
-    TEST_FOR_EXCEPT(ierr < 0);
+    TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
     
     ierr = ex_put_nset_var_tab(exoid, nNodesets, 
       nNodesetFuncs, &(nodesetFuncTruthTable[0]));
-    TEST_FOR_EXCEPT(ierr < 0);
+    TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
     
     Array<std::string> nsFuncNames(nNodesetFuncs);
     Array<const char*> nsNameP;
@@ -402,7 +402,7 @@ void ExodusWriter::writeFields(int exoid,
     getCharpp(nsFuncNames, nsNameP);  
     
     ierr = ex_put_var_names(exoid, "M", nNodesetFuncs, (char**)&(nsNameP[0]));
-    TEST_FOR_EXCEPT(ierr < 0);
+    TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
   }
 
 
@@ -426,7 +426,7 @@ void ExodusWriter::writeFields(int exoid,
   if (nNodalFuncs > 0)
   {
     ierr = ex_put_var_names(exoid, "N", nNodalFuncs, (char**)&(nNameP[0]));
-    TEST_FOR_EXCEPT(ierr < 0);
+    TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
     
     Array<double> funcVals;
     Array<int> nodeID(mesh().numCells(0));
@@ -439,7 +439,7 @@ void ExodusWriter::writeFields(int exoid,
       int t = 1;
       int numNodes = funcVals.size();
       ierr = ex_put_nodal_var(exoid, t, i+1, numNodes, &(funcVals[0]));
-      TEST_FOR_EXCEPT(ierr < 0);
+      TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
     }
     
     for (int i=0; i<nNodesetFuncs; i++)
@@ -455,7 +455,7 @@ void ExodusWriter::writeFields(int exoid,
         int numNodes = funcVals.size();
         int id = nsID[ns[s]];
         ierr = ex_put_nset_var(exoid, t, i+1, id, numNodes, &(funcVals[0]));
-        TEST_FOR_EXCEPT(ierr < 0);
+        TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
       }
     }
   }
@@ -463,7 +463,7 @@ void ExodusWriter::writeFields(int exoid,
   if (nElemFuncs > 0)
   {
     ierr = ex_put_var_names(exoid, "E", nElemFuncs, (char**)&(eNameP[0]));
-    TEST_FOR_EXCEPT(ierr < 0);
+    TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
     
     Array<double> funcVals;
     int dim = mesh().spatialDim();
@@ -477,13 +477,13 @@ void ExodusWriter::writeFields(int exoid,
       int t = 1;
       int numElems = funcVals.size();
       ierr = ex_put_elem_var(exoid, t, i+1, 1, numElems, &(funcVals[0]));
-      TEST_FOR_EXCEPT(ierr < 0);
+      TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
     }
   }
 
 
 #else
-  TEST_FOR_EXCEPTION(true, std::runtime_error, "Exodus not enabled");
+  TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Exodus not enabled");
 #endif
   
 }
@@ -499,7 +499,7 @@ std::string ExodusWriter::elemType(const CellType& type) const
     case TetCell:
       return "TETRA";
     default:
-      TEST_FOR_EXCEPTION(true, std::runtime_error, "cell type=" << type << " cannot be used as a "
+      TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "cell type=" << type << " cannot be used as a "
         "maximal-dimension cell in exodus");
   }
   return "NULL"; //-Wall

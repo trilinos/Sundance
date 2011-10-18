@@ -60,7 +60,7 @@ ExprWithChildren::ExprWithChildren(const Array<RCP<ScalarExpr> >& children)
 bool ExprWithChildren::lessThan(const ScalarExpr* other) const
 {
   const ExprWithChildren* c = dynamic_cast<const ExprWithChildren*>(other);
-  TEST_FOR_EXCEPTION(c==0, std::logic_error, "cast should never fail at this point");
+  TEUCHOS_TEST_FOR_EXCEPTION(c==0, std::logic_error, "cast should never fail at this point");
 
   if (children_.size() < c->children_.size()) return true;
   if (children_.size() > c->children_.size()) return false;
@@ -100,7 +100,7 @@ const EvaluatableExpr* ExprWithChildren::evaluatableChild(int i) const
   const EvaluatableExpr* e 
     = dynamic_cast<const EvaluatableExpr*>(children_[i].get());
 
-  TEST_FOR_EXCEPTION(e==0, std::logic_error, 
+  TEUCHOS_TEST_FOR_EXCEPTION(e==0, std::logic_error, 
     "ExprWithChildren: cast of child [" 
     << children_[i]->toString()
     << " to evaluatable expr failed");
@@ -308,9 +308,9 @@ ExprWithChildren::product(const Array<int>& J, const Array<int>& K,
   DerivSubsetSpecifier dss,
   const EvalContext& context) const
 {
-  TEST_FOR_EXCEPTION(J.size() != K.size(), std::logic_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(J.size() != K.size(), std::logic_error,
     "mismatched index set sizes");
-  TEST_FOR_EXCEPTION(J.size() == 0, std::logic_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(J.size() == 0, std::logic_error,
     "empty index set");
 
   Set<MultipleDeriv> rtn 
@@ -854,7 +854,7 @@ RCP<Array<Set<MultipleDeriv> > > ExprWithChildren
     Tabs tab1;
     MultiSet<int> mi = makeMultiSet(i);
     SUNDANCE_MSG4(verb, tab1 << "i=" << i << ", Q1_i = " << mi );
-    TEST_FOR_EXCEPTION(mi.size() != 1, std::logic_error, "unexpected multiset size");
+    TEUCHOS_TEST_FOR_EXCEPTION(mi.size() != 1, std::logic_error, "unexpected multiset size");
     //      int i = *(mi.begin());
     Set<MultipleDeriv> R11;
     Set<MultipleDeriv> R12;
@@ -877,7 +877,7 @@ RCP<Array<Set<MultipleDeriv> > > ExprWithChildren
              j=jSet.begin(); j!=jSet.end(); j++)
       {
         Tabs tab3;
-        TEST_FOR_EXCEPTION(j->size()!=1, std::logic_error, 
+        TEUCHOS_TEST_FOR_EXCEPTION(j->size()!=1, std::logic_error, 
           "unexpected set size");
         int jIndex = *(j->begin());
         SUNDANCE_MSG5(verb,  tab3 << "j=" << jIndex );
@@ -903,7 +903,7 @@ RCP<Array<Set<MultipleDeriv> > > ExprWithChildren
       for (Set<MultiSet<int> >::const_iterator 
              jk=jkSet.begin(); jk!=jkSet.end(); jk++)
       {
-        TEST_FOR_EXCEPTION(jk->size()!=2, std::logic_error, 
+        TEUCHOS_TEST_FOR_EXCEPTION(jk->size()!=2, std::logic_error, 
           "unexpected set size");
         Array<int> jka = jk->elements();
         int j = jka[0];
@@ -1213,7 +1213,7 @@ int chainRuleMultiplicity(const MultipleDeriv& nu,
     int lPow = 1;
     int kNorm = K[i].size();
     for (int j=0; j<kNorm; j++) lPow *= lFact;
-    TEST_FOR_EXCEPT(rtn % lPow != 0);
+    TEUCHOS_TEST_FOR_EXCEPT(rtn % lPow != 0);
     rtn = rtn/lPow;
   }
   return rtn;

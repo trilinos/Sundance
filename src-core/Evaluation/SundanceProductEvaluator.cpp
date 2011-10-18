@@ -411,7 +411,7 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
   }
   catch(std::exception& e)
   {
-    TEST_FOR_EXCEPTION(true, std::runtime_error, 
+    TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, 
       "exception detected in ProductEvaluator: expr="
       << expr->toString() << std::endl
       << "exception=" << e.what());

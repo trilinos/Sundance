@@ -140,7 +140,7 @@ Point AToCDensitySampler::vec2point(const std::vector<double>& x) const
   if (x.size()==1) return Point(x[0]);
   else if (x.size()==2U) return Point(x[0], x[1]);
   else if (x.size()==3U) return Point(x[0], x[1], x[2]);
-  TEST_FOR_EXCEPT(x.size() < 1 || x.size() > 3U);
+  TEUCHOS_TEST_FOR_EXCEPT(x.size() < 1 || x.size() > 3U);
   return Point();
 }
 
@@ -155,7 +155,7 @@ Expr AToCDensitySampler::sample(const std::vector<double>& positions,
 {
   TimeMonitor timer(densitySamplingTimer());
 
-  TEST_FOR_EXCEPTION(positions.size() % dim_ != 0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(positions.size() % dim_ != 0, std::runtime_error,
                      "vector of coordinates should by an integer multiple "
                      "of the spatial dimension");
 
@@ -170,7 +170,7 @@ Expr AToCDensitySampler::sample(const std::vector<double>& positions,
 
       int guess = locator_.guessCell(x);
 
-      TEST_FOR_EXCEPTION(guess < 0, std::runtime_error, "particle #" << i << " position="
+      TEUCHOS_TEST_FOR_EXCEPTION(guess < 0, std::runtime_error, "particle #" << i << " position="
                          << AToCPointLocator::makePoint(dim_, x) 
                          << " is out of search grid");
 
@@ -198,7 +198,7 @@ void AToCDensitySampler::addToCounts(const std::vector<double>& positions,
 {
   TimeMonitor timer(densitySamplingTimer());
 
-  TEST_FOR_EXCEPTION(positions.size() % dim_ != 0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(positions.size() % dim_ != 0, std::runtime_error,
                      "vector of coordinates should by an integer multiple "
                      "of the spatial dimension");
 
@@ -212,7 +212,7 @@ void AToCDensitySampler::addToCounts(const std::vector<double>& positions,
 
       int guess = locator_.guessCell(x);
 
-      TEST_FOR_EXCEPTION(guess < 0, std::runtime_error, "particle #" << i << " position="
+      TEUCHOS_TEST_FOR_EXCEPTION(guess < 0, std::runtime_error, "particle #" << i << " position="
                          << AToCPointLocator::makePoint(dim_, x) 
                          << " is out of search grid");
 

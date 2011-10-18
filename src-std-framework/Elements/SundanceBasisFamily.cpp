@@ -109,7 +109,7 @@ BasisFamily BasisFamily::getBasis(const RCP<const CommonFuncDataStub>& funcData)
       return d->discreteSpace().basis()[0];
     }
 
-  TEST_FOR_EXCEPTION(u==0 && t==0 && d==0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(u==0 && t==0 && d==0, std::runtime_error,
 		     "BasisFamily::getBasis() argument is not a recognized "
 		     "type of function data");
   return BasisFamily();
@@ -121,7 +121,7 @@ BasisFamily BasisFamily::getBasis(const RCP<const CommonFuncDataStub>& funcData)
 RCP<BasisDOFTopologyBase> BasisFamily::getBasisTopology(const RCP<const CommonFuncDataStub>& funcData)
 {
   BasisFamily b = getBasis(funcData);
-  TEST_FOR_EXCEPT(b.ptr().get()==0);
+  TEUCHOS_TEST_FOR_EXCEPT(b.ptr().get()==0);
 
   return rcp_dynamic_cast<BasisDOFTopologyBase>(b.ptr());
 }

@@ -215,7 +215,7 @@ void VTKWriter::writeCells(std::ostream& os) const
 		          os << std::endl;
 				break;
             default:
-            	 TEST_FOR_EXCEPTION(true, std::runtime_error, "call type " << cellType <<
+            	 TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "call type " << cellType <<
             			 " not handled in VTKWriter::writeCells()");
 			}
     }
@@ -265,7 +265,7 @@ void VTKWriter::writeCells(std::ostream& os) const
 					vtkCode = 11;
 					break;
         default:
-          TEST_FOR_EXCEPTION(true, std::runtime_error,
+          TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error,
                              "call type " << cellType << " not handled "
                              "in VTKWriter::writeCells()");
 				}
