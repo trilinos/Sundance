@@ -306,13 +306,13 @@ string CellFilter::toString() const
 const CellFilterBase* CellFilter::cfbPtr() const
 {
   const CellFilterBase* rtn = dynamic_cast<const CellFilterBase*>(ptr().get());
-  TEST_FOR_EXCEPTION(rtn==0, std::logic_error, "CellFilter::cfbPtr() cast failed");
+  TEUCHOS_TEST_FOR_EXCEPTION(rtn==0, std::logic_error, "CellFilter::cfbPtr() cast failed");
   return rtn;
 }
 
 CellFilterBase* CellFilter::nonConstCfbPtr()
 {
   CellFilterBase* rtn = dynamic_cast<CellFilterBase*>(ptr().get());
-  TEST_FOR_EXCEPTION(rtn==0, std::logic_error, "CellFilter::nonConstCfbPtr() cast failed");
+  TEUCHOS_TEST_FOR_EXCEPTION(rtn==0, std::logic_error, "CellFilter::nonConstCfbPtr() cast failed");
   return rtn;
 }

@@ -36,7 +36,7 @@ LinearSolver<double> LinearSolverBuilder::createSolver(const std::string& filena
 
 LinearSolver<double> LinearSolverBuilder::createSolver(const ParameterList& params, int verb)
 {
-  TEST_FOR_EXCEPTION(!params.isSublist("Linear Solver"), std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(!params.isSublist("Linear Solver"), std::runtime_error,
     "did not find Linear Solver sublist in " << params);
 
   ParameterList solverSublist = params.sublist("Linear Solver");
@@ -62,7 +62,7 @@ LinearSolver<double> LinearSolverBuilder::createSolver(const ParameterList& para
     }
     else if (solverMethod=="GMRES")
     {
-      TEST_FOR_EXCEPTION(true, RuntimeError, "Playa GMRES solver not implemented");
+      TEUCHOS_TEST_FOR_EXCEPTION(true, RuntimeError, "Playa GMRES solver not implemented");
     }
   }
   else if (solverType=="Amesos")
@@ -80,7 +80,7 @@ LinearSolver<double> LinearSolverBuilder::createSolver(const ParameterList& para
     return new BlockTriangularSolver<double>(subSolver);
   }
 
-  TEST_FOR_EXCEPTION(true, std::runtime_error, 
+  TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, 
     "Could not create a solver from parameter list " 
     << params);
   return LinearSolver<double>();

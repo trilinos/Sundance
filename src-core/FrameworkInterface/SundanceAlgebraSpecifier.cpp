@@ -100,7 +100,7 @@ ostream& operator<<(std::ostream& os,
       os << "Normal";
       break;
     default:
-      TEST_FOR_EXCEPT(1);
+      TEUCHOS_TEST_FOR_EXCEPT(1);
   }
   return os;
 }

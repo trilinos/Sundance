@@ -55,7 +55,7 @@ Expr Ellipse2D::getParams() const
 double Ellipse2D::curveEquation_intern(const Point& evalPoint) const
 {
 	int verb = 0;
-	TEST_FOR_EXCEPTION(evalPoint.dim() != 2, std::runtime_error,
+	TEUCHOS_TEST_FOR_EXCEPTION(evalPoint.dim() != 2, std::runtime_error,
 			"Ellipse2D::curveEquation() evaluation point dimension must be 2");
 
 	// calculate the distance compared to the middle point

@@ -109,7 +109,7 @@ void ChainRuleSum
   for (int i=0; i<varArgDerivs.size(); i++)
     {
       int s = varArgDerivs[i]->length();
-      TEST_FOR_EXCEPTION(vecSize != -1 && s != vecSize, std::logic_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(vecSize != -1 && s != vecSize, std::logic_error,
                          "inconsistent vector sizes " << vecSize
                          << " and " << s);
       vecSize = s;
@@ -119,13 +119,13 @@ void ChainRuleSum
       for (int j=0; j<vArgResults[i]->size(); j++)
         {
           int s = (*(vArgResults[i]))[j]->length();
-          TEST_FOR_EXCEPTION(vecSize != -1 && s != vecSize, std::logic_error,
+          TEUCHOS_TEST_FOR_EXCEPTION(vecSize != -1 && s != vecSize, std::logic_error,
                              "inconsistent vector sizes " << vecSize
                              << " and " << s);
           vecSize = s;
         }
     } 
-  TEST_FOR_EXCEPT(vecSize==-1);
+  TEUCHOS_TEST_FOR_EXCEPT(vecSize==-1);
   
   varResult = mgr.popVector();
   varResult->resize(vecSize);

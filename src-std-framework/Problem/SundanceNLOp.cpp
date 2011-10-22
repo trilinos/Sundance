@@ -268,15 +268,15 @@ void NLOp::
 computeJacobianAndFunction(LinearOperator<double>& J,
   Vector<double>& resid) const
 {
-  TEST_FOR_EXCEPTION(currentEvalPt().ptr().get()==0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(currentEvalPt().ptr().get()==0, std::runtime_error,
     "null evaluation point in "
     "NLOp::jacobian()");
 
-  TEST_FOR_EXCEPTION(J.ptr().get()==0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(J.ptr().get()==0, std::runtime_error,
     "null Jacobian pointer in "
     "NLOp::jacobian()");
 
-  TEST_FOR_EXCEPTION(resid.ptr().get()==0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(resid.ptr().get()==0, std::runtime_error,
     "null residual pointer in "
     "NLOp::jacobian()");
 
@@ -296,7 +296,7 @@ computeJacobianAndFunction(LinearOperator<double>& J,
 
 Vector<double> NLOp::computeFunctionValue() const 
 {
-  TEST_FOR_EXCEPTION(currentEvalPt().ptr().get()==0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(currentEvalPt().ptr().get()==0, std::runtime_error,
     "null evaluation point in "
     "NLOp::computeFunctionValue()");
 
@@ -321,11 +321,11 @@ void NLOp::computeFunctionValue(Vector<double>& resid) const
   /* Set the vector underlying the discrete 
    * function to the evaluation point*/
 
-  TEST_FOR_EXCEPTION(currentEvalPt().ptr().get()==0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(currentEvalPt().ptr().get()==0, std::runtime_error,
     "null evaluation point in "
     "NLOp::computeFunctionValue()");
 
-  TEST_FOR_EXCEPTION(resid.ptr().get()==0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(resid.ptr().get()==0, std::runtime_error,
     "null residual pointer in "
     "NLOp::computeFunctionValue()");
 
@@ -345,15 +345,15 @@ void NLOp::computeFunctionValue(Vector<double>& resid) const
 Expr NLOp::
 computeSensitivities(const LinearSolver<double>& solver) const
 {
-  TEST_FOR_EXCEPTION(currentEvalPt().ptr().get()==0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(currentEvalPt().ptr().get()==0, std::runtime_error,
     "null evaluation point in "
     "NLOp::computeSensitivities()");
 
-  TEST_FOR_EXCEPTION(J_.ptr().get()==0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(J_.ptr().get()==0, std::runtime_error,
     "null Jacobian pointer in "
     "NLOp::computeSensitivities()");
 
-  TEST_FOR_EXCEPTION(params_.ptr().get()==0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(params_.ptr().get()==0, std::runtime_error,
     "null parameters in NLOp::computeSensitivities()");
 
   updateDiscreteFunctionValue(currentEvalPt());

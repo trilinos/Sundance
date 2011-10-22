@@ -106,7 +106,7 @@ void LinearPDEConstrainedObj::solveState(const Vector<double>& x) const
   {
     SolverState<double> status 
       = stateProbs_[i].solve(solvers_[i], stateVarVals(i));
-    TEST_FOR_EXCEPTION(status.finalState() != SolveConverged,
+    TEUCHOS_TEST_FOR_EXCEPTION(status.finalState() != SolveConverged,
       std::runtime_error,
       "state equation could not be solved: status="
       << status.stateDescription());
@@ -155,7 +155,7 @@ void LinearPDEConstrainedObj
       }
       w.write();
     }
-    TEST_FOR_EXCEPTION(status.finalState() != SolveConverged,
+    TEUCHOS_TEST_FOR_EXCEPTION(status.finalState() != SolveConverged,
       std::runtime_error,
       "state equation " << i 
       << " could not be solved: status="
@@ -204,7 +204,7 @@ void LinearPDEConstrainedObj
       w.write();
 
     }
-    TEST_FOR_EXCEPTION(status.finalState() != SolveConverged,
+    TEUCHOS_TEST_FOR_EXCEPTION(status.finalState() != SolveConverged,
       std::runtime_error,
       "adjoint equation " << i 
       << " could not be solved: status="

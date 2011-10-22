@@ -108,7 +108,7 @@ PartialElementDOFMap::getDOFsForCellBatch(int cellDim,
       
     for (int c=0; c<nCells; c++)
     {
-      TEST_FOR_EXCEPTION(mesh().numMaxCofacets(cellDim, cellLID[c]) > 1,
+      TEUCHOS_TEST_FOR_EXCEPTION(mesh().numMaxCofacets(cellDim, cellLID[c]) > 1,
         std::runtime_error,
         "Attempt to do a trace of a L0 basis on a "
         "lower-dimensional cell having more than one "

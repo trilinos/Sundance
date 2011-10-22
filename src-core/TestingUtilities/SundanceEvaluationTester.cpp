@@ -129,7 +129,7 @@ EvaluationTester::EvaluationTester(const Expr& e, int maxDiffOrder)
     Tabs tabs1;
     const UnknownFuncElement* fe 
       = dynamic_cast<const UnknownFuncElement*>(unks[i].ptr().get());
-    TEST_FOR_EXCEPTION(fe==0, std::logic_error,
+    TEUCHOS_TEST_FOR_EXCEPTION(fe==0, std::logic_error,
       "unk " << unks[i] << " is not an UnknownFunction");
 
     RCP<const UnknownFuncDataStub> data 
@@ -138,14 +138,14 @@ EvaluationTester::EvaluationTester(const Expr& e, int maxDiffOrder)
     RCP<const TestUnknownFuncData> tufd  
       = rcp_dynamic_cast<const TestUnknownFuncData>(data);
 
-    TEST_FOR_EXCEPTION(tufd.get()==0, std::logic_error,
+    TEUCHOS_TEST_FOR_EXCEPTION(tufd.get()==0, std::logic_error,
       "unk " << unks[i] << " is not a TestUnknownFunction");
 
     Expr discFunc = tufd->createDiscreteFunction(fe->name());
 
     const DiscreteFuncElement* df 
       = dynamic_cast<const DiscreteFuncElement*>(discFunc[0].ptr().get());
-    TEST_FOR_EXCEPTION(df==0, std::logic_error,
+    TEUCHOS_TEST_FOR_EXCEPTION(df==0, std::logic_error,
       "df " << discFunc 
       << " is not a DiscreteFuncElement");
 
@@ -286,12 +286,12 @@ double EvaluationTester::evaluate() const
            iter=md.begin(); iter != md.end(); iter++)
     {
       const Deriv& d = *iter;
-      TEST_FOR_EXCEPTION(d.isCoordDeriv(), std::logic_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(d.isCoordDeriv(), std::logic_error,
         "coordinate deriv found in TestEvalMediator::"
         "sumFunctionalChainRule");
       int uid = d.fid().dofID();
       SUNDANCE_VERB_EXTREME("deriv=" << d << " uid=" << uid);
-      TEST_FOR_EXCEPTION(!unkIDToDiscreteIDMap_.containsKey(uid),
+      TEUCHOS_TEST_FOR_EXCEPTION(!unkIDToDiscreteIDMap_.containsKey(uid),
         std::logic_error,
         "uid " << uid << " not found in map " 
         <<unkIDToDiscreteIDMap_ );
@@ -390,12 +390,12 @@ double EvaluationTester::evaluate(Array<double>& firstDerivs) const
            iter=md.begin(); iter != md.end(); iter++)
     {
       const Deriv& d = *iter;
-      TEST_FOR_EXCEPTION(d.isCoordDeriv(), std::logic_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(d.isCoordDeriv(), std::logic_error,
         "coordinate deriv found in TestEvalMediator::"
         "sumFunctionalChainRule");
       int uid = d.fid().dofID();
       SUNDANCE_VERB_EXTREME("deriv=" << d << " uid=" << uid);
-      TEST_FOR_EXCEPTION(!unkIDToDiscreteIDMap_.containsKey(uid),
+      TEUCHOS_TEST_FOR_EXCEPTION(!unkIDToDiscreteIDMap_.containsKey(uid),
         std::logic_error,
         "uid " << uid << " not found in map " 
         <<unkIDToDiscreteIDMap_ );
@@ -509,12 +509,12 @@ double EvaluationTester::evaluate(Array<double>& firstDerivs,
            iter=md.begin(); iter != md.end(); iter++)
     {
       const Deriv& d = *iter;
-      TEST_FOR_EXCEPTION(d.isCoordDeriv(), std::logic_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(d.isCoordDeriv(), std::logic_error,
         "coordinate deriv found in TestEvalMediator::"
         "sumFunctionalChainRule");
       int uid = d.fid().dofID();
       SUNDANCE_VERB_EXTREME("deriv=" << d << " uid=" << uid);
-      TEST_FOR_EXCEPTION(!unkIDToDiscreteIDMap_.containsKey(uid),
+      TEUCHOS_TEST_FOR_EXCEPTION(!unkIDToDiscreteIDMap_.containsKey(uid),
         std::logic_error,
         "uid " << uid << " not found in map " 
         <<unkIDToDiscreteIDMap_ );

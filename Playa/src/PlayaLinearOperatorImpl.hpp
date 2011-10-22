@@ -195,7 +195,7 @@ void LinearOperator<Scalar>::getRow(const int& row,
 {
   const RowAccessibleOp<Scalar>* val = 
     dynamic_cast<const RowAccessibleOp<Scalar>* >(this->ptr().get());
-  TEST_FOR_EXCEPTION(val == 0, std::runtime_error, 
+  TEUCHOS_TEST_FOR_EXCEPTION(val == 0, std::runtime_error, 
     "Operator not row accessible; getRow() not defined.");
   val->getRow(row, indices, values);
 }
@@ -234,7 +234,7 @@ void LinearOperator<Scalar>::setBlock(int i, int j,
   SetableBlockOperatorBase<Scalar>* b = 
     dynamic_cast<SetableBlockOperatorBase<Scalar>* >(this->ptr().get());
   
-  TEST_FOR_EXCEPTION(b == 0, std::runtime_error, 
+  TEUCHOS_TEST_FOR_EXCEPTION(b == 0, std::runtime_error, 
     "Can't call setBlock since operator not SetableBlockOperatorBase");
 
   b->setBlock(i, j, sub);
@@ -260,7 +260,7 @@ LinearOperator<Scalar> LinearOperator<Scalar>::getBlock(const int &i,
   
   if (b==0)
   {
-    TEST_FOR_EXCEPTION(i != 0 || j != 0, std::runtime_error, 
+    TEUCHOS_TEST_FOR_EXCEPTION(i != 0 || j != 0, std::runtime_error, 
       "nonzero block index (" << i << "," << j << ") into "
       "non-block operator");
     return *this;
@@ -279,7 +279,7 @@ LinearOperator<Scalar> LinearOperator<Scalar>::getNonconstBlock(const int &i,
   
   if (b==0)
   {
-    TEST_FOR_EXCEPTION(i != 0 || j != 0, std::runtime_error, 
+    TEUCHOS_TEST_FOR_EXCEPTION(i != 0 || j != 0, std::runtime_error, 
       "nonzero block index (" << i << "," << j << ") into "
       "non-block operator");
     return *this;
@@ -296,7 +296,7 @@ void LinearOperator<Scalar>::endBlockFill()
   SetableBlockOperatorBase<Scalar>* b = 
     dynamic_cast<SetableBlockOperatorBase<Scalar>* >(this->ptr().get());
   
-  TEST_FOR_EXCEPTION(b == 0, std::runtime_error, 
+  TEUCHOS_TEST_FOR_EXCEPTION(b == 0, std::runtime_error, 
     "Can't call endBlockFill because operator is not a SetableBlockOperator");
 
   

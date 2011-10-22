@@ -27,11 +27,11 @@ MultiVectorOperator<Scalar>
   : LinearOpWithSpaces<Scalar>(domain, cols[0].space()),
     cols_(cols)
 {
-  TEST_FOR_EXCEPTION(cols.size() == 0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(cols.size() == 0, std::runtime_error,
     "empty multivector given to MultiVectorOperator ctor");
   for (int i=1; i<cols.size(); i++)
   {
-    TEST_FOR_EXCEPTION(cols[i].space() != cols[0].space(), std::runtime_error,
+    TEUCHOS_TEST_FOR_EXCEPTION(cols[i].space() != cols[0].space(), std::runtime_error,
       "inconsistent vector spaces in  MultiVectorOperator ctor");
   }
 }

@@ -38,7 +38,7 @@ IfpackOperator::IfpackOperator(const EpetraMatrix* A,
 
   int ierr = precondGraph->ConstructFilledGraph();
 
-  TEST_FOR_EXCEPTION(ierr < 0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(ierr < 0, std::runtime_error,
     "IfpackOperator ctor: "
     "precondGraph->ConstructFilledGraph() failed with ierr="
     << ierr);
@@ -52,14 +52,14 @@ IfpackOperator::IfpackOperator(const EpetraMatrix* A,
 
   ierr = precond->InitValues(*matrix);
 
-  TEST_FOR_EXCEPTION(ierr < 0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(ierr < 0, std::runtime_error,
     "IfpackOperator ctor: "
     "precond->InitValues() failed with ierr="
     << ierr);
 
   ierr = precond->Factor();
 
-  TEST_FOR_EXCEPTION(ierr < 0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(ierr < 0, std::runtime_error,
     "IfpackOperator ctor: "
     "precond->Factor() failed with ierr="
     << ierr);

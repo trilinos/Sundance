@@ -91,7 +91,7 @@ void QuadratureEvalMediator::setCellType(const CellType& cellType,
     SUNDANCE_MSG2(verb(), tab << "working on internal boundary");
   }
   
-//  TEST_FOR_EXCEPT(isInternalBdry()
+//  TEUCHOS_TEST_FOR_EXCEPT(isInternalBdry()
 //    && integrationCellSpec() != NoTermsNeedCofacets);
 
   if (cellType != maxCellType)
@@ -151,7 +151,7 @@ void QuadratureEvalMediator::setCellType(const CellType& cellType,
 
 int QuadratureEvalMediator::numQuadPts(const CellType& ct) const 
 {
-  TEST_FOR_EXCEPTION(!numQuadPtsForCellType_.containsKey(ct),
+  TEUCHOS_TEST_FOR_EXCEPTION(!numQuadPtsForCellType_.containsKey(ct),
     std::runtime_error,
     "no quadrature points have been tabulated for cell type=" << ct);
   return numQuadPtsForCellType_.get(ct);
@@ -208,7 +208,7 @@ void QuadratureEvalMediator::evalCellVectorExpr(const CellVectorExpr* expr,
   }
   else
   {
-    TEST_FOR_EXCEPTION(cellDim() != 1, std::runtime_error,
+    TEUCHOS_TEST_FOR_EXCEPTION(cellDim() != 1, std::runtime_error,
       "unable to compute tangent vectors for cell dim = " << cellDim());
     mesh().tangentsToEdges(*cellLID(), vectors);
   }
@@ -269,7 +269,7 @@ RCP<Array<Array<Array<double> > > > QuadratureEvalMediator
       if (!cofacetCellsAreReady()) setupFacetTransformations();
       evalCellType = maxCellType();
     
-      TEST_FOR_EXCEPTION(!cofacetCellsAreReady(), std::runtime_error, 
+      TEUCHOS_TEST_FOR_EXCEPTION(!cofacetCellsAreReady(), std::runtime_error, 
         "cofacet cells not ready in getFacetRefBasisVals()");
     }
   }
@@ -307,13 +307,13 @@ RCP<Array<Array<Array<double> > > > QuadratureEvalMediator
 
     if (evalCellType!=cellType())
     { 
-      TEST_FOR_EXCEPTION(quadPtsReferredToMaxCell_.size() == 0,
+      TEUCHOS_TEST_FOR_EXCEPTION(quadPtsReferredToMaxCell_.size() == 0,
         std::runtime_error,
         "empty quadrature point map (max cell)");
     }
     else
     {
-      TEST_FOR_EXCEPTION(quadPtsForReferenceCell_.size() == 0,
+      TEUCHOS_TEST_FOR_EXCEPTION(quadPtsForReferenceCell_.size() == 0,
         std::runtime_error,
         "empty quadrature point map (ref cell)");
     }
@@ -400,7 +400,7 @@ void QuadratureEvalMediator
   Array<RCP<EvalVector> >& vec) const
 {
   const DiscreteFunctionData* f = DiscreteFunctionData::getData(expr);
-  TEST_FOR_EXCEPTION(f==0, std::logic_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(f==0, std::logic_error,
     "QuadratureEvalMediator::evalDiscreteFuncElement() called "
     "with expr that is not a discrete function");
   Tabs tab;
@@ -625,7 +625,7 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
         mapStruct = f->getLocalValues(maxCellDim(), *cellLID(), *localValues);
       }
 
-      TEST_FOR_EXCEPT(mapStruct.get() == 0);
+      TEUCHOS_TEST_FOR_EXCEPT(mapStruct.get() == 0);
       localValueCache().put(f, localValues);
       mapStructCache().put(f, mapStruct);
       localValueCacheIsValid().put(f, true);
@@ -989,13 +989,13 @@ void QuadratureEvalMediator
 	      const double* data = vecResults[vecIndex]->start();
 	      if (EvalVector::shadowOps())
 		{
-		  TEST_FOR_EXCEPT(vecResults[vecIndex]->str().size()==0);
+		  TEUCHOS_TEST_FOR_EXCEPT(vecResults[vecIndex]->str().size()==0);
 		  os << vecResults[vecIndex]->str();
 		}
 	      os << endl;
 	      int nQuad = numQuadPts(cellType());
 	      int k=0;
-	      TEST_FOR_EXCEPT(cellLID()->size() * nQuad 
+	      TEUCHOS_TEST_FOR_EXCEPT(cellLID()->size() * nQuad 
 			      != vecResults[vecIndex]->length());
 	      for (int c=0; c<cellLID()->size(); c++)
 		{

@@ -16,9 +16,9 @@ int main(int argc, char** argv)
       int npx = -1;
       int npy = -1;
       PartitionedRectangleMesher::balanceXY(np, &npx, &npy);
-      TEST_FOR_EXCEPT(npx < 1);
-      TEST_FOR_EXCEPT(npy < 1);
-      TEST_FOR_EXCEPT(npx * npy != np);
+      TEUCHOS_TEST_FOR_EXCEPT(npx < 1);
+      TEUCHOS_TEST_FOR_EXCEPT(npy < 1);
+      TEUCHOS_TEST_FOR_EXCEPT(npx * npy != np);
 
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
@@ -100,7 +100,7 @@ int main(int argc, char** argv)
       NOXSolver solver(noxParams);
       
       NOX::StatusTest::StatusType status = prob.solve(solver);
-      TEST_FOR_EXCEPTION(status != NOX::StatusTest::Converged,
+      TEUCHOS_TEST_FOR_EXCEPTION(status != NOX::StatusTest::Converged,
         runtime_error, "solve failed");
 
 

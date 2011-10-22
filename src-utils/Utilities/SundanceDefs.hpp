@@ -32,7 +32,7 @@
 #define SUNDANCE_DEFS_H
 
 #include "Teuchos_ConfigDefs.hpp"
-#include "Teuchos_TestForException.hpp"
+#include "Teuchos_Assert.hpp"
 #include "Teuchos_Array.hpp"
 
 #ifndef __cplusplus

@@ -39,8 +39,8 @@ SolverState<double> BelosSolver::solve(const LinearOperator<double>& A,
   typedef LinearOperator<double>                 OP;
   typedef Belos::LinearProblem<double, MV, OP>   LP;
 
-  TEST_FOR_EXCEPT(!A.ptr().get());
-  TEST_FOR_EXCEPT(!rhs.ptr().get());
+  TEUCHOS_TEST_FOR_EXCEPT(!A.ptr().get());
+  TEUCHOS_TEST_FOR_EXCEPT(!rhs.ptr().get());
 
   if (!soln.ptr().get()) soln = rhs.copy();
 
@@ -53,7 +53,7 @@ SolverState<double> BelosSolver::solve(const LinearOperator<double>& A,
   
   RCP<LP> prob = rcp(new LP(APtr, ansPtr, bPtr));
 
-  TEST_FOR_EXCEPT(!prob->setProblem());
+  TEUCHOS_TEST_FOR_EXCEPT(!prob->setProblem());
 
   
   if (pf_.ptr().get())
@@ -103,7 +103,7 @@ SolverState<double> BelosSolver::solve(const LinearOperator<double>& A,
 	}
       else
 	{
-	  TEST_FOR_EXCEPT(!(solverType=="GMRES" || solverType=="CG"));
+	  TEUCHOS_TEST_FOR_EXCEPT(!(solverType=="GMRES" || solverType=="CG"));
 	}
     }
   else // reset problem

@@ -6,7 +6,7 @@
 #define PLAYA_OUT_HPP
 
 #include "PlayaDefs.hpp"
-#include "Teuchos_TestForException.hpp"
+#include "Teuchos_Assert.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 #include "Teuchos_FancyOStream.hpp"
 #include "PlayaMPIComm.hpp"

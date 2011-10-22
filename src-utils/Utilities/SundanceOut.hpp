@@ -32,7 +32,7 @@
 #define SUNDANCE_OUT_H
 
 #include "SundanceDefs.hpp"
-#include "Teuchos_TestForException.hpp"
+#include "Teuchos_Assert.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
 #include "PlayaOut.hpp"
 #include "PlayaTabs.hpp"
@@ -126,7 +126,7 @@ using Playa::Tabs;
         omsg << __FILE__ << ":" << __LINE__ << ": " \
        << ": " << msg; \
   const std::string &omsgstr = omsg.str(); \
-  TestForException_break(omsgstr); \
+  Teuchos::TestForException_break(omsgstr); \
   throw std::runtime_error(TEUCHOS_OSTRINGSTREAM_GET_C_STR(omsg)); \
 }
 

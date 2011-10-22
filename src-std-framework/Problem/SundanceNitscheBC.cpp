@@ -68,9 +68,9 @@ Expr NitscheStokesNoSlipBC(const CellFilter& cells,
   const double& gamma2
   )
 {
-  TEST_FOR_EXCEPT(nu.size() != 1);
-  TEST_FOR_EXCEPT(v.size() != u.size());
-  TEST_FOR_EXCEPT(uBC.size() != u.size());
+  TEUCHOS_TEST_FOR_EXCEPT(nu.size() != 1);
+  TEUCHOS_TEST_FOR_EXCEPT(v.size() != u.size());
+  TEUCHOS_TEST_FOR_EXCEPT(uBC.size() != u.size());
 
   int dim = uBC.size();
 

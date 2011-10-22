@@ -23,7 +23,7 @@
   Sundance::BasisArray pyListToBasisArray(PyObject* lst)
   {
     PyObject_Print(lst, stderr, Py_PRINT_RAW);
-    TEST_FOR_EXCEPTION(!PyList_Check(lst), std::runtime_error, 
+    TEUCHOS_TEST_FOR_EXCEPTION(!PyList_Check(lst), std::runtime_error, 
                        "Expecting a python list as argument to conversion to basis array");
     int n = PyList_Size(lst);
     Sundance::BasisArray rtn(n);
@@ -84,9 +84,9 @@
    Playa::VectorType<double> vecType)
 {
   std::cerr << "in (mesh, basis, vecType) typemap" << std::endl;
-  TEST_FOR_EXCEPTION(!PyTuple_Check($input), std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(!PyTuple_Check($input), std::runtime_error,
                      "expecting a tuple");
-  TEST_FOR_EXCEPTION(PyTuple_Size($input) != 3, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(PyTuple_Size($input) != 3, std::runtime_error,
                      "expecting a tuple of length 3");
   mesh = pyObjToMesh(PyTuple_GetItem($input, 0));
   basis = pyListToBasisArray(PyTuple_GetItem($input, 1));

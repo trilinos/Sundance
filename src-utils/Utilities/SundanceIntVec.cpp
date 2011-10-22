@@ -14,7 +14,7 @@ IntVec::IntVec(int n)
 
 IntVec IntVec::operator+(const IntVec& other) const
 {
-  TEST_FOR_EXCEPT(size() != other.size());
+  TEUCHOS_TEST_FOR_EXCEPT(size() != other.size());
 
   IntVec rtn(size());
   for (int i=0; i<size(); i++) rtn[i] = data_[i] + other[i];
@@ -46,7 +46,7 @@ int IntVec::factorial() const
 
 int IntVec::pow(const IntVec& other) const
 {
-  TEST_FOR_EXCEPT(size() != other.size());
+  TEUCHOS_TEST_FOR_EXCEPT(size() != other.size());
   int rtn=1;
 
   for (int i=0; i<size(); i++)
@@ -129,9 +129,9 @@ void IntVec::getPartitions(int M, Array<Array<IntVec> >& parts) const
     for (int j=0; j<M; j++) part[j] = IntVec(size());
     for (int i=0; i<size(); i++)
     {
-      TEST_FOR_EXCEPT(pick[i] >= rComp[i].size());
+      TEUCHOS_TEST_FOR_EXCEPT(pick[i] >= rComp[i].size());
       const Array<int>& p = rComp[i][pick[i]];
-      TEST_FOR_EXCEPT(p.size() != M);
+      TEUCHOS_TEST_FOR_EXCEPT(p.size() != M);
       for (int j=0; j<M; j++) part[j][i] = p[j];
     }
     bool isNonzero = true;

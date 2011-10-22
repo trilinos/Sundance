@@ -60,7 +60,7 @@ public:
       vecKernel_(rcp(new VectorAssemblyKernel(dofMap, isBCIndex,
             lowestLocalIndex, grad, partitionBCs, verb)))
     {
-      TEST_FOR_EXCEPTION(grad.size() != 1, std::logic_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(grad.size() != 1, std::logic_error,
         "assembly target in FunctionalGradientAssemblyKernel should not "
         "be a multivector");
     }
@@ -90,7 +90,7 @@ public:
       }
       else
       {
-        TEST_FOR_EXCEPT(group.isTwoForm());
+        TEUCHOS_TEST_FOR_EXCEPT(group.isTwoForm());
       }
     }
 

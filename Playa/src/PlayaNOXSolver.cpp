@@ -40,7 +40,7 @@ NOXSolver::NOXSolver(const ParameterList& params)
     params_(),
     printParams_()
 {
-  TEST_FOR_EXCEPTION(!params.isSublist("NOX Solver"), runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(!params.isSublist("NOX Solver"), runtime_error,
                      "did not find NOX Solver sublist in " << params);
   
   params_ = params.sublist("NOX Solver");
@@ -65,7 +65,7 @@ NOXSolver::NOXSolver(const ParameterList& params)
     }
   else
   {
-    TEST_FOR_EXCEPTION(!params_.isSublist("Linear Solver"),
+    TEUCHOS_TEST_FOR_EXCEPTION(!params_.isSublist("Linear Solver"),
       RuntimeError, "no linear solver specified in NOX parameters");
   }
   
@@ -74,10 +74,10 @@ NOXSolver::NOXSolver(const ParameterList& params)
       printParams_ = params_.sublist("Printing");
     }
   
-  TEST_FOR_EXCEPTION(linSolver_.ptr().get()==0, runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(linSolver_.ptr().get()==0, runtime_error,
                      "null linear solver object in NOXSolver ctor");
 
-  TEST_FOR_EXCEPTION(statusTest_.get()==0, runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(statusTest_.get()==0, runtime_error,
                      "null status test object in NOXSolver ctor");
 
 }
@@ -90,7 +90,7 @@ NOXSolver::NOXSolver(const ParameterList& nonlinParams,
     printParams_()
 {
   Tabs tab(0);
-  TEST_FOR_EXCEPTION(!nonlinParams.isSublist("NOX Solver"), runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(!nonlinParams.isSublist("NOX Solver"), runtime_error,
                      "did not find NOX Solver sublist in " << nonlinParams);
   
   params_ = nonlinParams.sublist("NOX Solver");
@@ -120,10 +120,10 @@ NOXSolver::NOXSolver(const ParameterList& nonlinParams,
       printParams_ = params_.sublist("Printing");
     }
   
-  TEST_FOR_EXCEPTION(linSolver_.ptr().get()==0, runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(linSolver_.ptr().get()==0, runtime_error,
                      "null linear solver object in NOXSolver ctor");
 
-  TEST_FOR_EXCEPTION(statusTest_.get()==0, runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(statusTest_.get()==0, runtime_error,
                      "null status test object in NOXSolver ctor");
 
 }
@@ -149,13 +149,13 @@ NOXSolver::solve(const NonlinearOperator<double>& F,
   const NOX::NOXPlaya::Group* solnGrp 
     = dynamic_cast<const NOX::NOXPlaya::Group*>(&(solver->getSolutionGroup()));
 
-  TEST_FOR_EXCEPTION(solnGrp==0, runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(solnGrp==0, runtime_error,
                      "Solution group could not be cast to NOX::NOXPlaya::Group");
 
   const NOX::NOXPlaya::Vector* x 
     = dynamic_cast<const NOX::NOXPlaya::Vector*>(&(solnGrp->getX()));
 
-  TEST_FOR_EXCEPTION(x==0, runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(x==0, runtime_error,
     "Solution vector could not be cast to NOX::NOXPlaya::Vector");
   
   solnVec = x->getPlayaVector();

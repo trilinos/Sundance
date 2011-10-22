@@ -37,7 +37,7 @@ using namespace Teuchos;
 
 bool PositionalCellPredicate::lessThan(const CellPredicateBase* other) const
 {
-  TEST_FOR_EXCEPTION(dynamic_cast<const PositionalCellPredicate*>(other) == 0,
+  TEUCHOS_TEST_FOR_EXCEPTION(dynamic_cast<const PositionalCellPredicate*>(other) == 0,
                      std::logic_error,
                      "argument " << other->toXML() 
                      << " to PositionalCellPredicate::lessThan() should be "

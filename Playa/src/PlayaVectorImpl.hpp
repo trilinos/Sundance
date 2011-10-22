@@ -87,7 +87,7 @@ void Vector<Scalar>::setBlock(int i, const Vector<Scalar>& v)
 {
   BlockVectorBase<Scalar>* bv = 
     dynamic_cast<BlockVectorBase<Scalar>* >(this->ptr().get());
-  TEST_FOR_EXCEPTION(bv == 0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(bv == 0, std::runtime_error,
     "setBlock() called on a vector is not a block vector");
   bv->setBlock(i, v);
 }  
@@ -101,7 +101,7 @@ const Vector<Scalar>& Vector<Scalar>::getBlock(int i) const
     dynamic_cast<const BlockVectorBase<Scalar>* >(this->ptr().get());
   if (bv==0 && numBlocks()==1) return *this;
 
-  TEST_FOR_EXCEPTION(bv == 0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(bv == 0, std::runtime_error,
     "getBlock() called on a vector is not a block vector");
   return bv->getBlock(i);
 }
@@ -114,7 +114,7 @@ Vector<Scalar> Vector<Scalar>::getNonConstBlock(int i)
     dynamic_cast<BlockVectorBase<Scalar>* >(this->ptr().get());
   if (bv==0 && numBlocks()==1) return *this;
 
-  TEST_FOR_EXCEPTION(bv == 0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(bv == 0, std::runtime_error,
     "getBlock() called on a vector is not a block vector");
   return bv->getNonConstBlock(i);
 }
@@ -126,7 +126,7 @@ const Vector<Scalar>& Vector<Scalar>
 ::getBlock(const BlockIterator<Scalar>& b) const
 {
   /* Check that the block iterator is valid */
-  TEST_FOR_EXCEPTION(b.atEnd(), RuntimeError, 
+  TEUCHOS_TEST_FOR_EXCEPTION(b.atEnd(), RuntimeError, 
     "Attempt to use a block iterator that's run off end");
 
   return this->getBlock(b.blockIndex());
@@ -140,7 +140,7 @@ Vector<Scalar> Vector<Scalar>
 ::getNonConstBlock(const BlockIterator<Scalar>& b)
 {
   /* Check that the block iterator is valid */
-  TEST_FOR_EXCEPTION(b.atEnd(), RuntimeError, 
+  TEUCHOS_TEST_FOR_EXCEPTION(b.atEnd(), RuntimeError, 
     "Attempt to use a block iterator that's run off end");
 
   return this->getNonConstBlock(b.blockIndex());
@@ -153,7 +153,7 @@ const Vector<Scalar>& Vector<Scalar>
 ::getBlock(const std::deque<int>& b) const
 {
   /* Check that the block iterator is valid */
-  TEST_FOR_EXCEPTION(b.size()==0, RuntimeError, 
+  TEUCHOS_TEST_FOR_EXCEPTION(b.size()==0, RuntimeError, 
     "Attempt to use an empty block iterator");
   
   if (b.size()==1) 
@@ -173,7 +173,7 @@ Vector<Scalar> Vector<Scalar>
 ::getNonConstBlock(const std::deque<int>& b) 
 {
   /* Check that the block iterator is valid */
-  TEST_FOR_EXCEPTION(b.size()==0, RuntimeError, 
+  TEUCHOS_TEST_FOR_EXCEPTION(b.size()==0, RuntimeError, 
     "Attempt to use an empty block iterator");
   
   if (b.size()==1) 
@@ -343,7 +343,7 @@ Vector<Scalar>& Vector<Scalar>::acceptUnaryFunctor(const UF& func,
 {
   TimeMonitor t(*opTimer());
 
-  TEST_FOR_EXCEPTION(!this->space().isCompatible(other.space()),
+  TEUCHOS_TEST_FOR_EXCEPTION(!this->space().isCompatible(other.space()),
     std::runtime_error,
     "Spaces this=" << this->space() << " and other="
     << other.space() << " are not compatible in unary accept-operation "
@@ -387,7 +387,7 @@ Vector<Scalar>& Vector<Scalar>::applyBinaryFunctor(const VF& func,
 {
   TimeMonitor t(*opTimer());
 
-  TEST_FOR_EXCEPTION(!this->space().isCompatible(other.space()),
+  TEUCHOS_TEST_FOR_EXCEPTION(!this->space().isCompatible(other.space()),
     std::runtime_error,
     "Spaces this=" << this->space() << " and other="
     << other.space() << " are not compatible in binary operation "
@@ -432,7 +432,7 @@ Vector<Scalar>& Vector<Scalar>::applyTernaryFunctor(
 {
   TimeMonitor t(*opTimer());
 
-  TEST_FOR_EXCEPTION(!this->space().isCompatible(y.space())
+  TEUCHOS_TEST_FOR_EXCEPTION(!this->space().isCompatible(y.space())
     || !this->space().isCompatible(z.space()),
     std::runtime_error,
     "Spaces this=" << this->space() << ", Y="
@@ -513,7 +513,7 @@ Vector<Scalar>::applyBinaryReductionFunctor(const RF& func, const Vector<Scalar>
 {
   TimeMonitor t(*opTimer());
 
-  TEST_FOR_EXCEPTION(!this->space().isCompatible(y.space()),
+  TEUCHOS_TEST_FOR_EXCEPTION(!this->space().isCompatible(y.space()),
     std::runtime_error,
     "Spaces this=" << this->space() << " and other="
     << y.space() << " are not compatible in binary reduction operation "
@@ -824,7 +824,7 @@ const Scalar& Vector<Scalar>::operator[](int localIndex) const
     chunkBase += chunkSize;
   }
   
-  TEST_FOR_EXCEPTION(true, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error,
     "Vector operator[] local index " 
     << localIndex << " out of range [0, " << chunkBase << ")");
 
@@ -862,7 +862,7 @@ Scalar& Vector<Scalar>::operator[](int localIndex)
     chunkBase += chunkSize;
   }
   
-  TEST_FOR_EXCEPTION(true, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error,
     "Vector operator[] local index " 
     << localIndex << " out of range [0, " << chunkBase << ")");
 
@@ -896,7 +896,7 @@ Scalar* dataPtr(Vector<Scalar> vec)
 {
   SingleChunkVector<Scalar>* v 
     = dynamic_cast<SingleChunkVector<Scalar>* >(vec.ptr().get());
-  TEST_FOR_EXCEPT(v==0);
+  TEUCHOS_TEST_FOR_EXCEPT(v==0);
   return v->dataPtr();
 }
 
@@ -908,7 +908,7 @@ const Scalar* dataPtr(const Vector<Scalar>& vec)
 {
   const SingleChunkVector<Scalar>* v 
     = dynamic_cast<const SingleChunkVector<Scalar>* >(vec.ptr().get());
-  TEST_FOR_EXCEPT(v==0);
+  TEUCHOS_TEST_FOR_EXCEPT(v==0);
   return v->dataPtr();
 }
 
@@ -919,7 +919,7 @@ LoadableVector<Scalar>* loadable(Vector<Scalar> vec)
 {
   LoadableVector<Scalar>* lv 
     = dynamic_cast<LoadableVector<Scalar>* >(vec.ptr().get());
-  TEST_FOR_EXCEPT(lv==0);
+  TEUCHOS_TEST_FOR_EXCEPT(lv==0);
   return lv;
 }
 

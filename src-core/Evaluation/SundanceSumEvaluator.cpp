@@ -89,7 +89,7 @@ SumEvaluator::SumEvaluator(const SumExpr* se,
   for (int i=0; i<this->sparsity()->numDerivs(); i++)
     {
       const MultipleDeriv& d = this->sparsity()->deriv(i);
-      TEST_FOR_EXCEPTION(!leftSparsity()->containsDeriv(d) 
+      TEUCHOS_TEST_FOR_EXCEPTION(!leftSparsity()->containsDeriv(d) 
                          && !rightSparsity()->containsDeriv(d),
                          std::logic_error,
                          "deriv " << d.toString() 

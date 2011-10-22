@@ -87,7 +87,7 @@ namespace Sundance
     int d = dimension(cellType);
     if (facetDim == d) return 1;
 
-    TEST_FOR_EXCEPTION(facetDim > d, std::runtime_error,
+    TEUCHOS_TEST_FOR_EXCEPTION(facetDim > d, std::runtime_error,
                        "invalid facet dim " << facetDim << " for cell "
                        << toString(cellType));
 
@@ -122,7 +122,7 @@ namespace Sundance
   {
     int d = dimension(cellType);
     if (facetDim == d) return cellType;
-    TEST_FOR_EXCEPTION(facetDim > d, std::runtime_error,
+    TEUCHOS_TEST_FOR_EXCEPTION(facetDim > d, std::runtime_error,
                        "invalid facet dim " << facetDim << " for cell "
                        << toString(cellType));
 

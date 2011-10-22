@@ -68,7 +68,7 @@ Deriv::Deriv(
     symbFuncElem_(func),
     symbFunc_(0), coordDerivDir_(-1)
 {
-  TEST_FOR_EXCEPTION(func==0, std::logic_error, 
+  TEUCHOS_TEST_FOR_EXCEPTION(func==0, std::logic_error, 
     "null function given to Deriv ctor");
   fid_ = func->fid();
   myAlgSpec_ = derivAlgSpec(fid_.algSpec(), d);
@@ -84,7 +84,7 @@ Deriv::Deriv(
     fid_(), sds_(d),
     symbFuncElem_(0), symbFunc_(func), coordDerivDir_(-1)
 {
-  TEST_FOR_EXCEPTION(func==0, std::logic_error, 
+  TEUCHOS_TEST_FOR_EXCEPTION(func==0, std::logic_error, 
     "null function given to Deriv ctor");
   fid_ = func->fid();
   myAlgSpec_ = derivAlgSpec(fid_.algSpec(), d);
@@ -95,9 +95,9 @@ Deriv::Deriv(
 
 void Deriv::checkConsistencyOfOperations() const 
 {
-  TEST_FOR_EXCEPT(sds_.isDivergence() && !fid_.isVector());
-  TEST_FOR_EXCEPT(sds_.isPartial() && fid_.isVector());
-  TEST_FOR_EXCEPT(sds_.isNormal() && fid_.isVector());
+  TEUCHOS_TEST_FOR_EXCEPT(sds_.isDivergence() && !fid_.isVector());
+  TEUCHOS_TEST_FOR_EXCEPT(sds_.isPartial() && fid_.isVector());
+  TEUCHOS_TEST_FOR_EXCEPT(sds_.isNormal() && fid_.isVector());
 }
 
 
@@ -136,7 +136,7 @@ std::string Deriv::toString(bool verb) const
       string f;
       if (symbFunc_!=0) f = symbFunc_->toString();
       else if (symbFuncElem_!=0) f = symbFuncElem_->toString();
-      else TEST_FOR_EXCEPT(true);
+      else TEUCHOS_TEST_FOR_EXCEPT(true);
 
       if (opOnFunc().isPartial() && opOnFunc().derivOrder()>0)
       {
@@ -155,12 +155,12 @@ std::string Deriv::toString(bool verb) const
       {
         return f;
       }
-      else TEST_FOR_EXCEPT(1);
+      else TEUCHOS_TEST_FOR_EXCEPT(1);
     }
     case NullDT:
       return "NullDeriv()";
     default:
-      TEST_FOR_EXCEPT(1);
+      TEUCHOS_TEST_FOR_EXCEPT(1);
       return "NullDeriv";
   }
 }
@@ -170,8 +170,8 @@ const SymbolicFuncDescriptor* Deriv::sfdPtr() const
   assertType(FunctionalDT);
   /* at this point, exactly one of the two function pointers should be
    * nonzero */
-  TEST_FOR_EXCEPT(symbFuncElem_ == 0 && symbFunc_==0);
-  TEST_FOR_EXCEPT(symbFuncElem_ != 0 && symbFunc_!=0);
+  TEUCHOS_TEST_FOR_EXCEPT(symbFuncElem_ == 0 && symbFunc_==0);
+  TEUCHOS_TEST_FOR_EXCEPT(symbFuncElem_ != 0 && symbFunc_!=0);
   
   /* return the nonzero pointer */
   if (symbFuncElem_) return symbFuncElem_;
@@ -235,7 +235,7 @@ int Deriv::coordDerivDir() const
 RCP<const CommonFuncDataStub> Deriv::data() const
 {
   assertType(FunctionalDT);
-  TEST_FOR_EXCEPTION(symbFuncElem_==0 && symbFunc_==0, 
+  TEUCHOS_TEST_FOR_EXCEPTION(symbFuncElem_==0 && symbFunc_==0, 
     std::logic_error,
     "Deriv::data() called, but deriv=" << *this << " does not contain a "
     "valid function");
@@ -259,9 +259,9 @@ const SpatialDerivSpecifier& Deriv::opOnFunc() const
 Deriv Deriv::derivWrtMultiIndex(const MultiIndex& mi) const
 {
   assertType(FunctionalDT);
-  TEST_FOR_EXCEPTION(mi.order()>0 && sds_.isDivergence(), std::logic_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(mi.order()>0 && sds_.isDivergence(), std::logic_error,
     "cannot take spatial derivative of an atomic divergence operation");
-  TEST_FOR_EXCEPTION(mi.order()>0 && isParameter(), std::logic_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(mi.order()>0 && isParameter(), std::logic_error,
     "cannot take spatial derivative of a parameter");
 
   SpatialDerivSpecifier d = sds_.derivWrtMultiIndex(mi);
@@ -274,7 +274,7 @@ Deriv Deriv::derivWrtMultiIndex(const MultiIndex& mi) const
   {
     return Deriv(symbFunc_, d);
   }
-  TEST_FOR_EXCEPTION(symbFuncElem_==0 && symbFunc_==0, 
+  TEUCHOS_TEST_FOR_EXCEPTION(symbFuncElem_==0 && symbFunc_==0, 
     std::logic_error,
     "attempt to differentiate a null operative function");
   return *this; // -Wall
@@ -303,7 +303,7 @@ AlgebraSpecifier Deriv::derivAlgSpec(
   }
   else
   {
-    TEST_FOR_EXCEPT(true);
+    TEUCHOS_TEST_FOR_EXCEPT(true);
     return IdentitySDT;
   }
 }

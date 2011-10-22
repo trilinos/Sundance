@@ -97,22 +97,22 @@ void DiffOp::requestMultiIndexAtEvalPoint(const MultiIndex& mi,
   int verb = context.setupVerbosity();
   Tabs tab0(0);
   SUNDANCE_MSG3(verb, tab0 << "DiffOp::requestMultiIndexAtEvalPoint() for=" << toString());
-  TEST_FOR_EXCEPT(u.size() != 1);
+  TEUCHOS_TEST_FOR_EXCEPT(u.size() != 1);
   const Deriv& d = *(u.begin());
 
   if (d.isFunctionalDeriv())
   {
     const SpatialDerivSpecifier& sds = d.opOnFunc();
 
-    TEST_FOR_EXCEPTION(sds.isDivergence(), std::logic_error,
+    TEUCHOS_TEST_FOR_EXCEPTION(sds.isDivergence(), std::logic_error,
       "divergence operators not possible within DiffOp");
-    TEST_FOR_EXCEPTION(sds.isNormal(), std::logic_error,
+    TEUCHOS_TEST_FOR_EXCEPTION(sds.isNormal(), std::logic_error,
       "normal deriv operators not possible within DiffOp");
 
     const MultiIndex& newMi = sds.mi();
 
     const SymbolicFuncElement* sfe = d.symbFuncElem();
-    TEST_FOR_EXCEPT(sfe == 0);
+    TEUCHOS_TEST_FOR_EXCEPT(sfe == 0);
     const EvaluatableExpr* evalPt = sfe->evalPt();
     const ZeroExpr* z = dynamic_cast<const ZeroExpr*>(evalPt);
     if (z != 0) return;
@@ -321,7 +321,7 @@ Set<MultipleDeriv> DiffOp::internalFindC(int order, const EvalContext& context) 
 bool DiffOp::lessThan(const ScalarExpr* other) const
 {
   const DiffOp* d = dynamic_cast<const DiffOp*>(other);
-  TEST_FOR_EXCEPTION(d==0, std::logic_error, "cast should never fail at this point");
+  TEUCHOS_TEST_FOR_EXCEPTION(d==0, std::logic_error, "cast should never fail at this point");
   
   if (myCoordDeriv_ < d->myCoordDeriv_) return true;
   if (d->myCoordDeriv_ < myCoordDeriv_) return false;

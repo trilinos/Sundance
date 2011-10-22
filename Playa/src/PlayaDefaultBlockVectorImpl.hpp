@@ -47,7 +47,7 @@ void DefaultBlockVector<Scalar>::setBlock(int b, const Vector<Scalar>& block)
   PLAYA_BOUNDSCHECK(b, 0, space_.numBlocks(), 
     "DefaultBlockVector::setBlock()");
 
-  TEST_FOR_EXCEPTION(
+  TEUCHOS_TEST_FOR_EXCEPTION(
     block.space() != space_.getBlock(b),
     RuntimeError,
     "inconsistent block spaces in setBlock: \n" 

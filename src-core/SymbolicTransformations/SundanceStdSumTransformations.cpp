@@ -528,7 +528,7 @@ bool RearrangeRightSumWithConstant::doTransform(const RCP<ScalarExpr>& left,
       /* The case in which the right operand of right is a constant
        * should have been transformed away by now. Do a paranoid 
        * check to make sure this hasn't happened */
-      TEST_FOR_EXCEPTION(sRight->rightScalar()->isConstant(),
+      TEUCHOS_TEST_FOR_EXCEPTION(sRight->rightScalar()->isConstant(),
                          std::logic_error,
                          "RearrangeRightSumWithConstant: unexpected case, "
                          "constant expr"
@@ -595,7 +595,7 @@ bool RearrangeLeftSumWithConstant::doTransform(const RCP<ScalarExpr>& left,
       /* The case in which the right operand of left is a constant
        * should have been transformed away by now. Do a paranoid 
        * check to make sure this hasn't happened */
-      TEST_FOR_EXCEPTION(sLeft->rightScalar()->isConstant(),
+      TEUCHOS_TEST_FOR_EXCEPTION(sLeft->rightScalar()->isConstant(),
                          std::logic_error,
                          "RearrangeLeftSumWithConstant::doTransform "
                          ": unexpected case, constant expr"
@@ -671,7 +671,7 @@ bool SumIntegrals::doTransform(const RCP<ScalarExpr>& left,
        * the other is not */
       bool leftIsBC = (dynamic_cast<const SumOfBCs*>(sLeft) != 0);
       bool rightIsBC = (dynamic_cast<const SumOfBCs*>(sRight) != 0);
-      TEST_FOR_EXCEPTION((leftIsBC && !rightIsBC)
+      TEUCHOS_TEST_FOR_EXCEPTION((leftIsBC && !rightIsBC)
                          || (!leftIsBC && rightIsBC), std::runtime_error,
                          "Attempting to add EssentialBC and non-EssentialBC "
                          "integrals: L=" << left->toString() << ", R="
@@ -689,11 +689,11 @@ bool SumIntegrals::doTransform(const RCP<ScalarExpr>& left,
 
       /* at this point, one of the terms is a global equation. BCs should
        * not be involved at this point */
-      TEST_FOR_EXCEPTION(leftIsBC, std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(leftIsBC, std::runtime_error,
                          "Attempting to add a BC " << left->toString()
                          << " and a global expression " << right->toString());
 
-      TEST_FOR_EXCEPTION(rightIsBC, std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(rightIsBC, std::runtime_error,
                          "Attempting to add a BC " << right->toString()
                          << " and a global expression " << left->toString());
 
@@ -703,7 +703,7 @@ bool SumIntegrals::doTransform(const RCP<ScalarExpr>& left,
           const SpatiallyConstantExpr* cRight 
             = dynamic_cast<const SpatiallyConstantExpr*>(right.get());
 
-          TEST_FOR_EXCEPTION(cRight == 0, std::logic_error,
+          TEUCHOS_TEST_FOR_EXCEPTION(cRight == 0, std::logic_error,
                              "Attempting to add non-constant expression "
                              << right->toString() << " to an integral");
 
@@ -722,7 +722,7 @@ bool SumIntegrals::doTransform(const RCP<ScalarExpr>& left,
           const SpatiallyConstantExpr* cLeft 
             = dynamic_cast<const SpatiallyConstantExpr*>(left.get());
 
-          TEST_FOR_EXCEPTION(cLeft == 0, std::logic_error,
+          TEUCHOS_TEST_FOR_EXCEPTION(cLeft == 0, std::logic_error,
                              "Attempting to add non-constant expression "
                              << left->toString() << " to an integral");
 
@@ -739,6 +739,6 @@ bool SumIntegrals::doTransform(const RCP<ScalarExpr>& left,
     {
       return false;
     }
-  TEST_FOR_EXCEPTION(true, std::logic_error, "this should not happen");
+  TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "this should not happen");
   return false; // -Wall;
 }

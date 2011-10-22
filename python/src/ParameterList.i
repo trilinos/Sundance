@@ -6,7 +6,7 @@
 
   // Trilinos includes
 #include "Teuchos_ParameterEntry.hpp" // class data element 
-#include "Teuchos_TestForException.hpp"
+#include "Teuchos_Assert.hpp"
 #include "Teuchos_ConfigDefs.hpp"
 #include "Teuchos_map.hpp"
 #include "PyTeuchos_Utils.hpp"

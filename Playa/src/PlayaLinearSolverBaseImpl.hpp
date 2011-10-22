@@ -46,7 +46,7 @@ void LinearSolverBase<Scalar>::setParameter(const ParameterList& params,
 {
   if (!params.isParameter(name)) return;
 
-  TEST_FOR_EXCEPTION(!params.template isType<T>(name), std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(!params.template isType<T>(name), std::runtime_error,
     "invalid type for parameter [" << name << "]"); 
 
   *dataPtr = params.template get<T>(name);
@@ -55,7 +55,7 @@ void LinearSolverBase<Scalar>::setParameter(const ParameterList& params,
 template <class Scalar> inline
 void LinearSolverBase<Scalar>::setUserPrec(const PreconditionerFactory<Scalar>& pf)
 {
-  TEST_FOR_EXCEPTION(true, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error,
     "User-defined preconditioning not allowed for generic "
     "linear solver subtypes");
 }
@@ -64,7 +64,7 @@ template <class Scalar> inline
 void LinearSolverBase<Scalar>::setUserPrec(const LinearOperator<Scalar>& P,
   const LinearSolver<Scalar>& pSolver)
 {
-  TEST_FOR_EXCEPTION(true, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error,
     "User-defined preconditioning not allowed for generic "
     "linear solver subtypes");
 }

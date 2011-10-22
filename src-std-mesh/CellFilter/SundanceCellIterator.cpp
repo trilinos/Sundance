@@ -108,7 +108,7 @@ CellIterator::CellIterator(const Set<int>* cells, CellIteratorPos pos)
       iter_ = cells->end();
       break;
     default:
-      TEST_FOR_EXCEPT(1);
+      TEUCHOS_TEST_FOR_EXCEPT(1);
   }
 }
 

@@ -40,7 +40,7 @@ Array<Array<int> > partitionInteger(int n)
         tuple(2, 1, 1, 1), 
         tuple(1, 1, 1, 1, 1)
         ));
-  TEST_FOR_EXCEPTION(n<1 || n>5, std::runtime_error, 
+  TEUCHOS_TEST_FOR_EXCEPTION(n<1 || n>5, std::runtime_error, 
     "case n=" << n << " not implemented in partitionInteger()");
   return rtn[n-1];
 }
@@ -73,7 +73,7 @@ void weightedPartitions(int n, const Array<int>& w,
   int S = w.size();
   for (int i=0; i<S; i++) 
   {
-    TEST_FOR_EXCEPT(w[i] <= 0);
+    TEUCHOS_TEST_FOR_EXCEPT(w[i] <= 0);
   }
 
   Array<Array<int> > trial(S);
@@ -582,7 +582,7 @@ Array<Array<int> > distinctIndexTuples(int m, int n)
   
 Array<int> bitsOfAnInteger(int x, int n)
 {
-  TEST_FOR_EXCEPTION(x >= pow2(n), std::logic_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(x >= pow2(n), std::logic_error,
     "Invalid input to bitsOfAnIteger");
                      
   Array<int> rtn(n);

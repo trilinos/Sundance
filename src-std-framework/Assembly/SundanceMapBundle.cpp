@@ -62,7 +62,7 @@ MapBundle::MapBundle(
 
 int MapBundle::nCells() const 
 {
-  TEST_FOR_EXCEPTION(localDOFMap_->isUnused() 
+  TEUCHOS_TEST_FOR_EXCEPTION(localDOFMap_->isUnused() 
     && cofacetLocalDOFMap_->isUnused(), std::runtime_error,
     "no local DOF maps defined in call to MapBundle::nCells()");
 
@@ -77,7 +77,7 @@ int MapBundle::nCells() const
   }
   else
   {
-    TEST_FOR_EXCEPTION(localDOFMap_->nCells() != cofacetLocalDOFMap_->nCells(),
+    TEUCHOS_TEST_FOR_EXCEPTION(localDOFMap_->nCells() != cofacetLocalDOFMap_->nCells(),
       std::runtime_error,
       "mismatched cell counts in MapBundle::nCells()");
     return cofacetLocalDOFMap_->nCells();
@@ -96,14 +96,14 @@ const RCP<LocalDOFMap>& MapBundle::chooseMap(
 {
   if (useCofacets)
   {
-    TEST_FOR_EXCEPTION(cofacetLocalDOFMap_->isUnused(block),
+    TEUCHOS_TEST_FOR_EXCEPTION(cofacetLocalDOFMap_->isUnused(block),
       std::runtime_error,
       "request for unavailable cofacet-based local map for block = " << block);
     return cofacetLocalDOFMap_;
   }
   else
   {
-    TEST_FOR_EXCEPTION(localDOFMap_->isUnused(block),
+    TEUCHOS_TEST_FOR_EXCEPTION(localDOFMap_->isUnused(block),
       std::runtime_error,
       "request for unavailable local map for block = " << block);
     return localDOFMap_;

@@ -146,7 +146,7 @@ inline void AnasaziEigensolver<Scalar>::solve(
   if (usePrec) problem->setPrec(InitTraits<MV, OP>::opPtr(P));
 
   bool ret = problem->setProblem();
-  TEST_FOR_EXCEPTION(!ret, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(!ret, std::runtime_error,
     "Eigenproblem not setup correctly");
   
 
@@ -170,14 +170,14 @@ inline void AnasaziEigensolver<Scalar>::solve(
   }
   else
   {
-    TEST_FOR_EXCEPTION(true, std::runtime_error,
+    TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error,
       "solver method [" << method << "] not recognized");
   }
 
   // Solve the problem to the specified tolerances or length
   Anasazi::ReturnType returnCode = MySolverMan->solve();
   Out::os() << "return code = " << returnCode << endl;
-  TEST_FOR_EXCEPTION(returnCode != Anasazi::Converged, 
+  TEUCHOS_TEST_FOR_EXCEPTION(returnCode != Anasazi::Converged, 
     std::runtime_error, "Anasazi did not converge!");
   
   // Get the eigenvalues and eigenvectors from the eigenproblem

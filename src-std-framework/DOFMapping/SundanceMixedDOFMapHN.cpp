@@ -1356,5 +1356,5 @@ void MixedDOFMapHN::checkTable() const
   int anyBad = bad;
   comm().allReduce((void*) &bad, (void*) &anyBad, 1, 
     MPIComm::INT, MPIComm::SUM);
-  TEST_FOR_EXCEPTION(anyBad > 0, std::runtime_error, "invalid DOF map");
+  TEUCHOS_TEST_FOR_EXCEPTION(anyBad > 0, std::runtime_error, "invalid DOF map");
 }

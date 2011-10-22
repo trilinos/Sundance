@@ -144,7 +144,7 @@ ElementIntegral::ElementIntegral(int spatialDim,
   {
     if (isInternalBdry)
     {
-      TEST_FOR_EXCEPT(!okToRestrictTestToBdry);
+      TEUCHOS_TEST_FOR_EXCEPT(!okToRestrictTestToBdry);
     }
     if (alwaysUseCofacets() || testDerivOrder>0)
     {
@@ -154,11 +154,11 @@ ElementIntegral::ElementIntegral(int spatialDim,
       nNodesTest_ = testBasis.nReferenceDOFsWithFacets(maxCellType, maxCellType);
       SUNDANCE_MSG2(setupVerb(), tab2 << "nNodesTest=" << nNodesTest_);
       nNodes_ = nNodesTest_;
-      TEST_FOR_EXCEPT(nNodes_ == 0);
+      TEUCHOS_TEST_FOR_EXCEPT(nNodes_ == 0);
     }
     else
     {
-      TEST_FOR_EXCEPT(!okToRestrictTestToBdry);
+      TEUCHOS_TEST_FOR_EXCEPT(!okToRestrictTestToBdry);
     }
   }
 
@@ -221,7 +221,7 @@ ElementIntegral::ElementIntegral(int spatialDim,
   {
     if (isInternalBdry)
     {
-      TEST_FOR_EXCEPT(!(okToRestrictTestToBdry && okToRestrictUnkToBdry));   
+      TEUCHOS_TEST_FOR_EXCEPT(!(okToRestrictTestToBdry && okToRestrictUnkToBdry));   
     }
     if (alwaysUseCofacets() || testDerivOrder>0 || unkDerivOrder>0)
     {
@@ -233,11 +233,11 @@ ElementIntegral::ElementIntegral(int spatialDim,
       nNodesUnk_ = unkBasis.nReferenceDOFsWithFacets(maxCellType, maxCellType);
       SUNDANCE_MSG2(setupVerb(), tab2 << "nNodesUnk=" << nNodesUnk_);
       nNodes_ = nNodesTest_ * nNodesUnk_;
-      TEST_FOR_EXCEPT(nNodes_ == 0);
+      TEUCHOS_TEST_FOR_EXCEPT(nNodes_ == 0);
     }
     else
     {
-      TEST_FOR_EXCEPT(okToRestrictTestToBdry != okToRestrictUnkToBdry);
+      TEUCHOS_TEST_FOR_EXCEPT(okToRestrictTestToBdry != okToRestrictUnkToBdry);
     }
   }
 
@@ -290,12 +290,12 @@ void ElementIntegral::describe(std::ostream& os) const
 
 void ElementIntegral::assertBilinearForm() const 
 {
-  TEST_FOR_EXCEPTION(testDerivOrder() < 0 || testDerivOrder() > 1,
+  TEUCHOS_TEST_FOR_EXCEPTION(testDerivOrder() < 0 || testDerivOrder() > 1,
     std::logic_error,
     "Test function derivative order=" << testDerivOrder()
     << " must be 0 or 1");
   
-  TEST_FOR_EXCEPTION(unkDerivOrder() < 0 || unkDerivOrder() > 1,
+  TEUCHOS_TEST_FOR_EXCEPTION(unkDerivOrder() < 0 || unkDerivOrder() > 1,
     std::logic_error,
     "Unknown function derivative order=" << unkDerivOrder()
     << " must be 0 or 1");
@@ -303,7 +303,7 @@ void ElementIntegral::assertBilinearForm() const
 
 void ElementIntegral::assertLinearForm() const 
 {
-  TEST_FOR_EXCEPTION(testDerivOrder() < 0 || testDerivOrder() > 1,
+  TEUCHOS_TEST_FOR_EXCEPTION(testDerivOrder() < 0 || testDerivOrder() > 1,
     std::logic_error,
     "Test function derivative order=" << testDerivOrder()
     << " must be 0 or 1");

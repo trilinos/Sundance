@@ -76,7 +76,7 @@ ExprFieldWrapper::ExprFieldWrapper(const Expr& expr)
     {
       const DiscreteFunctionData* f = DiscreteFunctionData::getData(dfe);
 
-      TEST_FOR_EXCEPTION(f == 0, std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(f == 0, std::runtime_error,
         "ExprFieldWrapper ctor argument "
         << expr << " is not a discrete function");
       discreteSpace_ = f->discreteSpace();
@@ -93,7 +93,7 @@ ExprFieldWrapper::ExprFieldWrapper(const Expr& expr)
     }
     else
     {
-      TEST_FOR_EXCEPTION(df == 0 && dfe == 0, std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(df == 0 && dfe == 0, std::runtime_error,
         "ExprFieldWrapper ctor argument is not a discrete "
         "function");
     }
@@ -111,7 +111,7 @@ double ExprFieldWrapper::getData(int cellDim, int cellID, int elem) const
   //cout << "indices_[elem][0]:" << indices_[elem][0] << std::endl;
 
   // This exception is not needed since the first value must be the nodal value
-  //TEST_FOR_EXCEPTION(dofs.size() > 1, std::runtime_error,
+  //TEUCHOS_TEST_FOR_EXCEPTION(dofs.size() > 1, std::runtime_error,
   //  "too many DOFs found in ExprFieldWrapper::getData()");
 
   // in case of hanging node the "dofs[0]" will be negative, in this case treate this case

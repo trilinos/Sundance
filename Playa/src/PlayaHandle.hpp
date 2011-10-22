@@ -172,7 +172,7 @@ void Handle<PointerType>::setVerb(int verbosity)
   ObjectWithVerbosity* v 
     = dynamic_cast<ObjectWithVerbosity*>(ptr_.get());
   if (v) v->setVerb(verbosity);
-  TEST_FOR_EXCEPTION(v==0, RuntimeError, 
+  TEUCHOS_TEST_FOR_EXCEPTION(v==0, RuntimeError, 
     "attempt to set verbosity on a handle that doesn't wrap "
     "an ObjectWithVerbosity subtype");
 }

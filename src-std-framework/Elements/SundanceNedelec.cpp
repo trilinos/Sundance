@@ -91,7 +91,7 @@ int Nedelec::nReferenceDOFsWithoutFacets(
   const CellType& cellType
   ) const
 {
-  TEST_FOR_EXCEPT(maximalCellType != TriangleCell);
+  TEUCHOS_TEST_FOR_EXCEPT(maximalCellType != TriangleCell);
   switch(cellType)
     {
     case PointCell:
@@ -101,7 +101,7 @@ int Nedelec::nReferenceDOFsWithoutFacets(
     case TriangleCell:
       return 0;
     default:
-      TEST_FOR_EXCEPTION(true, std::runtime_error, "Cell type "
+      TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Cell type "
                          << cellType << " not implemented in Nedelec basis");
       return -1; // -Wall
     }
@@ -137,7 +137,7 @@ void Nedelec::getReferenceDOFs(
       dofs[3] = tuple(Array<int>());
       return;
     default:
-      TEST_FOR_EXCEPTION(true, std::runtime_error, "Cell type "
+      TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Cell type "
                          << cellType << " not implemented in Nedelec basis");
     }
 }
@@ -151,7 +151,7 @@ void Nedelec::refEval(
   Array<Array<Array<double> > >& result,
   int verbosity) const
 {
-  TEST_FOR_EXCEPTION(true, std::runtime_error, "evaluation of Nedelec elements not yet supported");
+  TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "evaluation of Nedelec elements not yet supported");
 }
 
 

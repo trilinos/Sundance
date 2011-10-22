@@ -103,22 +103,24 @@ CellSet CellSet::setDifference(const CellSet& other) const
 
 void CellSet::checkCompatibility(const std::string& op, const CellSet& other) const 
 {
-  TEST_FOR_EXCEPTION(meshID() != other.meshID(), std::runtime_error,
+
+  TEUCHOS_TEST_FOR_EXCEPTION(meshID() != other.meshID(), std::runtime_error,
     "CellSet::checkCompatibility(): "
     "incompatible mesh ID numbers in " << op
     << ". LHS=" << meshID() << " RHS=" << other.meshID());
 
-  TEST_FOR_EXCEPTION(dimension() != other.dimension(), std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(dimension() != other.dimension(), std::runtime_error,
     "CellSet::checkCompatibility() incompatible dimensions in " << op
     << "LHS has "
     "dimension=" << dimension() << " but RHS has dimension="
     << other.dimension());
   
-  TEST_FOR_EXCEPTION(cellType() != other.cellType(), std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(cellType() != other.cellType(), std::runtime_error,
     "CellSet::checkCompatibility() incompatible cell types. "
     " in " << op << " LHS has "
     "cellType=" << cellType() << " but RHS has cellType="
     << other.cellType());
+
 
   SUNDANCE_OUT(this->verb() > 2,
     "Set operation: " << op << std::endl

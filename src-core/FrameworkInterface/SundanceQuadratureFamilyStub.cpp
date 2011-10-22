@@ -41,7 +41,7 @@ using namespace Teuchos;
 QuadratureFamilyStub::QuadratureFamilyStub(int order)
 : order_(order)
 {
-  TEST_FOR_EXCEPTION(order <= 0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(order <= 0, std::runtime_error,
                      "invalid quadrature order=" << order
                      << " in QuadratureFamilyStub ctor");
 }

@@ -83,12 +83,12 @@ namespace Sundance
       }
     else if (cellDim==3)
       {
-        TEST_FOR_EXCEPT(true);
+        TEUCHOS_TEST_FOR_EXCEPT(true);
         return false; // -Wall
       }
     else
       {
-        TEST_FOR_EXCEPTION(cellDim<=0 || cellDim>3, std::runtime_error,
+        TEUCHOS_TEST_FOR_EXCEPTION(cellDim<=0 || cellDim>3, std::runtime_error,
                            "invalid point dimension " << cellDim);
         return false; // -Wall
       }
@@ -115,7 +115,7 @@ namespace Sundance
         const double* C = mesh.nodePositionView(facetLID[2]);
         return fabs(0.5*orient2D(A, B, C));
       }
-    TEST_FOR_EXCEPT(true);
+    TEUCHOS_TEST_FOR_EXCEPT(true);
   }
 
 
@@ -189,7 +189,7 @@ namespace Sundance
       }
     else
       {
-        TEST_FOR_EXCEPTION(cellDim != 2, std::runtime_error,
+        TEUCHOS_TEST_FOR_EXCEPTION(cellDim != 2, std::runtime_error,
                            "invalid point dimension " << cellDim);
         return Point(); // -Wall
       }

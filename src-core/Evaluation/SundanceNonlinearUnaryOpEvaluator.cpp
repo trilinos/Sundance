@@ -89,7 +89,7 @@ NonlinearUnaryOpEvaluator
   /* Find the index of the argument value (zeroth-order deriv) in the 
    * vector of derivatives of the argument */
   MultipleDeriv d0;
-  TEST_FOR_EXCEPTION(!sArg->containsDeriv(d0), std::logic_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(!sArg->containsDeriv(d0), std::logic_error,
                      "NonlinearUnaryOpEvaluator::ctor did not find zeroth-order "
                      "derivative of argument");
   int d0Index = sArg->getIndex(d0);
@@ -138,7 +138,7 @@ void NonlinearUnaryOpEvaluator
                      &(constArgDerivs[2]), &(constArgDerivs[3]));
           break;
         default:
-          TEST_FOR_EXCEPT(true);
+          TEUCHOS_TEST_FOR_EXCEPT(true);
         }
     }
   else
@@ -205,22 +205,22 @@ void NonlinearUnaryOpEvaluator
           op_->eval0(argValue, nx, f);
           break;
         case 1:
-          TEST_FOR_EXCEPT(df_dArg==0);
+          TEUCHOS_TEST_FOR_EXCEPT(df_dArg==0);
           op_->eval1(argValue, nx, f, df_dArg);
           break;
         case 2:
-          TEST_FOR_EXCEPT(df_dArg==0);
-          TEST_FOR_EXCEPT(d2f_dArg2==0);
+          TEUCHOS_TEST_FOR_EXCEPT(df_dArg==0);
+          TEUCHOS_TEST_FOR_EXCEPT(d2f_dArg2==0);
           op_->eval2(argValue, nx, f, df_dArg, d2f_dArg2);
           break;
         case 3:
-          TEST_FOR_EXCEPT(df_dArg==0);
-          TEST_FOR_EXCEPT(d2f_dArg2==0);
-          TEST_FOR_EXCEPT(d3f_dArg3==0);
+          TEUCHOS_TEST_FOR_EXCEPT(df_dArg==0);
+          TEUCHOS_TEST_FOR_EXCEPT(d2f_dArg2==0);
+          TEUCHOS_TEST_FOR_EXCEPT(d3f_dArg3==0);
           op_->eval3(argValue, nx, f, df_dArg, d2f_dArg2, d3f_dArg3);
           break;
         default:
-          TEST_FOR_EXCEPT(true);
+          TEUCHOS_TEST_FOR_EXCEPT(true);
         }
     }
 

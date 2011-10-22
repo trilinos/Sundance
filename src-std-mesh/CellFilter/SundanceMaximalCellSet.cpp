@@ -49,7 +49,7 @@ XMLObject MaximalCellSet::toXML() const
 
 bool MaximalCellSet::lessThan(const CellSetBase* other) const
 {
-  TEST_FOR_EXCEPTION(dynamic_cast<const MaximalCellSet*>(other) == 0,
+  TEUCHOS_TEST_FOR_EXCEPTION(dynamic_cast<const MaximalCellSet*>(other) == 0,
                      std::logic_error,
                      "argument " << other->toXML() 
                      << " to MaximalCellSet::lessThan() should be "

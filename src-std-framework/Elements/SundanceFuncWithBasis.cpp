@@ -43,12 +43,12 @@ using namespace Teuchos;
 
 std::string describeFunction(const Expr& f)
 {
-  TEST_FOR_EXCEPT(f.ptr().get()==0);
+  TEUCHOS_TEST_FOR_EXCEPT(f.ptr().get()==0);
 
   if (f.size() == 1)
   {
     const FuncElementBase* fe = dynamic_cast<const FuncElementBase*>(f[0].ptr().get());
-    TEST_FOR_EXCEPTION(fe==0, std::runtime_error, "expected a FuncElementBase, "
+    TEUCHOS_TEST_FOR_EXCEPTION(fe==0, std::runtime_error, "expected a FuncElementBase, "
       "found " << typeid(*fe).name());
     
     const UnknownFuncElement* u = dynamic_cast<const UnknownFuncElement*>(f[0].ptr().get());
@@ -72,7 +72,7 @@ std::string describeFunction(const Expr& f)
     }
     else
     {
-      TEST_FOR_EXCEPTION(true, std::runtime_error, "unrecognized function " 
+      TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "unrecognized function " 
         << f[0]);
     }
 

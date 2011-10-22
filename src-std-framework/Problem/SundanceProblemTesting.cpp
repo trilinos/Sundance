@@ -172,15 +172,15 @@ RectangleDomain::RectangleDomain(
 
 void RectangleDomain::init()
 {
-  TEST_FOR_EXCEPT(nx_.size() != ny_.size());
+  TEUCHOS_TEST_FOR_EXCEPT(nx_.size() != ny_.size());
   int np = MPIComm::world().getNProc();
   int npx = -1;
   int npy = -1;
 
   PartitionedRectangleMesher::balanceXY(np, &npx, &npy);
-  TEST_FOR_EXCEPT(npx < 1);
-  TEST_FOR_EXCEPT(npy < 1);
-  TEST_FOR_EXCEPT(npx * npy != np);
+  TEUCHOS_TEST_FOR_EXCEPT(npx < 1);
+  TEUCHOS_TEST_FOR_EXCEPT(npy < 1);
+  TEUCHOS_TEST_FOR_EXCEPT(npx * npy != np);
 
   MeshType meshType = new BasicSimplicialMeshType();
   mesh_.resize(nx_.size());
@@ -219,7 +219,7 @@ Array<double> L2NormCalculator::computeNorms(
   CellFilter interior = prob->interior();
 
   Array<int> p = prob->pExpected();
-  TEST_FOR_EXCEPTION(p.size() != errFunc.size(),
+  TEUCHOS_TEST_FOR_EXCEPTION(p.size() != errFunc.size(),
     std::runtime_error,
     "size mismatch between array of expected orders (p=" << p << ") and "
     "array of solutions: " << errFunc.size());
@@ -320,7 +320,7 @@ VectorType<double> ForwardProblemTestBase::vecType() const
 
 Expr ForwardProblemTestBase::coord(int d) const 
 {
-  TEST_FOR_EXCEPT(d<0 || d>2);
+  TEUCHOS_TEST_FOR_EXCEPT(d<0 || d>2);
   return new CoordExpr(d);
 }
 

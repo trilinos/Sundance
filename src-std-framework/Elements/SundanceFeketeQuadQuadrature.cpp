@@ -89,7 +89,7 @@ void FeketeQuadQuadrature::computeBasisCoeffs(const int order, Array<double>& ba
 	::dgetrf_(&nFeketePts, &nFeketePts, &(basisCoeffs[0]), &nFeketePts,
 			&(pivot[0]), &lapack_err);
 
-	TEST_FOR_EXCEPTION(
+	TEUCHOS_TEST_FOR_EXCEPTION(
 			lapack_err != 0,
 			std::runtime_error,
 			"FeketeQuadQuadrature::computeBasisCoeffs(): factorization of generalized Vandermonde matrix failed");
@@ -102,7 +102,7 @@ void FeketeQuadQuadrature::computeBasisCoeffs(const int order, Array<double>& ba
 	::dgetri_(&nFeketePts, &(basisCoeffs[0]), &nFeketePts, &(pivot[0]),
 			&(work[0]), &lwork, &lapack_err);
 
-	TEST_FOR_EXCEPTION(
+	TEUCHOS_TEST_FOR_EXCEPTION(
 			lapack_err != 0,
 			std::runtime_error,
 			"FeketeQuadQuadrature::computeBasisCoeffs(): inversion of generalized Vandermonde matrix failed");

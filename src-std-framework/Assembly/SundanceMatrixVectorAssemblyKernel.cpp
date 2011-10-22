@@ -91,13 +91,13 @@ void MatrixVectorAssemblyKernel::init(
       {
         SUNDANCE_MSG3(verb(), tab1 << "block(br=" << br << ", "
           << bc << ") is zero");
-        TEST_FOR_EXCEPTION(numRowBlocks==1 && numColBlocks==1 && zp,
+        TEUCHOS_TEST_FOR_EXCEPTION(numRowBlocks==1 && numColBlocks==1 && zp,
           std::runtime_error, "no nonzero block in target matrix");
         continue;
       }
       mat_[br][bc] 
         = dynamic_cast<Playa::LoadableMatrix<double>* >(matBlock.ptr().get());
-      TEST_FOR_EXCEPTION(mat_[br][bc]==0, std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(mat_[br][bc]==0, std::runtime_error,
         "matrix block (" << br << ", " << bc 
         << ") is not loadable in Assembler::assemble()");
       mat_[br][bc]->zero();
@@ -287,7 +287,7 @@ void MatrixVectorAssemblyKernel::insertLocalMatrixBatch(
       }
 
       SUNDANCE_MSG2(verb(), tab2 << "calling addToElementBatch()");
-      TEST_FOR_EXCEPT(mat_[br][bc]==0);
+      TEUCHOS_TEST_FOR_EXCEPT(mat_[br][bc]==0);
       mat_[br][bc]->addToElementBatch(numRows,
         nTestNodes,
         &(rows[0]),

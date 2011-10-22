@@ -54,7 +54,7 @@ Expr Circle::getParams() const
 
 double Circle::curveEquation_intern(const Point& evalPoint) const
 {
-	TEST_FOR_EXCEPTION(evalPoint.dim() != 2, std::runtime_error,
+	TEUCHOS_TEST_FOR_EXCEPTION(evalPoint.dim() != 2, std::runtime_error,
 			"Circle::curveEquation() evaluation point dimension must be 2");
 
 	Point center(_centerx, _centery);

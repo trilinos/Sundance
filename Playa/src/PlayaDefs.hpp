@@ -6,7 +6,7 @@
 #define PLAYA_DEFS_H
 
 #include "Teuchos_ConfigDefs.hpp"
-#include "Teuchos_TestForException.hpp"
+#include "Teuchos_Assert.hpp"
 
 #ifndef __cplusplus
 #define __cplusplus

@@ -366,7 +366,7 @@ void GaussLobattoQuadrature::getAdaptedQuadWeights_polygon(int cellLID, const Me
 	// this works only in 2D for polygons, it is important that we ask the underlying object and not the object itself
 	const Polygon2D* poly = dynamic_cast<const Polygon2D* > ( globalCurve.ptr().get()->getUnderlyingCurveObj() );
 	if ( poly == 0 ) {
-		TEST_FOR_EXCEPTION( true , std::runtime_error , " getAdaptedQuadWeights_polygon , paramCurve must be a Polygon and the cell must be a quad" );
+		TEUCHOS_TEST_FOR_EXCEPTION( true , std::runtime_error , " getAdaptedQuadWeights_polygon , paramCurve must be a Polygon and the cell must be a quad" );
 		return;
 	}
 
@@ -520,7 +520,7 @@ void GaussLobattoQuadrature::getAdaptedQuadWeights_polygon(int cellLID, const Me
 		if ( (ind == 0) && ( orderedP <= 1) ){ ind = 1;}
 
 		// if "ind"
-		TEST_FOR_EXCEPTION( ind < 0 , std::runtime_error , " GaussLobattoQuadrature::getAdaptedQuadWeights_polygon ind < 0 ind:"<<ind );
+		TEUCHOS_TEST_FOR_EXCEPTION( ind < 0 , std::runtime_error , " GaussLobattoQuadrature::getAdaptedQuadWeights_polygon ind < 0 ind:"<<ind );
 		// insert the point to the "ind" position
 		orderedPoints.resize(orderedP+1);
 		orderedPointsRealCoords.resize(orderedP+1);
@@ -844,7 +844,7 @@ void GaussLobattoQuadrature::getAdaptedQuadWeights(int cellLID, const Mesh& mesh
 	int nr2DPoints = quadQuadPoints.size();
 
 	//those must be equal
-	TEST_FOR_EXCEPTION( quadPoints.size() != quadQuadPoints.size() , std::runtime_error ,
+	TEUCHOS_TEST_FOR_EXCEPTION( quadPoints.size() != quadQuadPoints.size() , std::runtime_error ,
 			"quadPoints.size() != quadQuadPoints.size() , size1:" << quadPoints.size() << " , size2:" << quadQuadPoints.size());
 	for (int q = 0; q < nr2DPoints; q++) {
 		SUNDANCE_MSG3(verb_, " Quad point quadWeights["<<q<<"]="<<quadWeights[q]);
@@ -1017,7 +1017,7 @@ void GaussLobattoQuadrature::getAdaptedQuadWeights(int cellLID, const Mesh& mesh
 			    break;}
 			default:{
 				// throw error
-				TEST_FOR_EXCEPTION( true , std::runtime_error  , "Quad cell not integrable:" << intersectioncaseStack[listI]);
+				TEUCHOS_TEST_FOR_EXCEPTION( true , std::runtime_error  , "Quad cell not integrable:" << intersectioncaseStack[listI]);
 			    break; }
 			}
 		}
@@ -2229,6 +2229,6 @@ void GaussLobattoQuadrature::getTriangleQuadPoints(Array<Point>& pnt  ,Array<dou
     }
     else {
     	// throw error , we do not have have the required order
-    	TEST_FOR_EXCEPTION( true , std::runtime_error  , " GaussLobattoQuadrature::getTriangleQuadPoints order of the quadrature to high !!! ");
+    	TEUCHOS_TEST_FOR_EXCEPTION( true , std::runtime_error  , " GaussLobattoQuadrature::getTriangleQuadPoints order of the quadrature to high !!! ");
     }
 }

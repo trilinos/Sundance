@@ -52,7 +52,7 @@ Expr Line2D::getParams() const
 
 double Line2D::curveEquation_intern(const Point& evalPoint) const
 {
-	TEST_FOR_EXCEPTION(evalPoint.dim() != 2, std::runtime_error,
+	TEUCHOS_TEST_FOR_EXCEPTION(evalPoint.dim() != 2, std::runtime_error,
 			"Line2D::curveEquation() evaluation point dimension must be 2");
 
 	// y = slope *x + b

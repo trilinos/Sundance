@@ -5,7 +5,7 @@
 
 #include "PlayaGlobalAnd.hpp"
 #include "PlayaMPIComm.hpp"
-#include "Teuchos_TestForException.hpp"
+#include "Teuchos_Assert.hpp"
 #include "PlayaOut.hpp"
 #ifdef HAVE_MPI
 #include "mpi.h"
@@ -23,7 +23,7 @@ bool globalAnd(bool localVal)
   int in = localVal;
   int ierr = ::MPI_Allreduce((void*) &in, (void*) &out, 1, MPI_INT,
     MPI_LAND, MPI_COMM_WORLD);
-  TEST_FOR_EXCEPTION(ierr != 0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(ierr != 0, std::runtime_error,
     "MPI_Allreduce returned error code=" << ierr);
 #endif
 

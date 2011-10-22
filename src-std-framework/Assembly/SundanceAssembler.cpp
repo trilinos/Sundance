@@ -465,7 +465,7 @@ void Assembler::init(const Mesh& mesh, const RCP<EquationSet>& eqn)
     
     /* If this RQC has never been used, we've made a mistake */
     /* Actually, no! Some terms might be unused in reduced-space methods */
-//    TEST_FOR_EXCEPTION(!rqcUsed, std::logic_error, "rqc=" << rqc 
+//    TEUCHOS_TEST_FOR_EXCEPTION(!rqcUsed, std::logic_error, "rqc=" << rqc 
 //      << " never used for any computation???");
 
     if (rqcUsed)
@@ -614,7 +614,7 @@ void Assembler::init(const Mesh& mesh, const RCP<EquationSet>& eqn)
       }
 /* Turn this test off, because some terms might be unused in reduced-space
  * methods */
-//      TEST_FOR_EXCEPTION(!rqcUsed, std::logic_error, "BC rqc=" << rqc 
+//      TEUCHOS_TEST_FOR_EXCEPTION(!rqcUsed, std::logic_error, "BC rqc=" << rqc 
 //        << " never used for any computation???");
       if (rqcUsed)
       {
@@ -695,7 +695,7 @@ IntegrationCellSpecifier Assembler::whetherToUseCofacets(
           tab1 << "integral group " << g << " needs cofacets");
         break;
       default:
-        TEST_FOR_EXCEPT(1);
+        TEUCHOS_TEST_FOR_EXCEPT(1);
     }
   } 
 
@@ -780,7 +780,7 @@ void Assembler::configureVector(Array<Vector<double> >& b) const
         Playa::LoadableVector<double>* lv 
           = dynamic_cast<Playa::LoadableVector<double>* >(b[i].ptr().get());
         
-        TEST_FOR_EXCEPTION(lv == 0, std::runtime_error,
+        TEUCHOS_TEST_FOR_EXCEPTION(lv == 0, std::runtime_error,
           "vector is not loadable in Assembler::configureVector()");
       }
       else
@@ -805,7 +805,7 @@ void Assembler::configureVectorBlock(int br, Vector<double>& b) const
     Playa::LoadableVector<double>* lv 
       = dynamic_cast<Playa::LoadableVector<double>* >(b.ptr().get());
     
-    TEST_FOR_EXCEPTION(lv == 0, std::runtime_error,
+    TEUCHOS_TEST_FOR_EXCEPTION(lv == 0, std::runtime_error,
       "vector block is not loadable "
       "in Assembler::configureVectorBlock()");
   }
@@ -889,7 +889,7 @@ void Assembler::configureMatrixBlock(int br, int bc,
   CollectivelyConfigurableMatrixFactory* ccmf 
     = dynamic_cast<CollectivelyConfigurableMatrixFactory*>(matFactory.get());
 
-  TEST_FOR_EXCEPTION(ccmf==0 && icmf==0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(ccmf==0 && icmf==0, std::runtime_error,
     "Neither incremental nor collective matrix structuring "
     "appears to be available");
 
@@ -1045,7 +1045,7 @@ void Assembler::assemblyLoop(const ComputationType& compType,
    * reset it at the end of a loop iteration */
   int oldKernelVerb = kernel->verb();
   
-  TEST_FOR_EXCEPT(rqc_.size() != evalExprs.size());
+  TEUCHOS_TEST_FOR_EXCEPT(rqc_.size() != evalExprs.size());
 
   /* Looping over RQCs */
   for (int r=0; r<rqc_.size(); r++)
@@ -1373,7 +1373,7 @@ void Assembler::assemble(LinearOperator<double>& A,
   
   SUNDANCE_BANNER1(verb, tab, "Assembling matrix and vector");
 
-  TEST_FOR_EXCEPTION(!contexts_.containsKey(MatrixAndVector),
+  TEUCHOS_TEST_FOR_EXCEPTION(!contexts_.containsKey(MatrixAndVector),
     std::runtime_error,
     "Assembler::assemble(A, b) called for an assembler that "
     "does not support matrix/vector assembly");
@@ -1413,7 +1413,7 @@ void Assembler::assembleSensitivities(LinearOperator<double>& A,
   
   SUNDANCE_BANNER1(verb, tab, "Assembling matrix and sensitivity vector");
 
-  TEST_FOR_EXCEPTION(!contexts_.containsKey(Sensitivities),
+  TEUCHOS_TEST_FOR_EXCEPTION(!contexts_.containsKey(Sensitivities),
     std::runtime_error,
     "Assembler::assembleSensitivities(A, b) called for an assembler that "
     "does not support sensitivity assembly");
@@ -1449,7 +1449,7 @@ void Assembler::assemble(Array<Vector<double> >& mv) const
   SUNDANCE_BANNER1(verb, tab, "Assembling vector");
 
   /* Throw an exception if we don't know how to compute a vector */
-  TEST_FOR_EXCEPTION(!contexts_.containsKey(VectorOnly),
+  TEUCHOS_TEST_FOR_EXCEPTION(!contexts_.containsKey(VectorOnly),
     std::runtime_error,
     "Assembler::assemble(b) called for an assembler that "
     "does not support vector-only assembly");
@@ -1480,7 +1480,7 @@ void Assembler::evaluate(double& value, Array<Vector<double> >& gradient) const
 
   SUNDANCE_BANNER1(verb, tab, "Computing functional and gradient");
 
-  TEST_FOR_EXCEPTION(!contexts_.containsKey(FunctionalAndGradient),
+  TEUCHOS_TEST_FOR_EXCEPTION(!contexts_.containsKey(FunctionalAndGradient),
     std::runtime_error,
     "Assembler::evaluate(f,df) called for an assembler that "
     "does not support value/gradient assembly");
@@ -1515,7 +1515,7 @@ void Assembler::evaluate(double& value) const
 
   SUNDANCE_BANNER1(verb, tab, "Computing functional");
 
-  TEST_FOR_EXCEPTION(!contexts_.containsKey(FunctionalOnly),
+  TEUCHOS_TEST_FOR_EXCEPTION(!contexts_.containsKey(FunctionalOnly),
     std::runtime_error,
     "Assembler::evaluate(f) called for an assembler that "
     "does not support functional evaluation");
@@ -1607,10 +1607,10 @@ void Assembler::getGraph(int br, int bc,
           int t = p.first();
           int u = p.second();
 
-          TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), std::logic_error,
+          TEUCHOS_TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), std::logic_error,
             "Test function ID " << t << " does not appear "
             "in equation set");
-          TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), std::logic_error,
+          TEUCHOS_TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), std::logic_error,
             "Unk function ID " << u << " does not appear "
             "in equation set");
 
@@ -1631,10 +1631,10 @@ void Assembler::getGraph(int br, int bc,
           if (eqn_->blockForVarID(t) != br) continue;
           if (eqn_->blockForUnkID(u) != bc) continue;
 
-          TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), std::logic_error,
+          TEUCHOS_TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), std::logic_error,
             "Test function ID " << t << " does not appear "
             "in equation set");
-          TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), std::logic_error,
+          TEUCHOS_TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), std::logic_error,
             "Unk function ID " << u << " does not appear "
             "in equation set");
           bcUnksForTestsSet[eqn_->reducedVarID(t)].put(eqn_->reducedUnkID(u));
@@ -1870,10 +1870,10 @@ void Assembler
         int t = p.first();
         int u = p.second();
 
-        TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), std::logic_error,
+        TEUCHOS_TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), std::logic_error,
           "Test function ID " << t << " does not appear "
           "in equation set");
-        TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), std::logic_error,
+        TEUCHOS_TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), std::logic_error,
           "Unk function ID " << u << " does not appear "
           "in equation set");
 
@@ -1891,10 +1891,10 @@ void Assembler
         const OrderedPair<int, int>& p = *i;
         int t = p.first();
         int u = p.second();
-        TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), std::logic_error,
+        TEUCHOS_TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), std::logic_error,
           "Test function ID " << t << " does not appear "
           "in equation set");
-        TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), std::logic_error,
+        TEUCHOS_TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), std::logic_error,
           "Unk function ID " << u << " does not appear "
           "in equation set");
 
@@ -2077,10 +2077,10 @@ Array<Array<int> > Assembler::findNonzeroBlocks() const
         int t = p.first();
         int u = p.second();
 
-        TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), std::logic_error,
+        TEUCHOS_TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), std::logic_error,
           "Test function ID " << t << " does not appear "
           "in equation set");
-        TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), std::logic_error,
+        TEUCHOS_TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), std::logic_error,
           "Unk function ID " << u << " does not appear "
           "in equation set");
 
@@ -2097,10 +2097,10 @@ Array<Array<int> > Assembler::findNonzeroBlocks() const
         const OrderedPair<int, int>& p = *i;
         int t = p.first();
         int u = p.second();
-        TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), std::logic_error,
+        TEUCHOS_TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), std::logic_error,
           "Test function ID " << t << " does not appear "
           "in equation set");
-        TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), std::logic_error,
+        TEUCHOS_TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), std::logic_error,
           "Unk function ID " << u << " does not appear "
           "in equation set");
         int br = eqn_->blockForVarID(t);

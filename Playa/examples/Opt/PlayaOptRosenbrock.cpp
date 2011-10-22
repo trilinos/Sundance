@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
      * functions */
     Out::root() << "Doing FD check of gradient..." << endl;
     bool fdOK = obj->fdCheck(xInit, 1.0e-6, 0);
-    TEST_FOR_EXCEPTION(!fdOK, std::runtime_error,
+    TEUCHOS_TEST_FOR_EXCEPTION(!fdOK, std::runtime_error,
       "finite difference test of Rosenbrock function gradient FAILED");
     Out::root() << "FD check OK!" << endl << endl;
 

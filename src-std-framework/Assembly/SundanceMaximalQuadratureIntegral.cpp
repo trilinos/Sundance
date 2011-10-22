@@ -278,11 +278,11 @@ void MaximalQuadratureIntegral
   Tabs tabs;
   SUNDANCE_MSG1(integrationVerb(), tabs << "doing zero form by quadrature");
 
-  TEST_FOR_EXCEPTION(order() != 0, std::logic_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(order() != 0, std::logic_error,
     "MaximalQuadratureIntegral::transformZeroForm() called "
     "for form of order " << order());
 
-  TEST_FOR_EXCEPTION( (int) isLocalFlag.size() != 0 
+  TEUCHOS_TEST_FOR_EXCEPTION( (int) isLocalFlag.size() != 0 
     && (int) isLocalFlag.size() != JVol.numCells(),
     std::runtime_error,
     "mismatch between isLocalFlag.size()=" << isLocalFlag.size()
@@ -368,7 +368,7 @@ void MaximalQuadratureIntegral::transformOneForm(const CellJacobianBatch& JTrans
 {
   TimeMonitor timer(maxCellQuadratureTimer());
   Tabs tabs;
-  TEST_FOR_EXCEPTION(order() != 1, std::logic_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(order() != 1, std::logic_error,
     "MaximalQuadratureIntegral::transformOneForm() called for form "
     "of order " << order());
   SUNDANCE_MSG2(integrationVerb(), tabs << "doing one form by quadrature");
@@ -521,7 +521,7 @@ void MaximalQuadratureIntegral::transformTwoForm(const CellJacobianBatch& JTrans
 {
   TimeMonitor timer(maxCellQuadratureTimer());
   Tabs tabs;
-  TEST_FOR_EXCEPTION(order() != 2, std::logic_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(order() != 2, std::logic_error,
     "MaximalQuadratureIntegral::transformTwoForm() called for form "
     "of order " << order());
   SUNDANCE_MSG2(integrationVerb(), tabs << "doing one form by quadrature");

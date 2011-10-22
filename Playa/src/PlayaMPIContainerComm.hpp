@@ -204,11 +204,11 @@ using Teuchos::Array;
     Array<T> rb(numProcs * outgoing.length());
 
     T* sendBuf = new T[numProcs * outgoing.length()];
-    TEST_FOR_EXCEPTION(sendBuf==0, 
+    TEUCHOS_TEST_FOR_EXCEPTION(sendBuf==0, 
                        std::runtime_error, "Comm::allToAll failed to allocate sendBuf");
 
     T* recvBuf = new T[numProcs * outgoing.length()];
-    TEST_FOR_EXCEPTION(recvBuf==0, 
+    TEUCHOS_TEST_FOR_EXCEPTION(recvBuf==0, 
                        std::runtime_error, "Comm::allToAll failed to allocate recvBuf");
 
     int i;
@@ -254,10 +254,10 @@ using Teuchos::Array;
       }
 
     int* sendMesgLength = new int[numProcs];
-    TEST_FOR_EXCEPTION(sendMesgLength==0, 
+    TEUCHOS_TEST_FOR_EXCEPTION(sendMesgLength==0, 
                        std::runtime_error, "failed to allocate sendMesgLength");
     int* recvMesgLength = new int[numProcs];
-    TEST_FOR_EXCEPTION(recvMesgLength==0, 
+    TEUCHOS_TEST_FOR_EXCEPTION(recvMesgLength==0, 
                        std::runtime_error, "failed to allocate recvMesgLength");
 
     int p = 0;
@@ -279,17 +279,17 @@ using Teuchos::Array;
       }
 
     T* sendBuf = new T[totalSendLength];
-    TEST_FOR_EXCEPTION(sendBuf==0, 
+    TEUCHOS_TEST_FOR_EXCEPTION(sendBuf==0, 
                        std::runtime_error, "failed to allocate sendBuf");
     T* recvBuf = new T[totalRecvLength];
-    TEST_FOR_EXCEPTION(recvBuf==0, 
+    TEUCHOS_TEST_FOR_EXCEPTION(recvBuf==0, 
                        std::runtime_error, "failed to allocate recvBuf");
 
     int* sendDisp = new int[numProcs];
-    TEST_FOR_EXCEPTION(sendDisp==0, 
+    TEUCHOS_TEST_FOR_EXCEPTION(sendDisp==0, 
                        std::runtime_error, "failed to allocate sendDisp");
     int* recvDisp = new int[numProcs];
-    TEST_FOR_EXCEPTION(recvDisp==0, 
+    TEUCHOS_TEST_FOR_EXCEPTION(recvDisp==0, 
                        std::runtime_error, "failed to allocate recvDisp");
 
     int count = 0;

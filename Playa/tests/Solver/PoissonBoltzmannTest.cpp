@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
 
     Vector<double> soln;
     NOX::StatusTest::StatusType stat = solver.solve(F, soln);
-    TEST_FOR_EXCEPTION(stat != NOX::StatusTest::Converged,
+    TEUCHOS_TEST_FOR_EXCEPTION(stat != NOX::StatusTest::Converged,
       runtime_error, "solve failed");
 
     Out::root() << "numerical solution = " << std::endl;

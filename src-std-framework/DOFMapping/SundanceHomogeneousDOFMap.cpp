@@ -327,7 +327,7 @@ void HomogeneousDOFMap::shareDOFs(int cellDim,
 
   if (np == 1) return;
 
-  TEST_FOR_EXCEPTION(np != outgoingCellRequests.size(), std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(np != outgoingCellRequests.size(), std::runtime_error,
                      "incorrect size of outgoingCellRequests array. Size is "
                      << outgoingCellRequests.size() << ", should be np=" << np);
 

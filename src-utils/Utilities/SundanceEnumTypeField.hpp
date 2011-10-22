@@ -46,14 +46,14 @@ public:
   /** */
   void assertType(const T& reqType) const 
     {
-      TEST_FOR_EXCEPTION(reqType != type(), std::runtime_error, 
+      TEUCHOS_TEST_FOR_EXCEPTION(reqType != type(), std::runtime_error, 
         "expected type=" << reqType << ", found type=" << type());
     }
 
   /** */
   void assertNotType(const T& tabooType) const 
     {
-      TEST_FOR_EXCEPTION(tabooType == type(), std::runtime_error, 
+      TEUCHOS_TEST_FOR_EXCEPTION(tabooType == type(), std::runtime_error, 
         "type=" << tabooType << " is unexpected in this context");
     }
 

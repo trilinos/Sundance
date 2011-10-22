@@ -50,7 +50,7 @@ int getNodeDof(const RCP<DOFMapBase>& dofMap, int nodeLID)
 {
   Array<int> dofs;
   dofMap->getDOFsForCell(0, nodeLID, 0, dofs);
-  TEST_FOR_EXCEPT(dofs.size() != 1);
+  TEUCHOS_TEST_FOR_EXCEPT(dofs.size() != 1);
   return dofs[0];
 }
 
@@ -62,7 +62,7 @@ int main(int argc, char** argv)
   {
     Sundance::init(&argc, &argv);
     int np = MPIComm::world().getNProc();
-    TEST_FOR_EXCEPT(np > 1); // works only in serial for now
+    TEUCHOS_TEST_FOR_EXCEPT(np > 1); // works only in serial for now
 
     /* We will do our linear algebra using Epetra */
     VectorType<double> vecType = new EpetraVectorType();

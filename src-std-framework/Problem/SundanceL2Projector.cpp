@@ -157,11 +157,11 @@ void L2Projector::init(const DiscreteSpace& space,
   const LinearSolver<double>& solver,
   const QuadratureFamily& quad)
 {
-  TEST_FOR_EXCEPTION(space.basis().size() != expr.size(),
+  TEUCHOS_TEST_FOR_EXCEPTION(space.basis().size() != expr.size(),
                      std::runtime_error,
                      "mismatched vector structure between basis and expr");
   
-  TEST_FOR_EXCEPTION(space.basis().size() == 0,
+  TEUCHOS_TEST_FOR_EXCEPTION(space.basis().size() == 0,
                      std::runtime_error,
                      "Empty basis?");
   

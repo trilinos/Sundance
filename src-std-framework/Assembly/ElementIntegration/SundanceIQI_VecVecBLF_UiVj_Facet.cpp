@@ -40,7 +40,7 @@ IQI_VecVecBLF_UiVj_Facet::IQI_VecVecBLF_UiVj_Facet( int spatialDim ,
 				    verbParams ),
   j_test_( test_component ) , i_trial_( unk_component )
 {
-  TEST_FOR_EXCEPTION(true,
+  TEUCHOS_TEST_FOR_EXCEPTION(true,
 		     InternalError,
 		     "IQI_VecVecBLF_UiVj_Facet is not implemented" );
 }
@@ -51,7 +51,7 @@ void IQI_VecVecBLF_UiVj_Facet::evaluate( CellJacobianBatch& JTrans,
 					   const double* const coeff,
 					   RefCountPtr<Array<double> >& A) const
 {
-  TEST_FOR_EXCEPTION(true,
+  TEUCHOS_TEST_FOR_EXCEPTION(true,
 		     InternalError,
 		     "IQI_VecVecBLF_UiVj_Facet is not implemented" );
 }

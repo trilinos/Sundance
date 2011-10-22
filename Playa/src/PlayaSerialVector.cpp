@@ -5,7 +5,7 @@
 #include "PlayaVectorDecl.hpp"
 #include "PlayaSerialVector.hpp"
 #include "PlayaSerialVectorSpace.hpp"
-#include "Teuchos_TestForException.hpp"
+#include "Teuchos_Assert.hpp"
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
 #include "PlayaVectorImpl.hpp"
@@ -23,7 +23,7 @@ SerialVector::SerialVector(const VectorSpace<double>& vs)
 {
   const SerialVectorSpace* rvs 
     = dynamic_cast<const SerialVectorSpace*>(vs.ptr().get());
-  TEST_FOR_EXCEPTION(rvs==0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(rvs==0, std::runtime_error,
     "could not cast vector space to SerialVectorSpace in "
     "SerialVector ctor");
 }
@@ -60,14 +60,14 @@ void SerialVector::addToElements(int numElems, const int* globalIndices,
 const SerialVector* SerialVector::getConcrete(const Vector<double>& x)
 {
   const SerialVector* rtn = dynamic_cast<const SerialVector*>(x.ptr().get());
-  TEST_FOR_EXCEPT(rtn==0);
+  TEUCHOS_TEST_FOR_EXCEPT(rtn==0);
   return rtn;
 }
 
 SerialVector* SerialVector::getConcrete(Vector<double>& x)
 {
   SerialVector* rtn = dynamic_cast<SerialVector*>(x.ptr().get());
-  TEST_FOR_EXCEPT(rtn==0);
+  TEUCHOS_TEST_FOR_EXCEPT(rtn==0);
   return rtn;
 }
 

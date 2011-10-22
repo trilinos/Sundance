@@ -49,7 +49,7 @@ void MLOperator::apply(
     }
   else
     {
-      TEST_FOR_EXCEPTION(applyType != NO_TRANS, std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(applyType != NO_TRANS, std::runtime_error,
         "ML preconditioner does not support transposes");
     }
 }

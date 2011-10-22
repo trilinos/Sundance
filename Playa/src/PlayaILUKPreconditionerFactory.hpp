@@ -72,7 +72,7 @@ namespace Playa
       const ILUFactorizableOp<Scalar>* fop 
         = dynamic_cast<const ILUFactorizableOp<Scalar>*>(A.ptr().get());
 
-      TEST_FOR_EXCEPTION(fop==0, std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(fop==0, std::runtime_error,
                          "ILUKPreconditionerFactory attempted to "
                          "create an ILU preconditioner for an operator type "
                          "that does not implement the ILUFactorizableOp "

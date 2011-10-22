@@ -146,7 +146,7 @@ DiffOpEvaluator
         SUNDANCE_MSG3(verb, tab2 << "getting coefficient of " << *j);
 
         int argIndex = argSparsitySuperset()->getIndex(*j);
-        TEST_FOR_EXCEPTION(argIndex==-1, std::runtime_error,
+        TEUCHOS_TEST_FOR_EXCEPTION(argIndex==-1, std::runtime_error,
           "Derivative " << *j << " expected in argument "
           "but not found");
 
@@ -187,7 +187,7 @@ DiffOpEvaluator
 
           const UnknownFuncElement* u 
             = dynamic_cast<const UnknownFuncElement*>(f);
-          TEST_FOR_EXCEPTION(u==0, std::logic_error,
+          TEUCHOS_TEST_FOR_EXCEPTION(u==0, std::logic_error,
             "Non-unknown function detected where an unknown "
             "function was expected in "
             "DiffOpEvaluator ctor");
@@ -196,14 +196,14 @@ DiffOpEvaluator
           const EvaluatableExpr* evalPt = u->evalPt();
           const ZeroExpr* z = dynamic_cast<const ZeroExpr*>(evalPt);
           if (z != 0) continue;
-          TEST_FOR_EXCEPTION(z != 0, std::logic_error,
+          TEUCHOS_TEST_FOR_EXCEPTION(z != 0, std::logic_error,
             "DiffOpEvaluator detected identically zero "
             "function");
 
           const DiscreteFuncElement* df 
             = dynamic_cast<const DiscreteFuncElement*>(evalPt);
           
-          TEST_FOR_EXCEPTION(df==0, std::logic_error,
+          TEUCHOS_TEST_FOR_EXCEPTION(df==0, std::logic_error,
             "DiffOpEvaluator ctor: evaluation point of "
             "unknown function " << u->toString() 
             << " is not a discrete function");
@@ -214,12 +214,12 @@ DiffOpEvaluator
           const DiscreteFuncElementEvaluator* dfEval = uEval->dfEval();
 
 
-          TEST_FOR_EXCEPTION(dfEval==0, std::logic_error,
+          TEUCHOS_TEST_FOR_EXCEPTION(dfEval==0, std::logic_error,
             "DiffOpEvaluator ctor: evaluator for "
             "evaluation point is not a "
             "DiscreteFuncElementEvaluator");
 
-          TEST_FOR_EXCEPTION(!dfEval->hasMultiIndex(mi), std::logic_error,
+          TEUCHOS_TEST_FOR_EXCEPTION(!dfEval->hasMultiIndex(mi), std::logic_error,
             "DiffOpEvaluator ctor: evaluator for "
             "discrete function " << df->toString()
             << " does not know about multiindex "
@@ -258,7 +258,7 @@ DiffOpEvaluator
         }
         else
         {
-          TEST_FOR_EXCEPTION(true, std::logic_error,
+          TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error,
             "DiffOpEvaluator has been asked to preprocess a Deriv that "
             "is not a simple partial derivative. The problem child is: "
             << lambda);
@@ -283,7 +283,7 @@ DiffOpEvaluator
              j=isolatedTerms.begin(); j != isolatedTerms.end(); j++)
       {
         int argIndex = argSparsitySuperset()->getIndex(*j);
-        TEST_FOR_EXCEPTION(argIndex==-1, std::runtime_error,
+        TEUCHOS_TEST_FOR_EXCEPTION(argIndex==-1, std::runtime_error,
           "Derivative " << *j << " expected in argument "
           "but not found");
         const DerivState& argState = argSparsitySuperset()->state(argIndex);
@@ -342,7 +342,7 @@ Deriv DiffOpEvaluator::remainder(const MultipleDeriv& big,
   Tabs tab;
   SUNDANCE_MSG5(verb, tab << "computing remainder: big=" << big << ", little="
     << little);
-  TEST_FOR_EXCEPT(big.order()-little.order() != 1);
+  TEUCHOS_TEST_FOR_EXCEPT(big.order()-little.order() != 1);
 
   MultipleDeriv r;
   if (little.order()==0) r = big;
@@ -350,7 +350,7 @@ Deriv DiffOpEvaluator::remainder(const MultipleDeriv& big,
 
   SUNDANCE_MSG5(verb, tab << "remainder = " << r);
 
-  TEST_FOR_EXCEPT(r.order() != 1);
+  TEUCHOS_TEST_FOR_EXCEPT(r.order() != 1);
 
   return *(r.begin());
 }
@@ -365,7 +365,7 @@ Set<MultipleDeriv> DiffOpEvaluator
   for (Set<MultipleDeriv>::const_iterator i=W1.begin(); i!=W1.end(); i++)
   {
     MultipleDeriv md = *i;
-    TEST_FOR_EXCEPT(md.order() != 1);
+    TEUCHOS_TEST_FOR_EXCEPT(md.order() != 1);
     Deriv lambda = *(md.begin());
     MultipleDeriv lambdaMu = mu;
     lambdaMu.put(lambda);
@@ -390,10 +390,10 @@ Set<MultipleDeriv> DiffOpEvaluator
     for (Set<MultipleDeriv>::const_iterator i=W1.begin(); i!=W1.end(); i++)
     {
       const MultipleDeriv& md = *i;
-      TEST_FOR_EXCEPT(md.order() != 1);
+      TEUCHOS_TEST_FOR_EXCEPT(md.order() != 1);
       Deriv lambda = *(md.begin());
       if (lambda.isCoordDeriv()) continue;
-      TEST_FOR_EXCEPT(!lambda.isFunctionalDeriv());
+      TEUCHOS_TEST_FOR_EXCEPT(!lambda.isFunctionalDeriv());
       FunctionIdentifier lambda_fid = lambda.fid();
       const MultiIndex& lambda_mi = lambda.opOnFunc().mi(); 
       for (MultipleDeriv::const_iterator j=mu.begin(); j!=mu.end(); j++)
@@ -615,7 +615,7 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
       SUNDANCE_MSG4(mgr.verb(), tab2 << "result is " << result->str());
     }
 
-    TEST_FOR_EXCEPTION(!vecHasBeenAllocated, std::logic_error,
+    TEUCHOS_TEST_FOR_EXCEPTION(!vecHasBeenAllocated, std::logic_error,
       "created empty vector in DiffOpEvaluator::internalEval");
     vectorResults[resultIndices_[i]] = result;
   }

@@ -105,7 +105,7 @@ int main(int argc, char** argv)
         nonlinSolveOK = inlineNewtonSolve(prob, uNewt, 10, 1.0e-10);
       }
       
-      TEST_FOR_EXCEPT(!nonlinSolveOK);
+      TEUCHOS_TEST_FOR_EXCEPT(!nonlinSolveOK);
 
       FieldWriter writer = new VTKWriter("SteadyRadDiff2D"); 
       writer.addMesh(mesh);
@@ -148,7 +148,7 @@ bool inlineNewtonSolve(NonlinearProblem prob,
     SolverState<double> solveState 
       = linSolver.solve(J, -1.0*resid, newtonStep);
     
-    TEST_FOR_EXCEPTION(solveState.finalState() != SolveConverged,
+    TEUCHOS_TEST_FOR_EXCEPTION(solveState.finalState() != SolveConverged,
       std::runtime_error,
       "linear solve failed!");
     

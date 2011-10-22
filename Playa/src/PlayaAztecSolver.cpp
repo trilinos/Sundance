@@ -65,7 +65,7 @@ AztecSolver::AztecSolver(const ParameterList& params)
       if (name=="Preconditioner")
       {
         precParams_ = params.sublist("Preconditioner");
-        TEST_FOR_EXCEPTION(!precParams_.isParameter("Type"), std::runtime_error,
+        TEUCHOS_TEST_FOR_EXCEPTION(!precParams_.isParameter("Type"), std::runtime_error,
           "preconditioner type not specified in parameter list "
           << precParams_);
         if (precParams_.get<string>("Type") == "ML")
@@ -109,7 +109,7 @@ AztecSolver::AztecSolver(const ParameterList& params)
     if (entry.isType<string>())
     {
       std::string val = getValue<string>(entry);
-      TEST_FOR_EXCEPTION(paramMap().find(val) == paramMap().end(),
+      TEUCHOS_TEST_FOR_EXCEPTION(paramMap().find(val) == paramMap().end(),
         std::runtime_error,
         "Aztec solver ctor: [" << val << "] is not a "
         "valid Aztec option value");
@@ -256,7 +256,7 @@ SolverState<double> AztecSolver::solve(const LinearOperator<double>& op,
   }
   else if (useUserPrec_)
   {
-    TEST_FOR_EXCEPT(userPrec_.get() == 0);
+    TEUCHOS_TEST_FOR_EXCEPT(userPrec_.get() == 0);
     prec = userPrec_;
   }
   
@@ -324,7 +324,7 @@ void AztecSolver::setUserPrec(const LinearOperator<double>& P,
   }
   else
   {
-    TEST_FOR_EXCEPTION(!useUserPrec_, std::runtime_error,
+    TEUCHOS_TEST_FOR_EXCEPTION(!useUserPrec_, std::runtime_error,
       "Attempt to set user-defined preconditioner "
       "after another preconditioner has been specified");
   }

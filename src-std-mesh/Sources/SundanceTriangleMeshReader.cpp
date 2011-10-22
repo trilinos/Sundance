@@ -124,7 +124,7 @@ void TriangleMeshReader::readParallelInfo(Array<int>& ptGID,
            * processors and the current rank */
           getNextLine(*parStream, line, tokens, '#');
       
-          TEST_FOR_EXCEPTION(tokens.length() != 2, std::runtime_error,
+          TEUCHOS_TEST_FOR_EXCEPTION(tokens.length() != 2, std::runtime_error,
                              "TriangleMeshReader::getMesh() expects 2 entries "
                              "on the first line of .par file. In " 
                              << parFilename_ << " I found \n[" << line << "]\n");
@@ -135,14 +135,14 @@ void TriangleMeshReader::readParallelInfo(Array<int>& ptGID,
           /* check consistency with the current number of
            * processors and the current rank */
       
-          TEST_FOR_EXCEPTION(np != nProc(), std::runtime_error,
+          TEUCHOS_TEST_FOR_EXCEPTION(np != nProc(), std::runtime_error,
                              "TriangleMeshReader::getMesh() found "
                              "a mismatch between the current number of processors="
                              << nProc() << 
                              "and the number of processors=" << np
                              << "in the file " << parFilename_);
 
-          TEST_FOR_EXCEPTION(pid != myRank(), std::runtime_error,
+          TEUCHOS_TEST_FOR_EXCEPTION(pid != myRank(), std::runtime_error,
                              "TriangleMeshReader::getMesh() found "
                              "a mismatch between the current processor rank="
                              << myRank() << "and the processor rank="
@@ -151,7 +151,7 @@ void TriangleMeshReader::readParallelInfo(Array<int>& ptGID,
           /* read the number of points */
           getNextLine(*parStream, line, tokens, '#');
 
-          TEST_FOR_EXCEPTION(tokens.length() != 1, std::runtime_error,
+          TEUCHOS_TEST_FOR_EXCEPTION(tokens.length() != 1, std::runtime_error,
                              "TriangleMeshReader::getMesh() requires 1 entry "
                              "on the second line of .par file. Found line \n[" 
                              << line << "]\n in file " << parFilename_);
@@ -166,7 +166,7 @@ void TriangleMeshReader::readParallelInfo(Array<int>& ptGID,
             {
               getNextLine(*parStream, line, tokens, '#');
 
-              TEST_FOR_EXCEPTION(tokens.length() != 3, std::runtime_error,
+              TEUCHOS_TEST_FOR_EXCEPTION(tokens.length() != 3, std::runtime_error,
                                  "TriangleMeshReader::getMesh() requires 3 "
                                  "entries on each line of the point section in "
                                  "the .par file. Found line \n[" << line
@@ -181,7 +181,7 @@ void TriangleMeshReader::readParallelInfo(Array<int>& ptGID,
 
           getNextLine(*parStream, line, tokens, '#');
 
-          TEST_FOR_EXCEPTION(tokens.length() != 1, std::runtime_error,
+          TEUCHOS_TEST_FOR_EXCEPTION(tokens.length() != 1, std::runtime_error,
                              "TriangleMeshReader::getMesh() requires 1 entry "
                              "on the cell count line of .par file. Found line \n[" 
                              << line << "]\n in file " << parFilename_);
@@ -200,7 +200,7 @@ void TriangleMeshReader::readParallelInfo(Array<int>& ptGID,
             {
               getNextLine(*parStream, line, tokens, '#');
 
-              TEST_FOR_EXCEPTION(tokens.length() != 3, std::runtime_error,
+              TEUCHOS_TEST_FOR_EXCEPTION(tokens.length() != 3, std::runtime_error,
                                  "TriangleMeshReader::getMesh() requires 3 "
                                  "entries on each line of the element section in "
                                  "the .par file. Found line \n[" << line
@@ -234,7 +234,7 @@ Mesh TriangleMeshReader::readNodes(Array<int>& ptGID,
 	
   /* read the header line */
   getNextLine(*nodeStream, line, tokens, '#');
-  TEST_FOR_EXCEPTION(tokens.length() != 4, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(tokens.length() != 4, std::runtime_error,
                      "TriangleMeshReader::getMesh() requires 4 "
                      "entries on the header line in "
                      "the .node file. Found line \n[" << line
@@ -260,7 +260,7 @@ Mesh TriangleMeshReader::readNodes(Array<int>& ptGID,
       /* If we're running in parallel, we'd better have consistent numbers
        * of points in the .node and .par file. */
       nPoints = ptGID.length();
-      TEST_FOR_EXCEPTION(atoi(tokens[0]) != nPoints, std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(atoi(tokens[0]) != nPoints, std::runtime_error,
                          "TriangleMeshReader::getMesh() found inconsistent "
                          "numbers of points in .node file and par file. Node "
                          "file " << nodeFilename_ << " had nPoints=" 
@@ -294,7 +294,7 @@ Mesh TriangleMeshReader::readNodes(Array<int>& ptGID,
     {
       getNextLine(*nodeStream, line, tokens, '#');
       
-      TEST_FOR_EXCEPTION(tokens.length() 
+      TEUCHOS_TEST_FOR_EXCEPTION(tokens.length() 
                          != (1 + dimension + nAttributes + nBdryMarkers),
                          std::runtime_error,
                          "TriangleMeshReader::getMesh() found bad node input "
@@ -307,7 +307,7 @@ Mesh TriangleMeshReader::readNodes(Array<int>& ptGID,
       if (first)
         {
           offset_ = atoi(tokens[0]);
-          TEST_FOR_EXCEPTION(offset_ < 0 || offset_ > 1, std::runtime_error,
+          TEUCHOS_TEST_FOR_EXCEPTION(offset_ < 0 || offset_ > 1, std::runtime_error,
                              "TriangleMeshReader::getMesh() expected "
                              "either 0-offset or 1-offset numbering. Found an "
                              "initial offset of " << offset_ << " in line \n["
@@ -358,7 +358,7 @@ void TriangleMeshReader::readElems(Mesh& mesh,
 
       getNextLine(*elemStream, line, tokens, '#');
 
-      TEST_FOR_EXCEPTION(tokens.length() != 3, std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(tokens.length() != 3, std::runtime_error,
                          "TriangleMeshReader::getMesh() requires 3 "
                          "entries on the header line in "
                          "the .ele file. Found line \n[" << line
@@ -382,7 +382,7 @@ void TriangleMeshReader::readElems(Mesh& mesh,
           /* If we're running in parallel, we'd better have consistent numbers
            * of points in the .node and .par file. */
           nElems = elemGID.length();
-          TEST_FOR_EXCEPTION(atoi(tokens[0]) != nElems, std::runtime_error,
+          TEUCHOS_TEST_FOR_EXCEPTION(atoi(tokens[0]) != nElems, std::runtime_error,
                              "TriangleMeshReader::readElems() found inconsistent "
                              "numbers of elements in .ele file and par file. Elem "
                              "file " << elemFilename_ << " had nElems=" 
@@ -392,7 +392,7 @@ void TriangleMeshReader::readElems(Mesh& mesh,
 
       int ptsPerElem = atoi(tokens[1]);
 
-      TEST_FOR_EXCEPTION(ptsPerElem != mesh.spatialDim()+1, std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(ptsPerElem != mesh.spatialDim()+1, std::runtime_error,
                          "TriangleMeshReader::readElems() found inconsistency "
                          "between number of points per element=" << ptsPerElem 
                          << " and dimension=" << mesh.spatialDim() << ". Number of pts "
@@ -408,7 +408,7 @@ void TriangleMeshReader::readElems(Mesh& mesh,
         {
           getNextLine(*elemStream, line, tokens, '#');
       
-          TEST_FOR_EXCEPTION(tokens.length() 
+          TEUCHOS_TEST_FOR_EXCEPTION(tokens.length() 
                              != (1 + ptsPerElem + nAttributes),
                              std::runtime_error,
                              "TriangleMeshReader::readElems() found bad elem "
@@ -473,7 +473,7 @@ void TriangleMeshReader::readSides(Mesh& mesh) const
 
       getNextLine(*sideStream, line, tokens, '#');
 
-      TEST_FOR_EXCEPTION(tokens.length() != 1, std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(tokens.length() != 1, std::runtime_error,
                          "TriangleMeshReader::readSides() requires 1 "
                          "entry on the header line in "
                          "the .side file. Found line \n[" << line
@@ -488,7 +488,7 @@ void TriangleMeshReader::readSides(Mesh& mesh) const
         {
           getNextLine(*sideStream, line, tokens, '#');
       
-          TEST_FOR_EXCEPTION(tokens.length() != 4,
+          TEUCHOS_TEST_FOR_EXCEPTION(tokens.length() != 4,
                              std::runtime_error,
                              "TriangleMeshReader::readSides() found bad side "
                              "input line. Expected 4 entries but found line \n[" 
@@ -496,7 +496,7 @@ void TriangleMeshReader::readSides(Mesh& mesh) const
 
           int elemGID = atoi(tokens[1]);
           int elemFacet = atoi(tokens[2]);
-          TEST_FOR_EXCEPTION(!mesh.hasGID(elemDim, elemGID), std::runtime_error,
+          TEUCHOS_TEST_FOR_EXCEPTION(!mesh.hasGID(elemDim, elemGID), std::runtime_error,
                              "element GID " << elemGID << " not found");
           int elemLID = mesh.mapGIDToLID(elemDim, elemGID);
           int o=0; // dummy orientation variable; not needed here

@@ -10,7 +10,7 @@
 #include "NOX_StatusTest_NormUpdate.H"         
 #include "NOX_StatusTest_SafeCombo.hpp"         
 #include "NOX_StatusTest_MaxIters.H"         
-#include "Teuchos_TestForException.hpp"   
+#include "Teuchos_Assert.hpp"   
 
 using namespace NOX;
 using namespace NOX::NOXPlaya;
@@ -19,7 +19,7 @@ using namespace Teuchos;
 RCP<StatusTest::Generic> 
 StatusTestBuilder::makeStatusTest(const ParameterList& params)
 {
-  TEST_FOR_EXCEPTION(!params.isSublist("Status Test"), runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(!params.isSublist("Status Test"), runtime_error,
                      "did not find Status Test sublist in " << params);
 
   ParameterList testSublist = params.sublist("Status Test");

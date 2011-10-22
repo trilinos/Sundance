@@ -45,7 +45,7 @@ public:
   /** */
   virtual double getData(int cellDim, int cellID, int elem) const 
     {
-      TEST_FOR_EXCEPT(!isDefined(cellDim, cellID, elem));
+      TEUCHOS_TEST_FOR_EXCEPT(!isDefined(cellDim, cellID, elem));
       return data_[cellID];
     }
   

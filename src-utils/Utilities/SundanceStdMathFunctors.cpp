@@ -102,7 +102,7 @@ void PowerFunctor::eval1(const double* const x,
         {
           for (int i=0; i<nx; i++) 
             {
-	      TEST_FOR_EXCEPTION(!acceptX(1,x[i]), std::runtime_error,
+	      TEUCHOS_TEST_FOR_EXCEPTION(!acceptX(1,x[i]), std::runtime_error,
 				 "first deriv of pow(" << x[i] 
 				 << ", " << p_ << ") "
 				 "is undefined");
@@ -112,7 +112,7 @@ void PowerFunctor::eval1(const double* const x,
               f[i] = x[i]*px;
               //bvbw tried to include math.h, without success
 #ifdef REDDISH_PORT_PROBLEM
-              TEST_FOR_EXCEPTION(fpclassify(f[i]) != FP_NORMAL 
+              TEUCHOS_TEST_FOR_EXCEPTION(fpclassify(f[i]) != FP_NORMAL 
                                  || fpclassify(df[i]) != FP_NORMAL,
                                  std::runtime_error,
                                  "Non-normal floating point result detected in "
@@ -124,7 +124,7 @@ void PowerFunctor::eval1(const double* const x,
         {
 	  for (int i=0; i<nx; i++) 
 	    {
-	      TEST_FOR_EXCEPTION(!acceptX(1,x[i]), std::runtime_error,
+	      TEUCHOS_TEST_FOR_EXCEPTION(!acceptX(1,x[i]), std::runtime_error,
 				 "first deriv of pow(" << x[i] 
 				 << ", " << p_ << ") "
 				 "is undefined");
@@ -197,14 +197,14 @@ void PowerFunctor::eval3(const double* const x,
               d2f_dxx[i] = p_ * (p_-1) * x[i] * px;
               df[i] = p_*x[i]*x[i]*px;
               f[i] = x[i]*x[i]*x[i]*px;
-	      TEST_FOR_EXCEPTION(!acceptX(3,x[i]), std::runtime_error,
+	      TEUCHOS_TEST_FOR_EXCEPTION(!acceptX(3,x[i]), std::runtime_error,
 				 "third deriv of pow(" << x[i] 
 				 << ", " << p_ << ") "
 				 "is undefined");
 
 
 #ifdef REDDISH_PORT_PROBLEM
-              TEST_FOR_EXCEPTION(fpclassify(f[i]) != FP_NORMAL 
+              TEUCHOS_TEST_FOR_EXCEPTION(fpclassify(f[i]) != FP_NORMAL 
                                  || fpclassify(df[i]) != FP_NORMAL,
                                  std::runtime_error,
                                  "Non-normal floating point result detected in "
@@ -216,7 +216,7 @@ void PowerFunctor::eval3(const double* const x,
         {
           for (int i=0; i<nx; i++) 
             {
-	      TEST_FOR_EXCEPTION(!acceptX(3,x[i]), std::runtime_error,
+	      TEUCHOS_TEST_FOR_EXCEPTION(!acceptX(3,x[i]), std::runtime_error,
 				 "third deriv of pow(" << x[i] 
 				 << ", " << p_ << ") "
 				 "is undefined");
@@ -271,7 +271,7 @@ void PowerFunctor::eval2(const double* const x,
         {
           for (int i=0; i<nx; i++) 
             {
-	      TEST_FOR_EXCEPTION(!acceptX(2,x[i]), std::runtime_error,
+	      TEUCHOS_TEST_FOR_EXCEPTION(!acceptX(2,x[i]), std::runtime_error,
 				 "second deriv of pow(" << x[i] 
 				 << ", " << p_ << ") "
 				 "is undefined");
@@ -282,7 +282,7 @@ void PowerFunctor::eval2(const double* const x,
               df[i] = p_*x[i]*px;
               f[i] = x[i]*x[i]*px;
 #ifdef REDDISH_PORT_PROBLEM
-              TEST_FOR_EXCEPTION(fpclassify(f[i]) != FP_NORMAL 
+              TEUCHOS_TEST_FOR_EXCEPTION(fpclassify(f[i]) != FP_NORMAL 
                                  || fpclassify(df[i]) != FP_NORMAL,
                                  std::runtime_error,
                                  "Non-normal floating point result detected in "
@@ -294,7 +294,7 @@ void PowerFunctor::eval2(const double* const x,
         {
 	  for (int i=0; i<nx; i++) 
 	    {
-	      TEST_FOR_EXCEPTION(!acceptX(2,x[i]), std::runtime_error,
+	      TEUCHOS_TEST_FOR_EXCEPTION(!acceptX(2,x[i]), std::runtime_error,
 				 "second deriv of pow(" << x[i] 
 				 << ", " << p_ << ") "
 				 "is undefined");
@@ -319,7 +319,7 @@ void PowerFunctor::eval0(const double* const x,
     {
       for (int i=0; i<nx; i++) 
         {
-	  TEST_FOR_EXCEPTION(!acceptX(0,x[i]), std::runtime_error,
+	  TEUCHOS_TEST_FOR_EXCEPTION(!acceptX(0,x[i]), std::runtime_error,
 			     "pow(" << x[i] 
 			     << ", " << p_ << ") "
 			     "is undefined");
@@ -327,7 +327,7 @@ void PowerFunctor::eval0(const double* const x,
 
           f[i] = ::pow(x[i], p_);
 #ifdef REDDISH_PORT_PROBLEM
-          TEST_FOR_EXCEPTION(fpclassify(f[i]) != FP_NORMAL, 
+          TEUCHOS_TEST_FOR_EXCEPTION(fpclassify(f[i]) != FP_NORMAL, 
                              std::runtime_error,
                              "Non-normal floating point result detected in "
                              "evaluation of unary functor " << name());
@@ -338,7 +338,7 @@ void PowerFunctor::eval0(const double* const x,
     {
       for (int i=0; i<nx; i++) 
 	{
-	  TEST_FOR_EXCEPTION(!acceptX(0,x[i]), std::runtime_error,
+	  TEUCHOS_TEST_FOR_EXCEPTION(!acceptX(0,x[i]), std::runtime_error,
 			     "pow(" << x[i] 
 			     << ", " << p_ << ") "
 			     "is undefined");

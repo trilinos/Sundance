@@ -68,7 +68,7 @@ string expand(const Expr& e)
 
 Expr LegendreP(int n, const Expr& x)
 {
-  TEST_FOR_EXCEPT(n<0);
+  TEUCHOS_TEST_FOR_EXCEPT(n<0);
 
   if (n==0) return 1.0;
   if (n==1) return x;

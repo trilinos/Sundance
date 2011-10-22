@@ -33,7 +33,7 @@ public:
     : PreconditionerFactoryBase<double>(), params_(params)
     {
       const std::string& pName = params_.name();
-      TEST_FOR_EXCEPTION(pName != "Preconditioner", std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(pName != "Preconditioner", std::runtime_error,
         "expected tag=Preconditioner in parameter list " << std::endl 
         << params_);
     }

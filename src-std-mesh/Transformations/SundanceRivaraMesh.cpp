@@ -94,7 +94,7 @@ int RivaraMesh::addElement(
           ownerProc,label));
       break;
     default:
-      TEST_FOR_EXCEPT(1);
+      TEUCHOS_TEST_FOR_EXCEPT(1);
   }
   elements_.append(elem);
   return lid;

@@ -133,7 +133,7 @@ AToCPointLocator::AToCPointLocator(const Mesh& mesh,
         }
       else
         {
-          TEST_FOR_EXCEPT(true);
+          TEUCHOS_TEST_FOR_EXCEPT(true);
         }
     }
 }
@@ -235,12 +235,12 @@ bool AToCPointLocator::cellContainsPoint(int cellLID,
     }
   else if (dim_==3)
     {
-      TEST_FOR_EXCEPT(true);
+      TEUCHOS_TEST_FOR_EXCEPT(true);
       return false; // -Wall
     }
   else
     {
-      TEST_FOR_EXCEPTION(dim_<=0 || dim_>3, std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(dim_<=0 || dim_>3, std::runtime_error,
                          "invalid point dimension " << dim_);
       return false; // -Wall
     }
@@ -308,12 +308,12 @@ bool AToCPointLocator::cellContainsPoint(int cellLID,
     }
   else if (dim_==3)
     {
-      TEST_FOR_EXCEPT(true);
+      TEUCHOS_TEST_FOR_EXCEPT(true);
       return false; // -Wall
     }
   else
     {
-      TEST_FOR_EXCEPTION(dim_<=0 || dim_>3, std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(dim_<=0 || dim_>3, std::runtime_error,
                          "invalid point dimension " << dim_);
       return false; // -Wall
     }

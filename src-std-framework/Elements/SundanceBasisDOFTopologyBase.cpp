@@ -67,7 +67,7 @@ int BasisDOFTopologyBase::nReferenceDOFsWithFacets(
     case PointCell:
       return nReferenceDOFsWithoutFacets(maximalCellType, PointCell);
     default:
-      TEST_FOR_EXCEPTION(true, std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error,
         "case cellType=" << cellType << " not defined");
   }
   return -1; // -Wall

@@ -18,7 +18,7 @@ PointData::PointData(const XMLObject& xml,
   const Mesh& mesh)
   : sensorVals_(), sensorLocations_()
 {
-  TEST_FOR_EXCEPTION(xml.getTag() != "PointData", RuntimeError,
+  TEUCHOS_TEST_FOR_EXCEPTION(xml.getTag() != "PointData", RuntimeError,
     "expected tag PointData, found " << xml.getTag());
 
   double tol = xml.getRequiredDouble("tol");
@@ -60,19 +60,19 @@ void PointData::init(const Array<Point>& locations,
   const Array<double>& values,
   const double& tol) 
 {
-  TEST_FOR_EXCEPTION(locations.size() != values.size(), RuntimeError,
+  TEUCHOS_TEST_FOR_EXCEPTION(locations.size() != values.size(), RuntimeError,
     "inconsistent measurement data: num locations = "
     << locations.size() << " but num readings = " 
     << values.size());
 
-  TEST_FOR_EXCEPTION(locations.size() < 1, RuntimeError,
+  TEUCHOS_TEST_FOR_EXCEPTION(locations.size() < 1, RuntimeError,
     "Empty data set in PointData ctor");
 
   /* make sure all points have the same dimension */
   int dim = locations[0].dim();
   for (int i=0; i<locations.size(); i++)
   {
-    TEST_FOR_EXCEPTION(dim != locations[i].dim(), RuntimeError,
+    TEUCHOS_TEST_FOR_EXCEPTION(dim != locations[i].dim(), RuntimeError,
       "inconsistent point dimensions in PointData ctor. "
       "points are " << locations);
   }
@@ -140,7 +140,7 @@ PointDataExprFunctor::PointDataExprFunctor(const Array<Point>& locations,
   Tabs tabs;
   for (int i=0; i<locations.size(); i++)
   {
-    TEST_FOR_EXCEPTION(pointToValueMap_.find(locations[i]) != pointToValueMap_.end(),
+    TEUCHOS_TEST_FOR_EXCEPTION(pointToValueMap_.find(locations[i]) != pointToValueMap_.end(),
       RuntimeError,
       "Data set contains duplicate point " << locations[i]
       << " to within tolerance "
@@ -148,7 +148,7 @@ PointDataExprFunctor::PointDataExprFunctor(const Array<Point>& locations,
       << locations);
     pointToValueMap_[locations[i]] = values[i];
 
-    TEST_FOR_EXCEPTION(pointToValueMap_.find(locations[i]) == pointToValueMap_.end(),
+    TEUCHOS_TEST_FOR_EXCEPTION(pointToValueMap_.find(locations[i]) == pointToValueMap_.end(),
       InternalError,
       "Bad map integrity in PointDataExprFunctor ctor: point "
       << locations[i] << " could not be recovered from map");
@@ -164,7 +164,7 @@ void PointDataExprFunctor::eval0(const double* in, double* out) const
   
   typedef std::map<Point, double, SloppyPointComparitor>::const_iterator iter;
   iter pos = pointToValueMap_.find(p);
-  TEST_FOR_EXCEPTION(pos == pointToValueMap_.end(), RuntimeError,
+  TEUCHOS_TEST_FOR_EXCEPTION(pos == pointToValueMap_.end(), RuntimeError,
     "Point " << p << " not found in list of data values");
 
 

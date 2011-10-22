@@ -12,7 +12,7 @@
 #include "NOX_Playa_Group.hpp"
 #include "NOX_Playa_StatusTestBuilder.hpp"
 #include "NOX_Multiphysics_Solver_Manager.H"
-#include "Teuchos_TestForException.hpp"   
+#include "Teuchos_Assert.hpp"   
 #include "Teuchos_ParameterList.hpp"
 
 namespace Playa

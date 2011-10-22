@@ -66,7 +66,7 @@ inline std::ostream& operator<<(std::ostream& os, const ComputationType& ct)
       os << "Sensitivities";
       break;
     default:
-      TEST_FOR_EXCEPT(1);
+      TEUCHOS_TEST_FOR_EXCEPT(1);
   }
   return os;
 }

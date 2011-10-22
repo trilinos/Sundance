@@ -66,7 +66,7 @@ bool SideCellFilter::lessThan(const CellFilterStub* other) const
   const SideCellFilter* S 
     = dynamic_cast<const SideCellFilter*>(other);
 
-  TEST_FOR_EXCEPTION(S==0,
+  TEUCHOS_TEST_FOR_EXCEPTION(S==0,
                      std::logic_error,
                      "argument " << other->toXML() 
                      << " to SideCellFilter::lessThan() should be "

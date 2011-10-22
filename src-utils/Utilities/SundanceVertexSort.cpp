@@ -24,7 +24,7 @@ int mapExSideToMissingVertex(int dim, int exFaceID)
     case 2:
       return map2D[exFaceID];
     default:
-      TEST_FOR_EXCEPTION(dim != 3, std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(dim != 3, std::runtime_error,
         "dimension " << dim << " not supported "
         "in mapExSideToMissingVertex()");
   }
@@ -51,7 +51,7 @@ Array<int> exSideVertPos(int dim, int sideIndex)
   else if (dim==3) return faceVerts[sideIndex];
   else 
   {
-    TEST_FOR_EXCEPT(true);
+    TEUCHOS_TEST_FOR_EXCEPT(true);
   }
   return faceVerts[0]; // -Wall
 }
@@ -76,7 +76,7 @@ Array<int> ufcSideVertPos(int dim, int f)
   else if (dim==3) return faceVerts[f];
   else 
   {
-    TEST_FOR_EXCEPT(true);
+    TEUCHOS_TEST_FOR_EXCEPT(true);
   }
   return faceVerts[0]; // -Wall
 
@@ -185,9 +185,9 @@ int ufcFacetIndexToExFacetIndex(int meshDim, int ufcFacetIndex)
   }
   else 
   {
-    TEST_FOR_EXCEPT( meshDim!=3 && meshDim!=2 );
+    TEUCHOS_TEST_FOR_EXCEPT( meshDim!=3 && meshDim!=2 );
   }
-  TEST_FOR_EXCEPT(true);
+  TEUCHOS_TEST_FOR_EXCEPT(true);
   return -1; // -Wall
 }
 

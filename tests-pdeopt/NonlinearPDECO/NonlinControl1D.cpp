@@ -103,7 +103,7 @@ int main(int argc, char** argv)
         else
         {
           Out::root() << "FD check FAILED" << endl;
-          TEST_FOR_EXCEPT(!fdOK);
+          TEUCHOS_TEST_FOR_EXCEPT(!fdOK);
         }
       }
 
@@ -116,7 +116,7 @@ int main(int argc, char** argv)
       if (state.status() != Opt_Converged)
       {
         Out::root()<< "optimization failed: " << state.status() << endl;
-        TEST_FOR_EXCEPT(state.status() != Opt_Converged);
+        TEUCHOS_TEST_FOR_EXCEPT(state.status() != Opt_Converged);
       }
       else
       {

@@ -59,7 +59,7 @@ Epetra_PlayaOperator::Epetra_PlayaOperator(const LinearOperator<double>& A,
   }
   else
   {
-    TEST_FOR_EXCEPT(true);
+    TEUCHOS_TEST_FOR_EXCEPT(true);
   }
 }
 
@@ -76,9 +76,9 @@ int Epetra_PlayaOperator::Apply(const Epetra_MultiVector& in, Epetra_MultiVector
     const Epetra_Vector* cevIn = dynamic_cast<const Epetra_Vector*>(&in);
     Epetra_Vector* evIn = const_cast<Epetra_Vector*>(cevIn);
     Epetra_Vector* evOut = dynamic_cast<Epetra_Vector*>(&out);
-    TEST_FOR_EXCEPTION(evIn==0, std::runtime_error, "Epetra_PlayaOperator::Apply "
+    TEUCHOS_TEST_FOR_EXCEPTION(evIn==0, std::runtime_error, "Epetra_PlayaOperator::Apply "
       "cannot deal with multivectors");
-    TEST_FOR_EXCEPTION(evOut==0, std::runtime_error, "Epetra_PlayaOperator::Apply "
+    TEUCHOS_TEST_FOR_EXCEPTION(evOut==0, std::runtime_error, "Epetra_PlayaOperator::Apply "
       "cannot deal with multivectors");
 
 
@@ -95,7 +95,7 @@ int Epetra_PlayaOperator::Apply(const Epetra_MultiVector& in, Epetra_MultiVector
   }
   else
   {
-    TEST_FOR_EXCEPT(true);
+    TEUCHOS_TEST_FOR_EXCEPT(true);
     return -1; // -Wall
   }
 }
@@ -103,9 +103,9 @@ int Epetra_PlayaOperator::Apply(const Epetra_MultiVector& in, Epetra_MultiVector
 int Epetra_PlayaOperator::ApplyInverse(const Epetra_MultiVector& in, Epetra_MultiVector& out) const
 {
   
-  TEST_FOR_EXCEPTION(solver_.ptr().get()==0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(solver_.ptr().get()==0, std::runtime_error,
     "no solver provided for Epetra_PlayaOperator::ApplyInverse");
-  TEST_FOR_EXCEPTION(!isNativeEpetra_ && !isCompoundEpetra_, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(!isNativeEpetra_ && !isCompoundEpetra_, std::runtime_error,
     "Epetra_PlayaOperator::ApplyInverse expects either "
     "a native epetra operator or a compound operator with "
     "Epetra domain and range spaces");
@@ -113,9 +113,9 @@ int Epetra_PlayaOperator::ApplyInverse(const Epetra_MultiVector& in, Epetra_Mult
   Epetra_Vector* evIn = const_cast<Epetra_Vector*>(cevIn);
   Epetra_Vector* evOut = dynamic_cast<Epetra_Vector*>(&out);
 
-  TEST_FOR_EXCEPTION(evIn==0, std::runtime_error, "Epetra_PlayaOperator::Apply "
+  TEUCHOS_TEST_FOR_EXCEPTION(evIn==0, std::runtime_error, "Epetra_PlayaOperator::Apply "
     "cannot deal with multivectors");
-  TEST_FOR_EXCEPTION(evOut==0, std::runtime_error, "Epetra_PlayaOperator::Apply "
+  TEUCHOS_TEST_FOR_EXCEPTION(evOut==0, std::runtime_error, "Epetra_PlayaOperator::Apply "
     "cannot deal with multivectors");
 
   RCP<VectorBase<double> > vpIn 
@@ -141,7 +141,7 @@ int Epetra_PlayaOperator::ApplyInverse(const Epetra_MultiVector& in, Epetra_Mult
 
 double Epetra_PlayaOperator::NormInf() const 
 {
-  TEST_FOR_EXCEPT(true);
+  TEUCHOS_TEST_FOR_EXCEPT(true);
   return -1; // -Wall
 }
 

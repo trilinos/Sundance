@@ -122,7 +122,7 @@ void Bubble::getReferenceDOFs(
             dofs[0].resize(1);
             return;
           default:
-            TEST_FOR_EXCEPT(1);
+            TEUCHOS_TEST_FOR_EXCEPT(1);
         }
       case LineCell:
         dofs.resize(2);
@@ -155,7 +155,7 @@ void Bubble::getReferenceDOFs(
         }
         return;
       default:
-        TEST_FOR_EXCEPTION(true, std::runtime_error, "Cell type "
+        TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Cell type "
           << cellType << " not implemented in Bubble basis");
     }
 }
@@ -170,7 +170,7 @@ void Bubble::refEval(
   Array<Array<Array<double> > >& result,
   int verbosity) const
 {
-  TEST_FOR_EXCEPTION(!(sds.isPartial() || sds.isIdentity()), 
+  TEUCHOS_TEST_FOR_EXCEPTION(!(sds.isPartial() || sds.isIdentity()), 
     std::runtime_error,
     "cannot evaluate spatial derivative " << sds << " on Bubble basis");
   const MultiIndex& deriv = sds.mi();
@@ -202,7 +202,7 @@ void Bubble::refEval(
         }
       break;
     default:
-      TEST_FOR_EXCEPTION(true, std::runtime_error,
+      TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error,
                          "Bubble::refEval() unimplemented for cell type "
                          << cellType);
 

@@ -168,7 +168,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
         rawParamID, paramID,
         isOneForm, hasParam);
       
-      TEST_FOR_EXCEPT(hasParam && !isOneForm);
+      TEUCHOS_TEST_FOR_EXCEPT(hasParam && !isOneForm);
 
       /* The parameter index acts as an index into a multivector. If
        * this one-form is not a parametric derivative, we use zero as

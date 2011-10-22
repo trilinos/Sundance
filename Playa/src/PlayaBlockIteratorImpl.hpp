@@ -43,7 +43,7 @@ bool BlockIterator<Scalar>
     Out::os() << "comparing (<): LHS=" << *this
               << ", RHS=" << other << std::endl;
   }
-  TEST_FOR_EXCEPTION(this->space() != other.space(),
+  TEUCHOS_TEST_FOR_EXCEPTION(this->space() != other.space(),
     RuntimeError, "Attempt to compare block iterators attached to "
     "two different spaces");
 
@@ -74,11 +74,11 @@ BlockIterator<Scalar> BlockIterator<Scalar>::operator++(int)
   }
   BlockIterator<Scalar> old = *this;
 
-  TEST_FOR_EXCEPTION(this->atEnd_, RuntimeError,
+  TEUCHOS_TEST_FOR_EXCEPTION(this->atEnd_, RuntimeError,
     "attempt to advance a BlockIterator beyond end");
 
   int depth = this->index_.size();
-  TEST_FOR_EXCEPTION(depth <= 0, RuntimeError, 
+  TEUCHOS_TEST_FOR_EXCEPTION(depth <= 0, RuntimeError, 
     "empty index stack in BlockIterator");
 
   atEnd_ = !advance(depth-1);

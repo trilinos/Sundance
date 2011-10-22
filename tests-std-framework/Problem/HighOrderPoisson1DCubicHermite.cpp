@@ -99,7 +99,7 @@ int main(int argc, char** argv)
       std::cerr << "matrix = " << std::endl << prob.getOperator() << std::endl;
       std::cerr << "rhs = " << std::endl << prob.getRHS() << std::endl;
 
-      TEST_FOR_EXCEPT(true);
+      TEUCHOS_TEST_FOR_EXCEPT(true);
 #ifdef HAVE_CONFIG_H
       ParameterXMLFileReader reader(searchForFile("SolverParameters/bicgstab.xml"));
 #else

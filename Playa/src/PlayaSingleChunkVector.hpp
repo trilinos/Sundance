@@ -70,7 +70,7 @@ public:
     {
       const SingleChunkVector<Scalar>* sco 
         = dynamic_cast<const SingleChunkVector<Scalar>* >(other);
-      TEST_FOR_EXCEPT(sco==0);
+      TEUCHOS_TEST_FOR_EXCEPT(sco==0);
 
       Scalar* const myVals = this->dataPtr();
       const Scalar* const yourVals = sco->dataPtr();
@@ -98,10 +98,10 @@ public:
     {
       const SingleChunkVector<Scalar>* scx 
         = dynamic_cast<const SingleChunkVector<Scalar>* >(x);
-      TEST_FOR_EXCEPT(scx==0);
+      TEUCHOS_TEST_FOR_EXCEPT(scx==0);
       const SingleChunkVector<Scalar>* scy 
         = dynamic_cast<const SingleChunkVector<Scalar>* >(y);
-      TEST_FOR_EXCEPT(scy==0);
+      TEUCHOS_TEST_FOR_EXCEPT(scy==0);
 
       Scalar* const myVals = this->dataPtr();
       const Scalar* const xVals = scx->dataPtr();
@@ -132,13 +132,13 @@ public:
     {
       const SingleChunkVector<Scalar>* scx 
         = dynamic_cast<const SingleChunkVector<Scalar>* >(x);
-      TEST_FOR_EXCEPT(scx==0);
+      TEUCHOS_TEST_FOR_EXCEPT(scx==0);
       const SingleChunkVector<Scalar>* scy 
         = dynamic_cast<const SingleChunkVector<Scalar>* >(y);
-      TEST_FOR_EXCEPT(scy==0);
+      TEUCHOS_TEST_FOR_EXCEPT(scy==0);
       const SingleChunkVector<Scalar>* scz
         = dynamic_cast<const SingleChunkVector<Scalar>* >(z);
-      TEST_FOR_EXCEPT(scz==0);
+      TEUCHOS_TEST_FOR_EXCEPT(scz==0);
 
       Scalar* const myVals = this->dataPtr();
       const Scalar* const xVals = scx->dataPtr();
@@ -170,7 +170,7 @@ public:
     {
       const SingleChunkVector<Scalar>* const sco 
         = dynamic_cast<const SingleChunkVector<Scalar>* >(other);    
-      TEST_FOR_EXCEPT(sco==0);  
+      TEUCHOS_TEST_FOR_EXCEPT(sco==0);  
 
       const Scalar* const yourVals = sco->dataPtr();
       const Scalar* const myVals = this->dataPtr();

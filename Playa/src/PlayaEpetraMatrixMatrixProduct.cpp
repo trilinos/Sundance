@@ -96,7 +96,7 @@ LinearOperator<double> epetraMatrixMatrixProduct(
   /* Carry out the multiplication */
   int ierr 
     = EpetraExt::MatrixMatrix::Multiply(*A_crs, transA, *B_crs, transB, *C);
-  TEST_FOR_EXCEPTION(ierr != 0, RuntimeError,
+  TEUCHOS_TEST_FOR_EXCEPTION(ierr != 0, RuntimeError,
     "EpetraExt Matrix-matrix multiply failed with error code ierr=" << ierr);
 
   /* Prepare an operator object for the scaled matrix */

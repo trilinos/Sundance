@@ -54,7 +54,7 @@ bool LabeledSubsetCellFilter::lessThan(const CellFilterBase* other) const
   const LabeledSubsetCellFilter* L 
     = dynamic_cast<const LabeledSubsetCellFilter*>(other);
 
-  TEST_FOR_EXCEPTION(L==0,
+  TEUCHOS_TEST_FOR_EXCEPTION(L==0,
                      std::logic_error,
                      "argument " << other->toXML() 
                      << " to LabeledSubsetCellFilter::lessThan() should be "

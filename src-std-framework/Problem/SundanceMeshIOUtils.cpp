@@ -157,7 +157,7 @@ double readbackTester(const std::string& infile, const MPIComm& comm)
   }
   else
   {
-    TEST_FOR_EXCEPT(dim != 2 && dim != 3);
+    TEUCHOS_TEST_FOR_EXCEPT(dim != 2 && dim != 3);
   }
   Out::root() << "done projecting function " << std::endl;
   /* Compute some functional using the mesh */
@@ -213,7 +213,7 @@ void serialPartition(
   /* This should only be run on a single-process communicator. If run in 
    * parallel, this function should be called only by the "MPI_COMM_SELF" 
    * communicator of a single processor. */
-  TEST_FOR_EXCEPTION(mesher.comm().getNProc() > 1, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(mesher.comm().getNProc() > 1, std::runtime_error,
     "serialPartition() should only be called from a "
     "single-process communicator");
 

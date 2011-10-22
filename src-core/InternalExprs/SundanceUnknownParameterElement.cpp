@@ -119,7 +119,7 @@ Evaluator* UnknownParameterElement
 const Parameter* UnknownParameterElement::parameterValue() const 
 {
   const Parameter* p = dynamic_cast<const Parameter*>(evalPt());
-  TEST_FOR_EXCEPTION(p==0, std::logic_error, 
+  TEUCHOS_TEST_FOR_EXCEPTION(p==0, std::logic_error, 
     "UnknownParameter evalPt() is not a Parameter");
   return p;
 }
@@ -127,7 +127,7 @@ const Parameter* UnknownParameterElement::parameterValue() const
 Parameter* UnknownParameterElement::parameterValue()  
 {
   Parameter* p = dynamic_cast<Parameter*>(evalPt());
-  TEST_FOR_EXCEPTION(p==0, std::logic_error, 
+  TEUCHOS_TEST_FOR_EXCEPTION(p==0, std::logic_error, 
     "UnknownParameter evalPt() is not a Parameter");
   return p;
 }
@@ -137,11 +137,11 @@ bool UnknownParameterElement::lessThan(const ScalarExpr* other) const
 {
   const UnknownParameterElement* p 
     = dynamic_cast<const UnknownParameterElement*>(other);
-  TEST_FOR_EXCEPT(p==0);
+  TEUCHOS_TEST_FOR_EXCEPT(p==0);
 
   if (name() < p->name()) return true;
 
-  TEST_FOR_EXCEPTION(name()==p->name() && this == p, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(name()==p->name() && this == p, std::runtime_error,
     "detected two different parameters with the same name");
   return false;
 }

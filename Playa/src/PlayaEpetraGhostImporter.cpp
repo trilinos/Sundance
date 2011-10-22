@@ -67,7 +67,7 @@ void EpetraGhostImporter
   EpetraGhostView* epgv 
     = dynamic_cast<EpetraGhostView*>(ghostView.get());
 
-  TEST_FOR_EXCEPTION(epgv==0, std::runtime_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(epgv==0, std::runtime_error,
     "argument ghostView to EpetraGhostImporter::importView() "
     "could not be cast to a EpetraGhostView pointer");
 

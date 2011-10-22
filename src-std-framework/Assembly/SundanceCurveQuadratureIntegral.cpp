@@ -81,7 +81,7 @@ CurveQuadratureIntegral::CurveQuadratureIntegral(
 {
   Tabs tab0(0);
   
-  TEST_FOR_EXCEPTION( cellType != mesh.cellType(mesh.spatialDim()) , std::runtime_error, " CurveQuadratureIntegral::CurveQuadratureIntegral , only on MAXcell!!");
+  TEUCHOS_TEST_FOR_EXCEPTION( cellType != mesh.cellType(mesh.spatialDim()) , std::runtime_error, " CurveQuadratureIntegral::CurveQuadratureIntegral , only on MAXcell!!");
 
   SUNDANCE_MSG1(setupVerb(), tab0 << "CurveQuadratureIntegral ctor for 0-form");
   if (setupVerb()) describe(Out::os());
@@ -125,7 +125,7 @@ CurveQuadratureIntegral::CurveQuadratureIntegral(
 {
   Tabs tab0(0);
   
-  TEST_FOR_EXCEPTION( cellType != mesh.cellType(mesh.spatialDim()) , std::runtime_error, " CurveQuadratureIntegral::CurveQuadratureIntegral , only on MAXcell!!");
+  TEUCHOS_TEST_FOR_EXCEPTION( cellType != mesh.cellType(mesh.spatialDim()) , std::runtime_error, " CurveQuadratureIntegral::CurveQuadratureIntegral , only on MAXcell!!");
 
   SUNDANCE_MSG1(setupVerb(), tab0 << "CurveQuadratureIntegral ctor for 1-form");
   if (setupVerb()) describe(Out::os());
@@ -174,7 +174,7 @@ CurveQuadratureIntegral::CurveQuadratureIntegral(
 {
   Tabs tab0(0);
 
-  TEST_FOR_EXCEPTION( cellType != mesh.cellType(mesh.spatialDim()) , std::runtime_error, " CurveQuadratureIntegral::CurveQuadratureIntegral , only on MAXcell!!");
+  TEUCHOS_TEST_FOR_EXCEPTION( cellType != mesh.cellType(mesh.spatialDim()) , std::runtime_error, " CurveQuadratureIntegral::CurveQuadratureIntegral , only on MAXcell!!");
   
   SUNDANCE_MSG1(setupVerb(), tab0 << "CurveQuadratureIntegral ctor for 2-form");
   if (setupVerb()) describe(Out::os());
@@ -340,7 +340,7 @@ void CurveQuadratureIntegral
   Tabs tabs;
   SUNDANCE_MSG1(integrationVerb(), tabs << "doing zero form by quadrature , isLocalFlag.size():" << isLocalFlag.size() );
 
-  TEST_FOR_EXCEPTION(order() != 0, std::logic_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(order() != 0, std::logic_error,
     "CurveQuadratureIntegral::transformZeroForm() called "
     "for form of order " << order());
 
@@ -379,7 +379,7 @@ void CurveQuadratureIntegral
   }
   else
   {
-	TEST_FOR_EXCEPTION( (int) isLocalFlag.size() != JVol.numCells(),
+	TEUCHOS_TEST_FOR_EXCEPTION( (int) isLocalFlag.size() != JVol.numCells(),
 		  std::runtime_error,
 	      "mismatch between isLocalFlag.size()="
 	      << isLocalFlag.size()
@@ -431,7 +431,7 @@ void CurveQuadratureIntegral::transformOneForm(const CellJacobianBatch& JTrans,
 {
   TimeMonitor timer(maxCellQuadratureTimer());
   Tabs tabs;
-  TEST_FOR_EXCEPTION(order() != 1, std::logic_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(order() != 1, std::logic_error,
     "CurveQuadratureIntegral::transformOneForm() called for form "
     "of order " << order());
   SUNDANCE_MSG2(integrationVerb(), tabs << "doing one form by quadrature");
@@ -528,7 +528,7 @@ void CurveQuadratureIntegral::transformTwoForm(const CellJacobianBatch& JTrans,
 {
   TimeMonitor timer(maxCellQuadratureTimer());
   Tabs tabs;
-  TEST_FOR_EXCEPTION(order() != 2, std::logic_error,
+  TEUCHOS_TEST_FOR_EXCEPTION(order() != 2, std::logic_error,
     "CurveQuadratureIntegral::transformTwoForm() called for form "
     "of order " << order());
   SUNDANCE_MSG2(integrationVerb(), tabs << "doing one form by quadrature");

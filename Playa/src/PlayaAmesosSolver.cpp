@@ -57,7 +57,7 @@ SolverState<double> AmesosSolver::solve(const LinearOperator<double>& op,
   Amesos amFactory;
   RCP<Amesos_BaseSolver> solver 
     = rcp(amFactory.Create("Amesos_" + kernel_, prob));
-  TEST_FOR_EXCEPTION(solver.get()==0, std::runtime_error, 
+  TEUCHOS_TEST_FOR_EXCEPTION(solver.get()==0, std::runtime_error, 
     "AmesosSolver::solve() failed to instantiate "
     << kernel_ << "solver kernel");
 
