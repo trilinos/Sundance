@@ -210,6 +210,14 @@ void ExodusWriter::writeMesh(int exoid,
   Array<int> blockLabels = mesh().getAllLabelsForDimension(dim).elements();
   int nodesPerElem = dim+1;
   std::string eType = elemType(mesh().cellType(dim));
+  
+  bool minBlockIsZero = false;
+  for (int b=0; b<blockLabels.size(); b++)
+  {
+    if (blockLabels[b] < 1) {minBlockIsZero = true; break;}
+  }
+  
+
   for (int b=0; b<blockLabels.size(); b++)
   {
 //    Out::os() << "writing element block" << b << endl;
@@ -219,15 +227,18 @@ void ExodusWriter::writeMesh(int exoid,
     Array<int> orient;
     mesh().getLIDsForLabel(dim, blockLabels[b], blockElemLIDs);
     int numElemsThisBlock = blockElemLIDs.size();
+//    Out::os() << "writing block #" << blockLabels[b] << " with " << numElemsThisBlock << " elems"  
+//              << endl;
     mesh().getFacetLIDs(dim, blockElemLIDs, 0, nodeLIDs, orient);
     offset(nodeLIDs);
     ierr = ex_put_elem_block(
-      exoid, blockLabels[b]+1, eType.c_str(), 
+      exoid, blockLabels[b], eType.c_str(), 
       numElemsThisBlock, nodesPerElem, numBlockAttr
       );
 
     TEST_FOR_EXCEPT(ierr < 0);
-    ierr = ex_put_elem_conn(exoid, blockLabels[b]+1, &(nodeLIDs[0]));
+    ierr = ex_put_elem_conn(exoid, blockLabels[b]+minBlockIsZero, 
+      &(nodeLIDs[0]));
     TEST_FOR_EXCEPT(ierr < 0);
   }
 //  Out::os() << "done all element blocks" << endl;
@@ -248,6 +259,7 @@ void ExodusWriter::writeMesh(int exoid,
 
 //    Out::os() << "getting LIDs "<< endl;  
     mesh().getLIDsForLabel(dim-1, ssLabels[ss], sideLIDs);
+//    sort(&(sideLIDs[0]), &(sideLIDs[sideLIDs.size()-1]));
 //    Out::os() << "LIDs= "<< sideLIDs << endl;  
 //    Out::os() << "getting cofacets "<< endl;  
     mesh().getMaxCofacetLIDs(sideLIDs, maxCofacetBatch);

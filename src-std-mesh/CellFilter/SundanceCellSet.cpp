@@ -44,8 +44,8 @@ using Playa::Handleable;
 
 
 CellSet::CellSet(const Mesh& mesh, int cellDim,
-                 const CellType& cellType,
-                 const Set<int>& cellLIDs)
+  const CellType& cellType,
+  const Set<int>& cellLIDs)
   : Handle<CellSetBase>(rcp(new ExplicitCellSet(mesh, cellDim, cellType, cellLIDs)))
 {}
 
@@ -61,7 +61,7 @@ CellSet CellSet::setUnion(const CellSet& other) const
   Set<int>& cells = rtn->cells();
 
   std::set_union(this->begin(), this->end(), other.begin(), other.end(), 
-                 std::insert_iterator<Set<int> >(cells, cells.begin()));
+    std::insert_iterator<Set<int> >(cells, cells.begin()));
   
   return rtn;
 }
@@ -78,7 +78,7 @@ CellSet CellSet::setIntersection(const CellSet& other) const
   Set<int>& cells = rtn->cells();
 
   std::set_intersection(this->begin(), this->end(), other.begin(), other.end(), 
-                        std::insert_iterator<Set<int> >(cells, cells.begin()));
+    std::insert_iterator<Set<int> >(cells, cells.begin()));
   
   return rtn;
 }
@@ -95,7 +95,7 @@ CellSet CellSet::setDifference(const CellSet& other) const
   Set<int>& cells = rtn->cells();
 
   std::set_difference(this->begin(), this->end(), other.begin(), other.end(), 
-                      std::insert_iterator<Set<int> >(cells, cells.begin()));
+    std::insert_iterator<Set<int> >(cells, cells.begin()));
   
   return rtn;
 }
@@ -104,26 +104,26 @@ CellSet CellSet::setDifference(const CellSet& other) const
 void CellSet::checkCompatibility(const std::string& op, const CellSet& other) const 
 {
   TEST_FOR_EXCEPTION(meshID() != other.meshID(), std::runtime_error,
-                     "CellSet::checkCompatibility(): "
-                     "incompatible mesh ID numbers in " << op
-                     << ". LHS=" << meshID() << " RHS=" << other.meshID());
+    "CellSet::checkCompatibility(): "
+    "incompatible mesh ID numbers in " << op
+    << ". LHS=" << meshID() << " RHS=" << other.meshID());
 
   TEST_FOR_EXCEPTION(dimension() != other.dimension(), std::runtime_error,
-                     "CellSet::checkCompatibility() incompatible dimensions in " << op
-                     << "LHS has "
-                     "dimension=" << dimension() << " but RHS has dimension="
-                     << other.dimension());
+    "CellSet::checkCompatibility() incompatible dimensions in " << op
+    << "LHS has "
+    "dimension=" << dimension() << " but RHS has dimension="
+    << other.dimension());
   
   TEST_FOR_EXCEPTION(cellType() != other.cellType(), std::runtime_error,
-                     "CellSet::checkCompatibility() incompatible cell types. "
-                     " in " << op << " LHS has "
-                     "cellType=" << cellType() << " but RHS has cellType="
-                     << other.cellType());
+    "CellSet::checkCompatibility() incompatible cell types. "
+    " in " << op << " LHS has "
+    "cellType=" << cellType() << " but RHS has cellType="
+    << other.cellType());
 
   SUNDANCE_OUT(this->verb() > 2,
-               "Set operation: " << op << std::endl
-               << "LHS cells: " << *this << std::endl
-               << "RHS cells: " << other);
+    "Set operation: " << op << std::endl
+    << "LHS cells: " << *this << std::endl
+    << "RHS cells: " << other);
                
 }
 
@@ -137,21 +137,21 @@ bool CellSet::areFacetsOf(const CellSet& other) const
   if (myDim >= cofacetDim) return false;
 
   for (CellIterator i=begin(); i!=end(); i++)
+  {
+    int cellLID = *i;
+    mesh().getCofacets(myDim, cellLID, cofacetDim, cofacetLIDs);
+    Set<int> cofacetSet;
+    for (int c=0; c<cofacetLIDs.size(); c++)
     {
-      int cellLID = *i;
-      mesh().getCofacets(myDim, cellLID, cofacetDim, cofacetLIDs);
-      Set<int> cofacetSet;
-      for (int c=0; c<cofacetLIDs.size(); c++)
-        {
-          int cf = cofacetLIDs[c];
-          cofacetSet.put(cf);
-        }
-      CellSet myCofacetSet(mesh(), cofacetDim, cofacetType, cofacetSet); 
-      CellSet intersection = myCofacetSet.setIntersection(other);      
-      /* if the intersection is empty, then we have found a cell
-       * that is not a facet of one of the other cells */
-      if (intersection.begin()==intersection.end()) return false;
+      int cf = cofacetLIDs[c];
+      cofacetSet.put(cf);
     }
+    CellSet myCofacetSet(mesh(), cofacetDim, cofacetType, cofacetSet); 
+    CellSet intersection = myCofacetSet.setIntersection(other);      
+    /* if the intersection is empty, then we have found a cell
+     * that is not a facet of one of the other cells */
+    if (intersection.begin()==intersection.end()) return false;
+  }
   return true;
 }
 
@@ -160,5 +160,16 @@ bool CellSet::operator<(const CellSet& other) const
   Tabs tab;
   bool rtn = ptr()->lessThan(other.ptr().get());
   return rtn;
+}
+
+
+int CellSet::numCells() const 
+{
+  int count = 0;
+  for (CellIterator i=begin(); i!=end(); i++)
+  {
+    count ++;
+  }
+  return count;
 }
 

@@ -33,6 +33,8 @@ private:
   double objTol_;
   double gradTol_;
   double stepTol_;
+  double xTyp_;
+  double fTyp_;
 };
 
 }

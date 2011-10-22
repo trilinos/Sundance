@@ -166,6 +166,15 @@ RCP<DOFMapBase> DOFMapBuilder::makeMap(const Mesh& mesh,
     // the last option inhomogeneous mixed map, which supports hanging nodes
 	rtn = rcp(new InhomogeneousDOFMapHN(mesh, basis , disjoint, verb_));
   }
+
+  if (verb_ > 0)
+  {
+    Out::os() << "done building DOF map" << std::endl;
+    if (verb_ > 1) Out::os() << "num DOFs" << rtn->numDOFs() << std::endl;
+    if (verb_ > 1) Out::os() << "num local DOFs" 
+                             << rtn->numLocalDOFs() << std::endl;
+    if (verb_ > 4) rtn->print(Out::os());
+  }
   return rtn;
 }
 
@@ -493,7 +502,7 @@ bool DOFMapBuilder::allFuncsAreOmnipresent(const Mesh& mesh,
     if (!isWholeDomain(mesh, maxFilterDim, *iter)) rtn = 1;
   }
 
-  // make syncronization with the other processors
+  // make synchronization with the other processors
   int omniPresent = rtn;
   mesh.comm().allReduce((void*) &omniPresent, (void*) &rtn, 1,
     MPIComm::INT, MPIComm::SUM);
@@ -534,9 +543,12 @@ bool DOFMapBuilder::isWholeDomain(const Mesh& mesh,
     }
     if (cf.dimension(mesh) != maxFilterDim) continue;
     CellSet cells = cf.getCells(mesh);
+    SUNDANCE_MSG2(verb_, "found " << cells.numCells() << " in CF " << cf);
     remainder = remainder.setDifference(cells);
     if (remainder.begin() == remainder.end()) return true;
   }
+
+  SUNDANCE_MSG2(verb_, "num remaining cells: " << remainder.numCells());
 
   return false;
 }

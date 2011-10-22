@@ -103,6 +103,9 @@ public:
   /** */
   bool operator<(const CellSet& other) const ;
 
+  /** */
+  int numCells() const ;
+
 private:
   void checkCompatibility(const std::string& op, const CellSet& other) const ;
 };

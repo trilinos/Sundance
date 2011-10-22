@@ -15,8 +15,12 @@ DefaultOptConvergenceTest::DefaultOptConvergenceTest(
     requiredPasses_(params.get<int>("Num Required Passes")),
     objTol_(params.get<double>("Objective Tolerance")), 
     gradTol_(params.get<double>("Gradient Tolerance")),
-    stepTol_(params.get<double>("Step Tolerance"))
+    stepTol_(params.get<double>("Step Tolerance")),
+    xTyp_(1.0),
+    fTyp_(1.0)
 {
+  if (params.isParameter("Typical X Scale")) xTyp_ = params.get<double>("Typical X Scale");
+  if (params.isParameter("Typical F Scale")) fTyp_ = params.get<double>("Typical F Scale");
 }
 
 
@@ -36,25 +40,24 @@ OptStatus DefaultOptConvergenceTest::test(const OptState& state) const
     return Opt_Continue;
   }
 
-  /* check function value change */
+  /* Get problem scale */
   double fCur = state.fCur();
   double fPrev = state.fPrev();
-  double objConv = std::fabs(fCur - fPrev)/(1.0 + std::fabs(fCur));
+  double fScale = std::max( std::fabs(fPrev), std::fabs(fTyp_) );
+  double xScale = std::max( state.xCur().normInf(), std::fabs(xTyp_) );
+
+  /* check function value change */
+  double objConv = std::fabs(fCur - fPrev)/fScale;
   if (objConv <= objTol_) conv++;
   PLAYA_MSG2(verb(), tab1 << "obj test: " << objConv << " tol=" << objTol_);
 
   /* check gradient */
-  double gradConv = state.gradCur().norm2();
+  double gradConv = state.gradCur().normInf() * xScale / fScale ;
   PLAYA_MSG2(verb(), tab1 << "|grad|: " << gradConv << " tol=" << gradTol_);
   if (gradConv <= gradTol_) conv++;
 
-  /* compute |xPrev_k - xCur_k| / (1 + |xPrev_k - xCur_k| ) elementwise */
-  Vector<double> diff = (state.xCur() - state.xPrev()).abs();
-  Vector<double> one = diff.copy();
-  one.setToConstant(1.0);
-  Vector<double> denom = state.xCur().copy().abs() + one;
-  diff.dotSlash(denom);
-  double stepConv = diff.normInf();
+  /* compute |xPrev_k - xCur_k| / xScale */
+  double stepConv = (state.xCur() - state.xPrev()).normInf()/xScale;
   if (stepConv <= stepTol_) conv++;
   PLAYA_MSG2(verb(), tab1 << "step test " << stepConv << " tol=" << stepTol_);
   

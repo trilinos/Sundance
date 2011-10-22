@@ -65,7 +65,7 @@ InhomogeneousNodalDOFMap
     nodeStructure_()
 {
   SUNDANCE_MSG1(setupVerb, "in InhomogeneousNodalDOFMap ctor");
-  SUNDANCE_MSG2(setupVerb, "func set to domain map " << funcSetToDomainMap);
+  SUNDANCE_MSG4(setupVerb, "func set to domain map " << funcSetToDomainMap);
 
   /* count the total number of functions across all subdomains */
   Set<int> allFuncs;
@@ -121,7 +121,7 @@ InhomogeneousNodalDOFMap
   {
     int d = subdomains[r].dimension(mesh);
     CellSet cells = subdomains[r].getCells(mesh);
-    SUNDANCE_MSG2(setupVerb, "domain " << subdomains[r] << " has functions "
+    SUNDANCE_MSG4(setupVerb, "domain " << subdomains[r] << " has functions "
       << funcSets[r]);
       
     for (CellIterator c=cells.begin(); c!=cells.end(); c++)
