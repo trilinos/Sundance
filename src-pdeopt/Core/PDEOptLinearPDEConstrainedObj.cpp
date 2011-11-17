@@ -16,6 +16,48 @@ LinearPDEConstrainedObj::LinearPDEConstrainedObj(
   const Expr& designVar,
   const Expr& designVarVal,
   const LinearSolver<double>& solver,
+  const RCP<IterCallbackBase>& iterCallback,
+  int verb)
+  : PDEConstrainedObjBase(lagrangian, tuple(stateVarVals),
+    tuple(adjointVarVals), designVarVal, iterCallback, verb),
+    stateProbs_(),
+    adjointProbs_(),
+    solvers_(tuple(solver))
+{
+  init(tuple(stateVars), tuple(adjointVars), designVar);
+}
+
+
+LinearPDEConstrainedObj::LinearPDEConstrainedObj(
+  const Functional& lagrangian,
+  const Array<Expr>& stateVars,
+  const Array<Expr>& stateVarVals,
+  const Array<Expr>& adjointVars,
+  const Array<Expr>& adjointVarVals,
+  const Expr& designVar,
+  const Expr& designVarVal,
+  const Array<LinearSolver<double> >& solvers,
+  const RCP<IterCallbackBase>& iterCallback,
+  int verb)
+  : PDEConstrainedObjBase(lagrangian, stateVarVals,
+    adjointVarVals, designVarVal, iterCallback, verb),
+    stateProbs_(),
+    adjointProbs_(),
+    solvers_(solvers)
+{
+  init(stateVars, adjointVars, designVar);
+}
+
+
+LinearPDEConstrainedObj::LinearPDEConstrainedObj(
+  const Functional& lagrangian,
+  const Expr& stateVars,
+  const Expr& stateVarVals,
+  const Expr& adjointVars,
+  const Expr& adjointVarVals,
+  const Expr& designVar,
+  const Expr& designVarVal,
+  const LinearSolver<double>& solver,
   int verb)
   : PDEConstrainedObjBase(lagrangian, tuple(stateVarVals),
     tuple(adjointVarVals), designVarVal, verb),

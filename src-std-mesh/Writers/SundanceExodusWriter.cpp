@@ -232,11 +232,12 @@ void ExodusWriter::writeMesh(int exoid,
     mesh().getFacetLIDs(dim, blockElemLIDs, 0, nodeLIDs, orient);
     offset(nodeLIDs);
     ierr = ex_put_elem_block(
-      exoid, blockLabels[b], eType.c_str(), 
+      exoid, blockLabels[b]+minBlockIsZero, eType.c_str(), 
       numElemsThisBlock, nodesPerElem, numBlockAttr
       );
 
     TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
+//    Out::os() << "block: " << blockLabels[b]+minBlockIsZero << endl;
     ierr = ex_put_elem_conn(exoid, blockLabels[b]+minBlockIsZero, 
       &(nodeLIDs[0]));
     TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);

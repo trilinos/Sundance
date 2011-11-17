@@ -50,6 +50,51 @@ NonlinearPDEConstrainedObj::NonlinearPDEConstrainedObj(
   init(stateVars, adjointVars, designVar);
 }
 
+NonlinearPDEConstrainedObj::NonlinearPDEConstrainedObj(
+  const Functional& lagrangian,
+  const Expr& stateVars,
+  const Expr& stateVarVals,
+  const Expr& adjointVars,
+  const Expr& adjointVarVals,
+  const Expr& designVar,
+  const Expr& designVarVal,
+  const NOXSolver& solver,
+  const LinearSolver<double>& adjSolver,
+  const RCP<IterCallbackBase>& iterCallback,
+  int verb)
+  : PDEConstrainedObjBase(lagrangian, tuple(stateVarVals),
+    tuple(adjointVarVals), designVarVal, iterCallback, verb),
+    stateProbs_(),
+    adjointProbs_(),
+    solver_(solver),
+    adjSolver_(adjSolver)
+{
+  init(tuple(stateVars), tuple(adjointVars), designVar);
+}
+
+
+NonlinearPDEConstrainedObj::NonlinearPDEConstrainedObj(
+  const Functional& lagrangian,
+  const Array<Expr>& stateVars,
+  const Array<Expr>& stateVarVals,
+  const Array<Expr>& adjointVars,
+  const Array<Expr>& adjointVarVals,
+  const Expr& designVar,
+  const Expr& designVarVal,
+  const NOXSolver& solver,
+  const LinearSolver<double>& adjSolver,
+  const RCP<IterCallbackBase>& iterCallback,
+  int verb)
+  : PDEConstrainedObjBase(lagrangian, stateVarVals,
+    adjointVarVals, designVarVal, iterCallback, verb),
+    stateProbs_(),
+    adjointProbs_(),
+    solver_(solver),
+    adjSolver_(adjSolver)
+{
+  init(stateVars, adjointVars, designVar);
+}
+
 
 void NonlinearPDEConstrainedObj::initEquations(
   const Array<Expr>& stateVars,

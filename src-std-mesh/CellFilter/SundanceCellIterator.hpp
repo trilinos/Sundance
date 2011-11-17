@@ -141,7 +141,6 @@ private:
   /** Advance the iterator */
   void advance()
     {
-      CellIterator old = *this;
       if (isImplicit_) 
       {
         if (reorderer_ != 0) 

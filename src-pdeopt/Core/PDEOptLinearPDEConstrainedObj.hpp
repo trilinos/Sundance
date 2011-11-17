@@ -43,6 +43,32 @@ public:
     const Array<LinearSolver<double> >& solvers,
     int verb=0);
 
+  /**  */
+  LinearPDEConstrainedObj(
+    const Functional& lagrangian,
+    const Expr& stateVars,
+    const Expr& stateVarVals,
+    const Expr& adjointVars,
+    const Expr& adjointVarVals,
+    const Expr& designVars,
+    const Expr& designVarVals,
+    const LinearSolver<double>& solver,
+    const RCP<IterCallbackBase>& iterCallback,
+    int verb=0);
+
+  /**  */
+  LinearPDEConstrainedObj(
+    const Functional& lagrangian,
+    const Array<Expr>& stateVars,
+    const Array<Expr>& stateVarVals,
+    const Array<Expr>& adjointVars,
+    const Array<Expr>& adjointVarVals,
+    const Expr& designVars,
+    const Expr& designVarVals,
+    const Array<LinearSolver<double> >& solvers,
+    const RCP<IterCallbackBase>& iterCallback,
+    int verb=0);
+
   /** virtual dtor */
   virtual ~LinearPDEConstrainedObj(){;}
 

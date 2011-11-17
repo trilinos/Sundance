@@ -398,7 +398,7 @@ void ElementIntegral
   int flops = 0;
 
   int maxDim = JTrans.cellDim();
-  int cellDim = JVol.cellDim();
+  //int cellDim = JVol.cellDim();
 
   if (testDerivOrder() == 1 && unkDerivOrder() == 1)
   {

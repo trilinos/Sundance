@@ -24,7 +24,28 @@ PDEConstrainedObjBase::PDEConstrainedObjBase(
     fEval_(),
     numFuncEvals_(0),
     numGradEvals_(0),
-    invHScale_(1.0)
+    invHScale_(1.0),
+    iterCallback_()
+{}
+
+
+PDEConstrainedObjBase::PDEConstrainedObjBase(
+  const Functional& lagrangian,
+  const Array<Expr>& stateVarVals,
+  const Array<Expr>& adjointVarVals,
+  const Expr& designVarVal,
+  const RCP<IterCallbackBase>& iterCallback,
+  int verb)
+  : ObjectiveBase(verb),
+    Lagrangian_(lagrangian),
+    designVarVal_(designVarVal),
+    stateVarVals_(stateVarVals),
+    adjointVarVals_(adjointVarVals),
+    fEval_(),
+    numFuncEvals_(0),
+    numGradEvals_(0),
+    invHScale_(1.0),
+    iterCallback_(iterCallback)
 {}
 
 
@@ -142,6 +163,15 @@ void PDEConstrainedObjBase::eval(const Vector<double>& x, double& f) const
 Vector<double> PDEConstrainedObjBase::getInit() const
 {
   return getDiscreteFunctionVector(designVarVal());
+}
+
+void PDEConstrainedObjBase:: iterationCallback(const Vector<double>& x, 
+  int iter) const
+{
+  if (iterCallback_.ptr().get() != 0) 
+  {
+    iterCallback_->call(this, iter);
+  }
 }
 
 

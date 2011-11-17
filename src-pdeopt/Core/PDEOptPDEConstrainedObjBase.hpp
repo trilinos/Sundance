@@ -4,6 +4,7 @@
 #include "PlayaObjectiveBase.hpp"
 #include "SundanceExpr.hpp"
 #include "SundanceFunctional.hpp"
+#include "PDEOptIterCallbackBase.hpp"
 
 namespace Sundance
 {
@@ -30,7 +31,16 @@ public:
     const Array<Expr>& stateVarVals,
     const Array<Expr>& adjointVarVals,
     const Expr& designVarVal,
-    int verb=0);
+    const RCP<IterCallbackBase>& iterCallback,
+    int verb = 0);
+      
+  /** Constructor */
+  PDEConstrainedObjBase(
+    const Functional& lagrangian,
+    const Array<Expr>& stateVarVals,
+    const Array<Expr>& adjointVarVals,
+    const Expr& designVarVal,
+    int verb = 0);
 
   /** virtual dtor */
   virtual ~PDEConstrainedObjBase(){;}
@@ -51,6 +61,9 @@ public:
    *
    * Default is a no-op. */
   virtual void statePostprocCallback() const {;}
+
+  /** */
+  virtual void iterationCallback(const Vector<double>& x, int iter) const ;
 
   /** */
   const Mesh& mesh() const {return Lagrangian_.mesh();}
@@ -88,6 +101,19 @@ public:
    * inverse of the Hessian */
   double getInvHScale() const {return invHScale_;}
   
+
+  /** Access to the design variable */
+  const Expr& designVar() const
+    {return designVarVal_;}
+
+  /** Access to the state variables */
+  const Array<Expr>& stateVars() const
+    {return stateVarVals_;}
+
+  /** Access to the adjoint variables */
+  const Array<Expr>& adjointVars() const
+    {return adjointVarVals_;}
+
 protected:  
   /** */
   void init(
@@ -126,6 +152,8 @@ private:
   mutable int numGradEvals_;
 
   double invHScale_;
+
+  RCP<IterCallbackBase> iterCallback_;
 };
 
 }

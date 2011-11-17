@@ -46,6 +46,34 @@ public:
     const LinearSolver<double>& adjSolver,
     int verb=0);
 
+  /**  */
+  NonlinearPDEConstrainedObj(
+    const Functional& lagrangian,
+    const Expr& stateVars,
+    const Expr& stateVarVals,
+    const Expr& adjointVars,
+    const Expr& adjointVarVals,
+    const Expr& designVars,
+    const Expr& designVarVals,
+    const NOXSolver& solver,
+    const LinearSolver<double>& adjSolver,
+    const RCP<IterCallbackBase>& iterCallback,
+    int verb=0);
+
+  /**  */
+  NonlinearPDEConstrainedObj(
+    const Functional& lagrangian,
+    const Array<Expr>& stateVars,
+    const Array<Expr>& stateVarVals,
+    const Array<Expr>& adjointVars,
+    const Array<Expr>& adjointVarVals,
+    const Expr& designVars,
+    const Expr& designVarVals,
+    const NOXSolver& solver,
+    const LinearSolver<double>& adjSolver,
+    const RCP<IterCallbackBase>& iterCallback,
+    int verb=0);
+
   /** virtual dtor */
   virtual ~NonlinearPDEConstrainedObj(){;}
 
