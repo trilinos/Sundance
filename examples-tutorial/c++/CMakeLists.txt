@@ -23,7 +23,7 @@ ADD_TEST_BATCH(MPITests
         NUM_MPI_PROCS 1
         )
 
-PACKAGE_COPY_FILES_TO_BINARY_DIR(ExampleCopyFiles
+TRIBITS_COPY_FILES_TO_BINARY_DIR(ExampleCopyFiles
   DEST_FILES 
                    amesos.xml 
                    anasazi-ml.xml 

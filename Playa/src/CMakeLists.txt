@@ -1,11 +1,11 @@
 
-INCLUDE(PackageLibraryMacros)
+INCLUDE(TribitsLibraryMacros)
 
 #
 # A) Package-specific configuration options
 #
 
-PACKAGE_CONFIGURE_FILE(PlayaConfig.h)
+TRIBITS_CONFIGURE_FILE(PlayaConfig.h)
 
 #
 # B) Define the header and source files (and directories)
@@ -288,7 +288,7 @@ ENDIF()
 
 PRINT_VAR(DEPLIBS)
 
-PACKAGE_ADD_LIBRARY(
+TRIBITS_ADD_LIBRARY(
   playa
   HEADERS ${HEADERS}
   SOURCES ${SOURCES}

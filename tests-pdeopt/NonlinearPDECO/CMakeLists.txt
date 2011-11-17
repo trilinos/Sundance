@@ -18,7 +18,7 @@ ADD_TEST_BATCH(SerialTests
         NUM_MPI_PROCS 1
         )
 
-PACKAGE_COPY_FILES_TO_BINARY_DIR(PDEOptNLTestCopyFiles
+TRIBITS_COPY_FILES_TO_BINARY_DIR(PDEOptNLTestCopyFiles
   DEST_FILES 
                    amesos.xml 
                    basicLMBFGS.xml

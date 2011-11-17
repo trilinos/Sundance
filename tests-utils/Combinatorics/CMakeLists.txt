@@ -1,15 +1,15 @@
 # CMake tests specification 
 
 
-INCLUDE(PackageAddExecutableAndTest)
+INCLUDE(TribitsAddExecutableAndTest)
 
-PACKAGE_ADD_EXECUTABLE_AND_TEST(
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
         CombTest
         SOURCES CombTest.cpp
         COMM serial
 )
 
-PACKAGE_ADD_EXECUTABLE_AND_TEST(
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
         VertexOrderTest
         SOURCES VertexOrderTest.cpp
         COMM serial mpi

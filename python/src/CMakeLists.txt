@@ -33,7 +33,7 @@ APPEND_SET(SOURCES
 # should be valid unless there's an error in the Trilinos package file.
 SET(PACK_LIST ${Trilinos_PACKAGES})
 
-# Remove from the package list all packages after ${PACKAGE} in the dependency
+# Remove from the package list all packages after ${TRIBITS_PACKAGE} in the dependency
 # chain. This way each package can create its own minimalist export makefile
 # with no upstream libraries. 
 SET(TMP_PACK_LIST)
@@ -41,7 +41,7 @@ SET(SKIP FALSE)
 FOREACH(PACK_NAME ${PACK_LIST})
   IF(NOT SKIP)
     LIST(APPEND TMP_PACK_LIST ${PACK_NAME})
-    IF(PACKAGE STREQUAL ${PACK_NAME})
+    IF(TRIBITS_PACKAGE STREQUAL ${PACK_NAME})
       SET(SKIP TRUE)
     ENDIF()
   ENDIF()

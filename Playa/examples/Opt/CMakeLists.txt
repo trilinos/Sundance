@@ -1,9 +1,9 @@
 # 
 
 
-INCLUDE(PackageAddExecutableAndTest)
+INCLUDE(TribitsAddExecutableAndTest)
 
-PACKAGE_ADD_EXECUTABLE_AND_TEST(
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
   PlayaOptRosenbrock
   SOURCES PlayaOptRosenbrock.cpp PlayaRosenbrock.cpp
   ARGS
@@ -14,7 +14,7 @@ PACKAGE_ADD_EXECUTABLE_AND_TEST(
 
 SET(SolverParamPath ${PACKAGE_SOURCE_DIR}/Playa/etc/SolverParameters)
 
-PACKAGE_COPY_FILES_TO_BINARY_DIR(OptimizerExampleCopyFiles
+TRIBITS_COPY_FILES_TO_BINARY_DIR(OptimizerExampleCopyFiles
   DEST_FILES 
   basicLMBFGS.xml 
   SOURCE_DIR ${SolverParamPath}

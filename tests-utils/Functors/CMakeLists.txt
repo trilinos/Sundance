@@ -1,9 +1,9 @@
 # CMake tests specification 
 
 
-INCLUDE(PackageAddExecutableAndTest)
+INCLUDE(TribitsAddExecutableAndTest)
 
-PACKAGE_ADD_EXECUTABLE_AND_TEST(
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
         FunctorTest
         SOURCES FunctorTest.cpp
         COMM serial mpi

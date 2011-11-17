@@ -1,9 +1,9 @@
 # 
 
 
-INCLUDE(PackageAddExecutableAndTest)
+INCLUDE(TribitsAddExecutableAndTest)
 
-PACKAGE_ADD_EXECUTABLE_AND_TEST(
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
   Example1-VectorOps
   SOURCES Example1-VectorOps.cpp
   ARGS

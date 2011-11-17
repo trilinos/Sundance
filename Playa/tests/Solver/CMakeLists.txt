@@ -26,7 +26,7 @@ ADD_TEST_BATCH(SerialOnlyTests
         )      
 
 
-PACKAGE_COPY_FILES_TO_BINARY_DIR(SolverTestCopyFiles
+TRIBITS_COPY_FILES_TO_BINARY_DIR(SolverTestCopyFiles
   DEST_FILES 
                    amesos.xml 
                    anasazi-ml.xml 

@@ -1,12 +1,12 @@
 
-INCLUDE(PackageLibraryMacros)
+INCLUDE(TribitsLibraryMacros)
 
 #
 # A) Package-specific configuration options
 #
 
-PACKAGE_CONFIGURE_FILE(SundanceConfig.h)
-PACKAGE_CONFIGURE_FILE(SundanceDefaultPath.hpp)
+TRIBITS_CONFIGURE_FILE(SundanceConfig.h)
+TRIBITS_CONFIGURE_FILE(SundanceDefaultPath.hpp)
 
 #
 # B) Define the header and source files (and directories)
@@ -89,7 +89,7 @@ ENDIF()
 # C) Define the targets for package's library(s)
 #
 
-PACKAGE_ADD_LIBRARY(
+TRIBITS_ADD_LIBRARY(
   sundanceUtils
   HEADERS ${HEADERS}
   SOURCES ${SOURCES}

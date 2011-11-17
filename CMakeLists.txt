@@ -1,6 +1,6 @@
 
-INCLUDE(PackageMacros)
-INCLUDE(AddOptionAndDefine)
+INCLUDE(TribitsPackageMacros)
+INCLUDE(TribitsAddOptionAndDefine)
 
 # dummy change to test secondary git repo
 # another dummy change
@@ -9,7 +9,7 @@ INCLUDE(AddOptionAndDefine)
 # A) Define the package
 #
 
-PACKAGE(Sundance  DISABLE_CIRCULAR_REF_DETECTION_FAILURE)
+TRIBITS_PACKAGE(Sundance  DISABLE_CIRCULAR_REF_DETECTION_FAILURE)
 
 #
 # B) Set up package-specific options
@@ -20,12 +20,12 @@ IF (NOT (${Trilinos_DATA_DIR} STREQUAL "NOTFOUND"))
 ENDIF()
 
 
-ADD_OPTION_AND_DEFINE(${PACKAGE_NAME}_ENABLE_Python
+TRIBITS_ADD_OPTION_AND_DEFINE(${PACKAGE_NAME}_ENABLE_Python
   HAVE_SUNDANCE_PYTHON
   "Enable python functionality."
   OFF )
 
-ADD_OPTION_AND_DEFINE(${PACKAGE_NAME}_ENABLE_MOOCHO
+TRIBITS_ADD_OPTION_AND_DEFINE(${PACKAGE_NAME}_ENABLE_MOOCHO
   HAVE_SUNDANCE_MOOCHO
   "Enable Sundance/Moocho."
   ON )
@@ -40,7 +40,7 @@ ENDIF()
 #This replaces an option that was reusing an existing name.
 SET(HAVE_SUNDANCE_STOKHOS ${HAVE_SUNDANCE_STOKHOS_DEFAULT})
 
-ADD_OPTION_AND_DEFINE(${PACKAGE_NAME}_ENABLE_BROKEN_CODE
+TRIBITS_ADD_OPTION_AND_DEFINE(${PACKAGE_NAME}_ENABLE_BROKEN_CODE
   HAVE_SUNDANCE_BROKEN_CODE
   "Enable broken code. For expert developer use only."
   OFF )
@@ -50,7 +50,7 @@ ADD_OPTION_AND_DEFINE(${PACKAGE_NAME}_ENABLE_BROKEN_CODE
 #This replaces an option that was reusing an existing name.
 SET(HAVE_SUNDANCE_EXODUS "${${PACKAGE_NAME}_ENABLE_SEACASExodus}")
 
-ADD_OPTION_AND_DEFINE(Sundance_ENABLE_EXTERNAL_CHACO
+TRIBITS_ADD_OPTION_AND_DEFINE(Sundance_ENABLE_EXTERNAL_CHACO
   HAVE_SUNDANCE_CHACO
   "Enable file-based chaco partitioning in Sundance (requires chaco executable in path)."
   OFF )
@@ -64,7 +64,7 @@ IF(TPL_ENABLE_Peano)
   INCLUDE_DIRECTORIES(${Peano_INCLUDE_DIRS}) 
   
   IF (TPL_ENABLE_Peano_NO_2D)
-    ADD_OPTION_AND_DEFINE(TPL_ENABLE_Peano_NO_2D
+    TRIBITS_ADD_OPTION_AND_DEFINE(TPL_ENABLE_Peano_NO_2D
       HAVE_SUNDANCE_PEANO_NO_2D
      "Turn OFF Peano 2D"
      ON )
@@ -74,7 +74,7 @@ IF(TPL_ENABLE_Peano)
   ENDIF()
   
   IF (TPL_ENABLE_Peano_NO_3D)
-    ADD_OPTION_AND_DEFINE(TPL_ENABLE_Peano_NO_3D
+    TRIBITS_ADD_OPTION_AND_DEFINE(TPL_ENABLE_Peano_NO_3D
       HAVE_SUNDANCE_PEANO_NO_3D
      "Turn OFF Peano 3D"
      ON )
@@ -102,10 +102,10 @@ ADD_SUBDIRECTORY(Playa)
 MESSAGE("adding src-utils")
 ADD_SUBDIRECTORY(src-utils)
 MESSAGE("adding test-utils")
-PACKAGE_ADD_TEST_DIRECTORIES(tests-utils)
+TRIBITS_ADD_TEST_DIRECTORIES(tests-utils)
 
 #ADD_SUBDIRECTORY(src-solvers)
-#PACKAGE_ADD_TEST_DIRECTORIES(tests-solvers)
+#TRIBITS_ADD_TEST_DIRECTORIES(tests-solvers)
 
 MESSAGE("adding src-interop")
 ADD_SUBDIRECTORY(src-interop)
@@ -113,22 +113,22 @@ ADD_SUBDIRECTORY(src-interop)
 MESSAGE("adding src-core")
 ADD_SUBDIRECTORY(src-core)
 MESSAGE("adding tests-core")
-PACKAGE_ADD_TEST_DIRECTORIES(tests-core)
+TRIBITS_ADD_TEST_DIRECTORIES(tests-core)
 
 MESSAGE("adding src-std-mesh")
 ADD_SUBDIRECTORY(src-std-mesh)
 MESSAGE("adding tests-std-mesh")
-PACKAGE_ADD_TEST_DIRECTORIES(tests-std-mesh)
+TRIBITS_ADD_TEST_DIRECTORIES(tests-std-mesh)
 
 MESSAGE("adding src-std-fwk")
 ADD_SUBDIRECTORY(src-std-framework)
 MESSAGE("adding tests-std-fwk")
-PACKAGE_ADD_TEST_DIRECTORIES(tests-std-framework)
+TRIBITS_ADD_TEST_DIRECTORIES(tests-std-framework)
 
 MESSAGE("adding src-pdeopt")
 ADD_SUBDIRECTORY(src-pdeopt)
 MESSAGE("adding tests-pdeopt")
-PACKAGE_ADD_TEST_DIRECTORIES(tests-pdeopt)
+TRIBITS_ADD_TEST_DIRECTORIES(tests-pdeopt)
 
 IF(Sundance_ENABLE_Python)
   MESSAGE("adding python")
@@ -136,17 +136,17 @@ IF(Sundance_ENABLE_Python)
 ENDIF()
 
 MESSAGE("adding ex-tut")
-PACKAGE_ADD_TEST_DIRECTORIES(examples-tutorial)
+TRIBITS_ADD_TEST_DIRECTORIES(examples-tutorial)
 
 
 #
 # Exclude files for source package.
 #
 
-PACKAGE_ARCH_EXCLUDE_AUTOTOOLS_FILES()
+TRIBITS_EXCLUDE_AUTOTOOLS_FILES()
 
 #
 # D) Do standard postprocessing
 #
 
-PACKAGE_POSTPROCESS()
+TRIBITS_PACKAGE_POSTPROCESS()

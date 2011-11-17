@@ -15,7 +15,7 @@ ADD_TEST_BATCH(
 
 SET(SolverParamPath ${PACKAGE_SOURCE_DIR}/Playa/etc/SolverParameters)
 
-PACKAGE_COPY_FILES_TO_BINARY_DIR(OptimizerTestCopyFiles
+TRIBITS_COPY_FILES_TO_BINARY_DIR(OptimizerTestCopyFiles
   DEST_FILES 
   steepestDescent.xml 
   basicLMBFGS.xml 

@@ -1,17 +1,17 @@
-INCLUDE(PackageCopyFilesToBinaryDir)
-INCLUDE(PackageAddTest)
+INCLUDE(TribitsCopyFilesToBinaryDir)
+INCLUDE(TribitsAddTest)
 
 SET(TEST_LIST
   Poisson1D
 )
 
-PACKAGE_COPY_FILES_TO_BINARY_DIR(setpath.py
+TRIBITS_COPY_FILES_TO_BINARY_DIR(setpath.py
   SOURCE_FILES setpath.src
   DEST_FILES   setpath.py)
 
 SET(SolverParamPath ${PACKAGE_SOURCE_DIR}/etc/SolverParameters)
 
-PACKAGE_COPY_FILES_TO_BINARY_DIR(PySundanceTestCopyFiles
+TRIBITS_COPY_FILES_TO_BINARY_DIR(PySundanceTestCopyFiles
   DEST_FILES 
                    amesos.xml 
                    anasazi-ml.xml 
@@ -27,7 +27,7 @@ PACKAGE_COPY_FILES_TO_BINARY_DIR(PySundanceTestCopyFiles
   SOURCE_DIR ${SolverParamPath}
   )
 
-PACKAGE_COPY_FILES_TO_BINARY_DIR(PySundanceSolverCopyFiles
+TRIBITS_COPY_FILES_TO_BINARY_DIR(PySundanceSolverCopyFiles
   SOURCE_FILES
     amesosSolver.py
     aztecSolver.py
@@ -65,11 +65,11 @@ SET(SERIAL_TEST_LIST
 
 FOREACH(TEST ${PAR_TEST_LIST})
 
-  PACKAGE_COPY_FILES_TO_BINARY_DIR(${TEST}.py
+  TRIBITS_COPY_FILES_TO_BINARY_DIR(${TEST}.py
     SOURCE_FILES ex${TEST}.py
     DEST_FILES   ${TEST}.py)
   
-  PACKAGE_ADD_TEST(
+  TRIBITS_ADD_TEST(
     ${PYTHON_EXECUTABLE}
     NOEXEPREFIX
     NOEXESUFFIX
@@ -84,11 +84,11 @@ ENDFOREACH()
 
 FOREACH(TEST ${SERIAL_TEST_LIST})
 
-  PACKAGE_COPY_FILES_TO_BINARY_DIR(${TEST}.py
+  TRIBITS_COPY_FILES_TO_BINARY_DIR(${TEST}.py
     SOURCE_FILES ex${TEST}.py
     DEST_FILES   ${TEST}.py)
   
-  PACKAGE_ADD_TEST(
+  TRIBITS_ADD_TEST(
     ${PYTHON_EXECUTABLE}
     NOEXEPREFIX
     NOEXESUFFIX

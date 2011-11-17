@@ -1,8 +1,8 @@
 
 
 
-INCLUDE(PackageAddExecutableAndTest)
-INCLUDE(PackageCopyFilesToBinaryDir)
+INCLUDE(TribitsAddExecutableAndTest)
+INCLUDE(TribitsCopyFilesToBinaryDir)
 
 
 FUNCTION(ADD_TEST_BATCH TestList)
@@ -66,7 +66,7 @@ FUNCTION(ADD_TEST_BATCH TestList)
       SET(CALL_ARGS ${CALL_ARGS} STANDARD_PASS_OUTPUT)
     ENDIF()
 
-  PACKAGE_ADD_EXECUTABLE_AND_TEST(
+  TRIBITS_ADD_EXECUTABLE_AND_TEST(
        ${TestName} 
        SOURCES ${TestName}.cpp
        ${CALL_ARGS}
@@ -80,7 +80,7 @@ FUNCTION(ADD_TEST_BATCH TestList)
        SET(CALL_ARGS ${CALL_ARGS} SOURCE_DIR ${PARSE_DATA_SOURCE_DIR}) 
     ENDIF()
 
-    PACKAGE_COPY_FILES_TO_BINARY_DIR(${TestName}_CopyData
+    TRIBITS_COPY_FILES_TO_BINARY_DIR(${TestName}_CopyData
        ${CALL_ARGS}
      )
      # Removing for now: EXEDEPS ${TestName}

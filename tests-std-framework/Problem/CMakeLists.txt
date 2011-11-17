@@ -100,7 +100,7 @@ ADD_TEST_BATCH(SerialTests
         NUM_MPI_PROCS 1
         )
 
-PACKAGE_COPY_FILES_TO_BINARY_DIR(TestCopyFiles
+TRIBITS_COPY_FILES_TO_BINARY_DIR(TestCopyFiles
   DEST_FILES 
                    amesos.xml 
                    anasazi-ml.xml 
@@ -127,14 +127,14 @@ PACKAGE_COPY_FILES_TO_BINARY_DIR(TestCopyFiles
 
 # Eikonal2D needs special handling because of the fortran file
 
-PACKAGE_ADD_EXECUTABLE_AND_TEST(
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
     Eikonal2D
        SOURCES Eikonal2D.cpp bessi0.f
        COMM serial mpi
        NUM_MPI_PROCS 1
    )
 
-PACKAGE_COPY_FILES_TO_BINARY_DIR(EikonalCopyFiles
+TRIBITS_COPY_FILES_TO_BINARY_DIR(EikonalCopyFiles
   DEST_FILES nox.xml
   SOURCE_DIR ${SolverParamPath}
   EXEDEPS Eikonal2D
