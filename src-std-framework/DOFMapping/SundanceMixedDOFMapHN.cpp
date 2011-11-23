@@ -437,6 +437,7 @@ void MixedDOFMapHN::setDOFs(int basisChunk, int cellDim, int cellLID,
     << "-cell " << cellLID <<  " , basisChunk:" << basisChunk <<" , nDofs:" <<nDofs << " , nextDOF:" << nextDOF );
 
   int* ptr = getInitialDOFPtrForCell(cellDim, cellLID, basisChunk);
+  //int setupVerb = 6;
 
   //dofs_[cellDim][basisChunk][cellLID*nDofsPerCell_[basisChunk][cellDim]]
   //SUNDANCE_MSG1(setupVerb," dofs_[cellDim][basisChunk].size():" << dofs_[cellDim][basisChunk].size() );
@@ -464,6 +465,9 @@ void MixedDOFMapHN::setDOFs(int basisChunk, int cellDim, int cellLID,
 		isElementHanging_[cellDim][cellLID] = true;
 		for (int i=0; i<nDofs; i++) {//hanging cell, no global DoF
 			//SUNDANCE_MSG1(setupVerb," cellDim:" << cellDim << ",cellLID:" << cellLID << ",basisChunk:" << basisChunk << "  ELEM HANGING");
+			//SUNDANCE_MSG1(setupVerb," cellDim:" << cellDim << ",cellLID:" << cellLID << ",basisChunk:" << basisChunk << "  dof:" << nextDOF);
+			//SUNDANCE_MSG1(setupVerb," writing at index:" << (cellLID*nDofsPerCell_[basisChunk][cellDim]+ i) );
+			//SUNDANCE_MSG1(setupVerb," ptr[i]:" << ptr[i] );
 			ptr[i] = -1;
 		}
 	}
@@ -625,6 +629,7 @@ RCP<const MapStructure> MixedDOFMapHN
   TimeMonitor timer(batchedDofLookupTimer());
 
   Tabs tab;
+  //verbosity = 6; // hard code, eliminate this
   SUNDANCE_MSG2(verbosity,
     tab << "getDOFsForCellBatch(): cellDim=" << cellDim
     << " cellLID=" << cellLID);
@@ -760,17 +765,28 @@ RCP<const MapStructure> MixedDOFMapHN
                   int ptr = nodePtr[n];
                   toPtr1[func*nNodes[b] + ptr]
                     = dofs_[d][b][facetID*nDofsPerCell_[b][d]+func*nNodesPerCell_[b][d]+n];
-
+                  //SUNDANCE_MSG3(verbosity,tab2 << "ptr=" << ptr << " , dof= " << toPtr1[func*nNodes[b] + ptr]);
+                  //SUNDANCE_MSG1(verbosity," read from index:" << (facetID*nDofsPerCell_[b][d]) << " , add func:" << func*nNodesPerCell_[b][d]+n );
                   // if this is negative , then we have to correct it
                   if (toPtr1[func*nNodes[b] + ptr] < 0 )
                      {
                 	  int fIndex = 1 , tmp1 = 1;
                 	  // get any cell which has this element
-                	  int maxCell = mesh().maxCofacetLID( cellDim , cellLID[c] , 0 , fIndex);
+                	  //int maxCell = mesh().maxCofacetLID( cellDim , cellLID[c] , 0 , fIndex);
+                	  // we replaced the line above with this below, due to possible bug in the 3D mesh
+                	  int maxCell = mesh().maxCofacetLID( d , facetID , 0 , fIndex);
+                	  //SUNDANCE_MSG3(verbosity,tab2 << "mesh().isElementHangingNode("<<cellDim <<","<<cellLID[c]<<")=" <<
+                		//	  mesh().isElementHangingNode( cellDim , cellLID[c]); );
+                	  //SUNDANCE_MSG3(verbosity,tab2 << "mesh().isElementHangingNode("<<d <<","<<facetID<<")=" <<
+                		//	  mesh().isElementHangingNode( d , facetID); );
+                	  //SUNDANCE_MSG3(verbosity,tab2 << " Point[" << facetID << "]=" <<  mesh().nodePosition(facetID) );
                       Array<int> facetsLIDs;
                       mesh().returnParentFacets( maxCell , d , facetsLIDs , tmp1 );
                       // return the parent facet at the same index
-                      SUNDANCE_MSG3(verbosity,tab2 << "f=" << f << " facetLID=" << facetID << " replaced by facetsLIDs[fIndex]:" << facetsLIDs[fIndex]);
+                      //SUNDANCE_MSG3(verbosity,tab2 << "maxCell=" << maxCell << " fIndex=" << fIndex );
+                      //SUNDANCE_MSG3(verbosity,tab2 << "facetsLIDs[0]=" << facetsLIDs[0] << " , facetsLIDs[1]=" << facetsLIDs[1] <<
+                    	//	  " , facetsLIDs[2]=" << facetsLIDs[2] << " , facetsLIDs[3]=" << facetsLIDs[3]);
+                      //SUNDANCE_MSG3(verbosity,tab2 << "f=" << f << " facetLID=" << facetID << " replaced by facetsLIDs[fIndex]:" << facetsLIDs[fIndex]);
                       toPtr1[func*nNodes[b] + ptr] //= fromPtr[func*nNodes[b] + n];
                                           = dofs_[d][b][facetsLIDs[fIndex]*nDofsPerCell_[b][d]+func*nNodesPerCell_[b][d]+n];
                      }
@@ -793,12 +809,14 @@ RCP<const MapStructure> MixedDOFMapHN
                      {
                 	  int fIndex = 1 , tmp1 = 1;
                 	  // get any cell which has this element
-                	  int maxCell = mesh().maxCofacetLID( cellDim , cellLID[c] , 0 , fIndex);
+                	  //int maxCell = mesh().maxCofacetLID( cellDim , cellLID[c] , 0 , fIndex);
+                	  // we replaced the line above with this below, due to possible bug in the 3D mesh
+                	  int maxCell = mesh().maxCofacetLID( d , facetID , 0 , fIndex);
                       Array<int> facetsLIDs;
                       mesh().returnParentFacets( maxCell , d , facetsLIDs , tmp1 );
                       // return the parent facet at the same index
                       // return the parent facet at the same index
-                      SUNDANCE_MSG3(verbosity,tab2 << "f=" << f << " facetLID=" << facetID << " replaced by facetsLIDs[fIndex]:" << facetsLIDs[fIndex]);
+                      //SUNDANCE_MSG3(verbosity,tab2 << "f=" << f << " facetLID=" << facetID << " replaced by facetsLIDs[fIndex]:" << facetsLIDs[fIndex]);
                       toPtr1[func*nNodes[b] + ptr] //= fromPtr[func*nNodes[b] + n];
                                           = dofs_[d][b][facetsLIDs[fIndex]*nDofsPerCell_[b][d]+func*nNodesPerCell_[b][d]+n];
                      }

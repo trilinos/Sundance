@@ -87,6 +87,11 @@ protected:
 			const ParametrizedCurve& globalCurve, Array<Point>& quadPoints,
 			Array<double>& quadWeights, bool& weightsChanged) const;
 
+	/** Get the weights for one quad knowing that the curve is a 3D surface */
+	virtual void getAdaptedQuadWeights_surf(int cellLID, const Mesh& mesh,
+			const ParametrizedCurve& globalCurve, Array<Point>& quadPoints,
+			Array<double>& quadWeights, bool& weightsChanged) const;
+
 private:
 
 	/** get the triangle quadrature points for the adaptive integration*/
@@ -108,7 +113,7 @@ private:
 	    return p;
 	}
 
-	/** this function applyes quadrature to the lagrange functions <br>
+	/** this function applies quadrature to the Lagrange functions <br>
 	 * all the coordinates are in the reference coordinates */
 	inline void makeInterpolantQuad( double px, double py, double ofx, double ofy,
 			                         int nr1DPoints , int nr2DPoints ,
@@ -148,13 +153,51 @@ private:
 		}
 	}
 
+
+	/** this function applies quadrature to the Lagrange functions <br>
+	 * all the coordinates are in the reference coordinates */
+	inline void makeInterpolantBrick(int nr1DPoints , int nr3DPoints ,
+			                         Array<Point>& linePoints ,
+			                         Array<Point>& quadPoints ,
+			                         Array<double>& pointWeights ,
+			                         Array<double>& weightsOut ,
+			                         double areFakt ) const {
+		int xi,yi,zi;
+		double xc,yc,zc, intR , valTmp , valBasisX , valBasisY , valBasisZ;
+
+		for (int i = 0 ; i < nr3DPoints ; i++){
+			zi = i/(nr1DPoints*nr1DPoints); yi = (i%(nr1DPoints*nr1DPoints)) / nr1DPoints;
+			xi = (i%(nr1DPoints*nr1DPoints)) % nr1DPoints; intR = 0.0;
+			// for each quadrature point
+			for (int q = 0 ; q < pointWeights.size() ; q++){
+				xc = quadPoints[q][0]; yc = quadPoints[q][1]; zc = quadPoints[q][2];
+				valBasisX = evalLagrangePol(xi , linePoints , xc);
+				valBasisY = evalLagrangePol(yi , linePoints , yc);
+				valBasisZ = evalLagrangePol(zi , linePoints , zc);
+				valTmp = pointWeights[q] * ( valBasisX * valBasisY * valBasisZ );
+				intR = intR + valTmp;
+				//SUNDANCE_MSG3(4, "i="<<i<< " , valBasisX=" << valBasisX  << " , valBasisY=" << valBasisY << " , valBasisZ=" << valBasisZ <<
+				//		" , valBasis=" << valBasisX*valBasisY <<" , val=" << valTmp );
+				//SUNDANCE_MSG3(4, "i="<<i<<",xi="<<xi<<",yi="<<yi<<",q="<<q<<",xc="<<xc<<",yc="<<yc<<",zc="<<zc<<
+				//		",pointWeights["<<q<<"]=" << pointWeights[q]);
+			}
+			intR = intR * areFakt ;
+			weightsOut[i] = weightsOut[i] + intR;
+		}
+	}
+
+
+
 	/** nr of points in 1D, the rest should be tensor product */
 	int nrPointin1D_;
 
 	/** the verbosity of the object*/
 	int verb_;
 
-	static int quadsEdgesPoints[4][2];
+	static const int quadsEdgesPoints[4][2];
+
+	/** qvasi information for the 3D cut-cell integral*/
+	static const int edge3DProjection[12];
 };
 
 }

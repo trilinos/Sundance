@@ -50,6 +50,14 @@ public:
     		const Mesh& mesh ,
     		const ParametrizedCurve& paramCurve);
 
+    /** test if we are in 3D for the Brick surface quadrature */
+    static bool use3DSurfQuadrature(
+    		const CellType& cellType ,
+    		const Mesh& mesh ){
+    	if ( (mesh.cellType(mesh.spatialDim()) == BrickCell) && (cellType == BrickCell) ) { return true; }
+    	else {return false;}
+    }
+
 private :
 
     /** the simplest method which considers only the intersection points on the
@@ -77,6 +85,19 @@ private :
 
     /** polygons in 1D curves, uses the information from the polygon */
     static void getCurveQuadPoints_polygon(
+                                   int  maxCellLID ,
+                                   CellType  maxCellType ,
+                                   const Mesh& mesh ,
+                                   const Array<Point>& cellPoints,
+								   const ParametrizedCurve& paramCurve,
+								   const QuadratureFamily& quad ,
+								   Array<Point>& curvePoints ,
+								   Array<Point>& curveDerivs ,
+								   Array<Point>& curveNormals );
+
+    /** special method for 3D surface quadrature similar to the one in getCurveQuadPoints_line ,
+     * but it uses special Quadrature class, up to 4 triangles per brick cell*/
+    static void getSurfQuadPoints(
                                    int  maxCellLID ,
                                    CellType  maxCellType ,
                                    const Mesh& mesh ,

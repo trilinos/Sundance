@@ -260,7 +260,7 @@ void CellCurvePredicate::testBatch(const Array<int>& cellLID,
 	        		  break;
 	        	  }
 	            } // from for loop
-	          //SUNDANCE_MSG3( 4 , "filterMode_ :" << filterMode_ << " , result:" << results[c]);
+	          //SUNDANCE_MSG3( 4 , "filterMode_ :" << filterMode_ << " cellLID=" << cellLID[c] << " , result:" << results[c]);
 	        } // loop over cells
 	  } break;
 	  }
