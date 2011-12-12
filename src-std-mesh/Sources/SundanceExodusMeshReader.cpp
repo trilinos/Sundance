@@ -3,6 +3,8 @@
 #include "SundanceOut.hpp"
 #include "PlayaExceptions.hpp"
 #include "SundancePathUtils.hpp"
+#include "Teuchos_Time.hpp"
+#include "Teuchos_TimeMonitor.hpp"
 
 #ifdef HAVE_SUNDANCE_EXODUS
 #include "exodusII.h"
@@ -11,6 +13,22 @@
 using namespace Teuchos;
 using namespace Sundance;
 using namespace std;
+
+static Time& getExoTimer() 
+{
+  static RCP<Time> rtn 
+    = TimeMonitor::getNewTimer("raw exodus reader functions"); 
+  return *rtn;
+}
+
+
+static Time& getExoFillTimer() 
+{
+  static RCP<Time> rtn 
+    = TimeMonitor::getNewTimer("exodus reader fillMesh"); 
+  return *rtn;
+}
+
 
 ExodusMeshReader::ExodusMeshReader(const std::string& fname,
   const MeshType& meshType,
@@ -47,6 +65,7 @@ ExodusMeshReader::ExodusMeshReader(const std::string& fname,
 
 Mesh ExodusMeshReader::fillMesh() const 
 {
+  TimeMonitor fillTimer(getExoFillTimer());
   Mesh mesh;
 #ifndef HAVE_SUNDANCE_EXODUS
   TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, 
@@ -185,6 +204,7 @@ Mesh ExodusMeshReader::fillMesh() const
   Array<int> blockIDs(numElemBlocks);
   if (numElemBlocks > 0)
   {
+    TimeMonitor timer(getExoTimer());
     ierr = ex_get_elem_blk_ids(exoID, &(blockIDs[0]));
   }
   TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
@@ -202,9 +222,12 @@ Mesh ExodusMeshReader::fillMesh() const
     int nodesPerEl;
     int numAttrs;
     int bid = blockIDs[b];
-    
-    ierr = ex_get_elem_block(exoID, bid, elemType, &elsInBlock,
-      &nodesPerEl, &numAttrs);
+
+    {
+      TimeMonitor timer(getExoTimer());
+      ierr = ex_get_elem_block(exoID, bid, elemType, &elsInBlock,
+        &nodesPerEl, &numAttrs);
+    }
     TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
 
     bool blockIsSimplicial = true;
@@ -216,7 +239,10 @@ Mesh ExodusMeshReader::fillMesh() const
 
     Array<int> connect(elsInBlock * nodesPerEl);
 
-    ierr = ex_get_elem_conn(exoID, bid, &(connect[0]));
+    {
+      TimeMonitor timer(getExoTimer());
+      ierr = ex_get_elem_conn(exoID, bid, &(connect[0]));
+    }
     TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
     int n=0;
     Array<int> orderedVerts(nodesPerEl);
@@ -254,6 +280,7 @@ Mesh ExodusMeshReader::fillMesh() const
   Array<int> nsIDs(numNodeSets);
   if (numNodeSets > 0)
   {
+    TimeMonitor timer(getExoTimer());
     ierr = ex_get_node_set_ids(exoID, &(nsIDs[0]));
   }
   TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
@@ -262,10 +289,16 @@ Mesh ExodusMeshReader::fillMesh() const
     int nNodes;
     int nDist;
     int nsID = nsIDs[ns];
-    ierr = ex_get_node_set_param(exoID, nsID, &nNodes, &nDist);
+    {
+      TimeMonitor timer(getExoTimer());
+      ierr = ex_get_node_set_param(exoID, nsID, &nNodes, &nDist);
+    }
     TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
     Array<int> nodes(nNodes);
-    ierr = ex_get_node_set(exoID, nsID, &(nodes[0]));
+    {
+      TimeMonitor timer(getExoTimer());
+      ierr = ex_get_node_set(exoID, nsID, &(nodes[0]));
+    }
     TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
     for (int n=0; n<nNodes; n++)
     {
@@ -278,6 +311,7 @@ Mesh ExodusMeshReader::fillMesh() const
   Array<int> ssIDs(numSideSets);
   if (numSideSets > 0)
   {
+    TimeMonitor timer(getExoTimer());
     ierr = ex_get_side_set_ids(exoID, &(ssIDs[0]));
   }
   TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
@@ -286,11 +320,17 @@ Mesh ExodusMeshReader::fillMesh() const
     int nSides;
     int nDist;
     int ssID = ssIDs[ss];
-    ierr = ex_get_side_set_param(exoID, ssID, &nSides, &nDist);
+    {
+      TimeMonitor timer(getExoTimer());
+      ierr = ex_get_side_set_param(exoID, ssID, &nSides, &nDist);
+    }
     TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
     Array<int> sides(nSides);
     Array<int> elems(nSides);
-    ierr = ex_get_side_set(exoID, ssID, &(elems[0]), &(sides[0]));
+    {
+      TimeMonitor timer(getExoTimer());
+      ierr = ex_get_side_set(exoID, ssID, &(elems[0]), &(sides[0]));
+    }
     TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
     for (int n=0; n<nSides; n++)
     {
@@ -311,7 +351,10 @@ Mesh ExodusMeshReader::fillMesh() const
 
   /* Read the nodal attributes */
   int nNodalVars = 0;
-  ierr = ex_get_var_param(exoID, "N", &nNodalVars);
+  {
+    TimeMonitor timer(getExoTimer());
+    ierr = ex_get_var_param(exoID, "N", &nNodalVars);
+  }
   TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
 
   Array<Array<double> >& funcVals = *nodeAttributes();
@@ -321,13 +364,19 @@ Mesh ExodusMeshReader::fillMesh() const
   {
     int t = 1;
     funcVals[i].resize(mesh.numCells(0));
-    ierr = ex_get_nodal_var(exoID, t, i+1, mesh.numCells(0), &(funcVals[i][0]));
+    {
+      TimeMonitor timer(getExoTimer());
+      ierr = ex_get_nodal_var(exoID, t, i+1, mesh.numCells(0), &(funcVals[i][0]));
+    }
     TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
   }
 
   /* Read the element attributes */
   int nElemVars = 0;
-  ierr = ex_get_var_param(exoID, "E", &nElemVars);
+  {
+      TimeMonitor timer(getExoTimer());
+      ierr = ex_get_var_param(exoID, "E", &nElemVars);
+  }
   TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
 
   Array<Array<double> >& eFuncVals = *elemAttributes();
@@ -337,7 +386,10 @@ Mesh ExodusMeshReader::fillMesh() const
   {
     int t = 1;
     eFuncVals[i].resize(mesh.numCells(mesh.spatialDim()));
-    ierr = ex_get_elem_var(exoID, t, i+1, 1, mesh.numCells(mesh.spatialDim()), &(eFuncVals[i][0]));
+    {
+      TimeMonitor timer(getExoTimer());
+      ierr = ex_get_elem_var(exoID, t, i+1, 1, mesh.numCells(mesh.spatialDim()), &(eFuncVals[i][0]));
+    }
     TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
   }
 

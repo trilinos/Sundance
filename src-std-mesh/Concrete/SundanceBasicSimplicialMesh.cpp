@@ -51,6 +51,55 @@ using Playa::MPIContainerComm;
 
 using std::endl;
 
+
+#ifdef BSM_LOW_LEVEL_TIMER
+
+static Time& getAddElementTimer() 
+{
+  static RCP<Time> rtn 
+    = TimeMonitor::getNewTimer("BSM addElement"); 
+  return *rtn;
+}
+
+static Time& getFacetRegistrationTimer() 
+{
+  static RCP<Time> rtn 
+    = TimeMonitor::getNewTimer("BSM element facet registration"); 
+  return *rtn;
+}
+
+
+static Time& getAddVertexTimer() 
+{
+  static RCP<Time> rtn 
+    = TimeMonitor::getNewTimer("BSM addVertex"); 
+  return *rtn;
+}
+
+
+static Time& getAddEdgeTimer() 
+{
+  static RCP<Time> rtn 
+    = TimeMonitor::getNewTimer("BSM addEdge"); 
+  return *rtn;
+}
+
+static Time& getAddFaceTimer() 
+{
+  static RCP<Time> rtn 
+    = TimeMonitor::getNewTimer("BSM addFace"); 
+  return *rtn;
+}
+
+static Time& getLookupLIDTimer() 
+{
+  static RCP<Time> rtn 
+    = TimeMonitor::getNewTimer("BSM lookup LID"); 
+  return *rtn;
+}
+
+#endif
+
 static Time& batchedFacetGrabTimer() 
 {
   static RCP<Time> rtn 
@@ -58,11 +107,25 @@ static Time& batchedFacetGrabTimer()
   return *rtn;
 }
 
-Array<int> sort(const Array<int>& in)
+void sort(const Array<int>& in, Array<int>& rtn)
 {
-  Array<int> rtn = in;
-  std::sort(rtn.begin(), rtn.end());
-  return rtn;
+  rtn.resize(in.size());
+  const int* pIn = &(in[0]);
+  int* pRtn = &(rtn[0]);
+  for (int i=0; i<in.size(); i++) pRtn[i] = pIn[i];
+  
+  for (int j=1; j<in.size(); j++)
+  {
+    int key = pRtn[j];
+    int i=j-1;
+    while (i>=0 && pRtn[i]>key)
+    {
+      pRtn[i+1]=pRtn[i];
+      i--;
+    }
+    pRtn[i+1]=key;
+  }
+  //std::sort(rtn.begin(), rtn.end());
 }
 
 
@@ -965,7 +1028,9 @@ void BasicSimplicialMesh::getLIDsForLabel(int cellDim, int label, Array<int>& ce
 int BasicSimplicialMesh::addVertex(int globalIndex, const Point& x,
   int ownerProcID, int label)
 {
-
+#ifdef BSM_LOW_LEVEL_TIMER
+  TimeMonitor timer(getAddVertexTimer());
+#endif
   int lid = points_.length();
   points_.append(x);
 
@@ -993,10 +1058,14 @@ int BasicSimplicialMesh::addElement(int globalIndex,
   const Array<int>& vertGID,
   int ownerProcID, int label)
 {
+#ifdef BSM_LOW_LEVEL_TIMER
+  TimeMonitor timer(getAddElementTimer());
+#endif
   SUNDANCE_VERB_HIGH("p=" << comm().getRank() << "adding element " << globalIndex 
     << " with vertices:" << vertGID);
 
-  Array<int> sortedVertGID = sort(vertGID);
+  static Array<int> sortedVertGID;
+  sort(vertGID, sortedVertGID);
 
   /* 
    * do basic administrative steps for the new element: 
@@ -1021,10 +1090,15 @@ int BasicSimplicialMesh::addElement(int globalIndex,
   static Array<int> vertLID;
 
   /* find the vertex LIDs given the input GIDs */
-  vertLID.resize(vertGID.size());
-  for (int i=0; i<vertGID.size(); i++) 
   {
-    vertLID[i] = GIDToLIDMap_[0].get(sortedVertGID[i]);
+#ifdef BSM_LOW_LEVEL_TIMER
+    TimeMonitor timer(getLookupLIDTimer());
+#endif
+    vertLID.resize(vertGID.size());
+    for (int i=0; i<vertGID.size(); i++) 
+    {
+      vertLID[i] = GIDToLIDMap_[0].get(sortedVertGID[i]);
+    }
   }
   
   /* 
@@ -1081,6 +1155,11 @@ int BasicSimplicialMesh::addElement(int globalIndex,
     vertCofacets_[vertLID[3]].append(lid);
 
     /* add the faces */
+    static Array<int> tmpVertLID(3);
+    static Array<int> tmpSortedVertGID(3);
+    static Array<int> tmpEdges(4);
+#define BSM_OPT_CODE
+#ifndef BSM_OPT_CODE
     faces[0] = addFace(tuple(vertLID[1], vertLID[2], vertLID[3]), 
       tuple(sortedVertGID[1], sortedVertGID[2], sortedVertGID[3]), 
       tuple(edges[2], edges[0], edges[1]), lid, globalIndex);
@@ -1096,16 +1175,74 @@ int BasicSimplicialMesh::addElement(int globalIndex,
     faces[3] = addFace(tuple(vertLID[0], vertLID[1], vertLID[2]), 
       tuple(sortedVertGID[0], sortedVertGID[1], sortedVertGID[2]), 
       tuple(edges[5], edges[2], edges[4]), lid, globalIndex);
+#else
+    tmpVertLID[0] = vertLID[1];
+    tmpVertLID[1] = vertLID[2];
+    tmpVertLID[2] = vertLID[3];
+    tmpSortedVertGID[0] = sortedVertGID[1];
+    tmpSortedVertGID[1] = sortedVertGID[2];
+    tmpSortedVertGID[2] = sortedVertGID[3];
+    tmpEdges[0] = edges[2];
+    tmpEdges[1] = edges[0];
+    tmpEdges[2] = edges[1];
+    faces[0] = addFace(tmpVertLID, tmpSortedVertGID, 
+                       tmpEdges, lid, globalIndex);
+
+    tmpVertLID[0] = vertLID[0];
+    tmpVertLID[1] = vertLID[2];
+    tmpVertLID[2] = vertLID[3];
+    tmpSortedVertGID[0] = sortedVertGID[0];
+    tmpSortedVertGID[1] = sortedVertGID[2];
+    tmpSortedVertGID[2] = sortedVertGID[3];
+    tmpEdges[0] = edges[3];
+    tmpEdges[1] = edges[4];
+    tmpEdges[2] = edges[0];
+    faces[1] = addFace(tmpVertLID, tmpSortedVertGID, 
+                       tmpEdges, lid, globalIndex);
+
+    tmpVertLID[0] = vertLID[0];
+    tmpVertLID[1] = vertLID[1];
+    tmpVertLID[2] = vertLID[3];
+    tmpSortedVertGID[0] = sortedVertGID[0];
+    tmpSortedVertGID[1] = sortedVertGID[1];
+    tmpSortedVertGID[2] = sortedVertGID[3];
+    tmpEdges[0] = edges[5];
+    tmpEdges[1] = edges[1];
+    tmpEdges[2] = edges[3];
+    faces[2] = addFace(tmpVertLID, tmpSortedVertGID, 
+                       tmpEdges, lid, globalIndex);
+
+    tmpVertLID[0] = vertLID[0];
+    tmpVertLID[1] = vertLID[1];
+    tmpVertLID[2] = vertLID[2];
+    tmpSortedVertGID[0] = sortedVertGID[0];
+    tmpSortedVertGID[1] = sortedVertGID[1];
+    tmpSortedVertGID[2] = sortedVertGID[2];
+    tmpEdges[0] = edges[5];
+    tmpEdges[1] = edges[2];
+    tmpEdges[2] = edges[4];
+    faces[3] = addFace(tmpVertLID, tmpSortedVertGID, 
+                       tmpEdges, lid, globalIndex);
+
+    
+#endif
   }
 
-  elemVerts_.append(vertLID);
-  if (edges.length() > 0) elemEdges_.append(edges);
-
-  if (faces.length() > 0) 
   {
-    elemFaces_.append(faces);
-    elemFaceRotations_.append(faceRotations);
+#ifdef BSM_LOW_LEVEL_TIMER
+    TimeMonitor timer(getFacetRegistrationTimer());
+#endif
+    elemVerts_.append(vertLID);
+    if (edges.length() > 0) elemEdges_.append(edges);
+    
+    if (faces.length() > 0) 
+    {
+      elemFaces_.append(faces);
+      elemFaceRotations_.append(faceRotations);
+    }
+    
   }
+
   for (int i=0; i<edges.length(); i++) edgeCofacets_[edges[i]].append(lid);
 
 
@@ -1121,6 +1258,10 @@ int BasicSimplicialMesh::addFace(
   int elemLID,
   int elemGID)
 {
+#ifdef BSM_LOW_LEVEL_TIMER
+  TimeMonitor timer(getAddFaceTimer());
+#endif
+
   /* First we check whether the face already exists */
   int lid = lookupFace(vertGID);
 
@@ -1232,6 +1373,9 @@ int BasicSimplicialMesh::addEdge(int v1, int v2,
   int elemLID, int elemGID,
   int myFacetNumber)
 {
+#ifdef BSM_LOW_LEVEL_TIMER
+  TimeMonitor timer(getAddEdgeTimer());
+#endif
   /* 
    * First we ask if this edge already exists in the mesh. If so,
    * we're done. 
@@ -1314,6 +1458,7 @@ void BasicSimplicialMesh::synchronizeGIDNumbering(int dim, int localCount)
 void BasicSimplicialMesh::assignIntermediateCellGIDs(int cellDim)
 {
   int myRank = comm().getRank();
+//  if (comm().getNProc() == 1) return;
   SUNDANCE_VERB_MEDIUM("p=" << myRank << " assigning " << cellDim 
     << "-cell owners");
 
