@@ -11,6 +11,7 @@
 #include "SundanceDefs.hpp"
 #include "PlayaHandleable.hpp"
 #include "SundancePoint.hpp"
+#include "SundanceParametrizedCurve.hpp"
 
 namespace Sundance {
 
@@ -85,6 +86,33 @@ public:
 	virtual int estimateRefinementLevel(
 			             const Point& cellPos,
 			             const Point& cellDimameter ) const { return 1; }
+
+};
+
+
+class GeometryRefinement : public RefinementBase , public Playa::Handleable<RefinementBase>{
+
+public:
+
+	GeometryRefinement(const ParametrizedCurve& curve , int level)
+	: RefinementBase() , curve_(curve) , level_(level) {;}
+
+	virtual ~GeometryRefinement() {;}
+
+	/** see super class */
+	virtual int refine(const int cellLevel ,
+			            const Point& cellPos ,
+			            const Point& cellDimameter) const;
+
+	GET_RCP(RefinementBase);
+
+private:
+
+	/** the curve which will be refined at*/
+	const ParametrizedCurve& curve_;
+
+	/** the refinement level at the geometry*/
+	const int level_;
 
 };
 }

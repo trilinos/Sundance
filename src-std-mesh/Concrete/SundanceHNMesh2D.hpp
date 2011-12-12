@@ -336,6 +336,15 @@ private:
    /** Create Leaf numbering */
    void createLeafNumbering();
 
+   /** Create Leaf numbering, but with a better load balancing for parallel case */
+   void createLeafNumbering_sophisticated();
+
+   /** estimate the load of one cell*/
+   int estimateCellLoad(int ID);
+
+   /** marks the cells recursivly in the tree (and facets) owned by one processor*/
+   void markCellsAndFacets(int cellID , int procID);
+
   /** The dimension of the grid*/
   int _dimension;
   /** Number of processors */
@@ -393,7 +402,7 @@ private:
 
 //------ Element (processor) ownership -----
   /** contains the ownership of the local elements [dim][ID] */
-  Array< Array< short int > > elementOwner_;
+  Array< Array< short signed int > > elementOwner_;
 
 //---- hierarchical storage -----
 

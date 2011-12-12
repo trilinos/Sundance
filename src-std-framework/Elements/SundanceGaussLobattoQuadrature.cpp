@@ -8,12 +8,15 @@
 #include "SundanceGaussLobattoQuadrature.hpp"
 #include "SundanceCurveIntegralCalc.hpp"
 #include "SundancePolygon2D.hpp"
+#include "SundanceSurf3DCalc.hpp"
 #include "PlayaTabs.hpp"
 
 using namespace Sundance;
 
 
-int GaussLobattoQuadrature::quadsEdgesPoints[4][2] = { {0,1} , {0,2} , {1,3} , {2,3} };
+int const GaussLobattoQuadrature::quadsEdgesPoints[4][2] = { {0,1} , {0,2} , {1,3} , {2,3} };
+                                                       //  0   1   2   3   4   5   6   7   8   9  10  11
+int const GaussLobattoQuadrature::edge3DProjection[12] = { 0 , 1 , 2 , 1 , 2 , 0 , 2 , 2 , 0 , 1 , 1 , 0};
 
 
 GaussLobattoQuadrature::GaussLobattoQuadrature(int order) :
@@ -29,200 +32,6 @@ XMLObject GaussLobattoQuadrature::toXML() const
 	return rtn;
 }
 
-void GaussLobattoQuadrature::getLineRule(
-		Array<Point>& quadPointsL,
-		Array<double>& quadWeights) const {
-
-	int n = order()+1; //this is correct m points for a basis of order m-1
-
-	Array<double> quadPoints;
-	quadPoints.resize(n);
-	quadPointsL.resize(n);
-	quadWeights.resize(n);
-
-	// ================== QUAD POINTS ========================
-	switch (n) {
-	case 2: { quadPoints[0]=0.0; quadPoints[1] = 1; break; }
-	case 3: { quadPoints[0]=0.0; quadPoints[1] = 0.5; quadPoints[2] = 1.0; break; }
-	case 4:	{ quadPoints[0]=0.0; quadPoints[1] = 0.5-0.5/::sqrt(5.0); quadPoints[2] = 0.5+0.5/::sqrt(5.0); quadPoints[3] = 1.0; break; }
-	case 5:	{ quadPoints[0]=0.0; quadPoints[1] = 0.5-0.5*::sqrt(3.0/7.0); quadPoints[2] = 0.5;
-	        quadPoints[3] = 0.5+0.5*::sqrt(3.0/7.0); quadPoints[4] = 1.0; break; }
-	case 6: { double t0=::sqrt(7.0);
-	        double t1=(7.0+2.0*t0)/21.0;
-	        double t2=(7.0-2.0*t0)/21.0;
-	        quadPoints[0] = 0; quadPoints[1] = 0.5-0.5*::sqrt(t1); quadPoints[2] = 0.5-0.5*::sqrt(t2);
-	        quadPoints[3] = 0.5+0.5*::sqrt(t2); quadPoints[4] = 0.5+0.5*::sqrt(t1); quadPoints[5] = 1.0; break; }
-	case 7: {
-		quadPoints[0] = 0.00000000000000000000e+00;
-		quadPoints[1] = 8.48880518607165179823e-02;
-		quadPoints[2] = 2.65575603264642912116e-01;
-		quadPoints[3] = 5.00000000000000000000e-01;
-		quadPoints[4] = 7.34424396735357087884e-01;
-		quadPoints[5] = 9.15111948139283537529e-01;
-		quadPoints[6] = 1.00000000000000000000e+00;
-	    break; }
-	case 8: {
-		quadPoints[0] = 0.00000000000000000000e+00;
-		quadPoints[1] = 6.41299257451967141819e-02;
-		quadPoints[2] = 2.04149909283428854234e-01;
-		quadPoints[3] = 3.95350391048760574364e-01;
-		quadPoints[4] = 6.04649608951239425636e-01;
-		quadPoints[5] = 7.95850090716571090255e-01;
-		quadPoints[6] = 9.35870074254803285818e-01;
-		quadPoints[7] = 1.00000000000000000000e+00;
-		break; }
-	case 9: {
-		quadPoints[0] = 0.00000000000000000000e+00;
-		quadPoints[1] = 5.01210022942699118254e-02;
-		quadPoints[2] = 1.61406860244631134016e-01;
-		quadPoints[3] = 3.18441268086910922452e-01;
-		quadPoints[4] = 5.00000000000000000000e-01;
-		quadPoints[5] = 6.81558731913089133059e-01;
-		quadPoints[6] = 8.38593139755368865984e-01;
-		quadPoints[7] = 9.49878997705730032663e-01;
-		quadPoints[8] = 1.00000000000000000000e+00;
-	    break; }
-	case 10: {
-		quadPoints[0] = 0.00000000000000000000e+00;
-		quadPoints[1] = 4.02330459167705711820e-02;
-		quadPoints[2] = 1.30613067447247432895e-01;
-		quadPoints[3] = 2.61037525094777733692e-01;
-		quadPoints[4] = 4.17360521166806497373e-01;
-		quadPoints[5] = 5.82639478833193447116e-01;
-		quadPoints[6] = 7.38962474905222266308e-01;
-		quadPoints[7] = 8.69386932552752567105e-01;
-		quadPoints[8] = 9.59766954083229428818e-01;
-		quadPoints[9] = 1.00000000000000000000e+00;
-		break; }
-	 case 11: {
-		quadPoints[0] = 0.00000000000000000000e+00;
-		quadPoints[1] = 3.29992847959704183047e-02;
-		quadPoints[2] = 1.07758263168427792511e-01;
-		quadPoints[3] = 2.17382336501897477365e-01;
-		quadPoints[4] = 3.52120932206530290465e-01;
-		quadPoints[5] = 5.00000000000000000000e-01;
-		quadPoints[6] = 6.47879067793469709535e-01;
-		quadPoints[7] = 7.82617663498102578146e-01;
-		quadPoints[8] = 8.92241736831572263000e-01;
-		quadPoints[9] = 9.67000715204029637206e-01;
-		quadPoints[10] = 1.00000000000000000000e+00;
-	    break; }
-	 case 12: {
-		quadPoints[0] = 0.00000000000000000000e+00;
-		quadPoints[1] = 2.75503638885589152707e-02;
-		quadPoints[2] = 9.03603391779966846897e-02;
-		quadPoints[3] = 1.83561923484069688950e-01;
-		quadPoints[4] = 3.00234529517325543502e-01;
-		quadPoints[5] = 4.31723533572536233294e-01;
-		quadPoints[6] = 5.68276466427463766706e-01;
-		quadPoints[7] = 6.99765470482674456498e-01;
-		quadPoints[8] = 8.16438076515930255539e-01;
-		quadPoints[9] = 9.09639660822003315310e-01;
-		quadPoints[10] = 9.72449636111441084729e-01;
-		quadPoints[11] = 1.00000000000000000000e+00;
-	    break; }
-	}
-
-	// transform the array of doubles into an array of Points
-	for (int i = 0 ; i < n ; i++){
-		quadPointsL[i] = Point(quadPoints[i]);
-	}
-
-	// ================== WEIGHTS ========================
-	switch (n) {
-	case 2:{
-		quadWeights[0] = 0.5;
-		quadWeights[1] = 0.5;
-	    break; }
-	case 3:{
-		quadWeights[0] = 1.0/6.0; quadWeights[1] = 2.0/3.0; quadWeights[2] = 1.0/6.0;
-		break;}
-	case 4:{
-		quadWeights[0] = 1.0/12.0; quadWeights[1] = 5.0/12.0; quadWeights[2] = 5.0/12.0; quadWeights[3] = 1.0/12.0;
-		break;}
-	case 5:{
-		quadWeights[0] = 0.05; quadWeights[1] = 49.0/180.0; quadWeights[2] = 32.0/90.0; quadWeights[3] = 49.0/180.0; quadWeights[4] = 0.05;
-		break;}
-	case 6:{
-	    double t0=::sqrt(7.0);
-	    double t1=(7.0+2.0*t0)/21.0;
-	    double t2=(7.0-2.0*t0)/21.0;
-	    double k1=(1.0-t0)*(1.0-t0);
-	    double k2=(1.0+t0)*(1.0+t0);
-	    quadWeights[0] = 1.0/30.0; quadWeights[1] = 0.3/(t1*k1); quadWeights[2] = 0.3/(t2*k2); quadWeights[3] = 0.3/(t2*k2);
-	    quadWeights[4] = 0.3/(t1*k1); quadWeights[5] = 1.0/30.0;
-	    break;}
-	case 7:{
-		quadWeights[0] = 2.38095238095238082021e-02;
-		quadWeights[1] = 1.38413023680782953928e-01;
-		quadWeights[2] = 2.15872690604931305458e-01;
-		quadWeights[3] = 2.43809523809523809312e-01;
-		quadWeights[4] = 2.15872690604931305458e-01;
-		quadWeights[5] = 1.38413023680782953928e-01;
-		quadWeights[6] = 2.38095238095238082021e-02;
-	    break;}
-	case 8:{
-		quadWeights[0] = 1.78571428571428561516e-02;
-		quadWeights[1] = 1.05352113571753072674e-01;
-		quadWeights[2] = 1.70561346241752204156e-01;
-		quadWeights[3] = 2.06229397329351860080e-01;
-		quadWeights[4] = 2.06229397329351860080e-01;
-		quadWeights[5] = 1.70561346241752204156e-01;
-		quadWeights[6] = 1.05352113571753072674e-01;
-		quadWeights[7] = 1.78571428571428561516e-02;
-	    break;}
-	case 9:{
-		quadWeights[0] = 1.38888888888888881179e-02;
-		quadWeights[1] = 8.27476807804027880699e-02;
-		quadWeights[2] = 1.37269356250080826198e-01;
-		quadWeights[3] = 1.73214255486523083238e-01;
-		quadWeights[4] = 1.85759637188208620584e-01;
-		quadWeights[5] = 1.73214255486523083238e-01;
-		quadWeights[6] = 1.37269356250080826198e-01;
-		quadWeights[7] = 8.27476807804027880699e-02;
-		quadWeights[8] = 1.38888888888888881179e-02;
-	    break;}
-	case 10:{
-		quadWeights[0] = 1.11111111111111115352e-02;
-		quadWeights[1] = 6.66529954255350304271e-02;
-		quadWeights[2] = 1.12444671031563220298e-01;
-		quadWeights[3] = 1.46021341839841889421e-01;
-		quadWeights[4] = 1.63769880591948718829e-01;
-		quadWeights[5] = 1.63769880591948718829e-01;
-		quadWeights[6] = 1.46021341839841889421e-01;
-		quadWeights[7] = 1.12444671031563220298e-01;
-		quadWeights[8] = 6.66529954255350304271e-02;
-		quadWeights[9] = 1.11111111111111115352e-02;
-	    break;}
-	case 11:{
-		quadWeights[0] = 9.09090909090909046752e-03;
-		quadWeights[1] = 5.48061366334974126024e-02;
-		quadWeights[2] = 9.35849408901525958715e-02;
-		quadWeights[3] = 1.24024052132014145355e-01;
-		quadWeights[4] = 1.43439562389503921791e-01;
-		quadWeights[5] = 1.50108797727845355574e-01;
-		quadWeights[6] = 1.43439562389503921791e-01;
-		quadWeights[7] = 1.24024052132014145355e-01;
-		quadWeights[8] = 9.35849408901525958715e-02;
-		quadWeights[9] = 5.48061366334974126024e-02;
-		quadWeights[10] = 9.09090909090909046752e-03;
-	    break;}
-	case 12:{
-		quadWeights[0] = 7.57575757575757596785e-03;
-		quadWeights[1] = 4.58422587065981240739e-02;
-		quadWeights[2] = 7.89873527821850218711e-02;
-		quadWeights[3] = 1.06254208880510653268e-01;
-		quadWeights[4] = 1.25637801599600640312e-01;
-		quadWeights[5] = 1.35702620455348088591e-01;
-		quadWeights[6] = 1.35702620455348088591e-01;
-		quadWeights[7] = 1.25637801599600640312e-01;
-		quadWeights[8] = 1.06254208880510653268e-01;
-		quadWeights[9] = 7.89873527821850218711e-02;
-		quadWeights[10] = 4.58422587065981240739e-02;
-		quadWeights[11] = 7.57575757575757596785e-03;
-	    break;}
-   }
-}
 
 void GaussLobattoQuadrature::getTriangleRule(
 		Array<Point>& quadPoints,
@@ -267,8 +76,27 @@ void GaussLobattoQuadrature::getTetRule(
 void GaussLobattoQuadrature::getBrickRule(
 		Array<Point>& quadPoints,
 		Array<double>& quadWeights) const {
-	// todo: implement this
-	SUNDANCE_ERROR("Brick rule not available for " << toXML());
+	Array<Point> quadPointsLine;
+	Array<double> quadWeightsLine;
+	// get the line rule
+    this->getLineRule( quadPointsLine, quadWeightsLine );
+
+    int nrPointPerAxis = quadPointsLine.size();
+    // we simply take the tensor product
+    quadPoints.resize(nrPointPerAxis*nrPointPerAxis*nrPointPerAxis);
+    quadWeights.resize(nrPointPerAxis*nrPointPerAxis*nrPointPerAxis);
+
+    int pcount = 0;
+    for (int iz = 0 ; iz < nrPointPerAxis ; iz ++){
+	  for (int iy = 0 ; iy < nrPointPerAxis ; iy ++){
+        for (int ix = 0 ; ix < nrPointPerAxis ; ix ++){
+    		// here we take the tensor product of the
+    		quadPoints[pcount] = Point( quadPointsLine[ix][0] , quadPointsLine[iy][0] , quadPointsLine[iz][0]);
+    		quadWeights[pcount] = quadWeightsLine[ix] * quadWeightsLine[iy] * quadWeightsLine[iz];
+    		pcount++;
+    	}
+      }
+    }
 }
 
 
@@ -342,6 +170,20 @@ void GaussLobattoQuadrature::getAdaptedWeights(
 		SUNDANCE_ERROR7("getAdaptedWeights rule for ACI(Adaptive Cell Integration) not available for submaximal cell " << maxCellType << " in a triangle mesh");
 #endif
 		}
+		break;
+	}
+	case BrickCell:
+	{
+		switch(cellType)
+		{
+		case BrickCell:
+		{
+			// call the method which does the job for 3D
+			getAdaptedQuadWeights_surf(cellLID, mesh, globalCurve, quadPoints, quadWeights, weightsChanged);
+			break;
+		}
+		default: {}
+	    }
 		break;
 	}
 	default:
@@ -1030,6 +872,493 @@ void GaussLobattoQuadrature::getAdaptedQuadWeights(int cellLID, const Mesh& mesh
 	}
 	SUNDANCE_MSG3(verb_, " Summ new weights = " << summWeights );
 }
+
+
+// =========================================================================================================================
+
+void GaussLobattoQuadrature::getAdaptedQuadWeights_surf(
+		    int cellLID, const Mesh& mesh,
+			const ParametrizedCurve& globalCurve, Array<Point>& quadPoints,
+			Array<double>& quadWeights, bool& weightsChanged) const {
+
+
+	int verb = 1;
+	int nr_point = mesh.numFacets( mesh.spatialDim() , 0 , 0);
+	Array<Point> maxCellsPoints(nr_point);
+	int tmp_i , point_LID;
+	weightsChanged = true;
+
+	// - get all the brick cells point
+	SUNDANCE_MSG3(verb, "CurveIntegralCalc::getCurveQuadPoints nr points per cell: " << nr_point)
+	for (int jj = 0 ; jj < nr_point ; jj++){
+		point_LID = mesh.facetLID( mesh.spatialDim() , cellLID , 0 , jj , tmp_i );
+		maxCellsPoints[jj] = mesh.nodePosition(point_LID);
+		SUNDANCE_MSG3(verb, " max cell point p[" << jj << "]:"<< maxCellsPoints[jj]);
+	}
+
+	// - use the existing method to get the triangles
+	Array<Point> intersectPoints;
+	Array<int> edgeIndex;
+	Array<int> triangleIndex;
+    // the results in this form will be in physical coordinates
+	SundanceSurf3DCalc::getCurveQuadPoints( BrickCell , cellLID , mesh , globalCurve, maxCellsPoints,
+						 intersectPoints ,  edgeIndex , triangleIndex );
+
+	// initialize the output variables
+	getBrickRule(quadPoints,quadWeights);
+
+	// if the cell has no intersection points then just return the standard weights
+	if (intersectPoints.size() < 1){
+		double intCoeff = globalCurve.integrationParameter( 0.5*(maxCellsPoints[0]+maxCellsPoints[7]) );
+		SUNDANCE_MSG1(verb, " WARNING cel has not been intersected , alpha = " << intCoeff );
+		for (int ii = 0 ; ii < quadWeights.size() ; ii++ ) { quadWeights[ii] = quadWeights[ii] * intCoeff;}
+		return;
+	}
+
+	// - determine the projection direction , and the points which overlap with the projected quad cell
+	int nrIntPoint = intersectPoints.size() , projDir = -1 , tmpI , coveredNodes = 0 , firstCoveredNode = -1;
+	int possibleProject[3] = { -1 , -1 , -1};
+	int otherDims[2] = {-1,-1};
+	int projectedEdgeCovered[4] = { -1 , -1 , -1 , -1 };
+	double dist_tmp = 1e+100;
+
+	// find out the possible projections (there is only three possible projections)
+	for (int ii = 0 ; ii < nrIntPoint ; ii++){
+		// for each edge index we set the projection directory to one
+		possibleProject[ edge3DProjection[ edgeIndex[ii] ] ] = 1;
+	}
+	// here we find the projection directory
+	for (int ii = 0 ; ii < 3 ; ii++){
+		if (possibleProject[ii] > 0) {
+			SUNDANCE_MSG3(verb, " Projected dir = " << ii);
+			projDir = ii; break;
+		}
+	}
+	// here we store the two other directions which are not projected
+	tmpI = 0;
+	for (int ii = 0 ; ii < 3 ; ii++){
+		if ( ii != projDir ) {
+			SUNDANCE_MSG3(verb, " otherDims["<< tmpI << "] = " << ii);
+			otherDims[tmpI] = ii; tmpI++;
+		}
+	}
+
+	// - transform all intersection points to reference coordinates
+	for (int ii = 0 ; ii < nrIntPoint ; ii++){
+		intersectPoints[ii] = Point( (intersectPoints[ii][0] - maxCellsPoints[0][0])/(maxCellsPoints[7][0] - maxCellsPoints[0][0]) ,
+				 (intersectPoints[ii][1] - maxCellsPoints[0][1])/(maxCellsPoints[7][1] - maxCellsPoints[0][1]) ,
+				 (intersectPoints[ii][2] - maxCellsPoints[0][2])/(maxCellsPoints[7][2] - maxCellsPoints[0][2]));
+		SUNDANCE_MSG3(verb, "REF intersectPoints[" << ii << "] = "<< intersectPoints[ii]);
+	}
+
+	// - the quad points on the projected
+	Array<Point> quadProjectPoints(4);
+	quadProjectPoints[0] = Point(0.0,0.0); quadProjectPoints[1] = Point(1.0,0.0);
+	quadProjectPoints[2] = Point(0.0,1.0); quadProjectPoints[3] = Point(1.0,1.0);
+
+	// - determine which out of the 4 nodes has been covered
+	coveredNodes = 0;
+	for (int ii = 0 ; ii < nrIntPoint ; ii++) {
+		Point tmpP( intersectPoints[ii][otherDims[0]] , intersectPoints[ii][otherDims[1]] );
+		for (int tt = 0 ; tt < 4 ; tt++ ) {
+			if ( ((tmpP-quadProjectPoints[tt])*(tmpP-quadProjectPoints[tt]) < 1e-12) && (projectedEdgeCovered[tt] < 0) )
+			{
+				projectedEdgeCovered[tt] = 1; // this node is covered
+				//SUNDANCE_MSG3(verb, "COVERED node[" << tt << "] = "<< quadProjectPoints[tt]);
+				coveredNodes++;
+				// to store the first node which is covered is important to measure the integration coefficient
+				if (firstCoveredNode < 0) { firstCoveredNode = tt; }
+			}
+		}
+	}
+	SUNDANCE_MSG3( verb , "covered nodes = "<< coveredNodes );
+
+	// if not all nodes in the projected quad are covered then we have to add them
+	// so we loop as long this is done
+	while (coveredNodes < 4) {
+	    // - look for one edge, which has at least one neighbor which is covered
+		int foundEdgeIndex[3] = {-1,-1,-1} , foundI = 0 , pF = -1 , pL = -1;
+		int neighbourNodes[4][2] = { {1,2} , {0,3} , {0,3} , {1,2} };
+		for (int ii = 0 ; ii < 4 ; ii++){
+			//SUNDANCE_MSG3( verb , "test node = "<< ii << " , projectedEdgeCovered[ii]=" << projectedEdgeCovered[ii] <<
+			//		" , N1=" << projectedEdgeCovered[ neighbourNodes[ii][0] ] << " , N2=" << projectedEdgeCovered[ neighbourNodes[ii][1] ]);
+			// look for uncovered nodes, which have one neighbor which is covered
+			if ( (projectedEdgeCovered[ii] < 0) &&
+				 ((projectedEdgeCovered[ neighbourNodes[ii][0] ] > 0) || (projectedEdgeCovered[ neighbourNodes[ii][1] ] > 0)) ){
+				//SUNDANCE_MSG3( verb , "found node = "<< ii );
+				foundEdgeIndex[foundI] = ii;
+				projectedEdgeCovered[ii] = 1;
+				coveredNodes++;
+				break;
+			}
+		}
+		foundI = 0;
+		// look for the nearest point, with respect to the found node
+		dist_tmp = 1e+100;
+		for (int ii = 0 ; ii < nrIntPoint ; ii++){
+			Point tmpP( intersectPoints[ii][otherDims[0]] , intersectPoints[ii][otherDims[1]] );
+			double dist_tmp_tmp = ::sqrt( (tmpP-quadProjectPoints[foundEdgeIndex[foundI]])*(tmpP-quadProjectPoints[foundEdgeIndex[foundI]]) );
+			//SUNDANCE_MSG3( verb , "test projected Int Point = "<< tmpP << " , dist = " << dist_tmp_tmp);
+			if ( dist_tmp_tmp < dist_tmp) { pF = ii; dist_tmp = dist_tmp_tmp;}
+		}
+		SUNDANCE_MSG3( verb , "pF = "<< pF );
+
+		// loop as long all the neighbors of the neighbors are covered
+		while ( (projectedEdgeCovered[ neighbourNodes[foundEdgeIndex[foundI]][0] ] < 0) ||
+		      (projectedEdgeCovered[ neighbourNodes[foundEdgeIndex[foundI]][1] ] < 0) ) {
+			int tmp_next_Neighbor = -1;
+			// only one can be true
+			if (projectedEdgeCovered[ neighbourNodes[foundEdgeIndex[foundI]][0] ] < 0) { tmp_next_Neighbor = neighbourNodes[foundEdgeIndex[foundI]][0]; }
+			if (projectedEdgeCovered[ neighbourNodes[foundEdgeIndex[foundI]][1] ] < 0) { tmp_next_Neighbor = neighbourNodes[foundEdgeIndex[foundI]][1]; }
+			//SUNDANCE_MSG3( verb , "tmp_next_Neighbor = "<< tmp_next_Neighbor );
+			foundEdgeIndex[foundI+1] = tmp_next_Neighbor;
+			projectedEdgeCovered[tmp_next_Neighbor] = 1;
+			foundI++;
+			coveredNodes++;
+		}
+		// once we finish the loop we look for a next intersection point which is closer to the last node and is different from "pF"
+		dist_tmp = 1e+100;
+		for (int ii = 0 ; ii < nrIntPoint ; ii++){
+			Point tmpP( intersectPoints[ii][otherDims[0]] , intersectPoints[ii][otherDims[1]] );
+			double dist_tmp_tmp = ::sqrt((tmpP-quadProjectPoints[foundEdgeIndex[foundI]])*(tmpP-quadProjectPoints[foundEdgeIndex[foundI]]));
+			if ( (dist_tmp_tmp < dist_tmp) && (ii != pF ) ) { pL = ii; dist_tmp = dist_tmp_tmp; }
+		}
+		SUNDANCE_MSG3( verb , "pL = "<< pF );
+
+		// - now we have a list of the nodes of the projected quad, which need to be added
+		for (int nn = 0 ; nn <= foundI ; nn = nn + 1)
+		{
+			int firstI_Tri = pF, secondI_Tri = -1 , thirdI_Tri = -1;
+			intersectPoints.resize( nrIntPoint + 1);
+			nrIntPoint++;
+			//  check if one point will not be added twice ... on the other side this is not a problem for the integration
+			Point ptmp( 0 , 0 , 0 );
+			ptmp[otherDims[0]] = quadProjectPoints[foundEdgeIndex[nn]][0];
+			ptmp[otherDims[1]] = quadProjectPoints[foundEdgeIndex[nn]][1];
+			ptmp[projDir] = intersectPoints[pF][projDir];
+			//SUNDANCE_MSG3( verb , "Add Point 2D " << quadProjectPoints[foundEdgeIndex[nn]] << " , P:" << ptmp);
+			intersectPoints[nrIntPoint-1] = ptmp;
+			secondI_Tri = nrIntPoint -1;
+			Point nextP( 0 , 0 , 0 );
+			if (nn < foundI ){
+				nextP[otherDims[0]] = quadProjectPoints[foundEdgeIndex[nn+1]][0];
+				nextP[otherDims[1]] = quadProjectPoints[foundEdgeIndex[nn+1]][1];
+				nextP[projDir] = intersectPoints[pF][projDir];
+				//SUNDANCE_MSG3( verb , "Add Point 2D " << quadProjectPoints[foundEdgeIndex[nn+1]] );
+				intersectPoints.resize( nrIntPoint + 1);
+				nrIntPoint++;
+				thirdI_Tri = nrIntPoint - 1;
+				intersectPoints[nrIntPoint-1] = nextP;
+			} else {
+				// the last point is "pL"
+				nextP = intersectPoints[pL];
+				thirdI_Tri = pL;
+			}
+			int triagSize = triangleIndex.size();
+			triangleIndex.resize(triagSize + 3);
+			triangleIndex[triagSize] = firstI_Tri;
+			triangleIndex[triagSize+1] = secondI_Tri;
+			triangleIndex[triagSize+2] = thirdI_Tri;
+			SUNDANCE_MSG3( verb , "Add triangle [ "<< firstI_Tri << " , " <<  secondI_Tri << " , " << thirdI_Tri << " ]");
+			SUNDANCE_MSG3( verb , "Added triangle's points [ "<< intersectPoints[firstI_Tri] << " , "
+					<<  intersectPoints[secondI_Tri] << " , " << intersectPoints[thirdI_Tri] << " ]");
+		}
+
+		SUNDANCE_MSG3( verb , "covered nodes = "<< coveredNodes );
+	} //end from the while which makes sure that each nodes are covered
+
+
+	// - first get the quadrature points for the whole quad
+	Array<Point> wholeQuadPoints;
+	Array<double> wholeQuadweights;
+	getBrickRule(wholeQuadPoints,wholeQuadweights);
+	Array<Point> linePoints;
+	Array<double> lineWeights;
+	getLineRule(linePoints,lineWeights);
+	int nrLinePoints = linePoints.size() , nr3DPoints = wholeQuadPoints.size();
+	// this will be the output of the quadrature
+	Array<double> computedWeights(nr3DPoints,0.0);
+
+	// compute the quadrature points and weights for the prism elements
+	Array<Point> triagPoints;
+	Array<double> triagWeights;
+	getTriangleQuadPoints( triagPoints , triagWeights );
+	int nrQuadTriagPoints = triagPoints.size();
+	int nrQuadPrism = triagPoints.size() * linePoints.size();
+	Array<Point> prismPoints(nrQuadPrism);
+	Array<double> prismWeights(nrQuadPrism);
+
+	// - integrate all the prism elements, if the heights are different then zero
+	int nr_prism = triangleIndex.size()/3;
+	for (int p = 0 ; p < nr_prism ; p++ ){
+		Point p0 = intersectPoints[ triangleIndex[3*p] ];
+		Point p1 = intersectPoints[ triangleIndex[3*p + 1] ];
+		Point p2 = intersectPoints[ triangleIndex[3*p + 2] ];
+		Point p0L = p0;
+		Point p1L = p1;
+		Point p2L = p2;
+		p0L[projDir] = 0.0; p1L[projDir] = 0.0; p2L[projDir] = 0.0;
+		//SUNDANCE_MSG3( verb , " Triangle [ " << p0 << " , "  << p1 << " , " << p2 << "]");
+		//SUNDANCE_MSG3( verb , " Triangle bottom [ " << p0L << " , "  << p1L << " , " << p2L << "]");
+
+		// only integrate the prism when there is a measurable height
+		if ( (::fabs(p0[projDir]-p0L[projDir]) + ::fabs(p1[projDir]-p1L[projDir])+ ::fabs(p2[projDir]-p2L[projDir]) ) > 1e-12 ){
+			Point normAreaVect = cross(p1L-p0L ,p2L-p0L);
+			Point triagPointTmp;
+			double areaTriag = 0.5*::sqrt(normAreaVect*normAreaVect) , Zc = 0.0;
+			int quadPIndex = 0;
+			// compute the quadrature points for this prism
+			for (int triagQIndex = 0 ; triagQIndex < nrQuadTriagPoints ; triagQIndex++)
+			{
+				// Zc is the height of the prism at the quadrature position
+			    Zc = (1.0 - triagPoints[triagQIndex][0] - triagPoints[triagQIndex][1]) * ( p0[projDir] - p0L[projDir] );
+				Zc = Zc + triagPoints[triagQIndex][0]*( p1[projDir] - p1L[projDir] );
+				Zc = Zc + triagPoints[triagQIndex][1]*( p2[projDir] - p2L[projDir] );
+				triagPointTmp = p0L + triagPoints[triagQIndex][0]*(p1L-p0L) + triagPoints[triagQIndex][1]*(p2L-p0L);
+				//SUNDANCE_MSG3( verb , " areaTriag = " << areaTriag << " , Zc = "  << Zc <<
+				//		" , triagWeights[triagQIndex] = " << triagWeights[triagQIndex] << " , lineWeights[0]" << lineWeights[0]);
+				for (int lineQIndex = 0 ; lineQIndex < nrLinePoints ; lineQIndex++ , quadPIndex++)
+				{
+					// take the tensor product of the triangle and the line quadrature points
+					// it is important that we compute correctly the weights and the quadrature points positions
+					prismPoints[quadPIndex] = triagPointTmp;
+					prismPoints[quadPIndex][projDir] = Zc * linePoints[lineQIndex][0];
+					prismWeights[quadPIndex] = Zc*areaTriag*triagWeights[triagQIndex]*lineWeights[lineQIndex];
+				}
+			}
+			// call the method to integrate the Lagrange polynoms
+			makeInterpolantBrick( nrLinePoints , nr3DPoints , linePoints ,
+					prismPoints , prismWeights , computedWeights , 1.0);
+		}
+	}
+
+	// - determine the integration coefficient , use "firstCoveredNode" with "0" and "1" offset
+	Point tmpPointIntCoeff = intersectPoints[firstCoveredNode];
+	tmpPointIntCoeff[projDir] = -0.001;
+	Point tmpPointIntCoeff1 = Point( maxCellsPoints[0][0] + tmpPointIntCoeff[0]*(maxCellsPoints[7][0]-maxCellsPoints[0][0]) ,
+			                         maxCellsPoints[0][1] + tmpPointIntCoeff[1]*(maxCellsPoints[7][1]-maxCellsPoints[0][1]) ,
+			                         maxCellsPoints[0][2] + tmpPointIntCoeff[2]*(maxCellsPoints[7][2]-maxCellsPoints[0][2]) );
+	double zeroIntCoeff = globalCurve.integrationParameter( tmpPointIntCoeff1 );
+	tmpPointIntCoeff[projDir] = 1.001;
+	tmpPointIntCoeff1 = Point( maxCellsPoints[0][0] + tmpPointIntCoeff[0]*(maxCellsPoints[7][0]-maxCellsPoints[0][0]) ,
+				               maxCellsPoints[0][1] + tmpPointIntCoeff[1]*(maxCellsPoints[7][1]-maxCellsPoints[0][1]) ,
+				               maxCellsPoints[0][2] + tmpPointIntCoeff[2]*(maxCellsPoints[7][2]-maxCellsPoints[0][2]) );
+	double oneIntCoeff = globalCurve.integrationParameter( tmpPointIntCoeff1 );
+
+	SUNDANCE_MSG3( verb , " alpha1 = " << zeroIntCoeff << " , alpha2 = "  << oneIntCoeff );
+
+	// at the end just compute the weights, by simply taking the difference of the whole and the computed weights
+	double sumWeights = 0.0;
+	for (int q = 0 ; q < computedWeights.size() ; q++ ){
+		quadWeights[q] = zeroIntCoeff * computedWeights[q] + oneIntCoeff*( wholeQuadweights[q]- computedWeights[q]);
+		sumWeights = sumWeights + quadWeights[q];
+	}
+
+	SUNDANCE_MSG3(verb , " ---------- END METHOD -----------  sum weights = " << sumWeights);
+
+}
+
+
+// ======================================================================================================
+
+
+
+
+void GaussLobattoQuadrature::getLineRule(
+		Array<Point>& quadPointsL,
+		Array<double>& quadWeights) const {
+
+	int n = order()+1; //this is correct m points for a basis of order m-1
+
+	Array<double> quadPoints;
+	quadPoints.resize(n);
+	quadPointsL.resize(n);
+	quadWeights.resize(n);
+
+	// ================== QUAD POINTS ========================
+	switch (n) {
+	case 2: { quadPoints[0]=0.0; quadPoints[1] = 1; break; }
+	case 3: { quadPoints[0]=0.0; quadPoints[1] = 0.5; quadPoints[2] = 1.0; break; }
+	case 4:	{ quadPoints[0]=0.0; quadPoints[1] = 0.5-0.5/::sqrt(5.0); quadPoints[2] = 0.5+0.5/::sqrt(5.0); quadPoints[3] = 1.0; break; }
+	case 5:	{ quadPoints[0]=0.0; quadPoints[1] = 0.5-0.5*::sqrt(3.0/7.0); quadPoints[2] = 0.5;
+	        quadPoints[3] = 0.5+0.5*::sqrt(3.0/7.0); quadPoints[4] = 1.0; break; }
+	case 6: { double t0=::sqrt(7.0);
+	        double t1=(7.0+2.0*t0)/21.0;
+	        double t2=(7.0-2.0*t0)/21.0;
+	        quadPoints[0] = 0; quadPoints[1] = 0.5-0.5*::sqrt(t1); quadPoints[2] = 0.5-0.5*::sqrt(t2);
+	        quadPoints[3] = 0.5+0.5*::sqrt(t2); quadPoints[4] = 0.5+0.5*::sqrt(t1); quadPoints[5] = 1.0; break; }
+	case 7: {
+		quadPoints[0] = 0.00000000000000000000e+00;
+		quadPoints[1] = 8.48880518607165179823e-02;
+		quadPoints[2] = 2.65575603264642912116e-01;
+		quadPoints[3] = 5.00000000000000000000e-01;
+		quadPoints[4] = 7.34424396735357087884e-01;
+		quadPoints[5] = 9.15111948139283537529e-01;
+		quadPoints[6] = 1.00000000000000000000e+00;
+	    break; }
+	case 8: {
+		quadPoints[0] = 0.00000000000000000000e+00;
+		quadPoints[1] = 6.41299257451967141819e-02;
+		quadPoints[2] = 2.04149909283428854234e-01;
+		quadPoints[3] = 3.95350391048760574364e-01;
+		quadPoints[4] = 6.04649608951239425636e-01;
+		quadPoints[5] = 7.95850090716571090255e-01;
+		quadPoints[6] = 9.35870074254803285818e-01;
+		quadPoints[7] = 1.00000000000000000000e+00;
+		break; }
+	case 9: {
+		quadPoints[0] = 0.00000000000000000000e+00;
+		quadPoints[1] = 5.01210022942699118254e-02;
+		quadPoints[2] = 1.61406860244631134016e-01;
+		quadPoints[3] = 3.18441268086910922452e-01;
+		quadPoints[4] = 5.00000000000000000000e-01;
+		quadPoints[5] = 6.81558731913089133059e-01;
+		quadPoints[6] = 8.38593139755368865984e-01;
+		quadPoints[7] = 9.49878997705730032663e-01;
+		quadPoints[8] = 1.00000000000000000000e+00;
+	    break; }
+	case 10: {
+		quadPoints[0] = 0.00000000000000000000e+00;
+		quadPoints[1] = 4.02330459167705711820e-02;
+		quadPoints[2] = 1.30613067447247432895e-01;
+		quadPoints[3] = 2.61037525094777733692e-01;
+		quadPoints[4] = 4.17360521166806497373e-01;
+		quadPoints[5] = 5.82639478833193447116e-01;
+		quadPoints[6] = 7.38962474905222266308e-01;
+		quadPoints[7] = 8.69386932552752567105e-01;
+		quadPoints[8] = 9.59766954083229428818e-01;
+		quadPoints[9] = 1.00000000000000000000e+00;
+		break; }
+	 case 11: {
+		quadPoints[0] = 0.00000000000000000000e+00;
+		quadPoints[1] = 3.29992847959704183047e-02;
+		quadPoints[2] = 1.07758263168427792511e-01;
+		quadPoints[3] = 2.17382336501897477365e-01;
+		quadPoints[4] = 3.52120932206530290465e-01;
+		quadPoints[5] = 5.00000000000000000000e-01;
+		quadPoints[6] = 6.47879067793469709535e-01;
+		quadPoints[7] = 7.82617663498102578146e-01;
+		quadPoints[8] = 8.92241736831572263000e-01;
+		quadPoints[9] = 9.67000715204029637206e-01;
+		quadPoints[10] = 1.00000000000000000000e+00;
+	    break; }
+	 case 12: {
+		quadPoints[0] = 0.00000000000000000000e+00;
+		quadPoints[1] = 2.75503638885589152707e-02;
+		quadPoints[2] = 9.03603391779966846897e-02;
+		quadPoints[3] = 1.83561923484069688950e-01;
+		quadPoints[4] = 3.00234529517325543502e-01;
+		quadPoints[5] = 4.31723533572536233294e-01;
+		quadPoints[6] = 5.68276466427463766706e-01;
+		quadPoints[7] = 6.99765470482674456498e-01;
+		quadPoints[8] = 8.16438076515930255539e-01;
+		quadPoints[9] = 9.09639660822003315310e-01;
+		quadPoints[10] = 9.72449636111441084729e-01;
+		quadPoints[11] = 1.00000000000000000000e+00;
+	    break; }
+	}
+
+	// transform the array of doubles into an array of Points
+	for (int i = 0 ; i < n ; i++){
+		quadPointsL[i] = Point(quadPoints[i]);
+	}
+
+	// ================== WEIGHTS ========================
+	switch (n) {
+	case 2:{
+		quadWeights[0] = 0.5;
+		quadWeights[1] = 0.5;
+	    break; }
+	case 3:{
+		quadWeights[0] = 1.0/6.0; quadWeights[1] = 2.0/3.0; quadWeights[2] = 1.0/6.0;
+		break;}
+	case 4:{
+		quadWeights[0] = 1.0/12.0; quadWeights[1] = 5.0/12.0; quadWeights[2] = 5.0/12.0; quadWeights[3] = 1.0/12.0;
+		break;}
+	case 5:{
+		quadWeights[0] = 0.05; quadWeights[1] = 49.0/180.0; quadWeights[2] = 32.0/90.0; quadWeights[3] = 49.0/180.0; quadWeights[4] = 0.05;
+		break;}
+	case 6:{
+	    double t0=::sqrt(7.0);
+	    double t1=(7.0+2.0*t0)/21.0;
+	    double t2=(7.0-2.0*t0)/21.0;
+	    double k1=(1.0-t0)*(1.0-t0);
+	    double k2=(1.0+t0)*(1.0+t0);
+	    quadWeights[0] = 1.0/30.0; quadWeights[1] = 0.3/(t1*k1); quadWeights[2] = 0.3/(t2*k2); quadWeights[3] = 0.3/(t2*k2);
+	    quadWeights[4] = 0.3/(t1*k1); quadWeights[5] = 1.0/30.0;
+	    break;}
+	case 7:{
+		quadWeights[0] = 2.38095238095238082021e-02;
+		quadWeights[1] = 1.38413023680782953928e-01;
+		quadWeights[2] = 2.15872690604931305458e-01;
+		quadWeights[3] = 2.43809523809523809312e-01;
+		quadWeights[4] = 2.15872690604931305458e-01;
+		quadWeights[5] = 1.38413023680782953928e-01;
+		quadWeights[6] = 2.38095238095238082021e-02;
+	    break;}
+	case 8:{
+		quadWeights[0] = 1.78571428571428561516e-02;
+		quadWeights[1] = 1.05352113571753072674e-01;
+		quadWeights[2] = 1.70561346241752204156e-01;
+		quadWeights[3] = 2.06229397329351860080e-01;
+		quadWeights[4] = 2.06229397329351860080e-01;
+		quadWeights[5] = 1.70561346241752204156e-01;
+		quadWeights[6] = 1.05352113571753072674e-01;
+		quadWeights[7] = 1.78571428571428561516e-02;
+	    break;}
+	case 9:{
+		quadWeights[0] = 1.38888888888888881179e-02;
+		quadWeights[1] = 8.27476807804027880699e-02;
+		quadWeights[2] = 1.37269356250080826198e-01;
+		quadWeights[3] = 1.73214255486523083238e-01;
+		quadWeights[4] = 1.85759637188208620584e-01;
+		quadWeights[5] = 1.73214255486523083238e-01;
+		quadWeights[6] = 1.37269356250080826198e-01;
+		quadWeights[7] = 8.27476807804027880699e-02;
+		quadWeights[8] = 1.38888888888888881179e-02;
+	    break;}
+	case 10:{
+		quadWeights[0] = 1.11111111111111115352e-02;
+		quadWeights[1] = 6.66529954255350304271e-02;
+		quadWeights[2] = 1.12444671031563220298e-01;
+		quadWeights[3] = 1.46021341839841889421e-01;
+		quadWeights[4] = 1.63769880591948718829e-01;
+		quadWeights[5] = 1.63769880591948718829e-01;
+		quadWeights[6] = 1.46021341839841889421e-01;
+		quadWeights[7] = 1.12444671031563220298e-01;
+		quadWeights[8] = 6.66529954255350304271e-02;
+		quadWeights[9] = 1.11111111111111115352e-02;
+	    break;}
+	case 11:{
+		quadWeights[0] = 9.09090909090909046752e-03;
+		quadWeights[1] = 5.48061366334974126024e-02;
+		quadWeights[2] = 9.35849408901525958715e-02;
+		quadWeights[3] = 1.24024052132014145355e-01;
+		quadWeights[4] = 1.43439562389503921791e-01;
+		quadWeights[5] = 1.50108797727845355574e-01;
+		quadWeights[6] = 1.43439562389503921791e-01;
+		quadWeights[7] = 1.24024052132014145355e-01;
+		quadWeights[8] = 9.35849408901525958715e-02;
+		quadWeights[9] = 5.48061366334974126024e-02;
+		quadWeights[10] = 9.09090909090909046752e-03;
+	    break;}
+	case 12:{
+		quadWeights[0] = 7.57575757575757596785e-03;
+		quadWeights[1] = 4.58422587065981240739e-02;
+		quadWeights[2] = 7.89873527821850218711e-02;
+		quadWeights[3] = 1.06254208880510653268e-01;
+		quadWeights[4] = 1.25637801599600640312e-01;
+		quadWeights[5] = 1.35702620455348088591e-01;
+		quadWeights[6] = 1.35702620455348088591e-01;
+		quadWeights[7] = 1.25637801599600640312e-01;
+		quadWeights[8] = 1.06254208880510653268e-01;
+		quadWeights[9] = 7.89873527821850218711e-02;
+		quadWeights[10] = 4.58422587065981240739e-02;
+		quadWeights[11] = 7.57575757575757596785e-03;
+	    break;}
+   }
+}
+
 
 void GaussLobattoQuadrature::getTriangleQuadPoints(Array<Point>& pnt  ,Array<double>& weight ) const{
 	// we took this directly from the Matlab code of Prof.Ulbrich

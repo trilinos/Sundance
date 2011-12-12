@@ -204,7 +204,7 @@ void HNMesh2D::getCellDiameters(int cellDim, const Array<int>& cellLID,
 			      cellDiameters[i] = sqrt(pnt * pnt); // the length of the edge
 	        break;
 	        default:
-	          TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "impossible switch value "  "cellDim=" << cellDim << " in HNMesh2D::getCellDiameters()");
+	        	TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "impossible switch value "  "cellDim=" << cellDim << " in HNMesh2D::getCellDiameters()");
 	      }
 	    }
 	  }
@@ -267,7 +267,7 @@ void HNMesh2D::pushForward(int cellDim, const Array<int>& cellLID,
 		         }
 	      break;}
 	      default:
-	        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "impossible switch value " "in HNMesh2D::getJacobians()");
+	    	TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "impossible switch value " "in HNMesh2D::getJacobians()");
 	    }
 	  }
 }
@@ -453,14 +453,14 @@ int HNMesh2D::maxCofacetLID(int cellDim, int cellLID,
 void HNMesh2D::getCofacets(int cellDim, int cellLID,
                  int cofacetDim, Array<int>& cofacetLIDs) const {
 	// Nothing to do
-    TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error," HNMesh2D::getCofacets() not implemented");
+	TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error," HNMesh2D::getCofacets() not implemented");
 }
 
 
 void HNMesh2D::getMaxCofacetLIDs(const Array<int>& cellLIDs,
   MaximalCofacetBatch& cofacets) const {
 	// nothing to do here
-    TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error," HNMesh2D::getMaxCofacetLIDs() not implemented");
+	TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error," HNMesh2D::getMaxCofacetLIDs() not implemented");
 }
 
 
@@ -539,7 +539,7 @@ int HNMesh2D::label(int cellDim, int cellLID) const {
 void HNMesh2D::getLabels(int cellDim, const Array<int>& cellLID,
 		Array<int>& labels) const {
    // not used
-   TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error," HNMesh2D::getLabels() not implemented yet");
+	TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error," HNMesh2D::getLabels() not implemented yet");
 }
 
 Set<int> HNMesh2D::getAllLabelsForDimension(int cellDim) const {
@@ -556,7 +556,7 @@ void HNMesh2D::getLIDsForLabel(int cellDim, int label, Array<int>& cellLIDs) con
 
 void HNMesh2D::setLabel(int cellDim, int cellLID, int label) {
    // not used
-   TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error," HNMesh2D::setLabel() not implemented yet");
+	TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error," HNMesh2D::setLabel() not implemented yet");
 }
 
 
@@ -640,7 +640,7 @@ void HNMesh2D::addVertex(int vertexLID , int ownerProc , bool isHanging ,
   // add only when the LID is new
   // WE ASSUME THAT THE "vertexLID" will come in increasing manner
   if (points_.size() <= vertexLID){
-	 TEUCHOS_TEST_FOR_EXCEPTION(vertexLID != nrElem_[0] , std::logic_error ,"HNMesh2D::addVertex " <<
+	  TEUCHOS_TEST_FOR_EXCEPTION(vertexLID != nrElem_[0] , std::logic_error ,"HNMesh2D::addVertex " <<
 			 " vertexLID:" << vertexLID << " nrElem_[0]:" << nrElem_[0] );
      Point pt(coordx,coordy);
      points_.append( pt );
@@ -659,7 +659,7 @@ void HNMesh2D::addEdge(int edgeLID , int ownerProc , bool isHanging , int edgeVe
 		               const Array<int> &vertexLIDs , const Array<int> &maxCoF){
 	  // add only when the edgeLID is new
 	  if (edgePoints_.size() <= edgeLID ){
-		 TEUCHOS_TEST_FOR_EXCEPTION(edgeLID != nrElem_[1], std::logic_error, "HNMesh2D::addEdge edgeLID != nrElem_[1]");
+		  TEUCHOS_TEST_FOR_EXCEPTION(edgeLID != nrElem_[1], std::logic_error, "HNMesh2D::addEdge edgeLID != nrElem_[1]");
 		 edgePoints_.append( vertexLIDs );
 		 edgeVertex_.append( edgeVertex );
 		 edgeMaxCoF_.append( maxCoF );
@@ -680,7 +680,7 @@ void HNMesh2D::addCell(int cellLID , int ownerProc ,
 		               const Array<int> &edgeLIDs , const Array<int> &vertexLIDs){
 	  // add only when the edgeLID is new
 	  if (cellsPoints_.size() <= cellLID ) {
-		 TEUCHOS_TEST_FOR_EXCEPTION(cellLID != nrElem_[2], std::logic_error, "HNMesh2D::cellLID cellLID != nrElem_[2]");
+		  TEUCHOS_TEST_FOR_EXCEPTION(cellLID != nrElem_[2], std::logic_error, "HNMesh2D::cellLID cellLID != nrElem_[2]");
 		 cellsPoints_.append( vertexLIDs );
 		 cellsEdges_.append( edgeLIDs );
 	     indexInParent_.append( indexInParent );
@@ -739,7 +739,8 @@ void HNMesh2D::createMesh(
     }
 
 	// calculate global IDs and create leaf Numbering
-    createLeafNumbering();
+    //createLeafNumbering();
+    createLeafNumbering_sophisticated();
 
 }
 
@@ -845,7 +846,7 @@ void HNMesh2D::createCoarseMesh(){
 		SUNDANCE_MSG3(verb() , "PCell ID:" << i << " coarseProcessCell[i]:" <<coarseProcessCell[i] << " pos:" << pos );
 		SUNDANCE_MSG3(verb() , "PCell, actual index" << ind  );
 		// this condition is so that remote cells will be added
-		if (coarseProcessCell[i] > 0){
+		if (coarseProcessCell[i] > 0) {
 			int vertexInd = (_res_y+1)*ind[0] + ind[1];
 			int edgeInd = (2*_res_y+1)*ind[0] + ind[1];
 			int cellLID = coarseCellLID[i];
@@ -1359,6 +1360,326 @@ void HNMesh2D::createLeafNumbering(){
 	// look for those leaf cells which points have a cell which maxCoFacet owner = myRank_
 	// only those will have an LID
 	Array<bool> hasCellLID(nrElem_[2],false);
+
+	for (int ind = 0 ; ind < nrElem_[2] ; ind++){
+		Array<int>& vertexIDs = cellsPoints_[ind];
+		hasCellLID[ind] = false;
+		for (int v = 0 ; v < 4 ; v++){
+			Array<int>& maxCoFacet = pointMaxCoF_[vertexIDs[v]];
+			hasCellLID[ind] =  ( hasCellLID[ind]
+					|| ( (maxCoFacet[0] >= 0) && (elementOwner_[2][maxCoFacet[0]] == myRank_) )
+                    || ( (maxCoFacet[1] >= 0) && (elementOwner_[2][maxCoFacet[1]] == myRank_) )
+                    || ( (maxCoFacet[2] >= 0) && (elementOwner_[2][maxCoFacet[2]] == myRank_) )
+                    || ( (maxCoFacet[3] >= 0) && (elementOwner_[2][maxCoFacet[3]] == myRank_) ) ) ;
+			//SUNDANCE_MSG3(verb() , " Point ID"<< vertexIDs[v] << ", MacCoFacet:" << maxCoFacet);
+
+			// add cells with hanging nodes which have contribution to element which are owned by this processor
+			// if vertex is hanging look into the parent cell at the same index and if the owner is myRank_ then add
+			// to the cells which should be processed
+			if ( (hasCellLID[ind] == false) && (isPointHanging_[vertexIDs[v]] == true)){
+				int parentID = parentCellLID_[ind];
+				Array<int>& parentVertexIDs = cellsPoints_[parentID];
+				hasCellLID[ind] = hasCellLID[ind] || (elementOwner_[0][parentVertexIDs[v]] == myRank_);
+			}
+		}
+		SUNDANCE_MSG3(verb() , "HNMesh2D::createLeafNumbering Cell ID :" << ind << " should be LID: " << hasCellLID[ind] <<
+				" ,isCellLeaf_[ind]:" << isCellLeaf_[ind]);
+	}
+
+	//  treat special case, so that each hanging element has its parents
+	// if we add one cell check hanging face, then add the maxCoF from the parent face if is leaf
+	// if this is not successful then do the same thing for edges
+	// - from each hanging edge there should be at least one cell on this processor which contains that parent edge !
+	bool check_Ghost_cells = true;
+	while (check_Ghost_cells){
+		check_Ghost_cells = false;
+	    for (int ind = 0 ; ind < nrElem_[2] ; ind++){
+		   if ( (hasCellLID[ind] == true) && (elementOwner_[2][ind] != myRank_ ) ){
+			  // check edges
+			  Array<int>& edgeIDs = cellsEdges_[ind];
+			  // we have this if only
+		      for (int ii = 0 ; ii < 4 ; ii++ ){
+				  // if the face is hanging and does not belong to me
+				  if (isEdgeHanging_[edgeIDs[ii]] && ( elementOwner_[1][edgeIDs[ii]] != myRank_)){
+                    // get parent cells same face
+					int parentCell = parentCellLID_[ind];
+					Array<int>& parentEdgesIDs = cellsEdges_[parentCell];
+					for (int f = 0 ; f < 2 ; f++)
+					if ( ( edgeMaxCoF_[parentEdgesIDs[ii]][f] >= 0 ) &&
+						 ( elementOwner_[2][ edgeMaxCoF_[parentEdgesIDs[ii]][f] ] != myRank_ ) &&
+						 ( hasCellLID[edgeMaxCoF_[parentEdgesIDs[ii]][f]] == false)   &&
+						 ( isCellLeaf_[edgeMaxCoF_[parentEdgesIDs[ii]][f]] )
+					   ){
+						hasCellLID[edgeMaxCoF_[parentEdgesIDs[ii]][f]] = true;
+						check_Ghost_cells = true;
+					}
+				  }
+			   } // from loop
+		   }
+	    }
+	}
+
+	// we also have to list the cells which are not owned by the processor
+	for (int ind = 0 ; ind < nrElem_[2] ; ind++)
+	{
+		 // GID numbering
+		 // if cell is leaf and if is inside the computational domain
+         if ( (isCellLeaf_[ind] == true) && (!isCellOut_[ind]) )
+         {
+        	 Array<int>& vertexIDs = cellsPoints_[ind];
+           	 for (int v = 0; v < 4 ; v++)
+             {
+           		SUNDANCE_MSG3(verb() , " createLeafGIDNumbering  vertexIDs[v]:" << vertexIDs[v] );
+            	if (vertexGIDToLeafMapping_[vertexIDs[v]] < 0)
+            	{
+            	   SUNDANCE_MSG3(verb() , " createLeafGIDNumbering -> VertexID:" << vertexIDs[v] << " , nrVertexLeafGID_:" << nrVertexLeafGID_ );
+            	   vertexLeafToGIDMapping_[nrVertexLeafGID_] = vertexIDs[v];
+            	   vertexGIDToLeafMapping_[vertexIDs[v]] = nrVertexLeafGID_;
+            	   nrVertexLeafGID_++;
+            	}
+             }
+        	 Array<int>& edgeIDs = cellsEdges_[ind];
+        	 // for each edge check weather it already has a leaf index, if not create one
+        	 for (int e = 0; e < 4 ; e++)
+        	 {
+        		 //SUNDANCE_MSG3(verb() , " createLeafNumbering  edgeLIDs[e]:" << edgeLIDs[e] );
+        		 if (edgeGIDToLeafMapping_[edgeIDs[e]] < 0)
+        		 {
+        			 SUNDANCE_MSG3(verb() , " createLeafGIDNumbering -> edgeID:" << edgeIDs[e] << " , nrEdgeLeafGID_:" << nrEdgeLeafGID_ );
+        			 //SUNDANCE_MSG3(verb() , " MaxCoFacet:" << edgeMaxCoF_[edgeLIDs[e]] << " edgeVertex:" << edgeVertex_[edgeLIDs[e]]);
+        			 edgeLeafToGIDMapping_[nrEdgeLeafGID_] = edgeIDs[e];
+        			 edgeGIDToLeafMapping_[edgeIDs[e]] = nrEdgeLeafGID_;
+        			 nrEdgeLeafGID_++;
+        		 }
+        	 }
+        	 // create leaf index for the leaf cell
+			 SUNDANCE_MSG3(verb() , " createLeafGIDNumbering CELL cellID:" << ind << " , nrCellLeafGID_:" << nrCellLeafGID_ );
+        	 cellLeafToGIDMapping_[nrCellLeafGID_] = ind;
+        	 cellGIDToLeafMapping_[ind] = nrCellLeafGID_;
+        	 nrCellLeafGID_++;
+
+        	 // LID numbering
+        	 // create leaf LID numbering , if this cell needs to be processed
+        	 if (hasCellLID[ind]){
+        		 // vertex
+              	 for (int v = 0; v < 4 ; v++)
+                 {
+                	if (vertexLIDToLeafMapping_[vertexIDs[v]] < 0)
+                	{
+                	   SUNDANCE_MSG3(verb() , " createLeafLIDNumbering -> VertexID:" << vertexIDs[v] << " , nrVertexLeafLID_:" << nrVertexLeafLID_ );
+                	   vertexLeafToLIDMapping_[nrVertexLeafLID_] = vertexIDs[v];
+                	   vertexLIDToLeafMapping_[vertexIDs[v]] = nrVertexLeafLID_;
+                	   nrVertexLeafLID_++;
+                	}
+                 }
+            	 // for each edge check weather it already has a leaf index, if not create one
+            	 for (int e = 0; e < 4 ; e++)
+            	 {
+            		 if (edgeLIDToLeafMapping_[edgeIDs[e]] < 0)
+            		 {
+            			 SUNDANCE_MSG3(verb() , " createLeafLIDNumbering -> edgeID:" << edgeIDs[e] << " , nrEdgeLeafLID_:" << nrEdgeLeafLID_ );
+            			 edgeLeafToLIDMapping_[nrEdgeLeafLID_] = edgeIDs[e];
+            			 edgeLIDToLeafMapping_[edgeIDs[e]] = nrEdgeLeafLID_;
+            			 nrEdgeLeafLID_++;
+            		 }
+            	 }
+            	 // create leaf index for the leaf cell
+            	 SUNDANCE_MSG3(verb() , " createLeafLIDNumbering CELL cellID:" << ind << " , nrCellLeafLID_:" << nrCellLeafLID_ );
+            	 cellLeafToLIDMapping_[nrCellLeafLID_] = ind;
+            	 cellLIDToLeafMapping_[ind] = nrCellLeafLID_;
+            	 nrCellLeafLID_++;
+        	 }
+         }
+	}
+	SUNDANCE_MSG3(verb() , "HNMesh2D::createLeafNumbering , DONE");
+}
+
+
+// ====================================== OTHER LEAF NUMBERING ALGORITHM ==================
+
+int HNMesh2D::estimateCellLoad(int ID){
+	int rtn = 0;
+	if (isCellLeaf_[ID]){
+		if (!isCellOut_[ID]) rtn = 1;
+	} else {
+		// for each child call recursivly the function
+		for (int r = 0 ; r < (int)cellsChildren_[ID].size() ; r++){
+			rtn = rtn + estimateCellLoad(cellsChildren_[ID][r]);
+		}
+	}
+    return rtn;
+}
+
+/** mark the cells and its facets for one processor*/
+void HNMesh2D::markCellsAndFacets(int cellID , int procID){
+	// mark the cell and the facets
+	if (elementOwner_[2][cellID] < 0)  { elementOwner_[2][cellID] = procID; }
+	//SUNDANCE_MSG3(verb() , "mark cell: " << cellID );
+	if (elementOwner_[1][cellsEdges_[cellID][0]] < 0 ) { elementOwner_[1][cellsEdges_[cellID][0]] = procID;}
+	if (elementOwner_[1][cellsEdges_[cellID][1]] < 0 ) { elementOwner_[1][cellsEdges_[cellID][1]] = procID;}
+	if (elementOwner_[1][cellsEdges_[cellID][2]] < 0 ) { elementOwner_[1][cellsEdges_[cellID][2]] = procID;}
+	if (elementOwner_[1][cellsEdges_[cellID][3]] < 0 ) { elementOwner_[1][cellsEdges_[cellID][3]] = procID;}
+	//SUNDANCE_MSG3(verb() , " ,mark edge: " << cellsEdges_[cellID][0] << " ,mark edge: " << cellsEdges_[cellID][1]
+	//                      << " ,mark edge: " << cellsEdges_[cellID][2] << " ,mark edge: " << cellsEdges_[cellID][3]);
+	if (elementOwner_[0][cellsPoints_[cellID][0]] < 0 ) { elementOwner_[0][cellsPoints_[cellID][0]] = procID;}
+	if (elementOwner_[0][cellsPoints_[cellID][1]] < 0 ) { elementOwner_[0][cellsPoints_[cellID][1]] = procID;}
+	if (elementOwner_[0][cellsPoints_[cellID][2]] < 0 ) { elementOwner_[0][cellsPoints_[cellID][2]] = procID;}
+	if (elementOwner_[0][cellsPoints_[cellID][3]] < 0 ) { elementOwner_[0][cellsPoints_[cellID][3]] = procID;}
+	//SUNDANCE_MSG3(verb() , " ,mark point: " << cellsPoints_[cellID][0] << " ,mark point: " << cellsPoints_[cellID][1]
+	//                      << " ,mark point: " << cellsPoints_[cellID][2] << " ,mark point: " << cellsPoints_[cellID][3] );
+	if (!isCellLeaf_[cellID]){
+		// for each child cell do it recursively
+		for (int r = 0 ; r < (int)cellsChildren_[cellID].size() ; r++){
+			markCellsAndFacets(cellsChildren_[cellID][r] , procID);
+		}
+	}
+}
+
+void HNMesh2D::createLeafNumbering_sophisticated(){
+
+	// this array shows which cell will belong to this processor
+	Array<bool> hasCellLID(nrElem_[2],false);
+	double total_load = 0.0;
+	int nrCoarseCell = _res_x * _res_y;
+	Array<int> coarseCellLoad( _res_x * _res_y , 1 );
+
+	// the principle for load is that each cell is one unit load
+	// count the total number of cells which are inside the computational domain and are leaf cells
+	// make a space filling curve traversal and assign each cell to one processor
+	// on the coarser level make a Z-curve traversal, and there for each cell make a recursive traversal
+	// distribute only the coarsest cells, since the tree traversal is not continuous
+	// "elementOwner_" has to be changed!!!
+
+	for (int ind = 0 ; ind < nrElem_[2] ; ind++){
+        if (ind < nrCoarseCell) {
+        	// estimate cells load
+        	coarseCellLoad[ind] = estimateCellLoad(ind);
+        }
+		if ((isCellLeaf_[ind] == true) && (!isCellOut_[ind]) )
+		{ total_load = total_load + 1 ; }
+	}
+
+	SUNDANCE_MSG3(verb() , "total_load = " << total_load << " , nrCell = " << nrElem_[2]);
+
+	// generate the space filling curve traversal for a given level and unit square
+	// and assign the coarsest cells to processors
+	int levelM = ::ceil( ::fmax( ::log2(_res_x) , ::log2(_res_y ) ) );
+	//int unitN = (int)::pow(2, levelM );
+	Array<int> vectX1(4), vectY1(4), vectX2(4), vectY2(4);
+	vectX1[0] = 0; vectX1[1] = (int)::pow(2,levelM-1); vectX1[2] = 0; vectX1[3] = (int)::pow(2,levelM-1);
+	vectY1[0] = 0; vectY1[1] = 0; vectY1[2] = (int)::pow(2,levelM-1); vectY1[3] = (int)::pow(2,levelM-1);
+	vectX2[0] = 0; vectX2[1] = (int)::pow(2,levelM-1); vectX2[2] = 0; vectX2[3] = (int)::pow(2,levelM-1);
+	vectY2[0] = 0; vectY2[1] = 0; vectY2[2] = (int)::pow(2,levelM-1); vectY2[3] = (int)::pow(2,levelM-1);
+	int addX[4] = { 0 , 1 , 0 , 1};
+	int addY[4] = { 0 , 0 , 1 , 1};
+	Array<int> *inX = &vectX1 , *inY = &vectY1 , *outX = &vectX2 , *outY = &vectY2 , *tmpVectP;
+	int levelActual = levelM - 2;
+	// this method generates the index for a unit square Z-curve traversal
+	while (levelActual >= 0){
+		outX->resize( 4 * inX->size() );
+		outY->resize( 4 * inY->size() );
+		int cI = 0 , addO = (int)::pow(2,levelActual);
+		SUNDANCE_MSG3(verb() , " outX->size():" << outX->size() << ", levelActual:" << levelActual << " , addO:" << addO);
+		// here create the 4 recursive cells
+		for (int ce = 0 ; ce < inX->size() ; ce++){
+			(*outX)[cI+0] = (*inX)[ce] + addO*addX[0];
+			(*outX)[cI+1] = (*inX)[ce] + addO*addX[1];
+			(*outX)[cI+2] = (*inX)[ce] + addO*addX[2];
+			(*outX)[cI+3] = (*inX)[ce] + addO*addX[3];
+			(*outY)[cI+0] = (*inY)[ce] + addO*addY[0];
+			(*outY)[cI+1] = (*inY)[ce] + addO*addY[1];
+			(*outY)[cI+2] = (*inY)[ce] + addO*addY[2];
+			(*outY)[cI+3] = (*inY)[ce] + addO*addY[3];
+			cI = cI + 4;
+		}
+		SUNDANCE_MSG3(verb() , " EX: " << (*outX)[0] << " , " << (*outX)[1] << " , " << (*outX)[2]);
+		SUNDANCE_MSG3(verb() , " EY: " << (*outY)[0] << " , " << (*outY)[1] << " , " << (*outY)[2]);
+		// decrease the level
+		levelActual = levelActual - 1;
+		tmpVectP = inX; inX = outX; outX = tmpVectP;
+		tmpVectP = inY; inY = outY; outY = tmpVectP;
+	}
+	// switch the vectors back once we are finished
+	tmpVectP = inX; inX = outX; outX = tmpVectP;
+	tmpVectP = inY; inY = outY; outY = tmpVectP;
+
+	// unmark the cells owners
+	for (int tmp = 0 ; tmp < nrElem_[0] ; tmp++ ){ elementOwner_[0][tmp] = -1; }
+	for (int tmp = 0 ; tmp < nrElem_[1] ; tmp++ ){ elementOwner_[1][tmp] = -1; }
+	for (int tmp = 0 ; tmp < nrElem_[2] ; tmp++ ){ elementOwner_[2][tmp] = -1; }
+
+	//mark the cells, vertex and edge to which cell they belong, recursively for each cell
+	int coarseCellID , actProcID = 0 , actualLoad = 0;
+	double loadPerProc = (double)total_load / (double)nrProc_ , diff_load = 0.0;
+	for (int ind = 0 ; ind < outX->size() ; ind++){
+		// first test the combinaiton if this is in the range
+        if ( ((*outX)[ind] < _res_x) && ((*outY)[ind] < _res_y) ){
+        	// !!!! --- here is very important that we compute the right index
+        	coarseCellID = ((*outX)[ind])*_res_y + ((*outY)[ind]);
+        	SUNDANCE_MSG3(verb(),"Z-curve trav. ind:" << ind << " , coarseCellID:" << coarseCellID << " , indX:" << (*outX)[ind] << " , indY:" << (*outY)[ind]);
+        	//the level of this cell with the ID should be zero
+        	TEUCHOS_TEST_FOR_EXCEPTION( cellLevel_[coarseCellID] > 0 , std::logic_error, " coarseCellID:" << coarseCellID << " has level:" << cellLevel_[coarseCellID] );
+        	markCellsAndFacets( coarseCellID , actProcID);
+        	actualLoad = actualLoad + coarseCellLoad[coarseCellID];
+        	// increment the processor if necessary
+    		if (((double)actualLoad >= (loadPerProc - 1e-8 - diff_load)) && ( actProcID < nrProc_-1 )){
+    			SUNDANCE_MSG3(verb() , "Increase CPU , actualLoad:" << actualLoad << " loadPerProc:" << loadPerProc );
+    			// compensate the load difference for the next CPU
+    			diff_load = actualLoad - loadPerProc;
+    			actProcID = actProcID + 1;
+    			actualLoad = 0;
+    		}
+        }
+	}
+
+	// unmark the cells owners
+	SUNDANCE_MSG3(verb()," nrElem_[0]:" << nrElem_[0] << " , nrElem_[1]:" << nrElem_[1] << " , nrElem_[2]" << nrElem_[2]);
+	for (int tmp = 0 ; tmp < nrElem_[0] ; tmp++ ){ TEUCHOS_TEST_FOR_EXCEPTION( elementOwner_[0][tmp] < 0 , std::logic_error, " 0 tmp:" << tmp); }
+	for (int tmp = 0 ; tmp < nrElem_[1] ; tmp++ ){ TEUCHOS_TEST_FOR_EXCEPTION( elementOwner_[1][tmp] < 0 , std::logic_error, " 1 tmp:" << tmp); }
+	for (int tmp = 0 ; tmp < nrElem_[2] ; tmp++ ){ TEUCHOS_TEST_FOR_EXCEPTION( elementOwner_[2][tmp] < 0 , std::logic_error, " 2 tmp:" << tmp); }
+
+// ==== what comes here is a code duplication from the method above ===========
+	// set all leaf numbers to -1
+	// - iterate trough the mesh and in the leaf cells , distribute leaf numbering
+	// , detect if one cell is leaf ()
+	// , have a tree similar tree traversal ... todo: later
+
+	SUNDANCE_MSG3(verb() , "HNMesh2D::createLeafNumbering nrPoint:" << nrElem_[0] << " , nrEdge:" << nrElem_[1] << ", nrCell:" << nrElem_[2]);
+	// we resize the leafID - > global
+	vertexGIDToLeafMapping_.resize(nrElem_[0],-1);
+	for (int dd = 0 ; dd < nrElem_[0] ; dd++) vertexGIDToLeafMapping_[dd] = -1;
+	vertexLeafToGIDMapping_.resize(nrElem_[0],-1);
+	for (int dd = 0 ; dd < nrElem_[0] ; dd++) vertexLeafToGIDMapping_[dd] = -1;
+
+	edgeGIDToLeafMapping_.resize(nrElem_[1],-1);
+	for (int dd = 0 ; dd < nrElem_[1] ; dd++) edgeGIDToLeafMapping_[dd] = -1;
+	edgeLeafToGIDMapping_.resize(nrElem_[1],-1);
+	for (int dd = 0 ; dd < nrElem_[1] ; dd++) edgeLeafToGIDMapping_[dd] = -1;
+
+	cellGIDToLeafMapping_.resize(nrElem_[2],-1);
+	for (int dd = 0 ; dd < nrElem_[2] ; dd++) cellGIDToLeafMapping_[dd] = -1;
+	cellLeafToGIDMapping_.resize(nrElem_[2],-1);
+	for (int dd = 0 ; dd < nrElem_[2] ; dd++) cellLeafToGIDMapping_[dd] = -1;
+
+	nrVertexLeafGID_ = 0; nrCellLeafGID_ = 0; nrEdgeLeafGID_ = 0;
+
+	nrVertexLeafLID_ = 0; nrCellLeafLID_ = 0; nrEdgeLeafLID_ = 0;
+	vertexLIDToLeafMapping_.resize(nrElem_[0],-1);
+	for (int dd = 0 ; dd < nrElem_[0] ; dd++) vertexLIDToLeafMapping_[dd] = -1;
+	vertexLeafToLIDMapping_.resize(nrElem_[0],-1);
+	for (int dd = 0 ; dd < nrElem_[0] ; dd++) vertexLeafToLIDMapping_[dd] = -1;
+
+	edgeLIDToLeafMapping_.resize(nrElem_[1],-1);
+	for (int dd = 0 ; dd < nrElem_[1] ; dd++) edgeLIDToLeafMapping_[dd] = -1;
+	edgeLeafToLIDMapping_.resize(nrElem_[1],-1);
+	for (int dd = 0 ; dd < nrElem_[1] ; dd++) edgeLeafToLIDMapping_[dd] = -1;
+
+	cellLIDToLeafMapping_.resize(nrElem_[2],-1);
+	for (int dd = 0 ; dd < nrElem_[2] ; dd++) cellLIDToLeafMapping_[dd] = -1;
+	cellLeafToLIDMapping_.resize(nrElem_[2],-1);
+	for (int dd = 0 ; dd < nrElem_[2] ; dd++) cellLeafToLIDMapping_[dd] = -1;
+
+	SUNDANCE_MSG3(verb() , "HNMesh2D::createLeafNumbering , start assigning leaf numbers");
 
 	for (int ind = 0 ; ind < nrElem_[2] ; ind++){
 		Array<int>& vertexIDs = cellsPoints_[ind];

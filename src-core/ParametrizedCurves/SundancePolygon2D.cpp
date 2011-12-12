@@ -41,7 +41,7 @@ using namespace Sundance;
 int Polygon2D::intersectionEdge_ = -1;
 
 Polygon2D::Polygon2D(const Mesh& mesh , const Array<Point>& points , double a1, double a2, bool closedPolygon ,bool flipD ) :
-	CurveBase(1, a2, a1, flipD), hasMesh_(true), closedPolygon_(closedPolygon) , mesh_(&(mesh)) ,
+	CurveBase(1, a2, a1 , flipD), hasMesh_(true), closedPolygon_(closedPolygon) , mesh_(&(mesh)) ,
 	polygonSpaceValues_() , polygonSpaceNames_() , nrScalarField_(0) , isRecording_(false),twinPolygon_(0) // here we twist the alpha parameters for the polygon convention
 {
 	int verb = 0;
@@ -444,7 +444,7 @@ void Polygon2D::returnIntersectPoints(const Point& start, const Point& end, int&
 	nrPoints = 0;
 	result.resize(nrPoints);
 	Point p0 , p1;
-	double eps = 1e-11;
+	double eps = 1e-9;
 
 	// the edge index which will be intersecting as last
 	intersectionEdge_ = -1;

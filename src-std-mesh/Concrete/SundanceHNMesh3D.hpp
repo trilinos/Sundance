@@ -344,6 +344,15 @@ private:
    /** Create Leaf numbering */
    void createLeafNumbering();
 
+   /** Create Leaf numbering, but with a better load balancing for parallel case */
+   void createLeafNumbering_sophisticated();
+
+   /** estimate the load of one cell*/
+   int estimateCellLoad(int ID);
+
+   /** marks the cells recursivly in the tree (and facets) owned by one processor*/
+   void markCellsAndFacets(int cellID , int procID);
+
    /** this updates the array with the local index of vertex, edge and face in the static array <br>
     * this method is only used in the coarse mesh creation */
    void updateLocalCoarseNumbering(int ix , int iy , int iz , int Nx , int Ny);

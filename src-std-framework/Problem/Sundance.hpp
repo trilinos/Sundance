@@ -72,10 +72,12 @@
 #include "SundanceEllipse2D.hpp"
 #include "SundanceSphere.hpp"
 #include "SundancePolygon2D.hpp"
+#include "SundanceTriangleSurf3D.hpp"
 #include "SundanceDummyParametrizedCurve.hpp"
 #include "SundanceParamCurveIntegral.hpp"
 #include "SundanceParametrizedCurve.hpp"
 #include "SundanceCurveIntegralCalc.hpp"
+#include "SundanceCurveCollection.hpp"
 
 /* Meshes */
 #include "SundanceMesh.hpp"
@@ -144,6 +146,7 @@
 #include "SundanceTrapesoidQuadrature.hpp"
 #include "SundanceGaussLobattoQuadrature.hpp"
 #include "SundancePolygonQuadrature.hpp"
+#include "SundanceSurfQuadrature.hpp"
 
 /* Spectral */
 #include "SundanceHermiteSpectralBasis.hpp"

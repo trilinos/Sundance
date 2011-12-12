@@ -11,6 +11,8 @@
 #include "SundanceCellJacobianBatch.hpp"
 #include "SundancePolygon2D.hpp"
 #include "SundancePolygonQuadrature.hpp"
+#include "SundanceSurf3DCalc.hpp"
+#include "SundanceSurfQuadrature.hpp"
 
 using namespace Sundance;
 
@@ -49,8 +51,15 @@ void CurveIntegralCalc::getCurveQuadPoints(CellType  maxCellType ,
 								    quad , curvePoints , curveDerivs , curveNormals);
 	} else {
 		// general curve integral
-		CurveIntegralCalc::getCurveQuadPoints_line( maxCellLID , maxCellType , mesh , maxCellsPoints , paramCurve,
+		if ( use3DSurfQuadrature( maxCellType , mesh ) ){
+			CurveIntegralCalc::getSurfQuadPoints(maxCellLID , maxCellType , mesh , maxCellsPoints , paramCurve,
+					quad , curvePoints , curveDerivs , curveNormals);
+			 //CurveIntegralCalc::getCurveQuadPoints_line( maxCellLID , maxCellType , mesh , maxCellsPoints , paramCurve,
+				//								quad , curvePoints , curveDerivs , curveNormals);
+		} else {
+		    CurveIntegralCalc::getCurveQuadPoints_line( maxCellLID , maxCellType , mesh , maxCellsPoints , paramCurve,
 									quad , curvePoints , curveDerivs , curveNormals);
+		}
 	}
 
 }
@@ -128,7 +137,7 @@ void CurveIntegralCalc::getCurveQuadPoints_line(
 						total_points += nrPoints;
 			    	}
 			    	// if we have more than one intersection point then just ignore that edge
-					TEUCHOS_TEST_FOR_EXCEPTION( nrPoints > 1 ,
+			    	TEUCHOS_TEST_FOR_EXCEPTION( nrPoints > 1 ,
 							std::runtime_error , " CurveIntegralCalc::getCurveQuadPoints , TriangleCell one edge " << jj << " , can have only one intersection point"
 							<< " edgeP0:" << cellPoints[edegIndex[jj][0]] << " edgeP1:" << cellPoints[edegIndex[jj][1]] );
 		    	}
@@ -284,6 +293,7 @@ void CurveIntegralCalc::getCurveQuadPoints_line(
 
 
 		    	// --------- discover the polygon and the triangles-----------
+		    	// todo: what if there is no or only too few intersection points
 		    	int intersTriangleInd = 0;
 		    	int nrTriangles = t_inters_points-2;
 		    	Array<int> triangles(3*nrTriangles,-1);
@@ -326,7 +336,7 @@ void CurveIntegralCalc::getCurveQuadPoints_line(
 			    			break;
 		    		}
 		    	}
-		        TEUCHOS_TEST_FOR_EXCEPTION( intPointProc < 0 , std::runtime_error,"getCurveQuadPoints , intPointProc < 0 , " << intPointProc );
+		    	TEUCHOS_TEST_FOR_EXCEPTION( intPointProc < 0 , std::runtime_error,"getCurveQuadPoints , intPointProc < 0 , " << intPointProc );
 		    	// store this as act. point and get the next one(which is not neighbor to "minIndex") which is not the one which we already had
 		        // here we create all triangles, by traversing the polygon in one direction, so that the mapping will be continous
 		        for (int pI = 0 ; pI < nrTriangles; pI++)
@@ -647,7 +657,7 @@ void CurveIntegralCalc::getCurveQuadPoints_polygon(
 		return;
 	}
 
-	// the algorithm is to ceate separate line segments
+	// the algorithm is to create separate line segments
 	//(P1,P2,d1),(P2,P3,d2),(P4,P5,d3) ... d1,d2,d3 are normalized lengths
 	// see these line segments as one continuous line and maps the quadrature points on the segments
 
@@ -657,7 +667,7 @@ void CurveIntegralCalc::getCurveQuadPoints_polygon(
 	int nrPoints , total_points , polyNrPoint ;
 	Tabs tabs;
 	int verb = 0;
-	double eps = 1e-15;
+	double eps = 1e-14;
 
 	SUNDANCE_MSG3(verb, " ---------- START METHOD -----------  ");
 
@@ -666,7 +676,7 @@ void CurveIntegralCalc::getCurveQuadPoints_polygon(
 	  case QuadCell:{
 	  	// loop over each edge and detect intersection point
 	   	// there can be only one
-	   	TEUCHOS_TEST_FOR_EXCEPTION( cellPoints.size() != 4 ,
+		TEUCHOS_TEST_FOR_EXCEPTION( cellPoints.size() != 4 ,
 	   			std::runtime_error ," CurveIntegralCalc::getCurveQuadPoints , QuadCell must have 4 points" );
 		//SUNDANCE_MSG3(verb, tabs << "CurveIntegralCalc::getCurveQuadPoints_line, on QuadCell")
 	   	Array<Point> result(5);
@@ -721,6 +731,21 @@ void CurveIntegralCalc::getCurveQuadPoints_polygon(
 	Array<Point> segmentEnd(0);
 	int segmentNr = 0 , flagMode , edgeActual = 0;
 	Array<bool> usedIntPoint( total_points , false );
+
+	// todo:
+	if (total_points < 2) {
+		std::cout << "total_points = " << total_points << " , P0:" << allIntPoints[0] << std::endl;
+	}
+	if (total_points == 3) {
+		std::cout << "total_points = " << total_points << "P0:" << allIntPoints[0] <<
+				" , P1:" << allIntPoints[1] << " , P2:" << allIntPoints[2] << std::endl;
+		total_points = 2;
+	}
+	if (total_points > 4) {
+		std::cout << "total_points = " << total_points << "P0:" << allIntPoints[0] << " , P1:" << allIntPoints[1]
+		       << " , P2:" << allIntPoints[2] << " , P3:" << allIntPoints[3] << std::endl;
+		total_points = 4;
+	}
 
 	TEUCHOS_TEST_FOR_EXCEPTION( (total_points != 2) && (total_points != 4) , std::runtime_error , "nr Intersect point can be eighter 2 or 4 but is " << total_points);
 
@@ -924,5 +949,96 @@ void CurveIntegralCalc::getCurveQuadPoints_polygon(
 		curveNormals[ii] = Point( 0.0 , 0.0 );
 	}
 
+	SUNDANCE_MSG3(verb, " ---------- END METHOD -----------  ");
+}
+
+
+void CurveIntegralCalc::getSurfQuadPoints(
+                               int  maxCellLID ,
+                               CellType  maxCellType ,
+                               const Mesh& mesh ,
+                               const Array<Point>& cellPoints,
+							   const ParametrizedCurve& paramCurve,
+							   const QuadratureFamily& quad ,
+							   Array<Point>& curvePoints ,
+							   Array<Point>& curveDerivs ,
+							   Array<Point>& curveNormals ) {
+
+	const SurfQuadrature* surfquad = dynamic_cast<const SurfQuadrature*> (quad.ptr().get());
+	if ( surfquad == 0 ) {
+		TEUCHOS_TEST_FOR_EXCEPTION( true , std::runtime_error ,
+			" getSurfQuadPoints , Surface Quadrature for a 3D must be SurfQuadrature" );
+		return;
+	}
+
+	Array<Point> quadPoints;
+	Array<double> quadWeights;
+	surfquad->getPoints( TriangleCell , quadPoints , quadWeights );
+	int nr_quad_points = quadPoints.size();
+	int maxTriangles = SurfQuadrature::getNrMaxTrianglePerCell();
+	int nrQuadPointPerTriag = nr_quad_points/maxTriangles;
+	int verb = 0;
+	curvePoints.resize(nr_quad_points);
+	curveDerivs.resize(nr_quad_points);
+	curveNormals.resize(nr_quad_points);
+
+	Array<Point> intersectPoints;
+	Array<int> edgeIndex;
+	Array<int> triangleIndex;
+    // the results in this form will be in physical coordinates
+	SundanceSurf3DCalc::getCurveQuadPoints( maxCellType , maxCellLID , mesh , paramCurve, cellPoints,
+						 intersectPoints ,  edgeIndex , triangleIndex );
+
+	int  nr_triag = triangleIndex.size()/3  ,  qind = 0;
+	double totalArea = 0.0 , area;
+	// first compute the total area of all triangles
+	for (int t = 0 ; t < nr_triag ; t++){
+		// for each triangle
+		Point p0 = intersectPoints[triangleIndex[3*t]];
+		Point p1 = intersectPoints[triangleIndex[3*t + 1]];
+		Point p2 = intersectPoints[triangleIndex[3*t + 2]];
+		Point n = cross(p1-p0,p2-p0);
+		totalArea = totalArea + ::sqrt(n*n);
+	}
+
+
+	SUNDANCE_MSG3(verb, " nr_triag = " << nr_triag);
+	// for each resulted triangles compute the quadrature points and the normal
+	for (int t = 0 ; t < nr_triag ; t++){
+		// for each triangle
+		Point p0 = intersectPoints[triangleIndex[3*t]];
+		Point p1 = intersectPoints[triangleIndex[3*t + 1]];
+		Point p2 = intersectPoints[triangleIndex[3*t + 2]];
+
+		Point n = cross(p1-p0,p2-p0);
+		// calculate area
+		area = ::sqrt(n*n); // / 2.0; -> no division by two
+		// invert the normal vector if necessary
+		if ( paramCurve.curveEquation( p0 + 5e-3*n ) > 0 ) { n = (-1)*n; }
+		n = (1/::sqrt(n*n))*n; // normalize the normal vector
+
+		// for each quadrature point on this triangle
+		//SUNDANCE_MSG3(verb, " p0 = " << p0 << " , p1 = " << p1 << " , p2 = " << p2 );
+		//SUNDANCE_MSG3(verb, " area = " << area << " , n = " << n );
+		for (int q = 0 ; q < nrQuadPointPerTriag ; q++ , qind++){
+			// this is the point in real coordinates
+			Point pTmp = p0 + quadPoints[qind][0] * (p1-p0) + quadPoints[qind][1] * (p2-p0);
+			//SUNDANCE_MSG3(verb, "REAL curvePoints["<<qind<<"]=" << pTmp );
+			// here we transform it to reference coordinates
+			curvePoints[qind] = Point( (pTmp[0] -  cellPoints[0][0])/(cellPoints[7][0] - cellPoints[0][0]),
+					                   (pTmp[1] -  cellPoints[0][1])/(cellPoints[7][1] - cellPoints[0][1]),
+					                   (pTmp[2] -  cellPoints[0][2])/(cellPoints[7][2] - cellPoints[0][2]) );
+			//SUNDANCE_MSG3(verb, "REF curvePoints["<<qind<<"]=" << curvePoints[qind] );
+			curveDerivs[qind] = Point( area * ((double)maxTriangles) , 0.0 , 0.0 );
+			curveNormals[qind] = n;
+		}
+	}
+
+	// the rest of the quadrature points we set to zero
+	for ( ; qind < nr_quad_points ; qind++){
+		curvePoints[qind] = Point( 0 , 0 , 0 );
+		curveDerivs[qind] = Point( 0 , 0 , 0 );
+		curveNormals[qind] = Point( 0 , 0 , 0 );
+	}
 	SUNDANCE_MSG3(verb, " ---------- END METHOD -----------  ");
 }
