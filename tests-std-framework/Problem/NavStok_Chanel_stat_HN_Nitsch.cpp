@@ -249,7 +249,7 @@ int main(int argc, char** argv)
       NOXSolver solver(noxParams);
 
       // Solve the nonlinear system
-      NOX::StatusTest::StatusType status = prob.solve(solver);
+      SolverState<double> status = prob.solve(solver);
 
       DiscreteSpace discreteSpace(mesh, List( L1 , L1 ), vecType);
       L2Projector projector(discreteSpace, grad*up[2]);

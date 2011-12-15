@@ -757,7 +757,7 @@ public:
     }
   
   /** */
-  NOX::StatusTest::StatusType solve(const NonlinearOperator<double>& F, 
+  SolverState<double> solve(const NonlinearOperator<double>& F, 
     Vector<double>& soln) const ;
 
   /** */

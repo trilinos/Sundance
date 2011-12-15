@@ -15,13 +15,13 @@ namespace Playa
 using namespace Teuchos;
 
 /** 
- *
+ * SolverStatusCode is an enum that encapsulates whether a solver succeeded or failed
  */
 enum SolverStatusCode {SolveCrashed, SolveFailedToConverge, SolveConverged};
 
 
 /**
- *
+ * SolverState provides information about the result of a linear or nonlinear solve
  */
 template <class Scalar>
 class SolverState

@@ -79,8 +79,8 @@ double runRadDiff1D(int nx, int p, double* hMean)
   NOXSolver solver(noxParams, linSolver);
   
   // Solve the nonlinear system
-  NOX::StatusTest::StatusType status = prob.solve(solver);
-  TEUCHOS_TEST_FOR_EXCEPTION(status != NOX::StatusTest::Converged,
+  SolverState<double> status = prob.solve(solver);
+  TEUCHOS_TEST_FOR_EXCEPTION(status.finalState() != SolveConverged,
     runtime_error, "solve failed");
 
   /* check solution */

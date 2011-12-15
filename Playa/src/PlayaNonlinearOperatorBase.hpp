@@ -57,7 +57,7 @@ public:
     {return range_;}
 
   /** Set the evaluation point */
-  void setEvalPt(const Vector<Scalar>& x)
+  void setEvalPt(const Vector<Scalar>& x) const 
     {
       if (this->verb() >= 1)
       {
@@ -190,7 +190,7 @@ private:
   mutable bool residualIsValid_;
 
   /** */
-  Vector<double> currentEvalPt_;
+  mutable Vector<double> currentEvalPt_;
 
   /** */
   mutable Vector<double> currentFunctionValue_;

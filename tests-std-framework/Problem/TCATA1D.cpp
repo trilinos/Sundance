@@ -180,7 +180,7 @@ int main(int argc, char** argv)
       NOX::Solver::Manager solver(grp, statusTestsCombo, solverParameters);
 
       // Solve the nonlinear system
-      NOX::StatusTest::StatusType status = solver.solve();
+      SolverState<double> status = solver.solve();
 
       // Print the answer
       cout << "\n" << "-- Parameter List From Solver --" << "\n";

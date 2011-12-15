@@ -142,7 +142,7 @@ int main(int argc, char** argv)
       NOXSolver solver(noxParams);
 
       // Solve the nonlinear system
-      NOX::StatusTest::StatusType status = prob.solve(solver);
+      SolverState<double> status = prob.solve(solver);
 
       // Write the field in VTK format
       FieldWriter w = new VTKWriter("NavStok_Chanel_box_stat");

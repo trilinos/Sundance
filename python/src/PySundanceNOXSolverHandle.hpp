@@ -18,7 +18,7 @@ namespace Playa
       : ptr_(ptr) {;}
 
     /** */
-    NOX::StatusTest::StatusType solve() const {return ptr_->solve();}
+    SolverState<double> solve() const {return ptr_->solve();}
 
   private:
     Teuchos::RCP<NOXSolver> ptr_;

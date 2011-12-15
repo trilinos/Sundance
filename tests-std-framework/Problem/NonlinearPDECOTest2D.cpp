@@ -110,8 +110,8 @@ int main(int argc, char** argv)
 
       NOXSolver solver(noxParams);
       
-      NOX::StatusTest::StatusType status = prob.solve(solver);
-      TEUCHOS_TEST_FOR_EXCEPTION(status != NOX::StatusTest::Converged,
+      SolverState<double> status = prob.solve(solver);
+      TEUCHOS_TEST_FOR_EXCEPTION(status.finalState() != SolveConverged,
         runtime_error, "solve failed");
 
 

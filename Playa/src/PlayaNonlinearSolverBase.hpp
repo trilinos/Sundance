@@ -10,38 +10,41 @@
 
 namespace Playa
 {
-  using namespace Teuchos;
+using namespace Teuchos;
+template<class Scalar>
+class NonlinearOperator;
 
-  /*! \brief Here I am
-   *
-   */
-  template <class Scalar>
-  class NonlinearSolverBase 
-  {
-  public:
-    /** */
-    NonlinearSolverBase(const ParameterList& params = ParameterList());
+/**
+ * Base interface for nonlinear solvers
+ */
+template <class Scalar>
+class NonlinearSolverBase : public Handleable<NonlinearSolverBase<Scalar> >
+{
+public:
+  /** */
+  NonlinearSolverBase(const ParameterList& params = ParameterList());
 
-    /** */
-    virtual ~NonlinearSolverBase(){;}
+  /** */
+  virtual ~NonlinearSolverBase(){;}
 
-    /** */
-    virtual Vector<double> solve() const = 0  ;
+  /** */
+  virtual SolverState<Scalar> solve(const NonlinearOperator<Scalar>& F,
+    Vector<Scalar>& soln) const = 0  ;
 
-  protected:
+protected:
 
-    const ParameterList& params() const {return params_;}
+  const ParameterList& params() const {return params_;}
 
-  private:
-    ParameterList params_;
-  };
+private:
+  ParameterList params_;
+};
 
   
-  template <class Scalar> inline
-  NonlinearSolverBase<Scalar>
-  ::NonlinearSolverBase(const ParameterList& params)
-    : params_(params)
-  {;}
+template <class Scalar> inline
+NonlinearSolverBase<Scalar>
+::NonlinearSolverBase(const ParameterList& params)
+  : params_(params)
+{;}
   
 }
 

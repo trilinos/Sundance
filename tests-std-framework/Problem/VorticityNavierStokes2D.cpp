@@ -143,8 +143,8 @@ int main(int argc, char** argv)
           std::cerr << " reynolds = " << reynolds << std::endl;
           std::cerr << "--------------------------------------------------------- " << std::endl;
           // Solve the nonlinear system
-          NOX::StatusTest::StatusType status = prob.solve(solver);
-          TEUCHOS_TEST_FOR_EXCEPTION(status != NOX::StatusTest::Converged,
+          SolverState<double> status = prob.solve(solver);
+          TEUCHOS_TEST_FOR_EXCEPTION(status.finalState() != SolveConverged,
             runtime_error, "solve failed");
 
           /* Write the field in VTK format */

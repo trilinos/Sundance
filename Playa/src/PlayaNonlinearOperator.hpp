@@ -32,7 +32,7 @@ public:
     {return this->ptr()->range();}
 
   /** */
-  void setEvalPt(const Vector<double>& evalPt)
+  void setEvalPt(const Vector<double>& evalPt) const 
     {
       this->ptr()->setEvalPt(evalPt);
     }

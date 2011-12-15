@@ -36,6 +36,8 @@ bool inlineNewtonSolve(NonlinearProblem prob,
 
 bool noxNewtonSolve(const NonlinearProblem& prob, Expr uNewt);
 
+bool playaNewtonArmijoSolve(const NonlinearProblem& prob, Expr uNewt);
+
 int main(int argc, char** argv)
 {
   try
@@ -102,7 +104,7 @@ int main(int argc, char** argv)
       }
       else
       {
-        nonlinSolveOK = inlineNewtonSolve(prob, uNewt, 10, 1.0e-10);
+        nonlinSolveOK = playaNewtonArmijoSolve(prob, uNewt);
       }
       
       TEUCHOS_TEST_FOR_EXCEPT(!nonlinSolveOK);
@@ -172,7 +174,28 @@ bool noxNewtonSolve(const NonlinearProblem& prob, Expr uNewt)
   ParameterList solverParams = reader.getParameters();
   NOXSolver solver(solverParams);
   
-  NOX::StatusTest::StatusType stat = prob.solve(solver);
+  SolverState<double> stat = prob.solve(solver);
 
-  return stat==NOX::StatusTest::Converged;
+  return stat.finalState()==SolveConverged;
+}
+
+bool playaNewtonArmijoSolve(const NonlinearProblem& prob, Expr uNewt)
+{
+  /* Use the Playa Newton-Armijo nonlinear solver */
+  LinearSolver<double> linSolver = LinearSolverBuilder::createSolver("amesos.xml");
+  ParameterList solverParams("NewtonArmijoSolver");
+  solverParams.set("Tau Relative", 1.0e-12);
+  solverParams.set("Tau Absolute", 1.0e-12);
+  solverParams.set("Alpha", 1.0e-4);
+  solverParams.set("Verbosity", 3);
+
+  NonlinearSolver<double> solver = new NewtonArmijoSolver<double>(solverParams, linSolver);
+  
+  SolverState<double> stat = prob.solve(solver);
+  if (stat.finalState() != SolveConverged)
+  {
+    Out::os() << stat.finalMsg() << endl;
+  }
+
+  return stat.finalState()==SolveConverged;
 }

@@ -113,8 +113,8 @@ int main(int argc, char** argv)
           std::cerr << " solving at eccentricity = " << ecc << std::endl;
           std::cerr << "--------------------------------------------------------- " << std::endl;
           // Solve the nonlinear system
-          NOX::StatusTest::StatusType status = nlp.solve(solver);
-          TEUCHOS_TEST_FOR_EXCEPTION(status != NOX::StatusTest::Converged,
+          SolverState<double> status = nlp.solve(solver);
+          TEUCHOS_TEST_FOR_EXCEPTION(status.finalState() != SolveConverged,
             runtime_error, "solve failed");
           
 

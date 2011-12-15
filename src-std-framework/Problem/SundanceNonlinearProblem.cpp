@@ -99,13 +99,26 @@ NonlinearProblem::NonlinearProblem(const RCP<Assembler>& assembler,
 
 
 
-NOX::StatusTest::StatusType
+SolverState<double>
 NonlinearProblem::solve(const NOXSolver& solver) const
 {
   RCP<NonlinearOperatorBase<double> > op = op_;
   NonlinearOperator<double> F = op;
   Vector<double> soln;
-  NOX::StatusTest::StatusType rtn = solver.solve(F, soln);
+  SolverState<double> rtn = solver.solve(F, soln);
+  F.setEvalPt(soln);
+  return rtn;
+}
+
+
+
+SolverState<double>
+NonlinearProblem::solve(const NonlinearSolver<double>& solver) const
+{
+  RCP<NonlinearOperatorBase<double> > op = op_;
+  NonlinearOperator<double> F = op;
+  Vector<double> soln;
+  SolverState<double> rtn = solver.solve(F, soln);
   F.setEvalPt(soln);
   return rtn;
 }

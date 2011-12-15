@@ -190,6 +190,8 @@
 #include "NOX_Common.H"
 #include "NOX_Utils.H"
 #include "PlayaNOXSolver.hpp"
+#include "PlayaNewtonArmijoSolverDecl.hpp"
+#include "PlayaNonlinearSolver.hpp"
 
 /* Eigensolvers */
 #include "PlayaAnasaziEigensolverDecl.hpp"

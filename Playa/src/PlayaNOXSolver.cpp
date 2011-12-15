@@ -131,7 +131,7 @@ NOXSolver::NOXSolver(const ParameterList& nonlinParams,
 
 
 
-NOX::StatusTest::StatusType 
+SolverState<double>
 NOXSolver::solve(const NonlinearOperator<double>& F, 
                  Playa::Vector<double>& solnVec) const 
 {
@@ -146,11 +146,17 @@ NOXSolver::solve(const NonlinearOperator<double>& F,
 
   NOX::StatusTest::StatusType rtn = solver->solve();
 
+
   const NOX::NOXPlaya::Group* solnGrp 
     = dynamic_cast<const NOX::NOXPlaya::Group*>(&(solver->getSolutionGroup()));
 
   TEUCHOS_TEST_FOR_EXCEPTION(solnGrp==0, runtime_error,
                      "Solution group could not be cast to NOX::NOXPlaya::Group");
+
+  double resid = solnGrp->getNormF();
+  int itersUsed = solver->getNumIterations();
+
+
 
   const NOX::NOXPlaya::Vector* x 
     = dynamic_cast<const NOX::NOXPlaya::Vector*>(&(solnGrp->getX()));
@@ -160,5 +166,17 @@ NOXSolver::solve(const NonlinearOperator<double>& F,
   
   solnVec = x->getPlayaVector();
 
-  return rtn;
+  if (rtn==NOX::StatusTest::Converged)
+  {
+    return SolverState<double>(SolveConverged, "Solve converged", itersUsed, resid);
+  }
+  else if (rtn==NOX::StatusTest::Unconverged)
+  {
+    return SolverState<double>(SolveFailedToConverge, "Solve failed to converge", itersUsed, resid);
+  }
+  else
+  {
+    return SolverState<double>(SolveCrashed, "Solve crashed", itersUsed, resid);
+  }
+
 }

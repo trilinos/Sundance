@@ -157,9 +157,9 @@ void NonlinearPDEConstrainedObj::solveState(const Vector<double>& x) const
   for (int i=0; i<stateProbs_.size(); i++)
   {
     PLAYA_MSG3(verb(), tab << "state eqn=" << i); 
-    NOX::StatusTest::StatusType status 
+    SolverState<double> status 
       = stateProbs_[i].solve(solver_);
-    TEUCHOS_TEST_FOR_EXCEPTION(status != NOX::StatusTest::Converged,
+    TEUCHOS_TEST_FOR_EXCEPTION(status.finalState() != SolveConverged,
       std::runtime_error,
       "state equation could not be solved: status="
       << status);
@@ -188,13 +188,13 @@ void NonlinearPDEConstrainedObj
   for (int i=0; i<stateProbs_.size(); i++)
   {
     PLAYA_MSG3(verb(), tab << "state eqn=" << i); 
-    NOX::StatusTest::StatusType status 
+    SolverState<double> status 
       = stateProbs_[i].solve(solver_);
 
     /* if the solve failed, write out the design var and known state
      * variables */
     bool dumpBadSolve = false;
-    if (dumpBadSolve && status != NOX::StatusTest::Converged)
+    if (dumpBadSolve && status.finalState() != SolveConverged)
     {
       FieldWriter w = new VTKWriter("badSolve");
       w.addMesh(Lagrangian().mesh());
@@ -210,7 +210,7 @@ void NonlinearPDEConstrainedObj
       }
       w.write();
     }
-    TEUCHOS_TEST_FOR_EXCEPTION(status != NOX::StatusTest::Converged,
+    TEUCHOS_TEST_FOR_EXCEPTION(status.finalState() != SolveConverged,
       std::runtime_error,
       "state equation " << i 
       << " could not be solved: status="

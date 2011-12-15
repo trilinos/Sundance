@@ -128,8 +128,11 @@ APPEND_SET(HEADERS
   PlayaMPISession.hpp
   PlayaMultiVectorOperatorDecl.hpp
   PlayaMultiVectorOperatorImpl.hpp
+  PlayaNewtonArmijoSolverDecl.hpp
+  PlayaNewtonArmijoSolverImpl.hpp
   PlayaNonlinearOperator.hpp
   PlayaNonlinearOperatorBase.hpp
+  PlayaNonlinearSolver.hpp
   PlayaNonlinearSolverBase.hpp
   PlayaNOXSolver.hpp
   PlayaObjectiveBase.hpp
@@ -253,6 +256,7 @@ APPEND_SET(SOURCES
   PlayaMPIComm.cpp
   PlayaMPISession.cpp
   PlayaMultiVectorOperator.cpp
+  PlayaNewtonArmijoSolver.cpp
   PlayaNOXSolver.cpp
   PlayaOut.cpp
   PlayaObjectiveBase.cpp

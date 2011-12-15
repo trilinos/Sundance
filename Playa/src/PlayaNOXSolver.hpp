@@ -6,6 +6,7 @@
 #define PLAYA_NOXSOLVER_HPP
 
 #include "PlayaDefs.hpp"
+#include "PlayaNonlinearSolverBase.hpp"
 #include "NOX.H"
 #include "NOX_Common.H"
 #include "NOX_Utils.H"
@@ -17,38 +18,41 @@
 
 namespace Playa
 {
-  using namespace Teuchos;
+using namespace Teuchos;
 
-  /**
-   *
-   */
-  class NOXSolver 
-  {
-  public:
-    /** */
-    NOXSolver(){;}
-    /** */
-    NOXSolver(const ParameterList& params);
-    /** */
-    NOXSolver(const ParameterList& nonlinParams,
-      const LinearSolver<double>& linSolver);
+/**
+ * Playa wrapper for NOX solver
+ */
+class NOXSolver : public NonlinearSolverBase<double>
+{
+public:
+  /** */
+  NOXSolver(){;}
+  /** */
+  NOXSolver(const ParameterList& params);
+  /** */
+  NOXSolver(const ParameterList& nonlinParams,
+    const LinearSolver<double>& linSolver);
 
-    /** */
-    NOX::StatusTest::StatusType solve(const NonlinearOperator<double>& F, 
-      Vector<double>& soln) const ;
+  /** */
+  SolverState<double>  solve(const NonlinearOperator<double>& F, 
+    Vector<double>& soln) const ;
 
-    /** */
-    const LinearSolver<double>& linSolver() const 
-      {return linSolver_;}
+  /** */
+  const LinearSolver<double>& linSolver() const 
+    {return linSolver_;}
+
+  /* */
+  GET_RCP(NonlinearSolverBase<double>);
 
 
-  private:
+private:
 
-    LinearSolver<double> linSolver_;
-    mutable RCP<NOX::StatusTest::Generic> statusTest_;
-    mutable ParameterList params_;
-    mutable ParameterList printParams_;
-  };
+  LinearSolver<double> linSolver_;
+  mutable RCP<NOX::StatusTest::Generic> statusTest_;
+  mutable ParameterList params_;
+  mutable ParameterList printParams_;
+};
 }
 
 #endif

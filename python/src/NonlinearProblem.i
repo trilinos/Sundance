@@ -50,7 +50,7 @@ public:
   Sundance::Expr computeSensitivities(const Playa::LinearSolver<double>& solver) const ;
 
   /** Solve the nonlinear problem */
-  NOX::StatusTest::StatusType solve(const Playa::NOXSolver& solver) const ;
+  SolverState<double> solve(const Playa::NOXSolver& solver) const ;
 
   /** Return the current evaluation point as a Sundance expression */
   Sundance::Expr getU0() const ;
