@@ -192,6 +192,9 @@
 #include "PlayaNOXSolver.hpp"
 #include "PlayaNewtonArmijoSolverDecl.hpp"
 #include "PlayaNonlinearSolver.hpp"
+#ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
+#include "PlayaNewtonArmijoSolverImpl.hpp"
+#endif
 
 /* Eigensolvers */
 #include "PlayaAnasaziEigensolverDecl.hpp"
