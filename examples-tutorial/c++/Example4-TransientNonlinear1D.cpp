@@ -114,7 +114,7 @@ int main(int argc, char** argv)
       double newtTol = 1.0e-12;
 
       /* Wrtie the initial conditions */
-      FieldWriter w = new MatlabWriter("transientNonlinear1D-0.dat"); 
+      FieldWriter w = new DSVWriter("transientNonlinear1D-0.dat"); 
       w.addMesh(mesh);
       w.addField("u", new ExprFieldWrapper(uPrev[0]));
       w.write();

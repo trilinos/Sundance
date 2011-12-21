@@ -158,6 +158,13 @@ Vector<double> getDiscreteFunctionVector(const Expr& u);
  */
 void setDiscreteFunctionVector(Expr u, const Vector<double>& v);
 
+
+/** \relates DiscreteFunction
+ * Get the mesh underlying a discrete function 
+ */
+Mesh getDiscreteFunctionMesh(const Expr& u);
+
+
 }
 
 

@@ -28,77 +28,55 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_VTKWRITER_H
-#define SUNDANCE_VTKWRITER_H
-
-
-#include "SundanceDefs.hpp"
-#include "SundanceFieldWriterBase.hpp"
+#include "SundanceTransientStepProblem.hpp"
+#include "PlayaOut.hpp"
+#include "PlayaTabs.hpp"
 
 namespace Sundance
 {
-/**
- * VTKWriter writes a mesh or fields to a VTK file
- */
-class VTKWriter : public FieldWriterBase
+
+TransientStepProblem::TransientStepProblem(
+    const NonlinearProblem& stepProb, 
+    const Expr& tPrev, const Expr& uPrev, 
+    const Expr& tNext, const Expr& uNext,
+    const Expr& dt,
+    int verbosity
+    )
+  : prob_(stepProb),
+    tPrev_(tPrev),
+    tNext_(tNext),
+    uPrev_(uPrev),
+    uNext_(uNext),
+    dt_(dt),
+    verb_(verbosity)
 {
-public:
-  /** */
-  VTKWriter(const std::string& filename="") 
-    : FieldWriterBase(filename) {;}
-    
-  /** virtual dtor */
-  virtual ~VTKWriter(){;}
-
-  /** */
-  virtual void write() const ;
-
-  /** Return a ref count pointer to self */
-  virtual RCP<FieldWriterBase> getRcp() {return rcp(this);}
-
-
-private:
-  /** */
-  void lowLevelWrite(const std::string& filename, bool isPHeader) const ;
-
-  /** */
-  void writePoints(std::ostream& os, bool isPHeader) const ;
-
-  /** */
-  void writeCells(std::ostream& os) const ;
-
-  /** */
-  void writePointData(std::ostream& os, bool isPHeader) const ;
-
-  /** */
-  void writeCellData(std::ostream& os, bool isPHeader) const ;
-
-  /** */
-  void writeDataArray(std::ostream& os, const std::string& name,
-    const RCP<FieldBase>& expr, bool isPHeader, bool isPointData) const ;
-};
-
-/** 
- * Create a VTKWriter 
- */
-class VTKWriterFactory : public FieldWriterFactoryBase
-{
-public:
-  /** */
-  VTKWriterFactory() {}
-
-  /** Create a writer with the specified filename */
-  RCP<FieldWriterBase> createWriter(const string& name) const 
-    {return rcp(new VTKWriter(name));}
-
-  /** */
-  virtual RCP<FieldWriterFactoryBase> getRcp() {return rcp(this);}
-  
-};
-
 }
 
+bool TransientStepProblem::step(
+  double tCur, const Expr& uCur,
+  double tNext, Expr uNext,
+  const NonlinearSolver<double>& solver) const
+{
+  Tabs tab;
+  
+  PLAYA_MSG1(verb_, tab << "step from t=" << tCur << " to " << tNext);
+  tPrev_.setParameterValue(tCur);
+  tNext_.setParameterValue(tNext);
+  dt_.setParameterValue(tNext-tCur);
 
+  PLAYA_MSG2(verb_, tab << "updating uPrev");
+  updateDiscreteFunction(uCur, uPrev_);
 
+  PLAYA_MSG2(verb_, tab << "updating uNext");
+  updateDiscreteFunction(uNext, uNext_);
 
-#endif
+  PLAYA_MSG2(verb_, tab << "Solving NLP");
+  SolverState<double> state = prob_.solve(solver);
+
+  PLAYA_MSG2(verb_, tab << "Updating solution");
+  updateDiscreteFunction(uNext_, uNext);
+
+  return state.finalState() == SolveConverged;
+}
+
+}

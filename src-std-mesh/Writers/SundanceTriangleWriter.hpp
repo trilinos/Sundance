@@ -37,49 +37,69 @@
 
 namespace Sundance
 {
-  /**
-   * TriangleWriter writes a mesh or fields to a file
-   * in Shewchuk's Triangle format.
-   */
-  class TriangleWriter : public FieldWriterBase
-  {
-  public:
-    /** */
-    TriangleWriter(const std::string& filename="", int indexOffset=0) 
-      : FieldWriterBase(filename), indexOffset_(indexOffset) {;}
+/**
+ * TriangleWriter writes a mesh or fields to a file
+ * in Shewchuk's Triangle format.
+ */
+class TriangleWriter : public FieldWriterBase
+{
+public:
+  /** */
+  TriangleWriter(const std::string& filename="", int indexOffset=0) 
+    : FieldWriterBase(filename), indexOffset_(indexOffset) {;}
     
-    /** virtual dtor */
-    virtual ~TriangleWriter(){;}
+  /** virtual dtor */
+  virtual ~TriangleWriter(){;}
 
-    /** */
-    virtual void write() const ;
+  /** */
+  virtual void write() const ;
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-    /** Return a ref count pointer to self */
-    virtual RCP<FieldWriterBase> getRcp() {return rcp(this);}
-#endif /* DOXYGEN_DEVELOPER_ONLY */
+  /** Return a ref count pointer to self */
+  virtual RCP<FieldWriterBase> getRcp() {return rcp(this);}
 
-  protected:
-    /** */
-      void writePoints(const std::string& filename) const ;
+protected:
+  /** */
+  void writePoints(const std::string& filename) const ;
 
-    /** */
-    void writeCells(const std::string& filename) const ;
+  /** */
+  void writeCells(const std::string& filename) const ;
     
-    /** */
-    void writeEdges(const std::string& filename) const ;
+  /** */
+  void writeEdges(const std::string& filename) const ;
     
-    /** */
-    void writeFaces(const std::string& filename) const ;
+  /** */
+  void writeFaces(const std::string& filename) const ;
     
-    /** */
-    void writeHeader(const std::string& filename) const ;
+  /** */
+  void writeHeader(const std::string& filename) const ;
     
-    /** */
-    void writeParallelInfo(const std::string& filename) const ;
+  /** */
+  void writeParallelInfo(const std::string& filename) const ;
     
-    int indexOffset_;
-  };
+  int indexOffset_;
+};
+
+/** 
+ * TriangleWriterFactory produces an Triangle writer in contexts where a user cannot
+ * do so directly.
+ */
+class TriangleWriterFactory : public FieldWriterFactoryBase
+{
+public:
+  /** */
+  TriangleWriterFactory() {}
+
+  /** Create a writer with the specified filename */
+  RCP<FieldWriterBase> createWriter(const string& name) const 
+    {return rcp(new TriangleWriter(name));}
+
+  /** */
+  virtual RCP<FieldWriterFactoryBase> getRcp() {return rcp(this);}
+  
+};
+
+
+
 }
 
 

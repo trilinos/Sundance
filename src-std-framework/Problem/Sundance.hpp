@@ -128,7 +128,8 @@
 
 /* Writers */
 #include "SundanceFieldWriter.hpp"
-#include "SundanceMatlabWriter.hpp"
+#include "SundanceMatlabWriter.hpp" // deprecated
+#include "SundanceDSVWriter.hpp"
 #include "SundanceVerboseFieldWriter.hpp"
 #include "SundanceTriangleWriter.hpp"
 #include "SundanceVTKWriter.hpp"
@@ -190,11 +191,8 @@
 #include "NOX_Common.H"
 #include "NOX_Utils.H"
 #include "PlayaNOXSolver.hpp"
-#include "PlayaNewtonArmijoSolverDecl.hpp"
 #include "PlayaNonlinearSolver.hpp"
-#ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
-#include "PlayaNewtonArmijoSolverImpl.hpp"
-#endif
+
 
 /* Eigensolvers */
 #include "PlayaAnasaziEigensolverDecl.hpp"

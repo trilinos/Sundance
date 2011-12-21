@@ -28,77 +28,16 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_VTKWRITER_H
-#define SUNDANCE_VTKWRITER_H
+#include "SundanceFieldWriterFactory.hpp"
 
 
-#include "SundanceDefs.hpp"
-#include "SundanceFieldWriterBase.hpp"
 
 namespace Sundance
 {
-/**
- * VTKWriter writes a mesh or fields to a VTK file
- */
-class VTKWriter : public FieldWriterBase
+
+FieldWriter FieldWriterFactory::createWriter(const string& filename) const
 {
-public:
-  /** */
-  VTKWriter(const std::string& filename="") 
-    : FieldWriterBase(filename) {;}
-    
-  /** virtual dtor */
-  virtual ~VTKWriter(){;}
-
-  /** */
-  virtual void write() const ;
-
-  /** Return a ref count pointer to self */
-  virtual RCP<FieldWriterBase> getRcp() {return rcp(this);}
-
-
-private:
-  /** */
-  void lowLevelWrite(const std::string& filename, bool isPHeader) const ;
-
-  /** */
-  void writePoints(std::ostream& os, bool isPHeader) const ;
-
-  /** */
-  void writeCells(std::ostream& os) const ;
-
-  /** */
-  void writePointData(std::ostream& os, bool isPHeader) const ;
-
-  /** */
-  void writeCellData(std::ostream& os, bool isPHeader) const ;
-
-  /** */
-  void writeDataArray(std::ostream& os, const std::string& name,
-    const RCP<FieldBase>& expr, bool isPHeader, bool isPointData) const ;
-};
-
-/** 
- * Create a VTKWriter 
- */
-class VTKWriterFactory : public FieldWriterFactoryBase
-{
-public:
-  /** */
-  VTKWriterFactory() {}
-
-  /** Create a writer with the specified filename */
-  RCP<FieldWriterBase> createWriter(const string& name) const 
-    {return rcp(new VTKWriter(name));}
-
-  /** */
-  virtual RCP<FieldWriterFactoryBase> getRcp() {return rcp(this);}
-  
-};
-
+  return this->ptr()->createWriter(filename);
 }
 
-
-
-
-#endif
+}

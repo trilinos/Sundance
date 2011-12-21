@@ -85,6 +85,8 @@ SET(MPITests
              NonlinearPartialDomain_mixed
              NavStok_Chanel_stat_HN_Nitsch
              Poisson3D_Surf
+             TransientNonlinTest
+             ControlledTransient1D
    )
 
 

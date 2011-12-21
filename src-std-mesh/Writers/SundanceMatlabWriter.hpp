@@ -37,30 +37,49 @@
 
 namespace Sundance
 {
-  /**
-   * MatlabWriter writes a 1D mesh to a matlab file
-   */
-  class MatlabWriter : public FieldWriterBase
-  {
-  public:
-    /** */
-    MatlabWriter(const std::string& filename="") 
-      : FieldWriterBase(filename) {;}
+/**
+ * MatlabWriter writes a 1D mesh to a space-delimited file. 
+ * This class is deprecated. Use DSVWriter instead.
+ */
+class MatlabWriter : public FieldWriterBase
+{
+public:
+  /** */
+  MatlabWriter(const std::string& filename="") 
+    : FieldWriterBase(filename) {;}
     
-    /** virtual dtor */
-    virtual ~MatlabWriter(){;}
+  /** virtual dtor */
+  virtual ~MatlabWriter(){;}
 
-    /** */
-    virtual void write() const ;
+  /** */
+  virtual void write() const ;
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-    /** Return a ref count pointer to self */
-    virtual RCP<FieldWriterBase> getRcp() {return rcp(this);}
+  /** Return a ref count pointer to self */
+  virtual RCP<FieldWriterBase> getRcp() {return rcp(this);}
 
 
-  private:
-#endif /* DOXYGEN_DEVELOPER_ONLY */
-  };
+private:
+};
+
+
+/** 
+ * MatlabWriterFactory produces a Matlab writer in contexts where a user cannot
+ * do so directly.
+ */
+class MatlabWriterFactory : public FieldWriterFactoryBase
+{
+public:
+  /** */
+  MatlabWriterFactory() {}
+
+  /** Create a writer with the specified filename */
+  RCP<FieldWriterBase> createWriter(const string& name) const 
+    {return rcp(new MatlabWriter(name));}
+
+  /** */
+  virtual RCP<FieldWriterFactoryBase> getRcp() {return rcp(this);}
+  
+};
 }
 
 

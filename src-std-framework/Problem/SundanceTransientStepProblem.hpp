@@ -28,77 +28,55 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_VTKWRITER_H
-#define SUNDANCE_VTKWRITER_H
+#ifndef SUNDANCE_TRANSIENT_STEP_PROBLEM_H
+#define SUNDANCE_TRANSIENT_STEP_PROBLEM_H
 
 
 #include "SundanceDefs.hpp"
-#include "SundanceFieldWriterBase.hpp"
+#include "SundanceNonlinearProblem.hpp"
 
 namespace Sundance
 {
-/**
- * VTKWriter writes a mesh or fields to a VTK file
+using Playa::NonlinearSolver;
+
+/** 
+ *
  */
-class VTKWriter : public FieldWriterBase
+class TransientStepProblem
 {
 public:
   /** */
-  VTKWriter(const std::string& filename="") 
-    : FieldWriterBase(filename) {;}
-    
-  /** virtual dtor */
-  virtual ~VTKWriter(){;}
+  TransientStepProblem(
+    const NonlinearProblem& stepProb, 
+    const Expr& tPrev, const Expr& uPrev, 
+    const Expr& tNext, const Expr& uNext,
+    const Expr& dt,
+    int verbosity=0
+    );
 
   /** */
-  virtual void write() const ;
+  bool step(double tCur, const Expr& uCur,
+    double tNext, Expr uNext,
+    const NonlinearSolver<double>& solver) const ;
 
-  /** Return a ref count pointer to self */
-  virtual RCP<FieldWriterBase> getRcp() {return rcp(this);}
+
+  /** */
+  Expr uCur() const {return uPrev_;}
+  /** */
+  Expr uSoln() const {return uNext_;}
 
 
 private:
-  /** */
-  void lowLevelWrite(const std::string& filename, bool isPHeader) const ;
-
-  /** */
-  void writePoints(std::ostream& os, bool isPHeader) const ;
-
-  /** */
-  void writeCells(std::ostream& os) const ;
-
-  /** */
-  void writePointData(std::ostream& os, bool isPHeader) const ;
-
-  /** */
-  void writeCellData(std::ostream& os, bool isPHeader) const ;
-
-  /** */
-  void writeDataArray(std::ostream& os, const std::string& name,
-    const RCP<FieldBase>& expr, bool isPHeader, bool isPointData) const ;
-};
-
-/** 
- * Create a VTKWriter 
- */
-class VTKWriterFactory : public FieldWriterFactoryBase
-{
-public:
-  /** */
-  VTKWriterFactory() {}
-
-  /** Create a writer with the specified filename */
-  RCP<FieldWriterBase> createWriter(const string& name) const 
-    {return rcp(new VTKWriter(name));}
-
-  /** */
-  virtual RCP<FieldWriterFactoryBase> getRcp() {return rcp(this);}
-  
+  NonlinearProblem prob_;
+  mutable Expr tPrev_;
+  mutable Expr tNext_;
+  mutable Expr uPrev_;
+  mutable Expr uNext_;
+  mutable Expr dt_;
+  int verb_;
 };
 
 }
-
-
 
 
 #endif

@@ -35,6 +35,10 @@
 #include "SundanceNLOp.hpp"
 #include "PlayaNOXSolver.hpp"
 #include "PlayaNonlinearSolver.hpp"
+#include "PlayaNewtonArmijoSolverDecl.hpp"
+#ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
+#include "PlayaNewtonArmijoSolverImpl.hpp"
+#endif
 
 namespace Sundance
 {

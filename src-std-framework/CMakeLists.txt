@@ -276,7 +276,9 @@ APPEND_SET(HEADERS
   Problem/SundanceAToCPointLocator.hpp
   Problem/SundanceCToAInterpolator.hpp
   Problem/SundanceCoordinateSystem.hpp
+  Problem/SundanceDoublingStepController.hpp
   Problem/SundanceEigensolution.hpp
+  Problem/SundanceEventDetector.hpp
   Problem/SundanceExprFieldWrapper.hpp
   Problem/SundanceFunctional.hpp
   Problem/SundanceL2Projector.hpp
@@ -291,6 +293,7 @@ APPEND_SET(HEADERS
   Problem/SundanceRivaraDriver.hpp
   Problem/SundanceStochBlockJacobiSolver.hpp
   Problem/SundanceNonlinearProblem.hpp 
+  Problem/SundanceTransientStepProblem.hpp 
   Problem/SundanceUniformRefinementPair.hpp 
   )
 
@@ -300,6 +303,8 @@ APPEND_SET(SOURCES
   Problem/SundanceAToCPointLocator.cpp
   Problem/SundanceCToAInterpolator.cpp
   Problem/SundanceCoordinateSystem.cpp
+  Problem/SundanceDoublingStepController.cpp
+  Problem/SundanceEventDetector.cpp
   Problem/SundanceExprFieldWrapper.cpp
   Problem/SundanceFunctional.cpp
   Problem/SundanceL2Projector.cpp
@@ -313,7 +318,8 @@ APPEND_SET(SOURCES
   Problem/SundanceProblemTesting.cpp
   Problem/SundanceRivaraDriver.cpp
   Problem/SundanceStochBlockJacobiSolver.cpp
-  Problem/SundanceNonlinearProblem.cpp  
+  Problem/SundanceNonlinearProblem.cpp 
+  Problem/SundanceTransientStepProblem.cpp  
   Problem/SundanceUniformRefinementPair.cpp 
   )
 

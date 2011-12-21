@@ -28,77 +28,33 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_VTKWRITER_H
-#define SUNDANCE_VTKWRITER_H
-
+#ifndef SUNDANCE_FIELDWRITER_FACTORY_H
+#define SUNDANCE_FIELDWRITER_FACTORY_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceFieldWriterBase.hpp"
+#include "SundanceFieldWriter.hpp"
+#include "PlayaHandle.hpp"
 
 namespace Sundance
 {
+
 /**
- * VTKWriter writes a mesh or fields to a VTK file
+ * In some contexts the user can't construct a writer directly; for example, during 
+ * timestepping the writer might be constructed by the step controller. 
+ * FieldWriterFactory provides a way for a user to specify what kind of
+ * writer should be created.
  */
-class VTKWriter : public FieldWriterBase
+class FieldWriterFactory : public Playa::Handle<FieldWriterFactoryBase>
 {
 public:
-  /** */
-  VTKWriter(const std::string& filename="") 
-    : FieldWriterBase(filename) {;}
-    
-  /** virtual dtor */
-  virtual ~VTKWriter(){;}
-
-  /** */
-  virtual void write() const ;
-
-  /** Return a ref count pointer to self */
-  virtual RCP<FieldWriterBase> getRcp() {return rcp(this);}
-
-
-private:
-  /** */
-  void lowLevelWrite(const std::string& filename, bool isPHeader) const ;
-
-  /** */
-  void writePoints(std::ostream& os, bool isPHeader) const ;
-
-  /** */
-  void writeCells(std::ostream& os) const ;
-
-  /** */
-  void writePointData(std::ostream& os, bool isPHeader) const ;
-
-  /** */
-  void writeCellData(std::ostream& os, bool isPHeader) const ;
-
-  /** */
-  void writeDataArray(std::ostream& os, const std::string& name,
-    const RCP<FieldBase>& expr, bool isPHeader, bool isPointData) const ;
-};
-
-/** 
- * Create a VTKWriter 
- */
-class VTKWriterFactory : public FieldWriterFactoryBase
-{
-public:
-  /** */
-  VTKWriterFactory() {}
+  /* Boilerplate handle ctors */
+  HANDLE_CTORS(FieldWriterFactory, FieldWriterFactoryBase);
 
   /** Create a writer with the specified filename */
-  RCP<FieldWriterBase> createWriter(const string& name) const 
-    {return rcp(new VTKWriter(name));}
-
-  /** */
-  virtual RCP<FieldWriterFactoryBase> getRcp() {return rcp(this);}
-  
+  FieldWriter createWriter(const string& filename) const ;
 };
 
+
 }
-
-
-
 
 #endif

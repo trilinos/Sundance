@@ -28,77 +28,52 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_VTKWRITER_H
-#define SUNDANCE_VTKWRITER_H
+#include "SundanceDSVWriter.hpp"
+#include "PlayaExceptions.hpp"
+#include "SundanceOut.hpp"
+#include "PlayaTabs.hpp"
+#include "Teuchos_XMLObject.hpp"
+#include <iomanip>
 
 
-#include "SundanceDefs.hpp"
-#include "SundanceFieldWriterBase.hpp"
 
 namespace Sundance
 {
-/**
- * VTKWriter writes a mesh or fields to a VTK file
- */
-class VTKWriter : public FieldWriterBase
+
+using namespace Teuchos;
+
+void DSVWriter::write() const 
 {
-public:
-  /** */
-  VTKWriter(const std::string& filename="") 
-    : FieldWriterBase(filename) {;}
-    
-  /** virtual dtor */
-  virtual ~VTKWriter(){;}
+  using std::setw;
+  using std::setprecision;
+  int width = precision_+7;
 
-  /** */
-  virtual void write() const ;
+  std::ofstream os(filename().c_str());
+  int numNodes = mesh().numCells(0);
 
-  /** Return a ref count pointer to self */
-  virtual RCP<FieldWriterBase> getRcp() {return rcp(this);}
+  std::ios_base::fmtflags oldFlags = os.flags();
+ 
+  for (int i=0; i<numNodes; i++)
+  {
+    const Point& x = mesh().nodePosition(i);
+    for (int d=0; d<x.dim(); d++) 
+    {
+      if (d != 0) os << delim_;
+      os << setw(width) << setprecision(precision_) << x[d];
+    }
+      
 
+    for (int j=0; j<pointScalarFields().size(); j++)
+    {
+      const RCP<FieldBase>& expr = pointScalarFields()[j];
+      os << setw(width) << setprecision(precision_);
+      os << expr->getData(0, i, 0);
+    }
+    os << std::endl;
+  }
 
-private:
-  /** */
-  void lowLevelWrite(const std::string& filename, bool isPHeader) const ;
-
-  /** */
-  void writePoints(std::ostream& os, bool isPHeader) const ;
-
-  /** */
-  void writeCells(std::ostream& os) const ;
-
-  /** */
-  void writePointData(std::ostream& os, bool isPHeader) const ;
-
-  /** */
-  void writeCellData(std::ostream& os, bool isPHeader) const ;
-
-  /** */
-  void writeDataArray(std::ostream& os, const std::string& name,
-    const RCP<FieldBase>& expr, bool isPHeader, bool isPointData) const ;
-};
-
-/** 
- * Create a VTKWriter 
- */
-class VTKWriterFactory : public FieldWriterFactoryBase
-{
-public:
-  /** */
-  VTKWriterFactory() {}
-
-  /** Create a writer with the specified filename */
-  RCP<FieldWriterBase> createWriter(const string& name) const 
-    {return rcp(new VTKWriter(name));}
-
-  /** */
-  virtual RCP<FieldWriterFactoryBase> getRcp() {return rcp(this);}
-  
-};
-
+  os.flags(oldFlags); 
 }
 
 
-
-
-#endif
+}
