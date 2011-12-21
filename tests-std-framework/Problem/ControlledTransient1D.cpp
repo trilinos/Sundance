@@ -42,9 +42,9 @@ Expr rhsF(const Expr& x, const Expr& t)
 
 
 
-CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;});
-CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;});
-CELL_PREDICATE(MidPointTest, {return fabs(x[0]-0.5) < 1.0e-10;});
+CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
+CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;})
+CELL_PREDICATE(MidPointTest, {return fabs(x[0]-0.5) < 1.0e-10;})
 
 int main(int argc, char** argv)
 {
