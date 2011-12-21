@@ -279,6 +279,7 @@ APPEND_SET(HEADERS
   Problem/SundanceDoublingStepController.hpp
   Problem/SundanceEigensolution.hpp
   Problem/SundanceEventDetector.hpp
+  Problem/SundanceExprComparison.hpp
   Problem/SundanceExprFieldWrapper.hpp
   Problem/SundanceFunctional.hpp
   Problem/SundanceL2Projector.hpp
@@ -305,6 +306,7 @@ APPEND_SET(SOURCES
   Problem/SundanceCoordinateSystem.cpp
   Problem/SundanceDoublingStepController.cpp
   Problem/SundanceEventDetector.cpp
+  Problem/SundanceExprComparison.cpp
   Problem/SundanceExprFieldWrapper.cpp
   Problem/SundanceFunctional.cpp
   Problem/SundanceL2Projector.cpp

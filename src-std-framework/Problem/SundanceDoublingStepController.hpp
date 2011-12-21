@@ -34,6 +34,8 @@
 #include "SundanceFieldWriter.hpp"
 #include "SundanceFieldWriterFactory.hpp"
 #include "SundanceTransientStepProblem.hpp"
+#include "SundanceExprComparison.hpp"
+#include "SundanceEventDetector.hpp"
 
 
 
@@ -107,7 +109,6 @@ public:
 };
 
 
-
 /** */
 class DoublingStepController
 {
@@ -117,12 +118,19 @@ public:
     const TransientStepProblem& prob,
     const NonlinearSolver<double>& solver,
     const StepControlParameters& stepControl,
-    const OutputControlParameters& outputControl)
+    const OutputControlParameters& outputControl,
+    const RCP<ExprComparisonBase>& compare)
     : prob_(prob), 
       stepControl_(stepControl), 
       outputControl_(outputControl),
-      solver_(solver)
+      solver_(solver),
+      compare_(compare),
+      eventHandler_()
     {}
+
+  /** */
+  void setEventHandler(RCP<EventDetectorBase> e)
+    {eventHandler_ = e;}
       
 
   /** */
@@ -136,6 +144,8 @@ private:
   StepControlParameters stepControl_;
   OutputControlParameters outputControl_;
   NonlinearSolver<double> solver_;
+  RCP<ExprComparisonBase> compare_;
+  RCP<EventDetectorBase> eventHandler_;
 };
 
 

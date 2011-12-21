@@ -107,7 +107,7 @@ int main(int argc, char** argv)
     TransientStepProblem prob(stepProb, tPrev, uPrev, t, uSoln, dt, 0);
 
     /* Use the Playa Newton-Armijo nonlinear solver */
-    LinearSolver<double> linSolver = LinearSolverBuilder::createSolver("aztec-ml.xml");
+    LinearSolver<double> linSolver = LinearSolverBuilder::createSolver("amesos.xml");
     ParameterList solverParams("NewtonArmijoSolver");
     solverParams.set("Tau Relative", 1.0e-12);
     solverParams.set("Tau Absolute", 1.0e-12);
@@ -126,8 +126,11 @@ int main(int argc, char** argv)
 
     FieldWriterFactory wf = new DSVWriterFactory();
     OutputControlParameters outputControl(wf, "ControlledTransient1D", tFinal/100.0, 1);
+
+    RCP<ExprComparisonBase> compare = rcp(new DefaultExprComparison());
     
-    DoublingStepController driver(prob, solver, stepControl, outputControl);
+    DoublingStepController driver(prob, solver, stepControl, outputControl,
+      compare);
 
     driver.run();
 

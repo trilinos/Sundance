@@ -49,6 +49,8 @@ SET(SerialTests
   RefinementTest2D
   Poisson2D_HN_Nitsch
   Stokes_Chanel_Nitsche_line_obstic
+  TransientNonlinTest
+  ControlledTransient1D
 )
 
 
@@ -85,8 +87,6 @@ SET(MPITests
              NonlinearPartialDomain_mixed
              NavStok_Chanel_stat_HN_Nitsch
              Poisson3D_Surf
-             TransientNonlinTest
-             ControlledTransient1D
    )
 
 

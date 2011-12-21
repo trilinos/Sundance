@@ -96,6 +96,13 @@ bool DoublingStepController::run() const
   int numGrow = 0;
   int numSolves = 0;
 
+  bool gotEvent = false;
+  bool terminateOnDetection = false;
+  if (eventHandler_.get()) terminateOnDetection 
+    = eventHandler_->terminateOnDetection();
+  PLAYA_MSG2(verb, tab1 << "Terminate on event detection: " 
+    << terminateOnDetection);
+
   while (t < tStop && step < maxSteps)
   {
     Tabs tab2;
@@ -119,10 +126,8 @@ bool DoublingStepController::run() const
     stepOK = prob_.step(t+0.5*dt, uSolnHalfStep, t+dt, uSolnTwoHalfSteps, solver_);
     numSolves += 3;
 
-    Vector<double> x0 = getDiscreteFunctionVector(uSolnTwoHalfSteps);
-    Vector<double> x1 = getDiscreteFunctionVector(uSolnOneFullStep);
-    double err = norm2(x0-x1);
-    
+    double err = compare_->diff(uSolnTwoHalfSteps, uSolnOneFullStep);
+
     PLAYA_MSG3(verb, tab3 << "error=" << err << " tau=" << tau);
     
     double dtNew = dt;
@@ -145,6 +150,15 @@ bool DoublingStepController::run() const
       PLAYA_MSG3(verb, tab3 << "reducing step to dt=" << dt);
       numShrink++;
       continue;
+    }
+
+    if (eventHandler_.get())
+    {
+      gotEvent = eventHandler_->checkForEvent(t, uCur, t+0.5*dt, uSolnHalfStep);
+      if (gotEvent && terminateOnDetection) break;
+
+      gotEvent = eventHandler_->checkForEvent(t+0.5*dt, uSolnHalfStep,
+        t+dt, uSolnTwoHalfSteps);
     }
 
     while ( tNextWrite >= t && tNextWrite < t+dt)
@@ -177,6 +191,7 @@ bool DoublingStepController::run() const
     t += dt;
     step++;
 
+    if (gotEvent && terminateOnDetection) break;
 
     if (t < tStop && dtNew > dt && !atMaxStepsize) /* increase timestep */
     {
@@ -196,6 +211,8 @@ bool DoublingStepController::run() const
     }
   }
 
+  
+
   PLAYA_MSG1(verb, tab0 << "=================================================================="
     << endl
     << tab0 << "   done time integration  ");
@@ -209,6 +226,10 @@ bool DoublingStepController::run() const
   PLAYA_MSG2(verb, tab1 << "Num nonlinear solves: " << numSolves);
   PLAYA_MSG2(verb, tab1 << "Num step reductions: " << numShrink);
   PLAYA_MSG2(verb, tab1 << "Num step increases: " << numGrow);
+  if (terminateOnDetection && gotEvent)
+  {
+    PLAYA_MSG2(verb, tab1 << "Terminated by event detection");
+  }
   PLAYA_MSG1(verb, tab0 << "==================================================================");
 
 }
