@@ -56,7 +56,7 @@ public:
   bool contains(const Key& key) const {return this->find(key) != this->end();}
 
   /** Put a new entry in the map */
-  void put(const Key& key) {insert(key);}
+  void put(const Key& key) {this->insert(key);}
 
   /** Write into an array */
   Array<Key> elements() const ;

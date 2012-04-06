@@ -9,6 +9,7 @@
 #include "PlayaIterativeSolver.hpp"
 #include "PlayaPreconditionerFactory.hpp"
 #include "PlayaILUKPreconditionerFactory.hpp"
+#include "PlayaSimpleComposedOpDecl.hpp"
 
 namespace Playa
 {
