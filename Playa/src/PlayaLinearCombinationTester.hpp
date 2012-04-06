@@ -45,7 +45,7 @@ using namespace Teuchos;
     Vector<Scalar> _val2 = form2;\
     Out::os() << "done testing... checking error" << std::endl;\
     ScalarMag err = (_val1-_val2).norm2();\
-    if (!checkTest(spec_, err, "[" #form1 "] == [" #form2 "]")) pass = false;\
+    if (!this->checkTest(spec_, err, "[" #form1 "] == [" #form2 "]")) pass = false;\
   }
     
 
@@ -143,9 +143,9 @@ inline bool LinearCombinationTester<Scalar>
   Vector<Scalar> y = A.domain().createMember();
   Vector<Scalar> z = A.domain().createMember();
 
-  randomizeVec(x);
-  randomizeVec(y);
-  randomizeVec(z);
+  this->randomizeVec(x);
+  this->randomizeVec(y);
+  this->randomizeVec(z);
 
 
   TESTER(x*2.0, 2.0*x);
@@ -271,9 +271,9 @@ inline bool LinearCombinationTester<Scalar>
   Vector<Scalar> y = A.domain().createMember();
   Vector<Scalar> z = A.domain().createMember();
 
-  randomizeVec(x);
-  randomizeVec(y);
-  randomizeVec(z);
+  this->randomizeVec(x);
+  this->randomizeVec(y);
+  this->randomizeVec(z);
 
   Vector<Scalar> a = x.copy();
   Vector<Scalar> b = y.copy();
@@ -284,84 +284,84 @@ inline bool LinearCombinationTester<Scalar>
 
   x = 2.0*A*x;
   Scalar err = (x - 2.0*A*a).norm2();
-  if (!checkTest(spec_, err, "x=2.0*A*x")) pass = false;
+  if (!this->checkTest(spec_, err, "x=2.0*A*x")) pass = false;
 
   a = x.copy();
   x = x + y;
   err = (x - (a + y)).norm2();
-  if (!checkTest(spec_, err, "x=x+y")) pass = false;
+  if (!this->checkTest(spec_, err, "x=x+y")) pass = false;
 
   a = x.copy();
   x = y + x;
   err = (x - (y + a)).norm2();
-  if (!checkTest(spec_, err, "x=y+x")) pass = false;
+  if (!this->checkTest(spec_, err, "x=y+x")) pass = false;
 
   a = x.copy();
   x = A*x + B*y;
   err = (x - (A*a + B*y)).norm2();
-  if (!checkTest(spec_, err, "x=A*x+B*y")) pass = false;
+  if (!this->checkTest(spec_, err, "x=A*x+B*y")) pass = false;
 
   a = x.copy();
   x = B*y + A*x;
   err = (x - (B*y + A*a)).norm2();
-  if (!checkTest(spec_, err, "x=B*y+A*x")) pass = false;
+  if (!this->checkTest(spec_, err, "x=B*y+A*x")) pass = false;
 
   a = x.copy();
   x = A*x + (B*y + C*x);
   err = (x - (A*a + (B*y + C*a))).norm2();
-  if (!checkTest(spec_, err, "x=A*x + (B*y + C*x)")) pass = false;
+  if (!this->checkTest(spec_, err, "x=A*x + (B*y + C*x)")) pass = false;
 
   a = x.copy();
   x = (A*x + B*y) + C*x;
   err = (x - ((A*a + B*y) + C*a)).norm2();
-  if (!checkTest(spec_, err, "x=(A*x + B*y) + C*x")) pass = false;
+  if (!this->checkTest(spec_, err, "x=(A*x + B*y) + C*x")) pass = false;
 
   /* test assignment of OpTimesLC into empty and non-empty vectors */
   Vector<Scalar> u;
   u = 2.0*A*B*x;
   err = (u - 2.0*A*B*x).norm2();
-  if (!checkTest(spec_, err, "(empty) u=2*A*B*x")) pass = false;
+  if (!this->checkTest(spec_, err, "(empty) u=2*A*B*x")) pass = false;
 
   u = 2.0*A*B*x;
   err = (u - 2.0*A*B*x).norm2();
-  if (!checkTest(spec_, err, "(non-empty) u=2*A*B*x")) pass = false;
+  if (!this->checkTest(spec_, err, "(non-empty) u=2*A*B*x")) pass = false;
 
   /* test assignment of LC2 into empty and non-empty vectors */
   Vector<Scalar> v;
   v = 2.0*x + 3.0*y;
   err = (v - (2.0*x + 3.0*y)).norm2();
-  if (!checkTest(spec_, err, "(empty) v=2*x + 3*y")) pass = false;
+  if (!this->checkTest(spec_, err, "(empty) v=2*x + 3*y")) pass = false;
 
   v = 2.0*x + 3.0*y;
   err = (v - (2.0*x + 3.0*y)).norm2();
-  if (!checkTest(spec_, err, "(non-empty) v=2*x + 3*y")) pass = false;
+  if (!this->checkTest(spec_, err, "(non-empty) v=2*x + 3*y")) pass = false;
 
   /* test assignment of LC3 into empty and non-empty vectors */
   Vector<Scalar> w;
   w = 2.0*x + 3.0*y + 5.0*z;
   err = (w - (2.0*x + 3.0*y + 5.0*z)).norm2();
-  if (!checkTest(spec_, err, "(empty) w=2*x + 3*y + 5*z")) pass = false;
+  if (!this->checkTest(spec_, err, "(empty) w=2*x + 3*y + 5*z")) pass = false;
 
   w = 2.0*x + 3.0*y + 5.0*z;
   err = (w - (2.0*x + 3.0*y + 5.0*z)).norm2();
-  if (!checkTest(spec_, err, "(non-empty) w=2*x + 3*y + 5*z")) pass = false;
+  if (!this->checkTest(spec_, err, "(non-empty) w=2*x + 3*y + 5*z")) pass = false;
 
   /* test assignment of LC4 into empty and non-empty vectors */
   Vector<Scalar> w2;
   w2 = 2.0*x + 3.0*y + 5.0*z + 7.0*u;
   err = (w2 - (2.0*x + 3.0*y + 5.0*z + 7.0*u)).norm2();
-  if (!checkTest(spec_, err, 
+  if (!this->checkTest(spec_, err, 
       "(empty) w2=2*x + 3*y + 5*z + 7*u")) pass = false;
 
   w2 = 2.0*x + 3.0*y + 5.0*z + 7.0*u;
   err = (w2 - (2.0*x + 3.0*y + 5.0*z + 7.0*u)).norm2();
-  if (!checkTest(spec_, err, 
+  if (!this->checkTest(spec_, err, 
       "(non-empty) w2=2*x + 3*y + 5*z + 7*u")) pass = false;
 
   /* test assignment of LC3 into one of the operands */
   x = 2.0*x + 3.0*y + 5.0*z;
   err = (w - x).norm2(); // Note: w contains 2x + 3y + 5z 
-  if (!checkTest(spec_, err, "x=2*x + 3*y + 5*z")) pass = false;
+  if (!this->checkTest(spec_, err, "x=2*x + 3*y + 5*z")) pass = false;
 
 
   return pass;

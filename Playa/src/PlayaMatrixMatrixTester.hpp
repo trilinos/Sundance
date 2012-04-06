@@ -127,8 +127,8 @@ inline bool MatrixMatrixTester<Scalar>
   {
     Vector<Scalar> x = B_.domain().createMember();
     Vector<Scalar> d = B_.domain().createMember();
-    randomizeVec(x);
-    randomizeVec(d);
+    this->randomizeVec(x);
+    this->randomizeVec(d);
     LinearOperator<Scalar> D0 = diagonalOperator(d);
     LinearOperator<Scalar> D = makeEpetraDiagonalMatrix(d);
     Vector<Scalar> d1 = getEpetraDiagonal(D);
@@ -146,7 +146,7 @@ inline bool MatrixMatrixTester<Scalar>
     ScalarMag err2 = (d - d1).norm2();
     Out::root() << "|d1-d2| = " << err2 << std::endl;
     
-    return checkTest(prodSpec_, err+err2, "matrix-matrix multiply");
+    return this->checkTest(prodSpec_, err+err2, "matrix-matrix multiply");
     
   }
   Out::root() << "skipping matrix-matrix multiply test..." << std::endl;
@@ -174,7 +174,7 @@ inline bool MatrixMatrixTester<Scalar>
     LinearOperator<Scalar> explicitAdd = epetraMatrixMatrixSum(A_, B_);
 
     Vector<Scalar> x = B_.domain().createMember();
-    randomizeVec(x);
+    this->randomizeVec(x);
     Out::root() << "computing implicit sum y1 = (A+B)*x..." << std::endl;
     Vector<Scalar> y1 = implicitAdd*x;
     Out::root() << "computing explicit sum y2 = (A+B)*x..." << std::endl;
@@ -183,7 +183,7 @@ inline bool MatrixMatrixTester<Scalar>
     ScalarMag err = (y1 - y2).norm2();
 
     Out::root() << "|y1-y2| = " << err << std::endl;
-    return checkTest(prodSpec_, err, "matrix-matrix multiply");
+    return this->checkTest(prodSpec_, err, "matrix-matrix multiply");
     
   }
   Out::root() << "skipping matrix-matrix multiply test..." << std::endl;
@@ -202,7 +202,7 @@ inline bool MatrixMatrixTester<Scalar>
     LinearOperator<Scalar> multiplied = epetraMatrixMatrixProduct(A_, B_);
 
     Vector<Scalar> x = B_.domain().createMember();
-    randomizeVec(x);
+    this->randomizeVec(x);
     Out::root() << "computing implicit product y1 = (A*B)*x..." << std::endl;
     Vector<Scalar> y1 = composed*x;
     Out::root() << "computing explicit product y2 = (A*B)*x..." << std::endl;
@@ -211,7 +211,7 @@ inline bool MatrixMatrixTester<Scalar>
     ScalarMag err = (y1 - y2).norm2();
 
     Out::root() << "|y1-y2| = " << err << std::endl;
-    return checkTest(prodSpec_, err, "matrix-matrix multiply");
+    return this->checkTest(prodSpec_, err, "matrix-matrix multiply");
   }
   Out::root() << "skipping matrix-matrix multiply test..." << std::endl;
   return true;
@@ -227,10 +227,10 @@ inline bool MatrixMatrixTester<Scalar>
     Out::root() << "running diagonal*matrix multiplication test..." << std::endl;
 
     Vector<Scalar> x = A_.domain().createMember();
-    randomizeVec(x);
+    this->randomizeVec(x);
 
     Vector<Scalar> d = A_.range().createMember();
-    randomizeVec(d);
+    this->randomizeVec(d);
         
     LinearOperator<Scalar> D = diagonalOperator(d);
     LinearOperator<Scalar> DA = epetraLeftScale(d, A_);
@@ -244,7 +244,7 @@ inline bool MatrixMatrixTester<Scalar>
 
     Out::root() << "|y1-y2| = " << err << std::endl;
 
-    return checkTest(diagLeftProdSpec_, err, "diagonal*matrix multiplication");
+    return this->checkTest(diagLeftProdSpec_, err, "diagonal*matrix multiplication");
   }
   Out::root() << "skipping diagonal matrix-matrix test..." << std::endl;
   return true;
@@ -260,10 +260,10 @@ inline bool MatrixMatrixTester<Scalar>
     Out::root() << "running diagonal*matrix multiplication test..." << std::endl;
 
     Vector<Scalar> x = A_.domain().createMember();
-    randomizeVec(x);
+    this->randomizeVec(x);
 
     Vector<Scalar> d = A_.domain().createMember();
-    randomizeVec(d);
+    this->randomizeVec(d);
         
     LinearOperator<Scalar> D = diagonalOperator(d);
     LinearOperator<Scalar> AD = epetraRightScale(A_, d);
@@ -277,7 +277,7 @@ inline bool MatrixMatrixTester<Scalar>
 
     Out::root() << "|y1-y2| = " << err << std::endl;
 
-    return checkTest(diagLeftProdSpec_, err, "matrix*diagonal multiplication");
+    return this->checkTest(diagLeftProdSpec_, err, "matrix*diagonal multiplication");
   }
   Out::root() << "skipping diagonal matrix-matrix test..." << std::endl;
   return true;
