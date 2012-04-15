@@ -10,6 +10,7 @@
 	finalizing, and querying the global MPI session
 */
 #include "PlayaDefs.hpp"
+#include <stack>
 
 #ifdef HAVE_MPI
 #include "mpi.h"
@@ -41,7 +42,6 @@ namespace Playa
       static bool& showStartupMessage() {static bool rtn=false; return rtn;}
 
     private:
-
       static int rank_;
       static int nProc_;
     };

@@ -51,6 +51,9 @@
 
 using namespace Sundance;
 using namespace Teuchos;
+using Playa::MPIComm;
+using Playa::MPIDataType;
+using Playa::MPIOp;
 
 static Time& DOFBuilderCtorTimer() 
 {
@@ -505,7 +508,7 @@ bool DOFMapBuilder::allFuncsAreOmnipresent(const Mesh& mesh,
   // make synchronization with the other processors
   int omniPresent = rtn;
   mesh.comm().allReduce((void*) &omniPresent, (void*) &rtn, 1,
-    MPIComm::INT, MPIComm::SUM);
+    MPIDataType::intType(), MPIOp::sumOp());
 
   // it is true only when the summed value is zero
   return (rtn < 1);

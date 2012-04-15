@@ -2,6 +2,8 @@
 // @HEADER
 
 #include "PlayaMPISession.hpp"
+#include "PlayaMPIDataType.hpp"
+#include "PlayaMPIOp.hpp"
 #include "Teuchos_Assert.hpp"
 
 namespace Playa
@@ -66,10 +68,15 @@ void MPISession::init(int* argc, void*** argv)
 void MPISession::finalize()
 {
 #ifdef HAVE_MPI
+  MPIDataType::clearTypeRegistry();
+  MPIOp::clearOpRegistry();
+
 	int mpierr = ::MPI_Finalize();
 
 	TEUCHOS_TEST_FOR_EXCEPTION(mpierr != 0, std::runtime_error,
                      "Error code=" << mpierr << " detected in MPI_Finalize()");
 #endif
 }
+
+
 }

@@ -125,7 +125,10 @@ APPEND_SET(HEADERS
   PlayaMLOperator.hpp
   PlayaMPIComm.hpp
   PlayaMPIContainerComm.hpp
+  PlayaMPIDataType.hpp
+  PlayaMPIOp.hpp
   PlayaMPISession.hpp
+  PlayaMPITraits.hpp
   PlayaMultiVectorOperatorDecl.hpp
   PlayaMultiVectorOperatorImpl.hpp
   PlayaNewtonArmijoSolverDecl.hpp
@@ -254,6 +257,8 @@ APPEND_SET(SOURCES
   PlayaMatrixLaplacian1D.cpp
   PlayaMLOperator.cpp
   PlayaMPIComm.cpp
+  PlayaMPIDataType.cpp
+  PlayaMPIOp.cpp
   PlayaMPISession.cpp
   PlayaMultiVectorOperator.cpp
   PlayaNewtonArmijoSolver.cpp

@@ -35,10 +35,17 @@ public:
       if (!suppressStdout()) os() << str << std::endl;
     }
 
+  /** */
+  static std::ostream*& basicStream()
+    {
+      static std::ostream* rtn = &std::cout;
+      return rtn;
+    }
+
   /** Provide a fancy ostream wrapper to cout */
   static FancyOStream& os()
     {
-      static RCP<std::ostream> os = rcp(&std::cout, false);
+      static RCP<std::ostream> os = rcp(basicStream(), false);
       static RCP<FancyOStream> rtn = fancyOStream(os);
       static bool first = true;
       if (first)

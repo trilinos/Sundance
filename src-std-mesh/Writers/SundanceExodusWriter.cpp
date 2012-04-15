@@ -260,11 +260,11 @@ void ExodusWriter::writeMesh(int exoid,
 
 //    Out::os() << "getting LIDs "<< endl;  
     mesh().getLIDsForLabel(dim-1, ssLabels[ss], sideLIDs);
-//    sort(&(sideLIDs[0]), &(sideLIDs[sideLIDs.size()-1]));
+    sort(&(sideLIDs[0]), &(sideLIDs[sideLIDs.size()-1]));
 //    Out::os() << "LIDs= "<< sideLIDs << endl;  
 //    Out::os() << "getting cofacets "<< endl;  
     mesh().getMaxCofacetLIDs(sideLIDs, maxCofacetBatch);
-//    Out::os() << "getting specified cofacets "<< endl;  
+    //Out::os() << "getting specified cofacets "<< endl;  
     maxCofacetBatch.getSpecifiedCofacets(0, elemLIDs, facets);
 
     int numSides = sideLIDs.size();

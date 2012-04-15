@@ -143,8 +143,8 @@ public:
 
       IndexedValue<Scalar> out = min_;
 
-      this->comm().allReduce(&min_, &out, 1, MPIComm::DOUBLE_INT, 
-        MPIComm::MINLOC);
+      this->comm().allReduce(&min_, &out, 1, MPIDataType::doubleIntPairType(), 
+        MPIOp::minlocOp());
       min_ = out;
     }
 
@@ -198,8 +198,8 @@ public:
 
       IndexedValue<Scalar> out = max_;
 
-      this->comm().allReduce(&max_, &out, 1, MPIComm::DOUBLE_INT, 
-        MPIComm::MAXLOC);
+      this->comm().allReduce(&max_, &out, 1, MPIDataType::doubleIntPairType(), 
+        MPIOp::minlocOp());
       max_ = out;
     }
 
@@ -238,7 +238,7 @@ public:
   void postProc() const 
     {
       Scalar final = val_;
-      this->comm().allReduce(&val_, &final, 1, MPIComm::DOUBLE, MPIComm::SUM);
+      this->comm().allReduce(&val_, &final, 1, MPIDataType::doubleType(), MPIOp::sumOp());
       val_ = final;
     }
 
@@ -273,7 +273,7 @@ public:
   void postProc() const 
     {
       Scalar final = val_;
-      this->comm().allReduce(&val_, &final, 1, MPIComm::DOUBLE, MPIComm::SUM);
+      this->comm().allReduce(&val_, &final, 1, MPIDataType::doubleType(), MPIOp::sumOp());
       val_ = final;
     }
 
@@ -306,7 +306,7 @@ public:
   void postProc() const 
     {
       Scalar final = val_;
-      this->comm().allReduce(&val_, &final, 1, MPIComm::DOUBLE, MPIComm::MAX);
+      this->comm().allReduce(&val_, &final, 1, MPIDataType::doubleType(), MPIOp::maxOp());
       val_ = final;
     }
 

@@ -39,12 +39,17 @@
 
 namespace Sundance
 {
+
+
 /**
  * Base class for mesh partitioners that run in serial
  */
 class SerialPartitionerBase
 {
 public:
+  /** */
+  SerialPartitionerBase(bool ignoreGhosts=false)
+    : ignoreGhosts_(ignoreGhosts){}
   
   /** */
   virtual ~SerialPartitionerBase(){;}
@@ -96,9 +101,10 @@ public:
 
 private:
 
-  
+  bool ignoreGhosts_;
   int max(const Set<int>& s) const ;
   mutable Array<Set<int> > elemVerts_;
+  mutable Array<Set<int> > elemEdgewiseNbors_;
   mutable Array<Set<int> > vertElems_;
 };
 }

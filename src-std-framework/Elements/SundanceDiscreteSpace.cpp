@@ -48,6 +48,8 @@ using namespace Teuchos;
 using Playa::blockSpace;
 using Playa::MPIComm;
 using Playa::MPIContainerComm;
+using Playa::MPIDataType;
+using Playa::MPIOp;
 
 const int* vecPtr(const Array<int>& x)
 {
@@ -326,7 +328,7 @@ void DiscreteSpace::initVectorSpace(
     }
     
     int nTotalBCDofs = nBCDofs;
-    mesh().comm().allReduce(&nBCDofs, &nTotalBCDofs, 1, MPIComm::INT, MPIComm::SUM);
+    mesh().comm().allReduce(&nBCDofs, &nTotalBCDofs, 1, MPIDataType::intType(), MPIOp::sumOp());
     int nTotalInteriorDofs = map_->numDOFs() - nTotalBCDofs;
 
     Array<int> interiorDofs(nDof - nBCDofs);

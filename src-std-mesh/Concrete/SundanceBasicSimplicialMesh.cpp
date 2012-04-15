@@ -861,14 +861,20 @@ int BasicSimplicialMesh::maxCofacetLID(int cellDim, int cellLID,
   }
   else
   {
-    TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "invalid cell dimension " << cellDim
+    TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, 
+      "invalid cell dimension " << cellDim
       << " in request for cofacet");
   }
 
+//  Out::os() << "facet LID=" << cellLID << " cofacetIndex=" << cofacetIndex
+//            << " recovered cofacet=" << rtn << endl;
   int dummy;
   for (int f=0; f<numFacets(spatialDim(), rtn, cellDim); f++)
   {
-    if (cellLID==facetLID(spatialDim(), rtn, cellDim, f, dummy)) 
+//    Tabs tab;
+    int c = facetLID(spatialDim(), rtn, cellDim, f, dummy);
+//    Out::os() << "f=" << f << " facet LID=" << c << endl;
+    if (cellLID==c)
     {
       facetIndex = f;
       return rtn;

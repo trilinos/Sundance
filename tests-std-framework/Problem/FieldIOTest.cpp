@@ -89,7 +89,7 @@ int main(int argc, char** argv)
     Out::os() << "synching..." << std::endl;
     MPIComm::world().synchronize();
     Out::os() << "sharing erro..." << std::endl;
-    MPIComm::world().bcast(&err, 1, MPIComm::INT, 0);
+    MPIComm::world().bcast(&err, 1, MPIDataType::intType(), 0);
 #endif
     
     /* Use a very tight tolerance because the readback should be

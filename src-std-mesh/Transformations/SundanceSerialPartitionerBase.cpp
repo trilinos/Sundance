@@ -42,14 +42,33 @@ void SerialPartitionerBase::getNeighbors(const Mesh& mesh,
   nEdges = 0;
 
   elemVerts_.resize(nElems);
+  elemEdgewiseNbors_.resize(nElems);
   vertElems_.resize(nVerts);
+
   
   for (int c=0; c<nElems; c++)
   {
     Array<int> facetLID;
     Array<int> facetDir;
+    /* Find the vertices associated with this element */
     mesh.getFacetArray(dim, c, 0, facetLID, facetDir);
     elemVerts_[c] = arrayToSet(facetLID);
+
+    /* Find the neighboring elements that share an edge. Needed for Rivara refinement */
+    facetLID.resize(0);
+    facetDir.resize(0);
+    mesh.getFacetArray(dim, c, 1, facetLID, facetDir);
+    Set<int> adjElems;
+    for (int f=0; f<facetLID.size(); f++)
+    {
+      Array<int> maxCofs;
+      mesh.getCofacets(1, facetLID[f], dim, maxCofs);
+      for (int cf=0; cf<maxCofs.size(); cf++)
+      {
+        if (maxCofs[cf] != c) adjElems.put(maxCofs[cf]);
+      }
+    }
+    elemEdgewiseNbors_[c] = adjElems;
   }    
 
   for (int v=0; v<nVerts; v++)
@@ -150,7 +169,8 @@ void SerialPartitionerBase::getOffProcData(int p,
   Set<int>& offProcNodes,
   Set<int>& offProcElems) const
 {
-  /* first pass: find off-proc nodes required by on-proc elems */
+  Out::root() << "ignore ghosts = " << ignoreGhosts_ << endl;
+  /* first pass: find off-proc nodes and elems required by on-proc elems */
   for (int e=0; e<elemAssignments.size(); e++)
   {
     if (elemAssignments[e] != p) continue;
@@ -158,26 +178,37 @@ void SerialPartitionerBase::getOffProcData(int p,
     {
       if (nodeAssignments[*v]!=p) offProcNodes.put(*v);
     }
-  }
-
-  /* second pass: find off-proc elems required by the on-proc nodes */
-  for (int v=0; v<nodeAssignments.size(); v++)
-  {
-    if (nodeAssignments[v] != p) continue;
-    const Set<int>& v2e = vertElems_[v];
-    for (Set<int>::const_iterator e=v2e.begin(); e!=v2e.end(); e++)
+    if (!ignoreGhosts_)
     {
-      if (elemAssignments[*e] != p) offProcElems.put(*e);
+      for (Set<int>::const_iterator 
+             n=elemEdgewiseNbors_[e].begin(); n!=elemEdgewiseNbors_[e].end(); n++)
+      {
+        if (elemAssignments[*n]!=p) offProcElems.put(*n);
+      }
     }
   }
 
-  /* third pass: find the additional nodes required by the off-proc
-   * elems found in the previous step */
-  for (Set<int>::const_iterator e=offProcElems.begin(); e!=offProcElems.end(); e++)
+  if (!ignoreGhosts_)
   {
-    for (Set<int>::const_iterator v=elemVerts_[*e].begin(); v!=elemVerts_[*e].end(); v++)
+    /* second pass: find off-proc elems required by the on-proc nodes */
+    for (int v=0; v<nodeAssignments.size(); v++)
     {
-      if (nodeAssignments[*v]!=p) offProcNodes.put(*v);
+      if (nodeAssignments[v] != p) continue;
+      const Set<int>& v2e = vertElems_[v];
+      for (Set<int>::const_iterator e=v2e.begin(); e!=v2e.end(); e++)
+      {
+        if (elemAssignments[*e] != p) offProcElems.put(*e);
+      }
+    }
+
+    /* third pass: find the additional nodes required by the off-proc
+     * elems found in the previous step */
+    for (Set<int>::const_iterator e=offProcElems.begin(); e!=offProcElems.end(); e++)
+    {
+      for (Set<int>::const_iterator v=elemVerts_[*e].begin(); v!=elemVerts_[*e].end(); v++)
+      {
+        if (nodeAssignments[*v]!=p) offProcNodes.put(*v);
+      }
     }
   }  
 }

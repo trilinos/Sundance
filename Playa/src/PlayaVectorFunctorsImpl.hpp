@@ -250,7 +250,7 @@ public:
   void postProc() const 
     {
       Scalar final = val_;
-      this->comm().allReduce(&val_, &final, 1, MPIComm::DOUBLE, MPIComm::SUM);
+      this->comm().allReduce(&val_, &final, 1, MPIDataType::doubleType(), MPIOp::sumOp());
       val_ = final;
     }
 
@@ -282,7 +282,7 @@ public:
   void postProc() const 
     {
       Scalar final = val_;
-      this->comm().allReduce(&val_, &final, 1, MPIComm::DOUBLE, MPIComm::SUM);
+      this->comm().allReduce(&val_, &final, 1, MPIDataType::doubleType(), MPIOp::sumOp());
       val_ = final;
     }
 
@@ -315,7 +315,7 @@ public:
   void postProc() const 
     {
       Scalar final = val_;
-      this->comm().allReduce(&val_, &final, 1, MPIComm::DOUBLE, MPIComm::SUM);
+      this->comm().allReduce(&val_, &final, 1, MPIDataType::doubleType(), MPIOp::sumOp());
       val_ = final;
     }
 
@@ -348,7 +348,7 @@ public:
   void postProc() const 
     {
       Scalar final = val_;
-      this->comm().allReduce(&val_, &final, 1, MPIComm::DOUBLE, MPIComm::MAX);
+      this->comm().allReduce(&val_, &final, 1, MPIDataType::doubleType(), MPIOp::maxOp());
       val_ = final;
     }
 
@@ -380,7 +380,7 @@ public:
   void postProc() const 
     {
       Scalar final = val_;
-      this->comm().allReduce(&val_, &final, 1, MPIComm::DOUBLE, MPIComm::SUM);
+      this->comm().allReduce(&val_, &final, 1, MPIDataType::doubleType(), MPIOp::sumOp());
       val_ = final;
     }
 
@@ -413,7 +413,7 @@ public:
   void postProc() const 
     {
       Scalar final = val_;
-      this->comm().allReduce(&val_, &final, 1, MPIComm::DOUBLE, MPIComm::MIN);
+      this->comm().allReduce(&val_, &final, 1, MPIDataType::doubleType(), MPIOp::minOp());
       val_ = final;
     }
 
@@ -446,7 +446,7 @@ public:
   void postProc() const 
     {
       Scalar final = val_;
-      this->comm().allReduce(&val_, &final, 1, MPIComm::DOUBLE, MPIComm::MAX);
+      this->comm().allReduce(&val_, &final, 1, MPIDataType::doubleType(), MPIOp::maxOp());
       val_ = final;
     }
 

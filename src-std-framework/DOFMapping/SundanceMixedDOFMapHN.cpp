@@ -42,6 +42,8 @@ using namespace Sundance;
 using namespace Teuchos;
 using Playa::MPIComm;
 using Playa::MPIContainerComm;
+using Playa::MPIDataType;
+using Playa::MPIOp;
 
 static Time& mixedHNDOFCtorTimer()
 {
@@ -1373,6 +1375,6 @@ void MixedDOFMapHN::checkTable() const
   
   int anyBad = bad;
   comm().allReduce((void*) &bad, (void*) &anyBad, 1, 
-    MPIComm::INT, MPIComm::SUM);
+    MPIDataType::intType(), MPIOp::sumOp());
   TEUCHOS_TEST_FOR_EXCEPTION(anyBad > 0, std::runtime_error, "invalid DOF map");
 }

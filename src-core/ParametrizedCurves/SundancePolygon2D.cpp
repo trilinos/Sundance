@@ -32,11 +32,14 @@
 #include "SundancePoint.hpp"
 #include "SundanceMesh.hpp"
 #include "SundanceDefs.hpp"
+#include "PlayaMPIComm.hpp"
 
 #include <iostream>
 #include <fstream>
 
 using namespace Sundance;
+using Playa::MPIOp;
+using Playa::MPIDataType;
 
 int Polygon2D::intersectionEdge_ = -1;
 
@@ -738,7 +741,7 @@ void Polygon2D::setSpaceValues(const FunctionalEvaluatorBase& scalarFunctional ,
 			  // call the MPI function to reduce the vector
 			  SUNDANCE_MSG3( verb , " call the reduce function " );
 			  mesh_->comm().allReduce((void*) &(polygonSpaceValues_[fieldIndex][0]), (void*) &(reduceVector[0]),
-			    polygonSpaceValues_[fieldIndex].size() ,MPIComm::DOUBLE, MPIComm::SUM);
+			    polygonSpaceValues_[fieldIndex].size() ,MPIDataType::doubleType(), MPIOp::sumOp());
 			  // copy the reduced vector back
 			  SUNDANCE_MSG3( verb , " copy the reduced values back " );
 			  for (int ii = 0 ; ii < polygonSpaceValues_[fieldIndex].size() ; ii++ ){

@@ -12,8 +12,9 @@ using std::ifstream;
 using std::endl;
 
 
-FileIOChacoPartitioner::FileIOChacoPartitioner(const std::string& filename)
-  : filename_(filename)
+FileIOChacoPartitioner::FileIOChacoPartitioner(const std::string& filename,
+  bool ignoreGhosts)
+  : SerialPartitionerBase(ignoreGhosts), filename_(filename)
 {}
 
 void FileIOChacoPartitioner::writeGraph(const Mesh& mesh) const 

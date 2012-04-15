@@ -12,8 +12,8 @@ namespace Playa
       {
         int myBad = 1;
         int anyBad = 0;
-        comm.allReduce((void*) &myBad, (void*) &anyBad, 1, MPIComm::INT,
-                       MPIComm::SUM);
+        comm.allReduce((void*) &myBad, (void*) &anyBad, 1, MPIDataType::intType(),
+                       MPIOp::sumOp());
       }
   }
 
@@ -26,8 +26,8 @@ namespace Playa
     int anyBad = 0;
     try
       {
-        comm.allReduce((void*) &myBad, (void*) &anyBad, 1, MPIComm::INT,
-                       MPIComm::SUM);
+        comm.allReduce((void*) &myBad, (void*) &anyBad, 1, MPIDataType::intType(),
+                       MPIOp::sumOp());
       }
     catch(const std::exception&)
       {

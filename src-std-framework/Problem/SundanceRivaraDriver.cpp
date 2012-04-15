@@ -8,7 +8,28 @@ using namespace Sundance;
 using namespace Teuchos;
 using namespace Sundance::Rivara;
 using Sundance::ExprFieldWrapper;
+using std::endl;
 
+void sort(const Array<int>& in, Array<int>& rtn)
+{
+  rtn.resize(in.size());
+  const int* pIn = &(in[0]);
+  int* pRtn = &(rtn[0]);
+  for (int i=0; i<in.size(); i++) pRtn[i] = pIn[i];
+  
+  for (int j=1; j<in.size(); j++)
+  {
+    int key = pRtn[j];
+    int i=j-1;
+    while (i>=0 && pRtn[i]>key)
+    {
+      pRtn[i+1]=pRtn[i];
+      i--;
+    }
+    pRtn[i+1]=key;
+  }
+  //std::sort(rtn.begin(), rtn.end());
+}
 
 static Time& refTimer() 
 {
@@ -170,6 +191,7 @@ Mesh RefinementTransformation::rivaraToMesh(const RCP<RivaraMesh>& rivMesh,
       
   while (iter.hasMoreElements())
   {
+    Tabs tab;
     const Element* e = iter.getNextElement();
     int ownerProcID = e->ownerProc();
     int label = e->label();
@@ -181,6 +203,11 @@ Mesh RefinementTransformation::rivaraToMesh(const RCP<RivaraMesh>& rivMesh,
     }
     int lid = mesh.addElement(gid, verts, ownerProcID, label);
     gid++;
+
+    Array<int> sortedVerts(verts.size());
+    sort(verts, sortedVerts);
+
+    Out::os() << tab << "elem LID=" << lid << " verts=" << sortedVerts << endl; 
     /* label edges or faces */
     if (dim==2)
     {
@@ -189,17 +216,53 @@ Mesh RefinementTransformation::rivaraToMesh(const RCP<RivaraMesh>& rivMesh,
       for (int f=0; f<3; f++)
       {
         int edgeLabel = e->edge(f)->label();
+        if (edgeLabel < 0) continue;
         mesh.setLabel(1, edgeLIDs[f], edgeLabel);
       }
     }
     else if (dim==3)
     {
+      Tabs tab1;
       if (e->hasNoFaceLabels()) continue;
       mesh.getFacetArray(dim, lid, 2, faceLIDs, fo);
       for (int f=0; f<4; f++)
       {
+        /* the faces have been renumbered by the mesh */
         int faceLabel = e->face(f)->label();
-        mesh.setLabel(2, faceLIDs[f], faceLabel);
+        if (faceLabel <= 0) continue;
+        const FaceNodes& nodes = e->face(f)->nodes();
+        Array<int> nodeLIDs = nodes.nodes().elements();
+        Out::os() << tab1 << "face nodes = " << nodeLIDs << endl;
+        int faceNum = -1;
+        if (nodeLIDs[0]==sortedVerts[0] && nodeLIDs[1]==sortedVerts[1]
+          && nodeLIDs[2]==sortedVerts[2])
+        {
+          faceNum = 3;
+        }
+        else if (nodeLIDs[0]==sortedVerts[0] && nodeLIDs[1]==sortedVerts[1]
+          && nodeLIDs[2]==sortedVerts[3])
+        {
+          faceNum = 2;
+        }
+        else if (nodeLIDs[0]==sortedVerts[0] && nodeLIDs[1]==sortedVerts[2]
+          && nodeLIDs[2]==sortedVerts[3])
+        {
+          faceNum = 1;
+        }
+        else if (nodeLIDs[0]==sortedVerts[1] && nodeLIDs[1]==sortedVerts[2]
+          && nodeLIDs[2]==sortedVerts[3])
+        {
+          faceNum = 0;
+        }
+        else
+        {
+          TEUCHOS_TEST_FOR_EXCEPT(true);
+        }
+        Out::os() << tab1 << "faceLID=" << faceLIDs[faceNum] << " UFC face num=" 
+                  << faceNum 
+                  << " label = " << faceLabel 
+                  << " parent = " << lid << std::endl;
+        mesh.setLabel(2, faceLIDs[faceNum], faceLabel);
       }
     }
   }

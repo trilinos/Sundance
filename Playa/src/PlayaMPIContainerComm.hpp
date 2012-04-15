@@ -266,8 +266,8 @@ using Teuchos::Array;
         sendMesgLength[p] = outgoing[p].length();
       }
     
-    comm.allToAll(sendMesgLength, 1, MPIComm::INT,
-                  recvMesgLength, 1, MPIComm::INT);
+    comm.allToAll(sendMesgLength, 1, MPIDataType::intType(),
+                  recvMesgLength, 1, MPIDataType::intType());
 
 
     int totalSendLength = 0;
@@ -480,8 +480,8 @@ using Teuchos::Array;
     int* recvDisplacements = new int[nProc];
 
     /* share lengths with all procs */
-    comm.allGather((void*) &sendCount, 1, MPIComm::INT,
-                   (void*) recvCounts, 1, MPIComm::INT);
+    comm.allGather((void*) &sendCount, 1, MPIDataType::intType(),
+                   (void*) recvCounts, 1, MPIDataType::intType());
 
 
     int recvSize = 0;
@@ -497,8 +497,8 @@ using Teuchos::Array;
 
     char* recvBuf = new char[recvSize];
 
-    comm.allGatherv((void*) outgoing.c_str(), sendCount, MPIComm::CHAR,
-                    recvBuf, recvCounts, recvDisplacements, MPIComm::CHAR);
+    comm.allGatherv((void*) outgoing.c_str(), sendCount, MPIDataType::charType(),
+                    recvBuf, recvCounts, recvDisplacements, MPIDataType::charType());
 
     for (int j=0; j<nProc; j++)
       {
@@ -531,8 +531,8 @@ using Teuchos::Array;
     Array<int> recvCounts(nProc);
     Array<int> recvDisplacements(nProc);
 
-    comm.gather((void*) &sendCount, 1, MPIComm::INT,
-                (void*) &(recvCounts[0]), 1, MPIComm::INT, root);
+    comm.gather((void*) &sendCount, 1, MPIDataType::intType(),
+                (void*) &(recvCounts[0]), 1, MPIDataType::intType(), root);
     
     /* compute the displacements */
     int recvSize = 0;
@@ -559,9 +559,9 @@ using Teuchos::Array;
     int* inDisps = &(recvDisplacements[0]);
 
     /* gather the packed data */
-    comm.gatherv( sendBuf, sendCount, MPIComm::CHAR,
+    comm.gatherv( sendBuf, sendCount, MPIDataType::charType(),
                   inBuf, inCounts, inDisps,
-                  MPIComm::CHAR, root);
+                  MPIDataType::charType(), root);
 
     /* on the root, unpack the data */
     if (comm.getRank()==root)

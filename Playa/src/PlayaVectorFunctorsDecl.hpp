@@ -16,6 +16,8 @@ namespace PlayaFunctors
 using Playa::GeneralizedIndex;
 using Teuchos::RCP;
 using Playa::MPIComm;
+using Playa::MPIOp;
+using Playa::MPIDataType;
 
 /**
  * \brief This traits class specifies the return type of a reduction functor. 

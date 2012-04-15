@@ -26,51 +26,45 @@ namespace Playa
 		{
 		public:
 			/** \brief Return the MPI data type of the template argument */
-			static int type();
+			static MPIDataType type();
 		};
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS	
 	/** \ingroup MPI 
-	 * Binds MPI_INT to int
 	 */
 	template <> class MPITraits<int>
 		{
 		public:
 			/** return the MPI data type of the template argument */
-			static int type() {return MPIComm::INT;}
+			static MPIDataType type() {return MPIDataType::intType();}
 		};
 	
 	/** \ingroup MPI 
-	 * Binds MPI_FLOAT to float
 	 */
 	template <> class MPITraits<float>
 		{
 		public:
 			/** return the MPI data type of the template argument */
-			static int type() {return MPIComm::FLOAT;}
+			static MPIDataType type() {return MPIDataType::floatType();}
 		};
 	
 	/** \ingroup MPI 
-	 * Binds MPI_DOUBLE to double
 	 */
 	template <> class MPITraits<double>
 		{
 		public:
 			/** return the MPI data type of the template argument */
-			static int type() {return MPIComm::DOUBLE;}
+			static MPIDataType type() {return MPIDataType::doubleType();}
 		};
 	
 	/** \ingroup MPI 
-	 * Binds MPI_CHAR to char
 	 */
 	template <> class MPITraits<char>
 		{
 		public:
 			/** return the MPI data type of the template argument */
-			static int type() {return MPIComm::CHAR;}
+			static MPIDataType type() {return MPIDataType::charType();}
 		};
 
-#endif //DOXYGEN_SHOULD_SKIP_THIS
 	
 } // namespace Playa
 

@@ -39,11 +39,14 @@
 #include "SundancePoint.hpp"
 #include "SundanceMesh.hpp"
 #include "SundanceDefs.hpp"
+#include "PlayaMPIComm.hpp"
 
 #include <iostream>
 #include <fstream>
 
 using namespace Sundance;
+using Playa::MPIOp;
+using Playa::MPIDataType;
 
 TriangleSurf3D::TriangleSurf3D(const Mesh& mesh , const Array<Point>& points ,
 		const Array<int>& triags , double a1, double a2, bool flipD ) :
@@ -728,7 +731,7 @@ void TriangleSurf3D::setSpaceValues(const FunctionalEvaluatorBase& scalarFunctio
 			  // call the MPI function to reduce the vector
 			  SUNDANCE_MSG3( verb , " call the reduce function " );
 			  mesh_->comm().allReduce((void*) &(triagSurfSpaceValues_[fieldIndex][0]), (void*) &(reduceVector[0]),
-					  triagSurfSpaceValues_[fieldIndex].size() ,MPIComm::DOUBLE, MPIComm::SUM);
+          triagSurfSpaceValues_[fieldIndex].size() ,MPIDataType::doubleType(), MPIOp::sumOp());
 			  // copy the reduced vector back
 			  SUNDANCE_MSG3( verb , " copy the reduced values back " );
 			  for (int ii = 0 ; ii < triagSurfSpaceValues_[fieldIndex].size() ; ii++ ){

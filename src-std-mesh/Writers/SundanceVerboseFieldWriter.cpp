@@ -145,7 +145,8 @@ void VerboseFieldWriter::write() const
                       if (fn != 0) os << ", ";
                       os << mesh().facetLID(fd, flid, 0, fn, facetSign);
                     }
-                  os << "} sign=" << facetSign << std::endl;
+                  os << "} sign=" << facetSign;
+                  os << " label=" << mesh().label(fd,flid) << std::endl;
                 }
               
             }

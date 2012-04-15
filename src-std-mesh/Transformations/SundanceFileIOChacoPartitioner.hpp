@@ -47,7 +47,8 @@ class FileIOChacoPartitioner : public SerialPartitionerBase
   public:
 
     /** Construct an empty mesh filter object */
-    FileIOChacoPartitioner(const std::string& filename);
+    FileIOChacoPartitioner(const std::string& filename,
+      bool ignoreGhosts=false);
 
 
 

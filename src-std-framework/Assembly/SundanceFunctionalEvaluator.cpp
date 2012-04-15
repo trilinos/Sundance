@@ -268,7 +268,7 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
   
   double maxErr = localMaxErr;
   df->mesh().comm().allReduce((void*) &localMaxErr, (void*) &maxErr, 1, 
-    MPIComm::DOUBLE, MPIComm::MAX);
+    MPIDataType::doubleType(), MPIOp::maxOp());
   os << tabs << "fd check: max error = " << maxErr << std::endl;
 
   return maxErr;

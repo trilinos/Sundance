@@ -243,6 +243,17 @@ void serialPartition(
   RCP<Array<Array<double> > > oldNodeData;
   mesher.getAttributes(oldNodeData, oldElemData);
 
+  /* Find the process IDs that view each vertex */
+  Array<Set<int> > vertViewers(mesh.numCells(0));
+  for (int p=0; p<numProc; p++)
+  {
+    for (int v=0; v<submesh[p].numCells(0); v++)
+    {
+      int gid = submesh[p].mapLIDToGID(0,v);
+      vertViewers[gid].put(p);
+    }
+  }
+
   /* Now write the submeshes using the specified writer */
   for (int p=0; p<numProc; p++)
   {
@@ -299,6 +310,29 @@ void serialPartition(
     Out::os() << "doing write()" << std::endl; 
     writer.write();
     Out::os() << "done part=" << p << " of " << numProc << std::endl; 
+  }
+
+  /* Write the vertex view files */
+  for (int p=0; p<numProc; p++)
+  {
+    Out::os() << "writing part=" << p << " of " << numProc << std::endl; 
+
+    string vvFile = outfile + "-" + Teuchos::toString(numProc)
+      + "-" + Teuchos::toString(p) + ".pvv";
+    ofstream of(vvFile.c_str());
+    of << submesh[p].numCells(0) << endl;
+    for (int v=0; v<submesh[p].numCells(0); v++)
+    {
+      int gid = submesh[p].mapLIDToGID(0, v);
+      const Set<int>& viewers = vertViewers[gid];
+      of << v << " " << gid << " " << viewers.size();
+      for (Set<int>::const_iterator 
+             i=viewers.begin(); i!=viewers.end(); i++)
+      {
+        of << " " << *i;
+      }
+      of << endl;
+    }
   }
 }
 

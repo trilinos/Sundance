@@ -64,6 +64,8 @@
 
 namespace Sundance
 {
+using Playa::MPIDataType;
+using Playa::MPIOp;
 
 void handleException(std::exception& e)
 {SundanceGlobal::handleException(e);}
@@ -311,8 +313,8 @@ bool SundanceGlobal::checkTest(double error, double tol)
 {
   int myFail = error > tol;
   int anyFail = myFail;
-  MPIComm::world().allReduce((void*) &myFail, (void*) &anyFail, 1, MPIComm::INT,
-    MPIComm::SUM);
+  MPIComm::world().allReduce((void*) &myFail, (void*) &anyFail, 1, MPIDataType::intType(),
+    MPIOp::sumOp());
   return (anyFail == 0);
 }
 

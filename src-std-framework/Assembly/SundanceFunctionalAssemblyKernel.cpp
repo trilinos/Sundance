@@ -35,11 +35,11 @@
 #include "Teuchos_Time.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
-
-using namespace Sundance;
-using namespace Sundance;
 using namespace Sundance;
 using namespace Teuchos;
+using Playa::MPIComm;
+using Playa::MPIDataType;
+using Playa::MPIOp;
 
 using std::setw;
 using std::endl;
@@ -63,7 +63,7 @@ void FunctionalAssemblyKernel::postLoopFinalization()
   double globalVal = localValue_;
   
   comm_.allReduce((void*) &localValue_, (void*) &globalVal, 1, 
-    MPIComm::DOUBLE, MPIComm::SUM);
+    MPIDataType::doubleType(), MPIOp::sumOp());
 
   *value_ = globalVal;
 
