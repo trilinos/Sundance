@@ -72,7 +72,7 @@ namespace Sundance {
     /** pointers to bases for each chunk */
     Array<const BasisFamilyBase *> chunkBases_;
 
-    /** verbosity atribute */
+    /** verbosity attribute */
     int verb_;
   };
 

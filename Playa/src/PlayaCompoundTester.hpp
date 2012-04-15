@@ -121,7 +121,7 @@ inline bool CompoundTester<Scalar>
     LinearOperator<Scalar> sum = A_ + B_;
 
     Vector<Scalar> x = A_.domain().createMember();
-    randomizeVec(x);
+    this->randomizeVec(x);
     Out::root() << "computing y1 = (A+B)*x..." << std::endl;
     Vector<Scalar> y1 = sum*x;
     Out::root() << "computing y2 = A*x + B*x..." << std::endl;
@@ -131,7 +131,7 @@ inline bool CompoundTester<Scalar>
 
     Out::root() << "|y1-y2| = " << err << std::endl;
         
-    return checkTest(sumSpec_, err, "operator addition");
+    return this->checkTest(sumSpec_, err, "operator addition");
   }
   Out::root() << "skipping operator addition test..." << std::endl;
   return true;
@@ -148,7 +148,7 @@ inline bool CompoundTester<Scalar>
     LinearOperator<Scalar> composed = A_ * B_;
 
     Vector<Scalar> x = B_.domain().createMember();
-    randomizeVec(x);
+    this->randomizeVec(x);
     Out::root() << "computing y1 = (A*B)*x..." << std::endl;
     Vector<Scalar> y1 = composed*x;
     Out::root() << "computing y2 = B*x..." << std::endl;
@@ -159,7 +159,7 @@ inline bool CompoundTester<Scalar>
     ScalarMag err = (y1 - y3).norm2();
 
     Out::root() << "|y1-y3| = " << err << std::endl;
-    return checkTest(composedSpec_, err, "operator composition");
+    return this->checkTest(composedSpec_, err, "operator composition");
   }
   Out::root() << "skipping operator composition test..." << std::endl;
   return true;
@@ -177,7 +177,7 @@ inline bool CompoundTester<Scalar>
     LinearOperator<Scalar> scaled = alpha*A_;
 
     Vector<Scalar> x = A_.domain().createMember();
-    randomizeVec(x);
+    this->randomizeVec(x);
     Out::root() << "computing y1 = (alpha*A)*x..." << std::endl;
     Vector<Scalar> y1 = scaled*x;
     Out::root() << "computing y2 = A*x..." << std::endl;
@@ -188,7 +188,7 @@ inline bool CompoundTester<Scalar>
     ScalarMag err = (y1 - y3).norm2();
 
     Out::root() << "|y1-y3| = " << err << std::endl;
-    return checkTest(composedSpec_, err, "operator scaling");
+    return this->checkTest(composedSpec_, err, "operator scaling");
   }
   Out::root() << "skipping operator scaling test..." << std::endl;
   return true;
@@ -205,10 +205,10 @@ inline bool CompoundTester<Scalar>
     Out::root() << "running diagonal operator test..." << std::endl;
 
     Vector<Scalar> x = A_.domain().createMember();
-    randomizeVec(x);
+    this->randomizeVec(x);
 
     Vector<Scalar> d = A_.domain().createMember();
-    randomizeVec(d);
+    this->randomizeVec(d);
         
     LinearOperator<Scalar> D = diagonalOperator(d);
 
@@ -220,7 +220,7 @@ inline bool CompoundTester<Scalar>
     ScalarMag err = (y1 - y2).norm2();
 
     Out::root() << "|y1-y2| = " << err << std::endl;
-    return checkTest(diagSpec_, err, "diagonal operator");
+    return this->checkTest(diagSpec_, err, "diagonal operator");
   }
   Out::root() << "skipping diagonal operator test..." << std::endl;
   return true;

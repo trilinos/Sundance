@@ -56,7 +56,7 @@ namespace Sundance
 
       /** Put a new (key, value) entry in the map */
       inline void put(const Key& key, const Value& value)
-        {operator[](key) = value;}
+        {this->operator[](key) = value;}
 
       /** Look up value and return a read-only reference */
       inline const Value& get(const Key& key) const
