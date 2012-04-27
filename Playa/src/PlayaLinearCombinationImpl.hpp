@@ -10,6 +10,7 @@
 #include "PlayaTabs.hpp"
 #include "PlayaLinearCombinationDecl.hpp"
 #include "PlayaLinearOperatorDecl.hpp"
+#include "Teuchos_ScalarTraits.hpp"
 
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
@@ -49,19 +50,21 @@ Vector<Scalar>& Vector<Scalar>::operator=(const LCN<Scalar, 1>& lc)
 {
   const Vector<Scalar>& other = lc.vec(0);
   const Scalar& alpha = lc.coeff(0);
+  const Scalar zero = Teuchos::ScalarTraits<Scalar>::zero();
+  const Scalar one = Teuchos::ScalarTraits<Scalar>::one();
 
   if (this->ptr().get() == other.ptr().get())
   {
     /* If LHS and RHS vectors are identical, simply multiply LHS
      * by the scalar constant */
-    if (alpha == 0.0) this->zero();
-    else if (alpha != 1.0) this->scale(alpha);
+    if (alpha == zero) this->zero();
+    else if (alpha != one) this->scale(alpha);
   }
   else if (this->ptr().get() != 0 && this->space() == other.space())
   {
     /* If the vectors are distinct but from the same space, use the
-     * update operation to compute (*this) = 0.0*(*this) + alpha*other */ 
-    this->ptr()->update(alpha, other.ptr().get(), 0.0);
+     * update operation to compute (*this) = zero*(*this) + alpha*other */ 
+    this->ptr()->update(alpha, other.ptr().get(), zero);
   }
   else
   {
@@ -83,6 +86,8 @@ Vector<Scalar>& Vector<Scalar>::operator=(const LCN<Scalar, 2>& lc)
   const Scalar& alpha = lc.coeff(0);
   const Vector<Scalar>& y = lc.vec(1);
   const Scalar& beta = lc.coeff(1);
+  const Scalar zero = Teuchos::ScalarTraits<Scalar>::zero();
+
 
   TEUCHOS_TEST_FOR_EXCEPTION(!y.space().isCompatible(x.space()),
     std::runtime_error,
@@ -93,15 +98,15 @@ Vector<Scalar>& Vector<Scalar>::operator=(const LCN<Scalar, 2>& lc)
   {
     /* If the LHS exists and is from the same space as the RHS vectors, use the
      * update operation to compute 
-     *      (*this) = 0.0*(*this) + alpha*x + beta*y 
+     *      (*this) = zero*(*this) + alpha*x + beta*y 
      */ 
-    this->update(alpha, x, beta, y, 0.0);
+    this->update(alpha, x, beta, y, zero);
   }
   else
   {
     /* If the vectors are from different spaces, or if the LHS is null,
      * form the RHS vector and overwrite the LHS's ptr with it. */
-    Vector e = lc.eval();
+    Vector<Scalar> e = lc.eval();
     this->ptr() = e.ptr();
   }
 
@@ -117,6 +122,7 @@ Vector<Scalar>& Vector<Scalar>::operator=(const LCN<Scalar, 3>& lc)
   const Scalar& beta = lc.coeff(1);
   const Vector<Scalar>& z = lc.vec(2);
   const Scalar& gamma = lc.coeff(2);
+  const Scalar zero = Teuchos::ScalarTraits<Scalar>::zero();
 
   TEUCHOS_TEST_FOR_EXCEPTION(!y.space().isCompatible(x.space()),
     std::runtime_error,
@@ -132,9 +138,9 @@ Vector<Scalar>& Vector<Scalar>::operator=(const LCN<Scalar, 3>& lc)
   {
     /* If the LHS exists and is from the same space as the RHS vectors, use the
      * update operation to compute 
-     *      (*this) = 0.0*(*this) + alpha*x + beta*y + c*z
+     *      (*this) = zero*(*this) + alpha*x + beta*y + c*z
      */ 
-    this->update(alpha, x, beta, y, gamma, z, 0.0);
+    this->update(alpha, x, beta, y, gamma, z, zero);
   }
   else
   {
@@ -169,13 +175,14 @@ Vector<Scalar>& Vector<Scalar>::operator+=(const LCN<Scalar, 1>& lc)
 {
   const Vector<Scalar>& other = lc.vec(0);
   const Scalar& alpha = lc.coeff(0);
+  const Scalar one = Teuchos::ScalarTraits<Scalar>::one();
 
   TEUCHOS_TEST_FOR_EXCEPTION(!this->space().isCompatible(other.space()),
     std::runtime_error,
     "Spaces this=" << this->space() << " and other="
     << other.space() << " are not compatible in operator+=()");
 
-  this->ptr()->update(alpha, other.ptr().get(), 1.0);
+  this->ptr()->update(alpha, other.ptr().get(), one);
 
   return *this;
 }  
@@ -188,13 +195,14 @@ Vector<Scalar>& Vector<Scalar>::operator+=(const LCN<Scalar, 2>& lc)
   const Scalar& alpha = lc.coeff(0);
   const Vector<Scalar>& y = lc.vec(1);
   const Scalar& beta = lc.coeff(1);
+  const Scalar one = Teuchos::ScalarTraits<Scalar>::one();
 
   TEUCHOS_TEST_FOR_EXCEPTION(!this->space().isCompatible(x.space()),
     std::runtime_error,
     "Spaces this=" << this->space() << " and other="
     << x.space() << " are not compatible in operator+=()");
 
-  this->update(alpha, x, beta, y, 1.0);
+  this->update(alpha, x, beta, y, one);
 
   return *this;
 }  
@@ -222,13 +230,14 @@ Vector<Scalar>& Vector<Scalar>::operator-=(const LCN<Scalar, 1>& lc)
 {
   const Vector<Scalar>& other = lc.vec(0);
   const Scalar& alpha = -lc.coeff(0);
+  const Scalar one = Teuchos::ScalarTraits<Scalar>::one();
 
   TEUCHOS_TEST_FOR_EXCEPTION(!this->space().isCompatible(other.space()),
     std::runtime_error,
     "Spaces this=" << this->space() << " and other="
     << other.space() << " are not compatible in operator+=()");
 
-  this->ptr()->update(alpha, other.ptr().get(), 1.0);
+  this->ptr()->update(alpha, other.ptr().get(), one);
 
   return *this;
 }  
@@ -242,13 +251,14 @@ Vector<Scalar>& Vector<Scalar>::operator-=(const LCN<Scalar, 2>& lc)
   const Scalar& alpha = -lc.coeff(0);
   const Vector<Scalar>& y = lc.vec(1);
   const Scalar& beta = -lc.coeff(1);
+  const Scalar one = Teuchos::ScalarTraits<Scalar>::one();
 
   TEUCHOS_TEST_FOR_EXCEPTION(!this->space().isCompatible(x.space()),
     std::runtime_error,
     "Spaces this=" << this->space() << " and other="
     << x.space() << " are not compatible in operator+=()");
 
-  this->update(alpha, x, beta, y, 1.0);
+  this->update(alpha, x, beta, y, one);
 
   return *this;
 }  
@@ -294,8 +304,9 @@ template <class Scalar>
 Vector<Scalar> operator*(const LinearOperator<Scalar>& A,
   const LCN<Scalar, 1>& x)
 {
+  const Scalar one = Teuchos::ScalarTraits<Scalar>::one();
   Vector<Scalar> rtn = A*x.vec(0);
-  if (x.coeff(0)!=1.0) rtn.scale(x.coeff(0));
+  if (x.coeff(0)!=one) rtn.scale(x.coeff(0));
   return rtn;
 }
 
@@ -328,7 +339,8 @@ template <class Scalar> inline
 LCN<Scalar, 1> operator/(const Vector<Scalar>& x, 
   const Scalar& alpha)
 {
-  return LCN<Scalar, 1>(1.0/alpha, x);
+  const Scalar one = Teuchos::ScalarTraits<Scalar>::one();
+  return LCN<Scalar, 1>(one/alpha, x);
 }
 
 
@@ -362,7 +374,8 @@ template <class Scalar, int N> inline
 LCN<Scalar, N> operator/(const LCN<Scalar, N>& lc, const Scalar& beta)
 {
   LCN<Scalar, N> rtn(lc);
-  rtn.multiply(1.0/beta);
+  const Scalar one = Teuchos::ScalarTraits<Scalar>::one();
+  rtn.multiply(one/beta);
   return rtn;
 }
 
@@ -380,7 +393,8 @@ template <class Scalar> inline
 LCN<Scalar, 2> operator+(const Vector<Scalar>& x, 
   const Vector<Scalar>& y)
 {
-  return LCN<Scalar, 2>(1.0, x, 1.0, y);
+  const Scalar one = Teuchos::ScalarTraits<Scalar>::one();
+  return LCN<Scalar, 2>(one, x, one, y);
 }
 
 /* */
@@ -388,7 +402,8 @@ template <class Scalar> inline
 LCN<Scalar, 2> operator-(const Vector<Scalar>& x, 
   const Vector<Scalar>& y)
 {
-  return LCN<Scalar, 2>(1.0, x, -1.0, y);
+  const Scalar one = Teuchos::ScalarTraits<Scalar>::one();
+  return LCN<Scalar, 2>(one, x, -one, y);
 }
 
 
@@ -413,9 +428,10 @@ LCN<Scalar, N+M> operator+(const LCN<Scalar, N>& f, const LCN<Scalar, M>& g)
 template <class Scalar, int N> inline
 LCN<Scalar, N+1> operator+(const LCN<Scalar, N>& f, const Vector<Scalar>& g)
 {
+  const Scalar one = Teuchos::ScalarTraits<Scalar>::one();
   LCN<Scalar, N+1> rtn;
   for (int i=0; i<N; i++) rtn.set(i, f.coeff(i), f.vec(i));
-  rtn.set(N, 1.0, g);
+  rtn.set(N, one, g);
   return rtn;
 }
 
@@ -423,8 +439,9 @@ LCN<Scalar, N+1> operator+(const LCN<Scalar, N>& f, const Vector<Scalar>& g)
 template <class Scalar, int N> inline
 LCN<Scalar, N+1> operator+(const Vector<Scalar>& f, const LCN<Scalar, N>& g)
 {
+  const Scalar one = Teuchos::ScalarTraits<Scalar>::one();
   LCN<Scalar, N+1> rtn;
-  rtn.set(0, 1.0, f);
+  rtn.set(0, one, f);
   for (int i=0; i<N; i++) rtn.set(i+1, g.coeff(i), g.vec(i));
 
   return rtn;
@@ -435,7 +452,8 @@ LCN<Scalar, N+1> operator+(const Vector<Scalar>& f, const LCN<Scalar, N>& g)
 template <class Scalar> inline
 LCN<Scalar, 2> operator+(const LCN<Scalar, 1>& lc, const Vector<Scalar>& x)
 {
-  return LCN<Scalar, 2>(lc, 1.0, x);
+  const Scalar one = Teuchos::ScalarTraits<Scalar>::one();
+  return LCN<Scalar, 2>(lc, one, x);
 }
 
 
@@ -444,7 +462,8 @@ LCN<Scalar, 2> operator+(const LCN<Scalar, 1>& lc, const Vector<Scalar>& x)
 template <class Scalar> inline
 LCN<Scalar, 2> operator+(const Vector<Scalar>& x, const LCN<Scalar, 1>& lc)
 {
-  return LCN<Scalar, 2>(1.0, x, lc);
+  const Scalar one = Teuchos::ScalarTraits<Scalar>::one();
+  return LCN<Scalar, 2>(one, x, lc);
 }
 
 /* */
@@ -469,7 +488,8 @@ LCN<Scalar, 3> operator+(const LCN<Scalar, 1>& ax, const LCN<Scalar, 2>& bycz)
 template <class Scalar> inline
 LCN<Scalar, 3> operator+(const Vector<Scalar>& x, const LCN<Scalar, 2>& bycz)
 {
-  return LCN<Scalar, 3>(LCN<Scalar, 1>(1.0, x), bycz);
+  const Scalar one = Teuchos::ScalarTraits<Scalar>::one();
+  return LCN<Scalar, 3>(LCN<Scalar, 1>(one, x), bycz);
 }
 
 
@@ -487,7 +507,8 @@ LCN<Scalar, 3> operator+(const LCN<Scalar, 2>& axby, const LCN<Scalar, 1>& cz)
 template <class Scalar> inline
 LCN<Scalar, 3> operator+(const LCN<Scalar, 2>& axby, const Vector<Scalar>& z)
 {
-  return LCN<Scalar, 3>(axby, LCN<Scalar,1>(1.0,z));
+  const Scalar one = Teuchos::ScalarTraits<Scalar>::one();
+  return LCN<Scalar, 3>(axby, LCN<Scalar,1>(one,z));
 }
 
 
@@ -514,8 +535,9 @@ template <class Scalar, int N> inline
 LCN<Scalar, N+1> operator-(const LCN<Scalar, N>& f, const Vector<Scalar>& g)
 {
   LCN<Scalar, N+1> rtn;
+  const Scalar one = Teuchos::ScalarTraits<Scalar>::one();
   for (int i=0; i<N; i++) rtn.set(i, f.coeff(i), f.vec(i));
-  rtn.set(N, -1.0, g);
+  rtn.set(N, -one, g);
   return rtn;
 }
 
@@ -523,8 +545,9 @@ LCN<Scalar, N+1> operator-(const LCN<Scalar, N>& f, const Vector<Scalar>& g)
 template <class Scalar, int N> inline
 LCN<Scalar, N+1> operator-(const Vector<Scalar>& f, const LCN<Scalar, N>& g)
 {
+  const Scalar one = Teuchos::ScalarTraits<Scalar>::one();
   LCN<Scalar, N+1> rtn;
-  rtn.set(0, 1.0, f);
+  rtn.set(0, one, f);
   for (int i=0; i<N; i++) rtn.set(i+1, -g.coeff(i), g.vec(i));
 
   return rtn;
@@ -535,7 +558,8 @@ LCN<Scalar, N+1> operator-(const Vector<Scalar>& f, const LCN<Scalar, N>& g)
 template <class Scalar> inline
 LCN<Scalar, 2> operator-(const LCN<Scalar, 1>& lc, const Vector<Scalar>& x)
 {
-  return LCN<Scalar, 2>(lc, -1.0, x);
+  const Scalar one = Teuchos::ScalarTraits<Scalar>::one();
+  return LCN<Scalar, 2>(lc, -one, x);
 }
 
 
@@ -544,7 +568,8 @@ LCN<Scalar, 2> operator-(const LCN<Scalar, 1>& lc, const Vector<Scalar>& x)
 template <class Scalar> inline
 LCN<Scalar, 2> operator-(const Vector<Scalar>& x, const LCN<Scalar, 1>& lc)
 {
-  return LCN<Scalar, 2>(1.0, x, -lc.coeff(0), lc.vec(0));
+  const Scalar one = Teuchos::ScalarTraits<Scalar>::one();
+  return LCN<Scalar, 2>(one, x, -lc.coeff(0), lc.vec(0));
 }
 
 /* */
@@ -569,7 +594,8 @@ LCN<Scalar, 3> operator-(const LCN<Scalar, 1>& ax, const LCN<Scalar, 2>& bycz)
 template <class Scalar> inline
 LCN<Scalar, 3> operator-(const Vector<Scalar>& x, const LCN<Scalar, 2>& bycz)
 {
-  return LCN<Scalar, 3>(LCN<Scalar, 1>(1.0, x), -bycz);
+  const Scalar one = Teuchos::ScalarTraits<Scalar>::one();
+  return LCN<Scalar, 3>(LCN<Scalar, 1>(one, x), -bycz);
 }
 
 
@@ -587,7 +613,8 @@ LCN<Scalar, 3> operator-(const LCN<Scalar, 2>& axby, const LCN<Scalar, 1>& cz)
 template <class Scalar> inline
 LCN<Scalar, 3> operator-(const LCN<Scalar, 2>& axby, const Vector<Scalar>& z)
 {
-  return LCN<Scalar, 3>(axby, LCN<Scalar,1>(-1.0,z));
+  const Scalar one = Teuchos::ScalarTraits<Scalar>::one();
+  return LCN<Scalar, 3>(axby, LCN<Scalar,1>(-one,z));
 }
 
 
