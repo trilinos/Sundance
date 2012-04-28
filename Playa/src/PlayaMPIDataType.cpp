@@ -9,9 +9,9 @@ using Teuchos::RCP;
 using Teuchos::rcp;
 
 MPIDataType::MPIDataType(const std::string& name)
-  : name_()
+  : name_(name)
 #ifdef HAVE_MPI
-  , mpiType_(rcp(new MPI_Datatype()))
+  , mpiType_()
 #endif
 {}
 

@@ -9,9 +9,9 @@ using Teuchos::RCP;
 using Teuchos::rcp;
 
 MPIOp::MPIOp(const std::string& name)
-  : name_()
+  : name_(name)
 #ifdef HAVE_MPI
-  , mpiOp_(rcp(new MPI_Op()))
+  , mpiOp_()
 #endif
 {}
 
