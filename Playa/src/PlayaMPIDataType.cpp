@@ -3,6 +3,17 @@
 
 #include "PlayaMPIDataType.hpp"
 
+#ifdef HAVE_MPI
+// Provide an explicit template specialization for the opaque type MPI_Datatype
+// so that the instantiation of Teuchos::RCP<MPI_Datatype> objects compiles correctly in debug mode
+// without relying on the implementation details of the MPI library.
+#include "Teuchos_TypeNameTraits.hpp"
+namespace Teuchos
+{
+  TEUCHOS_TYPE_NAME_TRAITS_BUILTIN_TYPE_SPECIALIZATION(MPI_Datatype);
+} // namespace Teuchos
+#endif
+
 namespace Playa
 {
 using Teuchos::RCP;
