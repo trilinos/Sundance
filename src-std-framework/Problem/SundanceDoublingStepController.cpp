@@ -44,6 +44,7 @@ bool DoublingStepController::run() const
   Tabs tab0(0);
   Tabs tab1;
   int verb = stepControl_.verbosity_;
+  if (MPIComm::world().getRank()!=0) verb = 0;
   double t = stepControl_.tStart_;
   double p = stepControl_.stepOrder_;
   double tau = stepControl_.tau_;
