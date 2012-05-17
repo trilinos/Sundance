@@ -98,6 +98,10 @@ public:
 
   /** */
   iterator insert(iterator pos, const Key& x) {return set_.insert(pos,x);}
+  
+  /** */
+  template <typename InputIterator>
+  void insert(InputIterator first, InputIterator last) {set_.insert(first,last);}
 
   /** */
   void erase(iterator pos) {set_.erase(pos);}

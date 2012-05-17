@@ -96,6 +96,8 @@ public:
   bool hasCommonDomain(const Array<Set<CellFilter> >& filters) const ;
 
   bool hasNodalBasis(const Array<RCP<BasisDOFTopologyBase> >& basis) const ;
+  
+  bool hasEdgeLocalizedBasis(const Array<RCP<BasisDOFTopologyBase> >& basis) const ;
 
   bool hasCellBasis(const Array<RCP<BasisDOFTopologyBase> >& basis) const ;
 

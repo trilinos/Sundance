@@ -33,6 +33,7 @@
 #include "PlayaTabs.hpp"
 #include "SundanceBasisFamily.hpp"
 #include "SundanceLagrange.hpp"
+#include "SundanceEdgeLocalizedBasis.hpp"
 #include "SundanceMixedDOFMap.hpp"
 #include "SundanceMixedDOFMapHN.hpp"
 #include "SundanceNodalDOFMap.hpp"
@@ -40,6 +41,7 @@
 #include "SundancePartialElementDOFMap.hpp"
 #include "SundanceMaximalCellFilter.hpp"
 #include "SundanceInhomogeneousNodalDOFMap.hpp"
+#include "SundanceInhomogeneousEdgeLocalizedDOFMap.hpp"
 #include "SundanceInhomogeneousDOFMapHN.hpp"
 #include "SundanceCellFilter.hpp"
 #include "SundanceDimensionalCellFilter.hpp"
@@ -157,6 +159,18 @@ RCP<DOFMapBase> DOFMapBuilder::makeMap(const Mesh& mesh,
       = DOFMapBuilder::funcDomains(mesh, fmap, inputChildren);
 
     rtn = rcp(new InhomogeneousNodalDOFMap(mesh, disjoint, verb_));
+  }
+  else if ( hasEdgeLocalizedBasis(basis) && (!mesh.allowsHangingHodes()) )
+  {
+    SUNDANCE_MSG2(verb_, "creating inhomogeneous edge-localized map");
+
+    Sundance::Map<CellFilter, Set<int> > fmap = domainToFuncSetMap(filters);
+    
+    Sundance::Map<CellFilter, Sundance::Map<Set<int>, CellSet> > inputChildren;
+    Array<Sundance::Map<Set<int>, CellFilter> > disjoint 
+      = DOFMapBuilder::funcDomains(mesh, fmap, inputChildren);
+
+    rtn = rcp(new InhomogeneousEdgeLocalizedDOFMap(mesh, disjoint, verb_));
   }
   else
   {
@@ -469,6 +483,15 @@ bool DOFMapBuilder::hasNodalBasis(const Array<RCP<BasisDOFTopologyBase> >& basis
   return true;
 }
 
+bool DOFMapBuilder::hasEdgeLocalizedBasis(const Array<RCP<BasisDOFTopologyBase> >& basis) const
+{
+  for (int i=0; i<basis.size(); i++)
+  {
+    const RCP<const EdgeLocalizedBasis> downcasted = rcp_dynamic_cast<EdgeLocalizedBasis>(basis[i]);
+    if (is_null(downcasted)) return false;
+  }
+  return true;
+}
 
 bool DOFMapBuilder::hasCellBasis(const Array<RCP<BasisDOFTopologyBase> >& basis) const
 {

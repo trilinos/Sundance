@@ -137,6 +137,7 @@ APPEND_SET(HEADERS
   DOFMapping/SundanceDOFMapBase.hpp
   DOFMapping/SundanceDOFMapBuilder.hpp
   DOFMapping/SundanceInhomogeneousNodalDOFMap.hpp
+  DOFMapping/SundanceInhomogeneousEdgeLocalizedDOFMap.hpp
   DOFMapping/SundanceMapStructure.hpp
   DOFMapping/SundanceMixedDOFMap.hpp
   DOFMapping/SundanceMixedDOFMapHN.hpp
@@ -155,6 +156,7 @@ APPEND_SET(SOURCES
   DOFMapping/SundanceDOFMapBase.cpp
   DOFMapping/SundanceDOFMapBuilder.cpp
   DOFMapping/SundanceInhomogeneousNodalDOFMap.cpp
+  DOFMapping/SundanceInhomogeneousEdgeLocalizedDOFMap.cpp
   DOFMapping/SundanceMapStructure.cpp
   DOFMapping/SundanceMixedDOFMap.cpp
   DOFMapping/SundanceMixedDOFMapHN.cpp
