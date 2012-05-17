@@ -165,7 +165,6 @@ InhomogeneousNodalDOFMap
   for (int n=0; n<nNodes; n++)
   {
     const Set<int>& f = nodeToFuncSetMap[n];
-    if (f.size()==0) continue;
     int funcComboIndex;
     if (!fsToFSIndexMap.containsKey(f)) 
     {
@@ -194,12 +193,12 @@ InhomogeneousNodalDOFMap
   {
     Array<int> funcs = nodalFuncSets_[f].elements();
     int nFuncs = funcs.size();
-    funcIndexWithinNodeFuncSet_[f] = Array<int>(nTotalFuncs_, -1);
+    funcIndexWithinNodeFuncSet_[f].resize(nTotalFuncs_, -1);
     for (int i=0; i<nFuncs; i++)
     {
       funcIndexWithinNodeFuncSet_[f][funcs[i]] = i;
     }
-    nodeDofs_[f].resize(nFuncs * funcSetNodeCounts[f]);
+    nodeDofs_[f].resize(nFuncs * funcSetNodeCounts[f], -1);
     Array<RCP<BasisDOFTopologyBase> > nodeBases = tuple(basis_);
     Array<Array<int> > nodeFuncs = tuple(nodalFuncSets_[f].elements());
     nodeStructure_[f] = rcp(new MapStructure(nTotalFuncs_, 
@@ -308,11 +307,12 @@ void InhomogeneousNodalDOFMap::getFunctionDofs(int cellDim,
   Array<Array<int> >& dofs) const
 {
   Array<int>& dofChunk = dofs[0];
+  dofChunk.clear();
 
   if (cellDim != 0)
   {
     int nFacets = mesh().numFacets(cellDim, cellLID[0], 0);
-    dofChunk.resize(funcs.size() * cellLID.size() * nFacets);
+    dofChunk.resize(funcs.size() * cellLID.size() * nFacets, -1);
       
       
     for (int c=0; c<cellLID.size(); c++)
@@ -325,15 +325,19 @@ void InhomogeneousNodalDOFMap::getFunctionDofs(int cellDim,
         for (int i=0; i<funcs.size(); i++)
         {
           int funcIndex = funcIndexWithinNodeFuncSet_[fci][funcs[i]];
-          dofChunk[(c*funcs.size()+i)*nFacets + f] 
+          if (funcIndex >= 0)
+          {
+            dofChunk[(c*funcs.size()+i)*nFacets + f] 
             = nodeDofs_[fci][nodeOffset+funcIndex];
+        
+          }
         }
       }
     }
   }
   else
   {
-    dofChunk.resize(funcs.size() * cellLID.size());
+    dofChunk.resize(funcs.size() * cellLID.size(), -1);
 
     for (int c=0; c<cellLID.size(); c++)
     {
@@ -342,8 +346,11 @@ void InhomogeneousNodalDOFMap::getFunctionDofs(int cellDim,
       for (int i=0; i<funcs.size(); i++)
       {
         int funcIndex = funcIndexWithinNodeFuncSet_[fci][funcs[i]];
-        dofChunk[c*funcs.size()+ i] 
-          = nodeDofs_[fci][nodeOffset+funcIndex];
+        if (funcIndex >= 0)
+        {
+          dofChunk[c*funcs.size()+ i] 
+            = nodeDofs_[fci][nodeOffset+funcIndex];
+        }
       }
     }
   }

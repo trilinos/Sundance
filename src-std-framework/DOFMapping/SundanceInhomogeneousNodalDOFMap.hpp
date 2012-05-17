@@ -66,6 +66,7 @@ public:
     Array<int>& nNodes,
     int verb) const ;
 
+protected:
   /** */
   void getFunctionDofs(int cellDim,
     const Array<int>& cellLID,
@@ -73,6 +74,7 @@ public:
     const Array<int>& funcs,
     Array<Array<int> >& dofs) const ;
 
+public:
   /** */
   RCP<const Set<int> >
   allowedFuncsOnCellBatch(int cellDim,
