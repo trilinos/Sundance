@@ -86,6 +86,7 @@ private:
     }
 };
 
+/** */
 class OutputControlParameters
 {
 public:

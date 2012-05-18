@@ -52,6 +52,12 @@ public:
   virtual bool checkForEvent(
     const double& t1, const Expr& u1,
     const double& t2, const Expr& u2) = 0 ;
+
+  /** */
+  virtual double eventTime() const = 0 ;
+
+  /** */
+  virtual double foundEvent() const = 0 ;
 };
 
 /** */

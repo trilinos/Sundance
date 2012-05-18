@@ -188,7 +188,8 @@ void ADReal::reciprocate()
 
   addFlops(1 + gradient_.dim());
 
-	gradient_ /= value_;
+	gradient_ /= (value_*value_);
+  gradient_ *= -1.0;
 	value_ = 1.0/value_;
 }
 
