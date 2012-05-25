@@ -153,6 +153,8 @@ bool DoublingStepController::run() const
       continue;
     }
 
+    if (stepHook_.get()) stepHook_->call(t+dt, uSolnTwoHalfSteps);
+
     if (eventHandler_.get())
     {
       gotEvent = eventHandler_->checkForEvent(t, uCur, t+0.5*dt, uSolnHalfStep);
