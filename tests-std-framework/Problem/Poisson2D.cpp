@@ -124,14 +124,14 @@ int main(int argc, char** argv)
     mesh.dump(meshFile+"-dump");
 
     WatchFlag watchMe("watch eqn");
-    watchMe.setParam("integration setup", 0);
+    watchMe.setParam("integration setup", 6);
     watchMe.setParam("integration", 6);
     watchMe.setParam("fill", 6);
     watchMe.setParam("evaluation", 0);
-//    watchMe.deactivate();
+    watchMe.deactivate();
 
     WatchFlag watchBC("watch BCs");
-    watchBC.setParam("integration setup", 0);
+    watchBC.setParam("integration setup", 6);
     watchBC.setParam("integration", 6);
     watchBC.setParam("fill", 6);
     watchBC.setParam("evaluation", 0);
@@ -267,7 +267,7 @@ int main(int argc, char** argv)
       new GaussianQuadrature(2));
 
       
-    watchBC.deactivate();
+//    watchBC.deactivate();
     Expr exactFluxExpr = Integral(top, 
       dy*exactSoln,
       new GaussianQuadrature(2), watchBC);

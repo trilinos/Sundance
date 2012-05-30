@@ -67,6 +67,7 @@ APPEND_SET(HEADERS
   Elements/SundanceQuadratureType.hpp
   Elements/SundanceQuadratureTypeBase.hpp
   Elements/SundanceRaviartThomas.hpp
+  Elements/SundanceReducedQuadrature.hpp
   Elements/SundanceTensorBasisBase.hpp
   Elements/SundanceTestFunction.hpp
   Elements/SundanceTestFunctionData.hpp
@@ -113,6 +114,7 @@ APPEND_SET(SOURCES
   Elements/SundanceQuadratureFamilyBase.cpp
   Elements/SundanceQuadratureType.cpp
   Elements/SundanceRaviartThomas.cpp
+  Elements/SundanceReducedQuadrature.cpp
   Elements/SundanceTestFunction.cpp
   Elements/SundanceTestFunctionData.cpp
   Elements/SundanceTetQuadrature.cpp
@@ -194,6 +196,7 @@ APPEND_SET(HEADERS
   Assembly/SundanceQuadratureEvalMediator.hpp
   Assembly/SundanceQuadratureIntegral.hpp
   Assembly/SundanceQuadratureIntegralBase.hpp
+  Assembly/SundanceReducedIntegral.hpp
   Assembly/SundanceRefIntegral.hpp
   Assembly/SundanceStdFwkEvalMediator.hpp
   Assembly/SundanceTrivialGrouper.hpp
@@ -243,6 +246,7 @@ APPEND_SET(SOURCES
   Assembly/SundanceQuadratureEvalMediator.cpp
   Assembly/SundanceQuadratureIntegral.cpp
   Assembly/SundanceQuadratureIntegralBase.cpp
+  Assembly/SundanceReducedIntegral.cpp
   Assembly/SundanceRefIntegral.cpp
   Assembly/SundanceStdFwkEvalMediator.cpp
   Assembly/SundanceTrivialGrouper.cpp

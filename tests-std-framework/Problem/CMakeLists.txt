@@ -81,6 +81,7 @@ SET(MPITests
              #HelmholtzEigen2D
              MixedTest_HN
              NavStok_Chanel_stat_HN
+             NonlinReducedIntegration
              Poisson3DTest_HN_Q1Q1
              Poisson3DTest_HN_Q2Q1
              LinearPartialDomain_mixed

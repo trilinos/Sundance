@@ -30,6 +30,7 @@
 
 #include "SundanceIntegralGroup.hpp"
 #include "SundanceRefIntegral.hpp"
+#include "SundanceReducedIntegral.hpp"
 #include "SundanceQuadratureIntegral.hpp"
 #include "SundanceMaximalQuadratureIntegral.hpp"
 #include "SundanceCurveQuadratureIntegral.hpp"
@@ -306,6 +307,8 @@ bool IntegralGroup
 
     const RefIntegral* ref 
       = dynamic_cast<const RefIntegral*>(integrals_[i].get());
+    const ReducedIntegral* reducedQuad 
+      = dynamic_cast<const ReducedIntegral*>(integrals_[i].get());
     const QuadratureIntegral* quad 
       = dynamic_cast<const QuadratureIntegral*>(integrals_[i].get());
     const MaximalQuadratureIntegral* maxQuad 
@@ -322,6 +325,17 @@ bool IntegralGroup
       SUNDANCE_MSG2(integrationVerb(),
         tab2 << "Coefficient is " << f);
       ref->transform(JTrans, JVol, isLocalFlag, facetIndex, cellLIDs , f, A);
+    }
+    else if (reducedQuad != 0)
+    {
+      SUNDANCE_MSG2(integrationVerb(),
+        tab2 << "Integrating term group " << i 
+        << " by reduced integration");
+      Tabs tab3;
+      SUNDANCE_MSG3(integrationVerb(),
+        tab3 << "coefficients are " <<  vectorCoeffs[resultIndices_[i]]->str());
+      const double* const f = vectorCoeffs[resultIndices_[i]]->start();
+      reducedQuad->transform(JTrans, JVol, isLocalFlag, facetIndex, cellLIDs , f, A);
     }
     else if (quad != 0)
     {
@@ -367,29 +381,29 @@ bool IntegralGroup
     }
     else if (curveQuad != 0)
     {
-        SUNDANCE_MSG2(integrationVerb(),
-          tab2 << "Integrating term group " << i
-          << " by curve integral (quadrature by default) , result index: " << resultIndices_[i]);
+      SUNDANCE_MSG2(integrationVerb(),
+        tab2 << "Integrating term group " << i
+        << " by curve integral (quadrature by default) , result index: " << resultIndices_[i]);
 
-        double f_const = 0.0;
-        if (constantCoeffs.size() > resultIndices_[i]){
-        	f_const = constantCoeffs[resultIndices_[i]];
-        }
+      double f_const = 0.0;
+      if (constantCoeffs.size() > resultIndices_[i]){
+        f_const = constantCoeffs[resultIndices_[i]];
+      }
 
-        SUNDANCE_MSG2(integrationVerb(),
-          tab2 << "Coefficient is " << f_const);
+      SUNDANCE_MSG2(integrationVerb(),
+        tab2 << "Coefficient is " << f_const);
 
-        // set this
-        if (vectorCoeffs.size() > resultIndices_[i]){
-            Tabs tab3;
-            double* const f = vectorCoeffs[resultIndices_[i]]->start();
-        	SUNDANCE_MSG3(integrationVerb(),
-        			tab3 << "coefficients are " <<  vectorCoeffs[resultIndices_[i]]->str());
-            curveQuad->transform(JTrans, JVol, isLocalFlag, facetIndex, cellLIDs , f_const , f , A);
-        } else{
-            const double* f_null = 0;
-            curveQuad->transform(JTrans, JVol, isLocalFlag, facetIndex, cellLIDs , f_const , f_null , A);
-        }
+      // set this
+      if (vectorCoeffs.size() > resultIndices_[i]){
+        Tabs tab3;
+        double* const f = vectorCoeffs[resultIndices_[i]]->start();
+        SUNDANCE_MSG3(integrationVerb(),
+          tab3 << "coefficients are " <<  vectorCoeffs[resultIndices_[i]]->str());
+        curveQuad->transform(JTrans, JVol, isLocalFlag, facetIndex, cellLIDs , f_const , f , A);
+      } else{
+        const double* f_null = 0;
+        curveQuad->transform(JTrans, JVol, isLocalFlag, facetIndex, cellLIDs , f_const , f_null , A);
+      }
 
     }
     else
