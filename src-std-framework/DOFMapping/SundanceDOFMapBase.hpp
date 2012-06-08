@@ -122,6 +122,9 @@ public:
    */
   virtual ~DOFMapBase(){;}
 
+  /** \brief . */
+  const Mesh& mesh() const {return mesh_;}
+  
   /** \brief Return <tt>true</tt> if the given cell is really owned by
    * another process and is only ghosted in this process (and optionally
    * return the owning process ID).
@@ -325,8 +328,6 @@ protected:
   void setNumLocalDOFs(int numDOFs) {numLocalDOFs_ = numDOFs;}
 
   void setTotalNumDOFs(int numDOFs) {numDOFs_ = numDOFs;}
-
-  const Mesh& mesh() const {return mesh_;}
 
   const MPIComm& comm() const {return mesh().comm();}
 
