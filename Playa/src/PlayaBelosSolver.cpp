@@ -43,6 +43,7 @@ SolverState<double> BelosSolver::solve(const LinearOperator<double>& A,
   TEUCHOS_TEST_FOR_EXCEPT(!rhs.ptr().get());
 
   if (!soln.ptr().get()) soln = rhs.copy();
+  /* KRL 8 Jun 2012: set x0 to zero to workaround bug in Belos */
   soln.zero();
 
   RCP<OP> APtr = rcp(new LinearOperator<double>(A));
