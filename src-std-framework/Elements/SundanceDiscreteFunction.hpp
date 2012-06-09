@@ -165,6 +165,12 @@ void setDiscreteFunctionVector(Expr u, const Vector<double>& v);
 Mesh getDiscreteFunctionMesh(const Expr& u);
 
 
+/** \relates DiscreteFunction
+ * Get the discrete space on which a discrete function is defined 
+ */
+DiscreteSpace getDiscreteSpace(const Expr& u);
+
+
 }
 
 

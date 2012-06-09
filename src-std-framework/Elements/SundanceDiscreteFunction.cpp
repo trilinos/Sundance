@@ -351,5 +351,35 @@ Mesh getDiscreteFunctionMesh(const Expr& u)
 }
 
 
+DiscreteSpace getDiscreteSpace(const Expr& u)
+{
+  const DiscreteFunction* df 
+    = dynamic_cast<const DiscreteFunction*>(u.ptr().get());
+
+  /* Case 1: u is a discrete function */
+  if (df != 0)
+  {
+    return df->discreteSpace();
+  }
+
+  /* Case 2: u is an element of a length-one expression whose DiscreteFunction
+   * wrapper has gotten lost in dereferencing. */
+  const DiscreteFuncElement* dfe 
+    = dynamic_cast<const DiscreteFuncElement*>(u.ptr().get());
+  TEUCHOS_TEST_FOR_EXCEPTION(dfe!=0 && u.size() > 1, runtime_error,
+    "attempt to access vector of a single element of a multicomponent "
+    "DiscreteFunction");
+  if (dfe != 0)
+  {
+    return DiscreteFunctionData::getData(dfe)->discreteSpace();
+  }
+
+  /* Case 3: u is a list of discrete functions */
+  TEUCHOS_TEST_FOR_EXCEPTION(df==0 && u.size()==1, runtime_error,
+    "non-block vector should be a discrete function in getDiscreteFunctionVector()");
+  return getDiscreteSpace(u[0]);
+}
+
+
 }
 

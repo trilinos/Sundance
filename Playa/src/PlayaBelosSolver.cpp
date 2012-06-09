@@ -49,6 +49,16 @@ SolverState<double> BelosSolver::solve(const LinearOperator<double>& A,
     soln.zero();
   }
 
+  if (rhs.norm2()==0.0)
+  {
+    soln.zero();
+    SolverStatusCode code = SolveConverged;
+    SolverState<double> state(code, "Detected trivial solution", 0, 0.0);
+    
+    return state;
+  }
+
+
   RCP<OP> APtr = rcp(new LinearOperator<double>(A));
   RCP<MV> bPtr = rcp(new MV(1));
   (*bPtr)[0] = rhs;
@@ -119,7 +129,7 @@ SolverState<double> BelosSolver::solve(const LinearOperator<double>& A,
   Belos::ReturnType rtn = solver_->solve();
 
   int numIters = solver_->getNumIters();
-  double resid = -1.0;
+  double resid = solver_->achievedTol();
   
   SolverStatusCode code = SolveFailedToConverge;
   if (rtn==Belos::Converged) code = SolveConverged;
