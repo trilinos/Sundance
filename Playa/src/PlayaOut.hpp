@@ -43,36 +43,11 @@ public:
     }
 
   /** Provide a fancy ostream wrapper to cout */
-  static FancyOStream& os()
-    {
-      static RCP<std::ostream> os = rcp(basicStream(), false);
-      static RCP<FancyOStream> rtn = fancyOStream(os);
-      static bool first = true;
-      if (first)
-      {
-        rtn->setShowProcRank(true);
-        first = false;
-      }
-      return *rtn;
-    }
+  static FancyOStream& os();
 
   /** Provide a fancy ostream wrapper to cout, ignoring output from
    * non-root processors*/
-  static FancyOStream& root()
-    {
-      static bool isRoot = MPIComm::world().getRank()==0;
-      static RCP<FancyOStream> blackHole
-        = rcp(new FancyOStream(rcp(new oblackholestream())));
-
-      if (isRoot)
-      {
-        return os();
-      }
-      else
-      {
-        return *blackHole;
-      }
-    }
+  static FancyOStream& root();
 
   /** */
   static bool& suppressStdout() {static bool rtn=false; return rtn;}

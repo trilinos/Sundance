@@ -91,15 +91,15 @@ SolverState<Scalar> LinearSolver<Scalar>
 
   TimeMonitor timer(solveTimer());
 
-  PLAYA_MSG1(this->ptr()->verb(), 
+  PLAYA_MSG1(this->ptr()->verb() * (MPIComm::world().getRank()==0), 
     tab << "Solver(" << this->description() << ") starting solve");
 
   SolverState<Scalar> rtn = this->ptr()->solve(op, rhs, soln);
 
-  PLAYA_MSG1(this->ptr()->verb(), 
+  PLAYA_MSG1(this->ptr()->verb() * (MPIComm::world().getRank()==0), 
     tab << "Solver(" << this->description() << ") done solve:");
   Tabs tab1;
-  PLAYA_MSG2(this->ptr()->verb(), 
+  PLAYA_MSG2(this->ptr()->verb() * (MPIComm::world().getRank()==0), 
     tab << "state=" << rtn);
 
   return rtn;    

@@ -35,7 +35,7 @@ void SimpleIdentityOp<Scalar>::apply(Teuchos::ETransp transApplyType,
   Vector<Scalar> out) const
 {
   Tabs tab(0);
-  PLAYA_MSG2(this->verb(), tab << "SimpleZeroOp::apply()");
+  PLAYA_MSG2(this->verb(), tab << "SimpleIdentityOp::apply()");
   out.acceptCopyOf(in);
   PLAYA_MSG2(this->verb(), tab << "done SimpleIdentityOp::apply()");
 }

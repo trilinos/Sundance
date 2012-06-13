@@ -192,6 +192,7 @@
 #include "NOX_Utils.H"
 #include "PlayaNOXSolver.hpp"
 #include "PlayaNonlinearSolver.hpp"
+#include "PlayaNonlinearSolverBuilder.hpp"
 
 
 /* Eigensolvers */
@@ -305,12 +306,6 @@ private:
   static bool checkTest(double error, double tol);
 
 
-  static RCP<GlobalMPISession> globalMPISession(int* argc, char*** argv)
-    {
-      static RCP<GlobalMPISession> rtn 
-        = rcp(new GlobalMPISession(argc, argv, &std::cerr)); 
-      return rtn;
-    }
 };
 
 

@@ -96,38 +96,38 @@ ENDIF()
 # C) Add the libraries, tests, and examples
 #
 
-MESSAGE("adding Playa")
+#MESSAGE("adding Playa")
 ADD_SUBDIRECTORY(Playa)
 
-MESSAGE("adding src-utils")
+#MESSAGE("adding src-utils")
 ADD_SUBDIRECTORY(src-utils)
-MESSAGE("adding test-utils")
+#MESSAGE("adding test-utils")
 TRIBITS_ADD_TEST_DIRECTORIES(tests-utils)
 
 #ADD_SUBDIRECTORY(src-solvers)
 #TRIBITS_ADD_TEST_DIRECTORIES(tests-solvers)
 
-MESSAGE("adding src-interop")
+#MESSAGE("adding src-interop")
 ADD_SUBDIRECTORY(src-interop)
 
-MESSAGE("adding src-core")
+#MESSAGE("adding src-core")
 ADD_SUBDIRECTORY(src-core)
-MESSAGE("adding tests-core")
+#MESSAGE("adding tests-core")
 TRIBITS_ADD_TEST_DIRECTORIES(tests-core)
 
-MESSAGE("adding src-std-mesh")
+#MESSAGE("adding src-std-mesh")
 ADD_SUBDIRECTORY(src-std-mesh)
-MESSAGE("adding tests-std-mesh")
+#MESSAGE("adding tests-std-mesh")
 TRIBITS_ADD_TEST_DIRECTORIES(tests-std-mesh)
 
-MESSAGE("adding src-std-fwk")
+#MESSAGE("adding src-std-fwk")
 ADD_SUBDIRECTORY(src-std-framework)
-MESSAGE("adding tests-std-fwk")
+#MESSAGE("adding tests-std-fwk")
 TRIBITS_ADD_TEST_DIRECTORIES(tests-std-framework)
 
-MESSAGE("adding src-pdeopt")
+#MESSAGE("adding src-pdeopt")
 ADD_SUBDIRECTORY(src-pdeopt)
-MESSAGE("adding tests-pdeopt")
+#MESSAGE("adding tests-pdeopt")
 TRIBITS_ADD_TEST_DIRECTORIES(tests-pdeopt)
 
 IF(Sundance_ENABLE_Python)
@@ -135,8 +135,8 @@ IF(Sundance_ENABLE_Python)
   ADD_SUBDIRECTORY(python)
 ENDIF()
 
-MESSAGE("adding ex-tut")
-TRIBITS_ADD_TEST_DIRECTORIES(examples-tutorial)
+#MESSAGE("adding ex-tut")
+TRIBITS_ADD_TEST_DIRECTORIES(examples)
 
 
 #

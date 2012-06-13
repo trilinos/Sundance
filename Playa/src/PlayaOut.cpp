@@ -14,6 +14,43 @@ using namespace std;
 namespace Playa
 {
 
+
+FancyOStream& Out::os()
+{
+  static RCP<std::ostream> os = rcp(basicStream(), false);
+  static RCP<FancyOStream> rtn = fancyOStream(os);
+  static bool first = true;
+  if (first)
+  {
+    rtn->setShowProcRank(true);
+    first = false;
+  }
+  return *rtn;
+}
+
+FancyOStream& Out::root()
+{
+  static bool isRoot = MPIComm::world().getRank()==0;
+
+  static RCP<std::ostream> os = rcp(basicStream(), false);
+  static RCP<FancyOStream> rtn = fancyOStream(os);
+
+  static RCP<FancyOStream> blackHole
+    = rcp(new FancyOStream(rcp(new oblackholestream())));
+  
+  if (isRoot)
+  {
+    return *rtn;
+  }
+  else
+  {
+    return *blackHole;
+  } 
+}
+
+
+
+
 void writeTable(std::ostream& os, const Tabs& tab,
   const Array<double>& a, int cols)
 {

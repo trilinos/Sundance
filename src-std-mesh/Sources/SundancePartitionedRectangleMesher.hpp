@@ -70,6 +70,24 @@ public:
     ax_(ax), bx_(bx), nx_(nx), npx_(npx),
     ay_(ay), by_(by), ny_(ny), npy_(npy) {;}
 
+  /** 
+   * Set up meshing of the rectangle 
+   * \f$ \left[a_x, b_x\right] \otimes \left[a_y, b_y\right] \f$
+   * with \f$ n_x \otimes n_y \f$ elements per processor. The
+   * balance() function is used to choose npx and npy.
+   */
+  PartitionedRectangleMesher(double ax, double bx, int nx,
+    double ay, double by, int ny,
+    const MeshType& meshType,
+    const MPIComm& comm = MPIComm::world())
+    : 
+    MeshSourceBase(meshType, comm),
+    ax_(ax), bx_(bx), nx_(nx), npx_(-1),
+    ay_(ay), by_(by), ny_(ny), npy_(-1) 
+    {
+      balanceXY(comm.getNProc(), &npx_, &npy_);
+    }
+
     
   /** Create a rectangle mesher from a ParameterList */
   PartitionedRectangleMesher(const ParameterList& params);
