@@ -53,10 +53,24 @@ int dgemm_(const char* transA, const char* transB,
   double* C, const int* ldC);
 }
 
-static Time& maxCellQuadratureTimer() 
+static Time& maxCellQuadrature0Timer() 
 {
   static RCP<Time> rtn
-    = TimeMonitor::getNewTimer("max cell quadrature"); 
+    = TimeMonitor::getNewTimer("max cell 0-form quadrature"); 
+  return *rtn;
+}
+
+static Time& maxCellQuadrature1Timer() 
+{
+  static RCP<Time> rtn
+    = TimeMonitor::getNewTimer("max cell 1-form quadrature"); 
+  return *rtn;
+}
+
+static Time& maxCellQuadrature2Timer() 
+{
+  static RCP<Time> rtn
+    = TimeMonitor::getNewTimer("max cell 2-form quadrature"); 
   return *rtn;
 }
 
@@ -274,7 +288,7 @@ void MaximalQuadratureIntegral
   const double* const coeff,
   RCP<Array<double> >& A) const
 {
-  TimeMonitor timer(maxCellQuadratureTimer());
+  TimeMonitor timer(maxCellQuadrature0Timer());
   Tabs tabs;
   SUNDANCE_MSG1(integrationVerb(), tabs << "doing zero form by quadrature");
 
@@ -366,7 +380,7 @@ void MaximalQuadratureIntegral::transformOneForm(const CellJacobianBatch& JTrans
   const double* const coeff,
   RCP<Array<double> >& A) const
 {
-  TimeMonitor timer(maxCellQuadratureTimer());
+  TimeMonitor timer(maxCellQuadrature1Timer());
   Tabs tabs;
   TEUCHOS_TEST_FOR_EXCEPTION(order() != 1, std::logic_error,
     "MaximalQuadratureIntegral::transformOneForm() called for form "
@@ -519,7 +533,7 @@ void MaximalQuadratureIntegral::transformTwoForm(const CellJacobianBatch& JTrans
   const double* const coeff,
   RCP<Array<double> >& A) const
 {
-  TimeMonitor timer(maxCellQuadratureTimer());
+  TimeMonitor timer(maxCellQuadrature2Timer());
   Tabs tabs;
   TEUCHOS_TEST_FOR_EXCEPTION(order() != 2, std::logic_error,
     "MaximalQuadratureIntegral::transformTwoForm() called for form "

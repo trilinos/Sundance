@@ -55,10 +55,26 @@ int dgemm_(const char* transA, const char* transB,
   double* C, const int* ldC);
 }
 
-static Time& reducedIntegrationTimer() 
+static Time& reduced0IntegrationTimer() 
 {
   static RCP<Time> rtn
-    = TimeMonitor::getNewTimer("reduced integration"); 
+    = TimeMonitor::getNewTimer("reduced 0-form integration"); 
+  return *rtn;
+}
+
+
+static Time& reduced1IntegrationTimer() 
+{
+  static RCP<Time> rtn
+    = TimeMonitor::getNewTimer("reduced 1-form integration"); 
+  return *rtn;
+}
+
+
+static Time& reduced2IntegrationTimer() 
+{
+  static RCP<Time> rtn
+    = TimeMonitor::getNewTimer("reduced 2-form integration"); 
   return *rtn;
 }
 
@@ -412,7 +428,7 @@ void ReducedIntegral::transformZeroForm(const CellJacobianBatch& JTrans,
   const double* const coeffs,
   RCP<Array<double> >& A) const
 {
-  TimeMonitor timer(reducedIntegrationTimer());
+  TimeMonitor timer(reduced0IntegrationTimer());
 
   TEUCHOS_TEST_FOR_EXCEPTION(order() != 0, std::logic_error,
     "ReducedIntegral::transformZeroForm() called "
@@ -479,7 +495,7 @@ void ReducedIntegral::transformOneForm(const CellJacobianBatch& JTrans,
   const double* const coeffs,
   RCP<Array<double> >& A) const
 {
-  TimeMonitor timer(reducedIntegrationTimer());
+  TimeMonitor timer(reduced1IntegrationTimer());
   TEUCHOS_TEST_FOR_EXCEPTION(order() != 1, std::logic_error,
     "ReducedIntegral::transformOneForm() called for form "
     "of order " << order());
@@ -587,7 +603,7 @@ void ReducedIntegral::transformTwoForm(const CellJacobianBatch& JTrans,
   const double* const coeffs,
   RCP<Array<double> >& A) const
 {
-  TimeMonitor timer(reducedIntegrationTimer());
+  TimeMonitor timer(reduced2IntegrationTimer());
   TEUCHOS_TEST_FOR_EXCEPTION(order() != 2, std::logic_error,
     "ReducedIntegral::transformTwoForm() called for form "
     "of order " << order());

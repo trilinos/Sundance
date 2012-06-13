@@ -53,10 +53,24 @@ int dgemm_(const char* transA, const char* transB,
   double* C, const int* ldC);
 }
 
-static Time& quadratureTimer() 
+static Time& quadrature0Timer() 
 {
   static RCP<Time> rtn
-    = TimeMonitor::getNewTimer("quadrature"); 
+    = TimeMonitor::getNewTimer("0-form quadrature"); 
+  return *rtn;
+}
+
+static Time& quadrature1Timer() 
+{
+  static RCP<Time> rtn
+    = TimeMonitor::getNewTimer("1-form quadrature"); 
+  return *rtn;
+}
+
+static Time& quadrature2Timer() 
+{
+  static RCP<Time> rtn
+    = TimeMonitor::getNewTimer("2-form quadrature"); 
   return *rtn;
 }
 
@@ -325,7 +339,7 @@ void QuadratureIntegral::transformZeroForm(const CellJacobianBatch& JTrans,
   const double* const coeff,
   RCP<Array<double> >& A) const
 {
-  TimeMonitor timer(quadratureTimer());
+  TimeMonitor timer(quadrature0Timer());
   Tabs tabs;
   TEUCHOS_TEST_FOR_EXCEPTION(order() != 0, std::logic_error,
     "QuadratureIntegral::transformZeroForm() called "
@@ -493,7 +507,7 @@ void QuadratureIntegral::transformOneForm(const CellJacobianBatch& JTrans,
   const double* const coeff,
   RCP<Array<double> >& A) const
 {
-  TimeMonitor timer(quadratureTimer());
+  TimeMonitor timer(quadrature1Timer());
   Tabs tabs;
   TEUCHOS_TEST_FOR_EXCEPTION(order() != 1, std::logic_error,
     "QuadratureIntegral::transformOneForm() called for form "
@@ -640,7 +654,7 @@ void QuadratureIntegral::transformTwoForm(const CellJacobianBatch& JTrans,
   const double* const coeff,
   RCP<Array<double> >& A) const
 {
-  TimeMonitor timer(quadratureTimer());
+  TimeMonitor timer(quadrature2Timer());
   Tabs tabs;
   TEUCHOS_TEST_FOR_EXCEPTION(order() != 2, std::logic_error,
     "QuadratureIntegral::transformTwoForm() called for form "

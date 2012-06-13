@@ -210,6 +210,7 @@ Assembler
 void Assembler::init(const Mesh& mesh, const RCP<EquationSet>& eqn)
 {
   Tabs tab0(0);
+  Out::root() << "assembler init" << endl;
 
   /* Decide a verbosity level for the overall setup */
   int verb = 0;

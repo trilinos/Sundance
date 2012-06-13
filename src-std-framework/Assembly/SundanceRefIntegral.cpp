@@ -55,13 +55,27 @@ int dgemm_(const char* transA, const char* transB,
   double* C, const int* ldC);
 }
 
-static Time& refIntegrationTimer() 
+static Time& ref0IntegrationTimer() 
 {
   static RCP<Time> rtn
-    = TimeMonitor::getNewTimer("ref integration"); 
+    = TimeMonitor::getNewTimer("ref 0-form integration"); 
   return *rtn;
 }
 
+static Time& ref1IntegrationTimer() 
+{
+  static RCP<Time> rtn
+    = TimeMonitor::getNewTimer("ref 1-form integration"); 
+  return *rtn;
+}
+
+
+static Time& ref2IntegrationTimer() 
+{
+  static RCP<Time> rtn
+    = TimeMonitor::getNewTimer("ref 2-form integration"); 
+  return *rtn;
+}
 
 
 RefIntegral::RefIntegral(int spatialDim,
@@ -436,7 +450,7 @@ void RefIntegral::transformZeroForm(const CellJacobianBatch& JVol,
   const double& coeff,
   RCP<Array<double> >& A) const
 {
-  TimeMonitor timer(refIntegrationTimer());
+  TimeMonitor timer(ref0IntegrationTimer());
 
   TEUCHOS_TEST_FOR_EXCEPTION(order() != 0, std::logic_error,
     "RefIntegral::transformZeroForm() called "
@@ -552,7 +566,7 @@ void RefIntegral::transformOneForm(const CellJacobianBatch& JTrans,
   const double& coeff,
   RCP<Array<double> >& A) const
 {
-  TimeMonitor timer(refIntegrationTimer());
+  TimeMonitor timer(ref1IntegrationTimer());
   TEUCHOS_TEST_FOR_EXCEPTION(order() != 1, std::logic_error,
     "RefIntegral::transformOneForm() called for form "
     "of order " << order());
@@ -763,7 +777,7 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& JTrans,
   const double& coeff,
   RCP<Array<double> >& A) const
 {
-  TimeMonitor timer(refIntegrationTimer());
+  TimeMonitor timer(ref2IntegrationTimer());
   TEUCHOS_TEST_FOR_EXCEPTION(order() != 2, std::logic_error,
     "RefIntegral::transformTwoForm() called for form "
     "of order " << order());
