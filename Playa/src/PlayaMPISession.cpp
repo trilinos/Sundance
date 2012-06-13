@@ -13,10 +13,10 @@ using namespace Teuchos;
 int MPISession::rank_ = 0 ;
 int MPISession::nProc_ = 1 ;
 
-void MPISession::init(int* argc, void*** argv)
+MPISession::MPISession(int* argc, char*** argv)
 {
-#ifdef HAVE_MPI
-	/* initialize MPI */
+  #ifdef HAVE_MPI
+  /* initialize MPI */
 	int mpiHasBeenStarted = 0;
 	MPI_Initialized(& mpiHasBeenStarted);
 	int mpierr = 0 ;
@@ -65,18 +65,40 @@ void MPISession::init(int* argc, void*** argv)
 #endif
 }
 
-void MPISession::finalize()
+
+void MPISession::init(int* argc, char*** argv)
 {
-#ifdef HAVE_MPI
-  MPIDataType::clearTypeRegistry();
-  MPIOp::clearOpRegistry();
-
-	int mpierr = ::MPI_Finalize();
-
-	TEUCHOS_TEST_FOR_EXCEPTION(mpierr != 0, std::runtime_error,
-                     "Error code=" << mpierr << " detected in MPI_Finalize()");
-#endif
+  static RCP<MPISession> session = rcp(new MPISession(argc, argv));
 }
 
+void MPISession::init(int* argc, void*** argv)
+{
+  MPISession::init(argc, (char***)argv);
+}
+
+void MPISession::finalize()
+{
+  // nothing to do here
+}
+
+
+MPISession::~MPISession()
+{
+#ifdef HAVE_MPI
+  int mpiHasBeenFinalized = 0;
+	MPI_Finalized(& mpiHasBeenFinalized);
+
+  if (!mpiHasBeenFinalized)
+  {
+    MPIDataType::clearTypeRegistry();
+    MPIOp::clearOpRegistry();
+    
+    int mpierr = ::MPI_Finalize();
+    
+    TEUCHOS_TEST_FOR_EXCEPTION(mpierr != 0, std::runtime_error,
+      "Error code=" << mpierr << " detected in MPI_Finalize()");
+  }
+#endif
+}
 
 }

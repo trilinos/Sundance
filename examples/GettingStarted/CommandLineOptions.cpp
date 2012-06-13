@@ -28,31 +28,41 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_VERSIONSTRING_H
-#define SUNDANCE_VERSIONSTRING_H
+#include "Sundance.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-#include "SundanceDefs.hpp"
-
-
-namespace Sundance
+int main(int argc, char** argv)
 {
-  class VersionString
+  try
   {
-  public:
-    /** */
-    static std::string date() {static std::string rtn = "10 June 2012"; return rtn;}
+    /* Declare variables for the options to be set on command line, and
+     * initialize with default values.
+     */
+    int someInt = 137;
+    double someDouble = 3.14159;
+    string someString = "blue";
+    bool someBool = false;
 
-    /** */
-    static std::string number() {static std::string rtn = "2.4.0"; return rtn;}
-  };
-} 
+    Sundance::setOption("integer", someInt, "An integer");
+    Sundance::setOption("alpha", someDouble, "A double");
+    Sundance::setOption("color", someString, "What is your favorite color?");
+    Sundance::setOption("lie", "truth", someBool, "I am lying.");
 
+    /* Now that command-line parsing has been set up, call init */ 
+    Sundance::init(&argc, &argv);
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */   
+    /* Just for the heck of it, do something with the options */
+    Out::root() << "User input:" << endl;
+    Out::root() << "An integer: " << someInt << endl;
+    Out::root() << "A double-precision number: " << someDouble << endl;
+    Out::root() << "Favorite color: " << someString << endl;
+    Out::root() << "I am lying: " << someBool << endl;
 
-#endif
-
-
-
+    Sundance::passFailTest(true);
+  }
+	catch(std::exception& e)
+  {
+    Sundance::handleException(e);
+  }
+  Sundance::finalize(); 
+  return Sundance::testStatus();
+}

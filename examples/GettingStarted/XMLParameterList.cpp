@@ -28,31 +28,43 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_VERSIONSTRING_H
-#define SUNDANCE_VERSIONSTRING_H
+#include "Sundance.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-#include "SundanceDefs.hpp"
-
-
-namespace Sundance
+int main(int argc, char** argv)
 {
-  class VersionString
+  try
   {
-  public:
-    /** */
-    static std::string date() {static std::string rtn = "10 June 2012"; return rtn;}
+    /* Read the XML filename as a command-line option */
+    string xmlFilename = "paramExample.xml";
+    Sundance::setOption("xml-file", xmlFilename, "XML filename");
+      
+    /* Initialize */
+    Sundance::init(&argc, &argv);
 
-    /** */
-    static std::string number() {static std::string rtn = "2.4.0"; return rtn;}
-  };
-} 
+    /* Read a parameter list from the XML file */
+    ParameterXMLFileReader reader(xmlFilename);
+    ParameterList params = reader.getParameters();
 
+    /* Get the parameters for the "Widget" sublist */
+    const ParameterList& widget = params.sublist("Widget");
+    Out::root() << "widget region label: " << widget.get<int>("Region") << endl;
+    Out::root() << "widget material: " << widget.get<string>("Material") << endl;
+    Out::root() << "widget density: " << widget.get<double>("Density") << endl;
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */   
+    /* Get the parameters for the "Gizmo" sublist */
+    const ParameterList& gizmo = params.sublist("Gizmo");
+    Out::root() << "gizmo region label: " << gizmo.get<int>("Region") << endl;
+    Out::root() << "gizmo material: " << gizmo.get<string>("Material") << endl;
+    Out::root() << "gizmo density: " << gizmo.get<double>("Density") << endl;
 
-#endif
-
+    Sundance::passFailTest(true);
+  }
+	catch(std::exception& e)
+  {
+    Sundance::handleException(e);
+  }
+  Sundance::finalize(); 
+  return Sundance::testStatus();
+}
 
 

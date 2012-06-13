@@ -137,6 +137,7 @@ APPEND_SET(HEADERS
   PlayaNonlinearOperatorBase.hpp
   PlayaNonlinearSolver.hpp
   PlayaNonlinearSolverBase.hpp
+  PlayaNonlinearSolverBuilder.hpp
   PlayaNOXSolver.hpp
   PlayaObjectiveBase.hpp
   PlayaObjectWithVerbosity.hpp
@@ -262,6 +263,7 @@ APPEND_SET(SOURCES
   PlayaMPISession.cpp
   PlayaMultiVectorOperator.cpp
   PlayaNewtonArmijoSolver.cpp
+  PlayaNonlinearSolverBuilder.cpp
   PlayaNOXSolver.cpp
   PlayaOut.cpp
   PlayaObjectiveBase.cpp

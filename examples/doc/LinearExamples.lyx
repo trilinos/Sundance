@@ -1,0 +1,260 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass extarticle
+\begin_preamble
+\newcommand{\pd}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\fdo}[1]{\mathcal{D}_{#1}}
+\newcommand{\sdo}[1]{D_{#1}}
+\newcommand{\tdo}[1]{D_{#1}}
+\newcommand{\fd}[2]{\fdo{#1} #2}
+\newcommand{\sd}[2]{\sdo{#1} #2}
+\newcommand{\td}[2]{\tdo{#1} #2}
+\newcommand{\pdd}[2]{\frac{\partial^2 #1}{\partial #2^2}}
+\newcommand{\pddd}[2]{\frac{\partial^3 #1}{\partial #2^3}}
+\newcommand{\pmix}[3]{\frac{\partial^2 #1}{\partial #2 \partial #3}}
+\newcommand{\pmixx}[4]{\frac{\partial^3 #1}{\partial #2 \partial #3 \partial #4}}
+\newcommand{\funcd}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\spaced}[2]{{\cal D}^{#1} #2}
+\newcommand{\totald}[2]{{D}^{#1} #2}
+
+\newcommand{\abs}[1]{\left\vert{#1}\right\vert}
+\newcommand{\od}[2]{\frac{d #1}{d #2}}
+\newcommand{\odd}[2]{\frac{d^2 #1}{d #2^2}}
+\newcommand{\R}{\mathbb{R}}
+
+\usepackage{listings}
+\usepackage[usenames,dvipsnames]{color}
+\definecolor{lightgray}{RGB}{240,240,240}
+\definecolor{bluegray}{RGB}{180,180,200}
+\lstset{basicstyle={\sffamily\footnotesize},language={C++},tabsize=2,showstringspaces=false,frame=shadowbox,breaklines=true,mathescape=true,commentstyle={\itshape\textcolor{red}},lineskip=1pt,aboveskip=\bigskipamount,belowskip=\bigskipamount, rulesepcolor=\color{bluegray}}
+\end_preamble
+\use_default_options true
+\begin_modules
+theorems-ams
+theorems-ams-extended
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman palatino
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\branch answers
+\selected 1
+\filename_suffix 0
+\color #5555ff
+\end_branch
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 0.9in
+\topmargin 0.75in
+\rightmargin 0.9in
+\bottommargin 0.75in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Sundance Examples: Linear PDE
+\end_layout
+
+\begin_layout Author
+Kevin Long
+\end_layout
+
+\begin_layout Section
+Example: Coupled problems in 2D
+\end_layout
+
+\begin_layout Subsection
+Problem formulation
+\end_layout
+
+\begin_layout Standard
+We solve the coupled equations
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+-\nabla^{2}u_{1}+u_{2}=0
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+-\nabla^{2}u_{2}+x=0
+\]
+
+\end_inset
+
+on the unit square with boundary conditions
+\begin_inset Formula 
+\[
+u_{1}(0,y)=u_{1}(1,y)=0
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+u_{2}(0,y)=u_{2}(1,y)=0
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\pd{u_{1}}{n}=\pd{u_{2}}{n}=0\;\;\mbox{on north and south boundaries}.
+\]
+
+\end_inset
+
+The exact solution is
+\begin_inset Formula 
+\[
+u_{1}\left(x\right)=\frac{1}{360}\left(3x^{5}-10x^{3}+7x\right)
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+u_{2}\left(x\right)=\frac{1}{6}\left(x^{3}-x\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Weak equation
+\end_layout
+
+\begin_layout Standard
+The Galerkin weak form is
+\begin_inset Formula 
+\[
+\int_{\Omega}\nabla v_{1}\cdot\nabla u_{1}+v_{1}u_{2}+\nabla v_{2}\cdot\nabla u_{2}+v_{2}x\, d\Omega=0
+\]
+
+\end_inset
+
+augmented by essential boundary conditions.
+ We'll discretize 
+\begin_inset Formula $u_{1}$
+\end_inset
+
+ with 
+\begin_inset Formula $P^{3}$
+\end_inset
+
+ and 
+\begin_inset Formula $u_{2}$
+\end_inset
+
+ with 
+\begin_inset Formula $P^{2}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Programming the problem
+\end_layout
+
+\begin_layout Subsubsection
+Meshing a rectangle
+\end_layout
+
+\begin_layout Subsubsection
+Coordinate-based cell filters
+\end_layout
+
+\begin_layout Subsubsection
+Writing the equations
+\end_layout
+
+\begin_layout Subsubsection
+Forming the coupled linear problem
+\end_layout
+
+\begin_layout Subsubsection
+Postprocessing and validation
+\end_layout
+
+\begin_layout Section
+Example: Convective cooling with ideal flow
+\end_layout
+
+\begin_layout Section
+Example sequence: Several formulations of Stokes flow
+\end_layout
+
+\begin_layout Subsection
+Driven cavity, vorticity-streamfunction formulation
+\end_layout
+
+\begin_layout Subsection
+Couette flow, pressure-stabilized equal-order discretization
+\end_layout
+
+\begin_layout Subsection
+Couette flow, mixed discretization and block preconditioning
+\end_layout
+
+\end_body
+\end_document

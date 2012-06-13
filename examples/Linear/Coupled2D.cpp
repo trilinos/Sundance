@@ -34,8 +34,16 @@
 
 using Sundance::List;
 /** 
- * Solves a system of coupled PDEs. See the LinearExamples 
- * documentation for more information.
+ * Solves the coupled equations
+ *
+ * u_xx = v
+ * v_xx = 1
+ * u(0) = u(1) = 0
+ * v(0) = v(1) = 0
+ *
+ * The solution is
+ * v(x) = -1/2 x (1-x)
+ * u(x) = 1/24 x (x^3 - 2 x^2 + 1)
  */
 
 
@@ -177,5 +185,6 @@ int main(int argc, char** argv)
 		{
       Sundance::handleException(e);
 		}
-  Sundance::finalize(); return Sundance::testStatus(); 
+  Sundance::finalize(); 
+  return Sundance::testStatus(); 
 }

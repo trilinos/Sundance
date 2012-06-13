@@ -13,22 +13,22 @@ SET(DisabledTests
 )
 
 SET(SerialTests
-  DiscFunc3D
-  TetQuadTransformationTest
+#  DiscFunc3D
+#  TetQuadTransformationTest
   PoissonOnDisk 
   LinearPeriodic1D
   NonlinearPeriodic1D
   Poisson3D
   Projection3D
-  PoissonBoltzmannDemo1D
+#  PoissonBoltzmannDemo1D
   BesselTest2D 
-  Coupled2D
+#  Coupled2D
   CNBugTest
   EdgeDFTest
-  Kepler 
-  Stokes2D 
-  NitschePoisson2D 
-  PCDStokesCouette2D
+#  Kepler 
+#  Stokes2D 
+#  NitschePoisson2D 
+ # PCDStokesCouette2D
   PCDNavierStokesCouette2D
   LinearPartialDomain 
   NonlinearPartialDomain 
@@ -65,14 +65,14 @@ SET(MPITests
              HighOrderPoisson2D
              HighOrderPoissonBernstein2D
              HighOrderProjection2D 
-             NoxPoisson1D 
-             PoissonBoltzmann2D
-             UserDefAlgebraic 
-             TaylorHoodStokes2D
+#             NoxPoisson1D 
+ #            PoissonBoltzmann2D
+  #           UserDefAlgebraic 
+  #           TaylorHoodStokes2D
              AdvectionDiffusion2D 
              LinearVariationalTest 
              OptPoisson1D
-             VorticityStokes2D 
+   #          VorticityStokes2D 
              VorticityNavierStokes2D
              SpectralPoisson1D 
              SpectralSqrt 

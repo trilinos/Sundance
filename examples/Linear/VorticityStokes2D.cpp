@@ -29,21 +29,20 @@
 /* @HEADER@ */
 
 #include "Sundance.hpp"
-#include <unistd.h>
-#include <sys/unistd.h>
+#include "SundanceEvaluator.hpp"
+#include "Teuchos_XMLParameterListWriter.hpp"
 
 using Sundance::List;
 /** 
- * Solves a system of coupled PDEs. See the LinearExamples 
- * documentation for more information.
+ * Solves the 2D Stokes driven cavity in the vorticity-streamfunction 
+ * formulation
  */
-
-
 
 CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
 CELL_PREDICATE(BottomPointTest, {return fabs(x[1]) < 1.0e-10;})
 CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;})
-CELL_PREDICATE(TopPointTest, {return fabs(x[1]-2.0) < 1.0e-10;})
+CELL_PREDICATE(TopPointTest, {return fabs(x[1]-1.0) < 1.0e-10;})
+
 
 int main(int argc, char** argv)
 {
@@ -52,23 +51,17 @@ int main(int argc, char** argv)
 		{
       Sundance::init(&argc, &argv);
       int np = MPIComm::world().getNProc();
-      int npx = -1;
-      int npy = -1;
-      PartitionedRectangleMesher::balanceXY(np, &npx, &npy);
-      TEUCHOS_TEST_FOR_EXCEPT(npx < 1);
-      TEUCHOS_TEST_FOR_EXCEPT(npy < 1);
-      TEUCHOS_TEST_FOR_EXCEPT(npx * npy != np);
 
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
-       * be built using a PartitionedLineMesher. */
-      MeshType meshType = new BasicSimplicialMeshType();
+       * be built using a PartitionedRectangleMesher. */
       int nx = 32;
-
-      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx, npx,
-                                                         0.0, 2.0, nx, npy,
+      int ny = 32;
+      MeshType meshType = new BasicSimplicialMeshType();
+      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx, np,
+                                                         0.0, 1.0, ny, 1,
                                                          meshType);
       Mesh mesh = mesher.getMesh();
 
@@ -82,100 +75,70 @@ int main(int argc, char** argv)
       CellFilter top = edges.subset(new TopPointTest());
       CellFilter bottom = edges.subset(new BottomPointTest());
 
-
       
       /* Create unknown and test functions, discretized using first-order
        * Lagrange interpolants */
-      Expr u = new UnknownFunction(new Lagrange(3), "u");
-      Expr v = new UnknownFunction(new Lagrange(2), "v");
-      Expr du = new TestFunction(new Lagrange(3), "du");
-      Expr dv = new TestFunction(new Lagrange(2), "dv");
+      Expr psi = new UnknownFunction(new Lagrange(1), "psi");
+      Expr vPsi = new TestFunction(new Lagrange(1), "vPsi");
+      Expr omega = new UnknownFunction(new Lagrange(1), "omega");
+      Expr vOmega = new TestFunction(new Lagrange(1), "vOmega");
 
-      /* Create differential operator and coordinate function */
+      /* Create differential operator and coordinate functions */
       Expr dx = new Derivative(0);
-      Expr x = new CoordExpr(0);
       Expr dy = new Derivative(1);
-      Expr y = new CoordExpr(1);
       Expr grad = List(dx, dy);
+      Expr x = new CoordExpr(0);
+      Expr y = new CoordExpr(1);
 
       /* We need a quadrature rule for doing the integrations */
-      QuadratureFamily quad2 = new GaussianQuadrature(6);
+      QuadratureFamily quad2 = new GaussianQuadrature(2);
+      QuadratureFamily quad4 = new GaussianQuadrature(4);
 
-      
       /* Define the weak form */
-      Expr eqn = Integral(interior, 
-                          (grad*du)*(grad*u) + du*v + (grad*dv)*(grad*v) + x*dv, 
-                          quad2);
+      Expr eqn = Integral(interior, (grad*vPsi)*(grad*psi) 
+                          + (grad*vOmega)*(grad*omega) + vPsi*omega, quad2)
+        + Integral(top, -1.0*vPsi, quad4);
       /* Define the Dirichlet BC */
-      Expr bc = EssentialBC(left, du*u + dv*v, quad2)
-        + EssentialBC(right, du*u + dv*v, quad2);
+      Expr bc = EssentialBC(bottom, vOmega*psi, quad2) 
+        + EssentialBC(top, vOmega*psi, quad2) 
+        + EssentialBC(left, vOmega*psi, quad2) 
+        + EssentialBC(right, vOmega*psi, quad2);
+
+
 
       /* We can now set up the linear problem! */
-      LinearProblem prob(mesh, eqn, bc, List(dv,du), List(v,u), vecType);
-
-      
-
-      /* Create an Aztec solver */
-      std::map<int,int> azOptions;
-      std::map<int,double> azParams;
-
-      azOptions[AZ_solver] = AZ_gmres;
-      azOptions[AZ_precond] = AZ_dom_decomp;
-      azOptions[AZ_subdomain_solve] = AZ_ilu;
-      azOptions[AZ_graph_fill] = 1;
-      //azOptions[AZ_ml] = 1;
-      //azOptions[AZ_ml_levels] = 4;
-      azParams[AZ_max_iter] = 1000;
-      azParams[AZ_tol] = 1.0e-8;
-
-      LinearSolver<double> solver = new AztecSolver(azOptions,azParams);
+      LinearProblem prob(mesh, eqn, bc, List(vPsi, vOmega), 
+                         List(psi, omega), vecType);
 
 
+      LinearSolver<double> solver 
+        = LinearSolverBuilder::createSolver("bicgstab.xml");
+
+
+      std::cerr << "starting solve..." << std::endl;
 
       Expr soln = prob.solve(solver);
 
-      Expr x2 = x*x;
-      Expr x3 = x*x2;
-
-      Expr uExact = (1.0/120.0)*x2*x3 - 1.0/36.0 * x3 + 7.0/360.0 * x;
-      Expr vExact = 1.0/6.0 * x * (x2 - 1.0);
-
-      Expr vErr = vExact - soln[0];
-      Expr uErr = uExact - soln[1];
-      
-      Expr vErrExpr = Integral(interior, 
-                              vErr*vErr,
-                              new GaussianQuadrature(6));
-      
-      Expr uErrExpr = Integral(interior, 
-                              uErr*uErr,
-                              new GaussianQuadrature(6));
-
-      FunctionalEvaluator vErrInt(mesh, vErrExpr);
-      FunctionalEvaluator uErrInt(mesh, uErrExpr);
-
-      double uErrorSq = uErrInt.evaluate();
-      std::cerr << "u error norm = " << sqrt(uErrorSq) << std::endl << std::endl;
-
-      double vErrorSq = vErrInt.evaluate();
-      std::cerr << "v error norm = " << sqrt(vErrorSq) << std::endl << std::endl;
-
-      
       /* Write the field in VTK format */
-      FieldWriter w = new VTKWriter("Coupled2D");
+      FieldWriter w = new VTKWriter("VorticityStokes2D");
       w.addMesh(mesh);
-      w.addField("v", new ExprFieldWrapper(soln[0]));
-      w.addField("u", new ExprFieldWrapper(soln[1]));
+      w.addField("psi", new ExprFieldWrapper(soln[0]));
+      w.addField("omega", new ExprFieldWrapper(soln[1]));
       w.write();
 
+      /* As a check, we integrate the vorticity over the domain. By 
+       * Stokes' theorem this should be equal to the line integral
+       * of the velocity around the boundary (which is 1). */
+      Expr totalVorticityExpr = Integral(interior, soln[1], quad2);
+      double totalVorticity = evaluateIntegral(mesh, totalVorticityExpr);
+      std::cerr << "total vorticity = " << totalVorticity << std::endl;
 
-
-      double tol = 1.0e-5;
-      Sundance::passFailTest(sqrt(uErrorSq+vErrorSq), tol);
+      double tol = 1.0e-4;
+      Sundance::passFailTest(fabs(totalVorticity-1.0), tol);
     }
 	catch(std::exception& e)
 		{
-      Sundance::handleException(e);
+      std::cerr << e.what() << std::endl;
 		}
   Sundance::finalize(); return Sundance::testStatus(); 
 }
