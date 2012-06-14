@@ -1,50 +1,26 @@
 
 
 INCLUDE(AddTestBatch)
+INCLUDE(TribitsAddExecutableAndTest)
+INCLUDE(TribitsCopyFilesToBinaryDir)
 
 SET(DisabledTests
-  RefinementTest3D
   FunctionalTest3D 
   transientOneZoneEddy2D
-  FOSLSMagnetostatics2D
-  PoissonBoltzmannDemo3D
-  NoxAlgebraic 
-  NonlinAlgebraic 
 )
 
 SET(SerialTests
-#  DiscFunc3D
-#  TetQuadTransformationTest
-  PoissonOnDisk 
-  LinearPeriodic1D
-  NonlinearPeriodic1D
-  Poisson3D
-  Projection3D
-#  PoissonBoltzmannDemo1D
   BesselTest2D 
-#  Coupled2D
-  CNBugTest
-  EdgeDFTest
-#  Kepler 
-#  Stokes2D 
-#  NitschePoisson2D 
- # PCDStokesCouette2D
   PCDNavierStokesCouette2D
-  LinearPartialDomain 
-  NonlinearPartialDomain 
-  AToCDensitySample
-  DuffingFloquet
   NonlinearPDECOTest1D
   NonlinearPDECOTest2D
   FunctionalTest 
-  TwoZoneDiscFunc
   PerforatedPlate
   PerforatedPlate_QuadInt
   Stokes2D_HN_Q1
   PoissonPeano2D
   PoissonPeano3D
   StokesPeano2D 
-  SecondOrderFloquet 
   MixedTest
   RefinementTest2D
   Poisson2D_HN_Nitsch
@@ -58,30 +34,15 @@ SET(SerialTests
 SET(MPITests 
              LPTests1D
              Poisson2D
-             RadDiff1D
              CrankNicolsonHeat1D
              FieldIOTest
-             BlockStochPoissonTest1D
-             HighOrderPoisson2D
-             HighOrderPoissonBernstein2D
-             HighOrderProjection2D 
-#             NoxPoisson1D 
- #            PoissonBoltzmann2D
-  #           UserDefAlgebraic 
-  #           TaylorHoodStokes2D
              AdvectionDiffusion2D 
              LinearVariationalTest 
              OptPoisson1D
-   #          VorticityStokes2D 
              VorticityNavierStokes2D
-             SpectralPoisson1D 
-             SpectralSqrt 
              SteadyBurgers1D
-             #NitschePoisson2D 
-             #HelmholtzEigen2D
              MixedTest_HN
              NavStok_Chanel_stat_HN
-             NonlinReducedIntegration
              Poisson3DTest_HN_Q1Q1
              Poisson3DTest_HN_Q2Q1
              LinearPartialDomain_mixed
@@ -90,6 +51,41 @@ SET(MPITests
              Poisson3D_Surf
    )
 
+
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
+  MPIProbTestBatch
+    SOURCES ProbMPITestDriver.cpp 
+       BlockStochPoissonTest1D.cpp 
+       HighOrderPoisson2D.cpp 
+       HighOrderPoissonBernstein2D.cpp 
+       HighOrderProjection2D.cpp 
+       NonlinReducedIntegration.cpp
+       SpectralPoisson1D.cpp 
+       SpectralSqrt.cpp
+    COMM serial mpi
+    NUM_MPI_PROCS 4
+  )
+
+
+
+TRIBITS_ADD_EXECUTABLE_AND_TEST(
+  SerialProbTestBatch
+    SOURCES ProbSerialTestDriver.cpp 
+       NonlinearPartialDomain.cpp
+       NonlinearPeriodic1D.cpp
+       LinearPeriodic1D.cpp
+       PoissonOnDisk.cpp
+       TetQuadTransformationTest.cpp
+       DiscFunc3D.cpp
+       Kepler.cpp
+       CNBugTest.cpp
+       EdgeDFTest.cpp
+       AToCDensitySample.cpp
+       DuffingFloquet.cpp
+       SecondOrderFloquet.cpp
+    COMM serial mpi
+    NUM_MPI_PROCS 1
+  )
 
 
 SET(SolverParamPath ${PACKAGE_SOURCE_DIR}/etc/SolverParameters)
@@ -124,7 +120,22 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(TestCopyFiles
                    poissonParams.xml
                    userPrecParams.xml
   SOURCE_DIR ${SolverParamPath}
-  EXEDEPS ${MPITests} ${SerialTests}
+  EXEDEPS ${MPITests} ${SerialTests} ${SerialProbsTestBatch} ${MPIProbsTestBatch}
+  )
+
+
+TRIBITS_COPY_FILES_TO_BINARY_DIR(TestMeshCopyFiles
+  DEST_FILES 
+    couette-2.exo
+    couette-3.exo
+    disk.ncdf
+    disk.1.ele
+    disk.1.node
+    diskWithHole2D-0.exo
+    diskWithHole2D-1.exo
+    tetPrism.exo
+  SOURCE_DIR ${PACKAGE_SOURCE_DIR}/tests-std-framework/Problem
+  EXEDEPS ${MPITests} ${SerialTests} ${SerialProbsTestBatch} ${MPIProbsTestBatch}
   )
 
 

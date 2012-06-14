@@ -302,7 +302,7 @@ public:
 
   static CommandLineProcessor& clp()
     {static CommandLineProcessor rtn; return rtn;}
-private:
+
   static bool checkTest(double error, double tol);
 
 
