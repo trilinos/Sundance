@@ -6,7 +6,8 @@
 #include "PlayaNonlinearSolverBuilder.hpp"
 #include "PlayaLinearSolverBuilder.hpp"
 #include "PlayaNOXSolver.hpp"
-#include "PlayaNewtonArmijoSolverDecl.hpp"
+#include "PlayaNewtonArmijoSolverImpl.hpp"
+#include "PlayaLinearCombinationImpl.hpp"
 #include "Teuchos_ParameterXMLFileReader.hpp"
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION

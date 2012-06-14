@@ -41,99 +41,89 @@
  * with periodic BC on the interval \f$ (0, 2\pi) \f$.
  */
 
-int main(int argc, char** argv)
+bool SecondOrderFloquet()
 {
-  
-  try
-		{
-      Sundance::init(&argc, &argv);
-      int np = MPIComm::world().getNProc();
-      TEUCHOS_TEST_FOR_EXCEPT(np != 1);
+  int np = MPIComm::world().getNProc();
+  TEUCHOS_TEST_FOR_EXCEPT(np != 1);
 
-      /* We will do our linear algebra using Epetra */
-      VectorType<double> vecType = new EpetraVectorType();
+  /* We will do our linear algebra using Epetra */
+  VectorType<double> vecType = new EpetraVectorType();
 
-      /* Create a periodic mesh */
-      int nx = 100;
-      const double pi = 4.0*atan(1.0);
-      MeshType meshType = new PeriodicMeshType1D();
-      MeshSource mesher = new PeriodicLineMesher(0.0, 2.0*pi, nx, meshType);
-      Mesh mesh = mesher.getMesh();
+  /* Create a periodic mesh */
+  int nx = 100;
+  const double pi = 4.0*atan(1.0);
+  MeshType meshType = new PeriodicMeshType1D();
+  MeshSource mesher = new PeriodicLineMesher(0.0, 2.0*pi, nx, meshType);
+  Mesh mesh = mesher.getMesh();
 
-      /* Create a cell filter that will identify the maximal cells
-       * in the interior of the domain */
-      CellFilter interior = new MaximalCellFilter();
+  /* Create a cell filter that will identify the maximal cells
+   * in the interior of the domain */
+  CellFilter interior = new MaximalCellFilter();
       
-      /* Create unknown and test functions, discretized using first-order
-       * Lagrange interpolants */
+  /* Create unknown and test functions, discretized using first-order
+   * Lagrange interpolants */
       
-      BasisFamily basis = new Lagrange(2);
-      Expr u1 = new UnknownFunction(basis, "u1");
-      Expr u2 = new UnknownFunction(basis, "u2");
-      Expr v1 = new TestFunction(basis, "v1");
-      Expr v2 = new TestFunction(basis, "v2");
-      Expr u = List(u1, u2);
-      Expr v = List(v1, v2);
+  BasisFamily basis = new Lagrange(2);
+  Expr u1 = new UnknownFunction(basis, "u1");
+  Expr u2 = new UnknownFunction(basis, "u2");
+  Expr v1 = new TestFunction(basis, "v1");
+  Expr v2 = new TestFunction(basis, "v2");
+  Expr u = List(u1, u2);
+  Expr v = List(v1, v2);
 
-      /* Create differential operator and coordinate function */
-      Expr dx = new Derivative(0);
-      Expr x = new CoordExpr(0);
+  /* Create differential operator and coordinate function */
+  Expr dx = new Derivative(0);
+  Expr x = new CoordExpr(0);
 
-      /* We need a quadrature rule for doing the integrations */
-      QuadratureFamily quad = new GaussianQuadrature(4);
+  /* We need a quadrature rule for doing the integrations */
+  QuadratureFamily quad = new GaussianQuadrature(4);
 
       
-      /* Define the weak form */
-      Expr f = cos(x) + 12.0*cos(2.0*x) - 52.0*sin(x) + sin(3.0*x) - 44.0;
-      Expr F = List(u[1], -u[1] + 4.0*pow(u[0], 3.0) + f);
-      Expr eqn = Integral(interior, 
-        v1*(dx*u[0] - F[0]) + v2*(dx*u[1] - F[1]), 
-        quad);
-      Expr bc ; // no explicit BC needed
+  /* Define the weak form */
+  Expr f = cos(x) + 12.0*cos(2.0*x) - 52.0*sin(x) + sin(3.0*x) - 44.0;
+  Expr F = List(u[1], -u[1] + 4.0*pow(u[0], 3.0) + f);
+  Expr eqn = Integral(interior, 
+    v1*(dx*u[0] - F[0]) + v2*(dx*u[1] - F[1]), 
+    quad);
+  Expr bc ; // no explicit BC needed
 
-      DiscreteSpace discSpace(mesh, List(basis,basis), vecType);
-      Expr u0 = new DiscreteFunction(discSpace, 0.1);
+  DiscreteSpace discSpace(mesh, List(basis,basis), vecType);
+  Expr u0 = new DiscreteFunction(discSpace, 0.1);
 
-      NonlinearProblem prob(mesh, eqn, bc, v, u, u0, vecType);
-
-
-      ParameterXMLFileReader reader("nox-amesos.xml");
-      ParameterList solverParams = reader.getParameters();
-
-      NOXSolver solver(solverParams);
-      prob.solve(solver);
-
-      Expr J = FunctionalDerivative(F, u);
-      Out::os() << "J = " << J << std::endl;
-
-      /* Write the field in ASCII format */
-      FieldWriter w = new MatlabWriter("Floquet");
-      w.addMesh(mesh);
-      w.addField("u1", new ExprFieldWrapper(u0[0]));
-      w.addField("u2", new ExprFieldWrapper(u0[1]));
-      w.write();
+  NonlinearProblem prob(mesh, eqn, bc, v, u, u0, vecType);
 
 
-      Expr uExact = 2.0+sin(x);
+  ParameterXMLFileReader reader("nox-amesos.xml");
+  ParameterList solverParams = reader.getParameters();
 
-      Expr uErr = uExact - u0[0];
+  NOXSolver solver(solverParams);
+  prob.solve(solver);
+
+  Expr J = FunctionalDerivative(F, u);
+  Out::os() << "J = " << J << std::endl;
+
+  /* Write the field in ASCII format */
+  FieldWriter w = new MatlabWriter("Floquet");
+  w.addMesh(mesh);
+  w.addField("u1", new ExprFieldWrapper(u0[0]));
+  w.addField("u2", new ExprFieldWrapper(u0[1]));
+  w.write();
+
+
+  Expr uExact = 2.0+sin(x);
+
+  Expr uErr = uExact - u0[0];
       
-      Expr uErrExpr = Integral(interior, 
-                              uErr*uErr,
-                              new GaussianQuadrature(6));
+  Expr uErrExpr = Integral(interior, 
+    uErr*uErr,
+    new GaussianQuadrature(6));
       
-      FunctionalEvaluator uErrInt(mesh, uErrExpr);
+  FunctionalEvaluator uErrInt(mesh, uErrExpr);
 
-      double uErrorSq = uErrInt.evaluate();
-      std::cerr << "u error norm = " << sqrt(uErrorSq) << std::endl << std::endl;
+  double uErrorSq = uErrInt.evaluate();
+  std::cerr << "u error norm = " << sqrt(uErrorSq) << std::endl << std::endl;
 
-      double tol = 1.0e-3;
-      Sundance::passFailTest(sqrt(uErrorSq), tol);
-
-    }
-	catch(std::exception& e)
-		{
-      Sundance::handleException(e);
-		}
-  Sundance::finalize(); return Sundance::testStatus(); 
+  double tol = 1.0e-3;
+  return SundanceGlobal::checkTest(sqrt(uErrorSq), tol);
 }
+
