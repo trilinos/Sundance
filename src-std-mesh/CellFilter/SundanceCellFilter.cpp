@@ -34,6 +34,7 @@
 #include "SundanceBinaryCellFilter.hpp"
 #include "SundanceSubsetCellFilter.hpp"
 #include "SundanceLabelCellPredicate.hpp"
+#include "SundancePositionalCellPredicate.hpp"
 #include "SundanceNullCellFilterStub.hpp"
 #include "SundanceNullCellFilter.hpp"
 #include "PlayaTabs.hpp"
@@ -175,9 +176,24 @@ CellFilter CellFilter::intersection(const CellFilter& other) const
 
 CellFilter CellFilter::labeledSubset(int label) const
 {
-  CellPredicate pred = new LabelCellPredicate(label);
+  return labeledSubset(tuple(label));
+}
+
+CellFilter CellFilter::labeledSubset(const Array<int>& labels) const
+{
+  Set<int> labelSet = makeSet(labels);
+  CellPredicate pred = new LabelCellPredicate(labelSet);
   CellFilter rtn = new SubsetCellFilter(*this, pred);
-  this->registerLabeledSubset(label, rtn);
+  this->registerLabeledSubset(labelSet, rtn);
+  this->registerSubset(rtn);
+
+  return rtn;
+}
+
+CellFilter CellFilter::coordSubset(int dir, const double& coordVal) const
+{
+  CellPredicate pred = new CoordinateValueCellPredicate(dir, coordVal);
+  CellFilter rtn = new SubsetCellFilter(*this, pred);
   this->registerSubset(rtn);
 
   return rtn;
@@ -277,13 +293,14 @@ void CellFilter::registerDisjoint(const CellFilter& sub) const
   }
 }
 
-void CellFilter::registerLabeledSubset(int label, const CellFilter& sub) const
+void CellFilter::registerLabeledSubset(const Set<int>& label, 
+  const CellFilter& sub) const
 {
   SubsetManager::registerLabeledSubset(*this, label, sub);
   
-  const Map<int, CellFilter>& subsub = SubsetManager::getLabeledSubsets(sub);
+  const Map<Set<int>, CellFilter>& subsub = SubsetManager::getLabeledSubsets(sub);
 
-  for (Map<int, CellFilter>::const_iterator 
+  for (Map<Set<int>, CellFilter>::const_iterator 
          iter=subsub.begin(); iter!=subsub.end(); iter++)
   {
     if (iter->first == label) continue;

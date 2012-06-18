@@ -59,9 +59,10 @@ void MPIDataType::clearTypeRegistry()
   while(!typeRegistry().empty())
   {
 #ifdef HAVE_MPI
-    MPIDataType t = typeRegistry().top();
+//    MPIDataType t = typeRegistry().top();
+//    std::cerr << "clearing type " << typeRegistry().top().name() << std::endl;
 
-    int ierr = MPI_Type_free(t.ptr());
+    int ierr = MPI_Type_free(typeRegistry().top().ptr());
 
     TEUCHOS_TEST_FOR_EXCEPTION(ierr != 0, std::runtime_error,
       "Error code=" << ierr << " detected in MPI_Type_free()");

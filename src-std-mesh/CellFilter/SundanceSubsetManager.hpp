@@ -67,10 +67,10 @@ public:
 
   /** */
   static void registerLabeledSubset(const CellFilter& filter, 
-    int label, const CellFilter& subset)
+    const Set<int>& label, const CellFilter& subset)
     {
       if (!labeledMap().containsKey(filter))
-        labeledMap().put(filter, Sundance::Map<int, CellFilter>());
+        labeledMap().put(filter, Sundance::Map<Set<int>, CellFilter>());
       labeledMap().get(filter).put(label, subset);
     }
 
@@ -92,11 +92,11 @@ public:
     }
 
   /** */
-  static const Sundance::Map<int, CellFilter>& 
+  static const Sundance::Map<Set<int>, CellFilter>& 
   getLabeledSubsets(const CellFilter& filter)
     {
       if (!labeledMap().containsKey(filter))
-        labeledMap().put(filter, Sundance::Map<int, CellFilter>());
+        labeledMap().put(filter, Sundance::Map<Set<int>, CellFilter>());
       return labeledMap().get(filter);
     }
 
@@ -117,9 +117,9 @@ private:
     }
   
   /** */
-  static Sundance::Map<CellFilter, Sundance::Map<int, CellFilter> >& labeledMap()
+  static Sundance::Map<CellFilter, Sundance::Map<Set<int>, CellFilter> >& labeledMap()
     {
-      static Sundance::Map<CellFilter, Sundance::Map<int, CellFilter> > rtn;
+      static Sundance::Map<CellFilter, Sundance::Map<Set<int>, CellFilter> > rtn;
       return rtn;
     }
 };

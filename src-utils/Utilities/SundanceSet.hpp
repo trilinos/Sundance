@@ -289,6 +289,15 @@ string Set<Key, Compare>::toString() const
 
 /** \relates Set Creates a set */
 template<class Key> inline
+Set<Key> makeSet(const Array<Key>& k)
+{
+  Set<Key> rtn;
+  for (int i=0; i<k.size(); i++) rtn.put(k[i]);
+  return rtn;
+}
+
+/** \relates Set Creates a set */
+template<class Key> inline
 Set<Key> makeSet(const Key& k)
 {
   Set<Key> rtn;
