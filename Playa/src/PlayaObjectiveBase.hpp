@@ -10,9 +10,6 @@
 #endif
 
 
-/** \example Rosenbrock.cpp 
- * An example of an objective function 
- */
 
 
 namespace Playa

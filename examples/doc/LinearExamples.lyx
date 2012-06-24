@@ -109,6 +109,463 @@ Kevin Long
 \end_layout
 
 \begin_layout Section
+Example: Advection-diffusion in 3D
+\end_layout
+
+\begin_layout Section
+Example: A parameter sweep
+\end_layout
+
+\begin_layout Standard
+A common task is to solve a problem with several values of a parameter.
+ For example, we might be interested in the problem
+\begin_inset Formula 
+\[
+-\nabla\cdot\left[\left(1+\frac{\xi}{10}e^{x}\right)\nabla u\right]-f=0
+\]
+
+\end_inset
+
+on the unit square with boundary conditions
+\begin_inset Formula 
+\[
+u=0\;\;\;\mbox{on east and west edges}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\pd{u}{n}=0\;\;\;\mbox{on north and south edges}.
+\]
+
+\end_inset
+
+To investigate how the solution change as the parameter 
+\begin_inset Formula $\xi$
+\end_inset
+
+ is changed we sweep over an interval 
+\begin_inset Formula $\left[0,\xi_{\mbox{max}}\right]$
+\end_inset
+
+ using some number 
+\begin_inset Formula $N_{\mbox{step}}$
+\end_inset
+
+ of samples.
+ 
+\end_layout
+
+\begin_layout Standard
+The obvious approach to programming this is to encapsulate the entire problem
+ in a function with 
+\begin_inset Formula $\xi$
+\end_inset
+
+ as an input argument, and then call that function for each 
+\begin_inset Formula $\xi$
+\end_inset
+
+ in a loop.
+ The trouble is that the linear problem and all its internal data structures
+ must be rebuilt on each call.
+ 
+\end_layout
+
+\begin_layout Standard
+A better solution is to build the equation set and problem once and for
+ all, writing the adjustable parameter 
+\begin_inset Formula $\xi$
+\end_inset
+
+ not as a double-precision number but as a special expression type, 
+\family typewriter
+Parameter
+\family default
+.
+ The value of the parameter can be changed between solves, allowing the
+ same problem object to be reused for multiple solves at multiple parameter
+ values.
+ How does it work? Simple: the parameter value is shallow copied when given
+ to the weak form and other expressions, so any change made later by the
+ user is immediately and transparently reflected in all copies.
+ 
+\end_layout
+
+\begin_layout Standard
+The full source code for this example is in 
+\series bold
+ParameterSweep.cpp
+\series default
+.
+ In the following, we omit parts of the code not relevant to the parameter
+ sweep such as construction of the mesh and cell filters, construction of
+ unknown functions, reading of the solver file, and so on.
+ All those details are of course shown in the full source code.
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+Parameter
+\family default
+ expression is constructed as follows.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+/* Define the parameter */       
+\end_layout
+
+\begin_layout Plain Layout
+
+Expr xi = new Sundance::Parameter(0.0);
+\end_layout
+
+\end_inset
+
+The namespace qualification is used to distinguish 
+\family typewriter
+Sundance::Parameter
+\family default
+ from 
+\family typewriter
+Teuchos::Parameter
+\family default
+.
+ In this problem, the value 
+\begin_inset Formula $0.0$
+\end_inset
+
+ given to the parameter constructor is unimportant, as it will be changed
+ during the sweep.
+ 
+\end_layout
+
+\begin_layout Standard
+With the parameter expression ready, we proceed to setting up a problem
+ that uses it.
+ For validation purposes, our example problem will have an exact solution
+ which, unsurprisingly, depends on the paremeter value.
+ We define the exact solution here, and then provide a parameter-depended
+ forcing function 
+\begin_inset Formula $f$
+\end_inset
+
+ that produces that solution.
+ Working backwards from the solution 
+\begin_inset Formula $u=x\left(1-x\right)\left(1+\xi e^{x}\right)$
+\end_inset
+
+ we can find the force function 
+\begin_inset Formula 
+\[
+f=-\frac{1}{10}\left(\xi\left(-e^{x}\right)\left(10x^{2}+\xi e^{x}(2x(x+2)-1)+32x+1\right)-20\right).
+\]
+
+\end_inset
+
+These functions are programmed as Sundance expressions, 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+/* Construct a forcing term to provide an exact solution */       
+\end_layout
+
+\begin_layout Plain Layout
+
+Expr uEx = x*(1.0-x)*(1.0+xi*exp(x));       
+\end_layout
+
+\begin_layout Plain Layout
+
+Expr f = -(-20 - exp(x)*xi*(1 + 32*x + 10*x*x + exp(x)*(-1 + 2*x*(2 + x))*xi))/1
+0.0;
+\end_layout
+
+\end_inset
+
+Now we write the weak form, again using the parameter.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+/* Define the weak form */       
+\end_layout
+
+\begin_layout Plain Layout
+
+Expr eqn = Integral(interior, (1.0 + 0.1*xi*exp(x))*(grad*v)*(grad*u) - f*v,
+ quad);
+\end_layout
+
+\end_inset
+
+Next we set up the linear problem.
+ Also, to visualize the exact solution we'll create a projector object that
+ projects it onto a discrete space.
+ The projector is given the expression 
+\family typewriter
+uEx
+\family default
+, which in turn contains a shallow copy of the parameter 
+\family typewriter
+xi
+\family default
+.
+ Therefore, just as with the linear problem the internal state of the projector
+ is always consistent with the current parameter value.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+/* We can now set up the linear problem.
+ This can be reused        
+\end_layout
+
+\begin_layout Plain Layout
+
+ * for different parameter values.
+ */       
+\end_layout
+
+\begin_layout Plain Layout
+
+LinearProblem prob(mesh, eqn, bc, v, u, vecType);
+\end_layout
+
+\begin_layout Plain Layout
+
+      
+\end_layout
+
+\begin_layout Plain Layout
+
+/* make a projector for the exact solution.
+ Just like the        
+\end_layout
+
+\begin_layout Plain Layout
+
+ * problem, this can be reused for different parameter values.
+ */       
+\end_layout
+
+\begin_layout Plain Layout
+
+DiscreteSpace ds(mesh, new Lagrange(1), vecType);       
+\end_layout
+
+\begin_layout Plain Layout
+
+L2Projector proj(ds, uEx);
+\end_layout
+
+\end_inset
+
+With the problem and projector constructed, we're ready to loop over parameter
+ values.
+ The 
+\family typewriter
+setParameterVal
+\family default
+ member function is used to update the parameter's numerical value.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+/* Set up the sweep from xi=0 to xi=xiMax in nSteps steps.
+ */      
+\end_layout
+
+\begin_layout Plain Layout
+
+int nSteps = 10;       
+\end_layout
+
+\begin_layout Plain Layout
+
+double xiMax = 2.0;              
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* Do the sweep */       
+\end_layout
+
+\begin_layout Plain Layout
+
+for (int n=0; n<nSteps; n++) {         
+\end_layout
+
+\begin_layout Plain Layout
+
+	/* Update the parameter value */         
+\end_layout
+
+\begin_layout Plain Layout
+
+	double xiVal = xiMax*n/(nSteps - 1.0);         
+\end_layout
+
+\begin_layout Plain Layout
+
+	xi.setParameterValue(xiVal);         
+\end_layout
+
+\begin_layout Plain Layout
+
+	Out::root() << "step n=" << n << " of " << nSteps << " xi=" << xiVal;
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\end_layout
+
+\begin_layout Plain Layout
+
+	/* Solve the problem.
+ The updated parameter value is automatically used.
+ */         
+\end_layout
+
+\begin_layout Plain Layout
+
+	state = prob.solve(solver, soln);
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+   TEUCHOS_TEST_FOR_EXCEPTION(state.finalState() != SolveConverged, std::runtime_
+error,           
+\end_layout
+
+\begin_layout Plain Layout
+
+		"solve failed!");
+\end_layout
+
+\begin_layout Plain Layout
+
+        
+\end_layout
+
+\begin_layout Plain Layout
+
+	/* Project the exact solution onto a discrete space for viz.
+ The updated          
+\end_layout
+
+\begin_layout Plain Layout
+
+     * parameter value is automatically used.
+ */         
+\end_layout
+
+\begin_layout Plain Layout
+
+	Expr uEx0 = proj.project();
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\end_layout
+
+\begin_layout Plain Layout
+
+	/* === output and validation code omitted === */  
+\end_layout
+
+\begin_layout Plain Layout
+
+} 
+\end_layout
+
+\end_inset
+
+Notice that the same problem and projector objects were reused at each iteration.
+\end_layout
+
+\begin_layout Standard
+Other applications of 
+\family typewriter
+Parameter
+\family default
+ include:
+\end_layout
+
+\begin_layout Itemize
+Continuation methods for nonlinear equations (see the document on nonlinear
+ problems).
+ Use a 
+\family typewriter
+Paremeter
+\family default
+ for the continuation variable.
+\end_layout
+
+\begin_layout Itemize
+In transient problems, the time variable can be defined as a 
+\family typewriter
+Parameter
+\family default
+ allowing the same problems to be reused at every timestep.
+\end_layout
+
+\begin_layout Itemize
+Multidimensional sampling methods such as Monte Carlo, latin hypercube,
+ and sparse quadrature.
+ In these problems, more than one 
+\family typewriter
+Parameter
+\family default
+ object might be used.
+\end_layout
+
+\begin_layout Section
 Example: Coupled problems in 2D
 \end_layout
 
