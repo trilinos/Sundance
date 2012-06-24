@@ -5,3 +5,5 @@ ADD_SUBDIRECTORY(Linear)
 
 ADD_SUBDIRECTORY(Nonlinear)
 
+ADD_SUBDIRECTORY(Transient)
+
