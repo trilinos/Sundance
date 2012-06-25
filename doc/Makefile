@@ -33,6 +33,7 @@
 # Build the doxygen
 
 dox: 
+	mkdir -p html
 	cp ../examples/doc/GettingStarted.pdf html
 	cp ../examples/doc/LinearExamples.pdf html
 	cp ../examples/doc/NonlinearExamples.pdf html
