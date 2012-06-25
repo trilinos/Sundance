@@ -3,6 +3,7 @@ INCLUDE(AddTestBatch)
 
 SET(SerialTests
   TransientHeat2D
+  StepControlledTransientNonlinear1D
 )
 
 SET(MPITests

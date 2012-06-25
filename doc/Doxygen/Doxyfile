@@ -370,6 +370,7 @@ INPUT                  = ../doc/Doxygen/index.dox \
                          ../examples/GettingStarted \
                          ../examples/Linear \
                          ../examples/Nonlinear \
+                         ../examples/Transient \
                          ../src-utils/Utilities \
                          ../src-core/Evaluation \
                          ../src-core/FrameworkInterface \

@@ -38,7 +38,7 @@ int main(int argc, char** argv)
 
     Sundance::setOption("nx", nx, "Number of elements");
     Sundance::setOption("nt", nt, "Number of timesteps");
-    Sundance::setOption("tFinal", tFinal, "Number of timesteps");
+    Sundance::setOption("tFinal", tFinal, "Final time");
     
     Sundance::init(&argc, &argv);
 

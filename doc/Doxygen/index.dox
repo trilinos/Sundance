@@ -72,7 +72,7 @@ instead to the <A href="doc_main.html"> index of major classes and functions, or
 
 <ul>
 <li> For an introduction to programming with %Sundance objects and a fully annotated example of a Laplace solver, go to <A HREF="GettingStarted.pdf"/> GettingStarted </A>
-<li> Categorizaed isting of <A href="doc_examples.html"> examples </a>
+<li> Categorized listing of <A href="doc_examples.html"> examples </a>
 <li> Examples of <A HREF="LinearExamples.pdf"> linear PDE </A>
 <li> Examples of several approaches to solving <A HREF="NonlinearExamples.pdf"> nonlinear PDE </a>
 </ul>

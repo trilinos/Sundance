@@ -64,18 +64,18 @@ bool DoublingStepController::run() const
   double minStepUsed = fabs(dt);
   double maxStepUsed = fabs(dt);
 
-  PLAYA_MSG1(verb, tab0 << "=================================================="
+  PLAYA_ROOT_MSG1(verb, tab0 << "=================================================="
     << endl
     << tab0 << "   starting time integration  " << endl
     << tab0 << "==================================================");
-  PLAYA_MSG2(verb, tab1 << "Initial time: " << t);
-  PLAYA_MSG2(verb, tab1 << "Final time: " << tStop);
-  PLAYA_MSG2(verb, tab1 << "Initial stepsize: " << dt);
-  PLAYA_MSG2(verb, tab1 << "Min allowed stepsize: " << minStepsize);
-  PLAYA_MSG2(verb, tab1 << "Max allowed stepsize: " << maxStepsize);
-  PLAYA_MSG2(verb, tab1 << "Step tolerance: " << tau);
-  PLAYA_MSG2(verb, tab1 << "Method order: " << p);
-  PLAYA_MSG2(verb, tab1 << "Max steps: " << maxSteps);
+  PLAYA_ROOT_MSG2(verb, tab1 << "Initial time: " << t);
+  PLAYA_ROOT_MSG2(verb, tab1 << "Final time: " << tStop);
+  PLAYA_ROOT_MSG2(verb, tab1 << "Initial stepsize: " << dt);
+  PLAYA_ROOT_MSG2(verb, tab1 << "Min allowed stepsize: " << minStepsize);
+  PLAYA_ROOT_MSG2(verb, tab1 << "Max allowed stepsize: " << maxStepsize);
+  PLAYA_ROOT_MSG2(verb, tab1 << "Step tolerance: " << tau);
+  PLAYA_ROOT_MSG2(verb, tab1 << "Method order: " << p);
+  PLAYA_ROOT_MSG2(verb, tab1 << "Max steps: " << maxSteps);
 
   Expr uCur = copyDiscreteFunction(prob_.uCur());
   Expr uTmp = copyDiscreteFunction(uCur);
@@ -101,35 +101,35 @@ bool DoublingStepController::run() const
   bool terminateOnDetection = false;
   if (eventHandler_.get()) terminateOnDetection 
     = eventHandler_->terminateOnDetection();
-  PLAYA_MSG2(verb, tab1 << "Terminate on event detection: " 
+  PLAYA_ROOT_MSG2(verb, tab1 << "Terminate on event detection: " 
     << terminateOnDetection);
 
   while (t < tStop && step < maxSteps)
   {
     Tabs tab2;
-    PLAYA_MSG3(verb, tab2 << " step " << step << " time=" << t 
+    PLAYA_ROOT_MSG3(verb, tab2 << " step " << step << " time=" << t 
       << " to " << t + dt << " stepsize=" << dt);
     Tabs tab3;
 
     if (t + dt > tStop)
     {
       dt = tStop - t;
-      PLAYA_MSG3(verb, tab3 << "timestep exceeds interval: reducing to dt=" << dt);
-      PLAYA_MSG3(verb, tab3 << " step " << step << " is now time=" << t 
+      PLAYA_ROOT_MSG3(verb, tab3 << "timestep exceeds interval: reducing to dt=" << dt);
+      PLAYA_ROOT_MSG3(verb, tab3 << " step " << step << " is now time=" << t 
         << " to " << t + dt << " stepsize=" << dt);
     }
 
-    PLAYA_MSG5(verb, tab3 << "doing full step");
+    PLAYA_ROOT_MSG5(verb, tab3 << "doing full step");
     bool stepOK = prob_.step(t, uCur, t+dt, uSolnOneFullStep, solver_);
-    PLAYA_MSG5(verb, tab3 << "doing first half step");
+    PLAYA_ROOT_MSG5(verb, tab3 << "doing first half step");
     stepOK = prob_.step(t, uCur, t+0.5*dt, uSolnHalfStep, solver_);
-    PLAYA_MSG5(verb, tab3 << "doing second half step");
+    PLAYA_ROOT_MSG5(verb, tab3 << "doing second half step");
     stepOK = prob_.step(t+0.5*dt, uSolnHalfStep, t+dt, uSolnTwoHalfSteps, solver_);
     numSolves += 3;
 
     double err = compare_->diff(uSolnTwoHalfSteps, uSolnOneFullStep);
 
-    PLAYA_MSG3(verb, tab3 << "error=" << err << " tau=" << tau);
+    PLAYA_ROOT_MSG3(verb, tab3 << "error=" << err << " tau=" << tau);
     
     double dtNew = dt;
     if (err < tau) dtNew = dt*pow(tau/err, 1.0/(p+1.0));
@@ -141,14 +141,14 @@ bool DoublingStepController::run() const
       {
         dt = minStepsize;
         atMinStepsize = true;
-        PLAYA_MSG1(verb, tab2 << "WARNING: minimum stepsize reached");
+        PLAYA_ROOT_MSG1(verb, tab2 << "WARNING: minimum stepsize reached");
       }
       else
       {
         dt = safety*dtNew;
       }
       atMaxStepsize = false;
-      PLAYA_MSG3(verb, tab3 << "reducing step to dt=" << dt);
+      PLAYA_ROOT_MSG3(verb, tab3 << "reducing step to dt=" << dt);
       numShrink++;
       continue;
     }
@@ -202,39 +202,39 @@ bool DoublingStepController::run() const
       {
         dt = maxStepsize;
         atMaxStepsize = true;
-        PLAYA_MSG2(verb, tab2 << "WARNING: maximum stepsize reached");
+        PLAYA_ROOT_MSG2(verb, tab2 << "WARNING: maximum stepsize reached");
       }
       else
       {
         dt = dtNew;
       }
       atMinStepsize = false;
-      PLAYA_MSG3(verb, tab3 << "increasing step to dt=" << dt);
+      PLAYA_ROOT_MSG3(verb, tab3 << "increasing step to dt=" << dt);
       numGrow++;
     }
   }
 
   
 
-  PLAYA_MSG1(verb, tab0 << "=================================================================="
+  PLAYA_ROOT_MSG1(verb, tab0 << "=================================================================="
     << endl
     << tab0 << "   done time integration  ");
-  PLAYA_MSG2(verb, tab0 << "------------------------------------------------------------------");
-  PLAYA_MSG2(verb, tab1 << "Final time: " << t);
-  PLAYA_MSG2(verb, tab1 << "Num steps: " << step);
-  PLAYA_MSG2(verb, tab1 << "Min stepsize used: " << minStepUsed
+  PLAYA_ROOT_MSG2(verb, tab0 << "------------------------------------------------------------------");
+  PLAYA_ROOT_MSG2(verb, tab1 << "Final time: " << t);
+  PLAYA_ROOT_MSG2(verb, tab1 << "Num steps: " << step);
+  PLAYA_ROOT_MSG2(verb, tab1 << "Min stepsize used: " << minStepUsed
     << " (would need " << fabs(t-stepControl_.tStart_)/minStepUsed 
     << " steps of this size)");
-  PLAYA_MSG2(verb, tab1 << "Max stepsize used: " << maxStepUsed);
-  PLAYA_MSG2(verb, tab1 << "Num nonlinear solves: " << numSolves);
-  PLAYA_MSG2(verb, tab1 << "Num step reductions: " << numShrink);
-  PLAYA_MSG2(verb, tab1 << "Num step increases: " << numGrow);
+  PLAYA_ROOT_MSG2(verb, tab1 << "Max stepsize used: " << maxStepUsed);
+  PLAYA_ROOT_MSG2(verb, tab1 << "Num nonlinear solves: " << numSolves);
+  PLAYA_ROOT_MSG2(verb, tab1 << "Num step reductions: " << numShrink);
+  PLAYA_ROOT_MSG2(verb, tab1 << "Num step increases: " << numGrow);
   if (terminateOnDetection && gotEvent)
   {
-    PLAYA_MSG2(verb, tab1 << "Terminated by event detection at time="
+    PLAYA_ROOT_MSG2(verb, tab1 << "Terminated by event detection at time="
       << eventHandler_->eventTime());
   }
-  PLAYA_MSG1(verb, tab0 << "==================================================================");
+  PLAYA_ROOT_MSG1(verb, tab0 << "==================================================================");
 
 }
 
@@ -246,7 +246,7 @@ void DoublingStepController::write(int index, double t, const Expr& u) const
 
   FieldWriter w = outputControl_.wf_.createWriter(name);
 
-  PLAYA_MSG1(outputControl_.verbosity_, tab << "writing to " << name);
+  PLAYA_ROOT_MSG1(outputControl_.verbosity_, tab << "writing to " << name);
 
   Mesh mesh = getDiscreteFunctionMesh(u);
   w.addMesh(mesh);

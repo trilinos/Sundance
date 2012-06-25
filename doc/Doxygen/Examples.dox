@@ -65,7 +65,7 @@ detail in the document <A HREF="GettingStarted.pdf"/> GettingStarted.pdf. </A>
 <h4> Linear PDE </h4>
 <ul>
 <li> Solve a system of two coupled PDEs: Coupled2D.cpp. 
-<li> Shows how to use a single LinearProblem to do multiple solves of 
+<li> How to use a single LinearProblem to do multiple solves of 
 a PDE over a range of parameter values: ParameterSweep.cpp
 <li> How to do a mixed discretization: TaylorHoodStokes2D.cpp
 <li> Nitsche's boundary condition method: NitschePoisson2D.cpp
@@ -94,6 +94,13 @@ A single nonlinear problem object is reused for every continuation step, similar
 a single linear problem was used through the sweep in ParameterSweep.cpp.
 </ul>
 
+<h4> Transient PDE </h4>
+<ul>
+<li> Crank-Nicolson stepping for the heat conduction equation in 2D: TransientHeat2D.cpp
+<li> Crank-Nicolson stepping for the radiation diffusion equation in 1D: TransientNonlinear1D.cpp. 
+<li> Crank-Nicolson stepping for radiation diffusion equation in 1D, with automatic stepsize 
+control: StepControlledTransientNonlinear1D.cpp. 
+</ul>
 
 */
 }
