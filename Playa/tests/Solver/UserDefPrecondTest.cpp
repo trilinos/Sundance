@@ -39,6 +39,8 @@ int main(int argc, char *argv[])
 {
   typedef Teuchos::ScalarTraits<double> ST;
 
+  int status=-1;
+
   try
   {
     GlobalMPISession session(&argc, &argv);
@@ -108,18 +110,20 @@ int main(int argc, char *argv[])
     if (err > tol)
     {
       cout << "User-defined preconditioner test FAILED" << std::endl;
-      return 1;
+      status = 1;
     }
     else
     {
       cout << "User-defined preconditioner test PASSED" << std::endl;
-      return 0;
+      status = 0;
     }
   }
   catch(std::exception& e)
   {
     cout << "Caught exception: " << e.what() << std::endl;
-    return -1;
+    status = -1;
   }
+
+  return status;
 }
 

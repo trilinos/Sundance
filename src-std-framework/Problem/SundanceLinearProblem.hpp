@@ -44,6 +44,7 @@ class Assembler;
 /** 
  * LinearProblem encapsulates all information needed to form
  * a discrete linear problem. 
+ *
  */
 class LinearProblem 
 {

@@ -28,6 +28,9 @@
 // ************************************************************************
 /* @HEADER@ */
 
+
+
+
 #include "Sundance.hpp"
 #include "Teuchos_CommandLineProcessor.hpp"
 #include "PlayaMPIComm.hpp"
@@ -145,7 +148,7 @@ int SundanceGlobal::init(int* argc, char*** argv)
   {
     /* start up MPI. In a serial run, this will be a no-op */
     //      MPISession::init(argc, argv);
-    globalMPISession(argc, (char***) argv);
+    MPISession::init(argc, (char***) argv);
 
     /* Start a stopwatch. It will be stopped upon a call to finalize() */
     totalTimer().start();
@@ -201,29 +204,27 @@ int SundanceGlobal::init(int* argc, char*** argv)
         cout << "Simulation built using Sundance version " 
              << VersionString::number() 
              << " (" << VersionString::date() << ")" << std::endl;
-     
-        cout << "Sundance is copyright (C) 2005 Sandia National Laboratories and is"
-             << std::endl;
-        cout << "licensed under the GNU Lesser General Public License, version 2.1" << std::endl;
-        cout << tab << std::endl;
         exit(0);
       }
     }
     if (showBanner && MPIComm::world().getRank()==0)
     {
-      cout << "Simulation built using Sundance version " 
+      ostringstream oss;
+      oss << "Simulation built using Sundance version " 
            << VersionString::number() 
            << " (" << VersionString::date() << ")" << std::endl;
       
-      cout << "Sundance is copyright" 
-           << std::endl << " (C) 2005-2008 Sandia National Laboratories " 
+      oss << "Sundance is copyright" 
+           << std::endl << " (C) 2005-2012 Sandia National Laboratories " 
            << std::endl
-           << " (C) 2007-2008 Texas Tech University"
+           << " (C) 2007-2012 Texas Tech University"
            << std::endl;
-      cout << "and is licensed under the GNU Lesser General Public License, version 2.1" << std::endl;
-      cout << tab << std::endl;
+      oss << "and is licensed under the GNU Lesser General Public License, version 2.1" << std::endl;
+      oss << std::endl;
+      cout << oss.str() << flush;
     }
 
+    MPIComm::world().synchronize();
     if (!showTimings) skipTimingOutput() = true;
 
     //      debugWait = true;
@@ -257,12 +258,7 @@ int SundanceGlobal::init(int* argc, char*** argv)
 
 bool& SundanceGlobal::showStartupMessage()
 {
-#ifdef TRILINOS_6
-  static bool rtn=false; 
-  return rtn;
-#else
   return MPISession::showStartupMessage();
-#endif
 }
 
 
@@ -283,15 +279,6 @@ int SundanceGlobal::finalize()
   try
   {
     Tabs tab;
-    if (false && MPIComm::world().getRank()==0)
-    {
-      cout << tab << "eval vector flops: " << EvalVector::totalFlops() << std::endl;
-      cout << tab << "quadrature flops: " << QuadratureIntegral::totalFlops() << std::endl;
-      cout << tab << "ref integration flops: " 
-           << RefIntegral::totalFlops() << std::endl;
-      cout << tab << "cell jacobian batch flops: " << CellJacobianBatch::totalFlops() << std::endl;
-      cout << tab << "quadrature eval mediator: " << QuadratureEvalMediator::totalFlops() << std::endl;
-    }
     /* we may need to skip timing summaries because of a Trilinos 6.0.x bug */
     if (!skipTimingOutput()) TimeMonitor::summarize();
     //  MPISession::finalize();
@@ -320,6 +307,7 @@ bool SundanceGlobal::checkTest(double error, double tol)
 
 bool SundanceGlobal:: passFailTest(double error, double tol)
 {
+  MPIComm::world().synchronize();
   bool pass;
   if (MPIComm::world().getRank()==0)
   {
@@ -346,6 +334,7 @@ bool SundanceGlobal:: passFailTest(double error, double tol)
 bool SundanceGlobal:: passFailTest(const std::string& statusMsg,
   bool status, double error, double tol)
 {
+  MPIComm::world().synchronize();
   bool pass;
   if (MPIComm::world().getRank()==0)
   {
@@ -374,6 +363,7 @@ bool SundanceGlobal:: passFailTest(const std::string& statusMsg,
 
 bool SundanceGlobal:: passFailTest(bool pass)
 {
+  MPIComm::world().synchronize();
   if (MPIComm::world().getRank()==0)
   {
     if (pass)

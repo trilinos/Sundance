@@ -34,6 +34,8 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceCellPredicateBase.hpp"
+#include "SundanceSet.hpp"
+#include "Teuchos_Array.hpp"
 
 namespace Sundance
 {
@@ -46,9 +48,15 @@ using namespace Teuchos;
 class LabelCellPredicate : public CellPredicateBase 
 {
 public:
-  /** Construct with a label std::string */
+  /** Construct with an integer label */
   LabelCellPredicate(int label) 
-    : CellPredicateBase(), labelIndex_(label){;}
+    : CellPredicateBase(), labelIndices_(makeSet(label)){;}
+  /** Construct with an array of labels */
+  LabelCellPredicate(const Array<int>& labels) 
+    : CellPredicateBase(), labelIndices_(makeSet(labels)){;}
+  /** Construct with a set of labels */
+  LabelCellPredicate(const Set<int>& labels) 
+    : CellPredicateBase(), labelIndices_(labels){;}
 
   /** virtual dtor */
   virtual ~LabelCellPredicate(){;}
@@ -65,17 +73,14 @@ public:
 
   /** */
   virtual std::string description() const 
-    {return "Label(" + Teuchos::toString(labelIndex_) + ")";}
-
-  /** */
-  int label() const {return labelIndex_;}
+    {return "Label(" + labelIndices_.toString() + ")";}
 
   /* */
   GET_RCP(CellPredicateBase);
 
 private:
 
-  int labelIndex_;
+  Set<int> labelIndices_;
 
 };
 

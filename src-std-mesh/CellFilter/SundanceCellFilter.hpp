@@ -150,6 +150,14 @@ public:
    * the given label */
   CellFilter labeledSubset(int label) const ;
 
+  /** Return a filter that will return the subset of cells having
+   * any one of the given labels */
+  CellFilter labeledSubset(const Array<int>& labels) const ;
+
+  /** Return a filter that will return the subset of cells for which
+   * the dir-th coordinate takes on value coordVal */
+  CellFilter coordSubset(int dir, const double& coordVal) const ;
+
     
   /** Return a filter that will return the subset of cells for which
    * the given predicate is true */
@@ -197,7 +205,7 @@ public:
   void registerDisjoint(const CellFilter& sub) const ;
 
   /** Register a labeled subset  */
-  void registerLabeledSubset(int label, const CellFilter& sub) const ;
+  void registerLabeledSubset(const Set<int>& label, const CellFilter& sub) const ;
 
     
   /** Indicate whether this is a null cell filter */

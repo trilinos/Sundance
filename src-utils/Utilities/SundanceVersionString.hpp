@@ -42,10 +42,10 @@ namespace Sundance
   {
   public:
     /** */
-    static std::string date() {static std::string rtn = "10 May 2008"; return rtn;}
+    static std::string date() {static std::string rtn = "10 June 2012"; return rtn;}
 
     /** */
-    static std::string number() {static std::string rtn = "2.3.0"; return rtn;}
+    static std::string number() {static std::string rtn = "2.4.0"; return rtn;}
   };
 } 
 

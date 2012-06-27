@@ -43,36 +43,11 @@ public:
     }
 
   /** Provide a fancy ostream wrapper to cout */
-  static FancyOStream& os()
-    {
-      static RCP<std::ostream> os = rcp(basicStream(), false);
-      static RCP<FancyOStream> rtn = fancyOStream(os);
-      static bool first = true;
-      if (first)
-      {
-        rtn->setShowProcRank(true);
-        first = false;
-      }
-      return *rtn;
-    }
+  static FancyOStream& os();
 
   /** Provide a fancy ostream wrapper to cout, ignoring output from
    * non-root processors*/
-  static FancyOStream& root()
-    {
-      static bool isRoot = MPIComm::world().getRank()==0;
-      static RCP<FancyOStream> blackHole
-        = rcp(new FancyOStream(rcp(new oblackholestream())));
-
-      if (isRoot)
-      {
-        return os();
-      }
-      else
-      {
-        return *blackHole;
-      }
-    }
+  static FancyOStream& root();
 
   /** */
   static bool& suppressStdout() {static bool rtn=false; return rtn;}
@@ -95,6 +70,16 @@ void writeTable(std::ostream& os, const Tabs& tab,
       TeuchosOStringStream omsg; \
       omsg << msg; \
       Out::println(omsg.str());                 \
+    } \
+  }
+
+#define PLAYA_ROOT_OUT(test, msg) \
+  { \
+    if (test) \
+    { \
+      TeuchosOStringStream omsg; \
+      omsg << msg; \
+      Out::root() << omsg.str() << std::endl;                 \
     } \
   }
 
@@ -129,30 +114,45 @@ void writeTable(std::ostream& os, const Tabs& tab,
 
 #define PLAYA_MSG5(level, msg) PLAYA_OUT(level >= 5, msg)
 
+
+
+#define PLAYA_ROOT_MSG1(level, msg) PLAYA_ROOT_OUT(level >= 1, msg)
+
+#define PLAYA_ROOT_MSG2(level, msg) PLAYA_ROOT_OUT(level >= 2, msg)
+
+#define PLAYA_ROOT_MSG3(level, msg) PLAYA_ROOT_OUT(level >= 3, msg)
+
+#define PLAYA_ROOT_MSG4(level, msg) PLAYA_ROOT_OUT(level >= 4, msg)
+
+#define PLAYA_ROOT_MSG5(level, msg) PLAYA_ROOT_OUT(level >= 5, msg)
+
+
+
+
 #define PLAYA_BANNER1(level, tab, msg) \
-  PLAYA_MSG1(level, tab \
+  PLAYA_ROOT_MSG1(level, tab \
     << "===================================================================");\
-  PLAYA_MSG1(level, tab << std::endl << tab \
+  PLAYA_ROOT_MSG1(level, tab << std::endl << tab \
     << "  " << msg); \
-  PLAYA_MSG1(level, tab << std::endl << tab\
+  PLAYA_ROOT_MSG1(level, tab << std::endl << tab\
     << "===================================================================");
 
 
 #define PLAYA_BANNER2(level, tab, msg) \
-  PLAYA_MSG2(level, tab \
+  PLAYA_ROOT_MSG2(level, tab \
     << "-------------------------------------------------------------------");\
-  PLAYA_MSG2(level, tab << msg); \
+  PLAYA_ROOT_MSG2(level, tab << msg); \
   PLAYA_MSG2(level, tab\
     << "-------------------------------------------------------------------");
 
 
 
 #define PLAYA_BANNER3(level, tab, msg) \
-  PLAYA_MSG3(level, tab \
+  PLAYA_ROOT_MSG3(level, tab \
     << "-------------------------------------------------------------------");\
-  PLAYA_MSG3(level, tab << std::endl << tab \
+  PLAYA_ROOT_MSG3(level, tab << std::endl << tab \
     << msg); \
-  PLAYA_MSG3(level, tab << std::endl << tab\
+  PLAYA_ROOT_MSG3(level, tab << std::endl << tab\
     << "-------------------------------------------------------------------");
 
 #endif

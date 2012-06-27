@@ -30,120 +30,99 @@
 
 #include "Sundance.hpp"
 #include "SundanceBernstein.hpp"
-#include "SundanceEvaluator.hpp"
 
 using Sundance::List;
 /** 
  * Solves the Poisson equation in 2D using high-order Bernstein interpolation
  */
 
-CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
-CELL_PREDICATE(BottomPointTest, {return fabs(x[1]) < 1.0e-10;})
-CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;})
-CELL_PREDICATE(TopPointTest, {return fabs(x[1]-1.0) < 1.0e-10;})
 
-
-int main(int argc, char** argv)
+bool HighOrderPoissonBernstein2D()
 {
 #define DISABLE_THIS_TEST
 #ifdef DISABLE_THIS_TEST
-  return 0;
+  return true;
 #else  
-  try
-		{
-      Sundance::init(&argc, &argv);
-      int np = MPIComm::world().getNProc();
+  int np = MPIComm::world().getNProc();
 
-      /* We will do our linear algebra using Epetra */
-      VectorType<double> vecType = new EpetraVectorType();
+  /* We will do our linear algebra using Epetra */
+  VectorType<double> vecType = new EpetraVectorType();
 
-      /* Create a mesh. It will be of type BasisSimplicialMesh, and will
-       * be built using a PartitionedRectangleMesher. */
-      int n = 6;
-      MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, n, np,
-                                                         0.0, 1.0, n, 1,
-                                                         meshType);
-      Mesh mesh = mesher.getMesh();
+  /* Create a mesh. It will be of type BasisSimplicialMesh, and will
+   * be built using a PartitionedRectangleMesher. */
+  int n = 6;
+  MeshType meshType = new BasicSimplicialMeshType();
+  MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, n, np,
+    0.0, 1.0, n, 1,
+    meshType);
+  Mesh mesh = mesher.getMesh();
 
-      /* Create a cell filter that will identify the maximal cells
-       * in the interior of the domain */
-      CellFilter interior = new MaximalCellFilter();
-      CellFilter edges = new DimensionalCellFilter(1);
+  /* Create a cell filter that will identify the maximal cells
+   * in the interior of the domain */
+  CellFilter interior = new MaximalCellFilter();
+  CellFilter edges = new DimensionalCellFilter(1);
 
-      CellFilter left = edges.subset(new LeftPointTest());
-      CellFilter right = edges.subset(new RightPointTest());
-      CellFilter top = edges.subset(new TopPointTest());
-      CellFilter bottom = edges.subset(new BottomPointTest());
+  CellFilter left = edges.subset(new CoordinateValueCellPredicate(0,0.0));
+  CellFilter right = edges.subset(new CoordinateValueCellPredicate(0,1.0));
+  CellFilter top = edges.subset(new CoordinateValueCellPredicate(1,1.0));
+  CellFilter bottom = edges.subset(new CoordinateValueCellPredicate(1,0.0));
+
+  /* Create unknown and test functions, discretized using Bernstein interpolants */
+  int order = 3;
+  BasisFamily basis = new Bernstein(order);
+
+  double p = (double) order;
+  Expr u = new UnknownFunction(basis, "u");
+  Expr v = new TestFunction(basis, "v");
+
+  /* Create differential operator and coordinate functions */
+  Expr dx = new Derivative(0);
+  Expr dy = new Derivative(1);
+  Expr grad = List(dx, dy);
+  Expr x = new CoordExpr(0);
+  Expr y = new CoordExpr(1);
+
+  /* We need a quadrature rule for doing the integrations */
+  QuadratureFamily quad = new GaussianQuadrature(2*order);
+
+  /* Define the weak form */
+  Expr alpha = sqrt(2.0);
+  Expr z = x + alpha*y;
+  Expr exactSoln = pow(z, p);
+  Expr eqn = Integral(interior, (dx*u)*(dx*v) + (dy*u)*(dy*v)  
+    + v*p*(p-1.0)*(1.0+alpha*alpha)*pow(z,p-2), quad);
+
+  /* Define the Dirichlet BC */
+  Expr bc = EssentialBC(bottom+top+left+right, v*(u-exactSoln), quad);
+
+
+  /* We can now set up the linear problem! */
+  LinearProblem prob(mesh, eqn, bc, v, u, vecType);
+
+
+  LinearSolver<double> solver 
+    = LinearSolverBuilder::createSolver("aztec.xml");
+
+
+  Expr soln = prob.solve(solver);
+
+  if (soln.ptr().get() != 0)
+  {
+    /* compute the error */
+    Expr err = exactSoln - soln;
+    Expr errExpr = Integral(interior, 
+      err*err,
+      quad);
+
+
+    FunctionalEvaluator errInt(mesh, errExpr);
+
+    double errorSq = errInt.evaluate();
+    std::cerr << "error norm = " << sqrt(errorSq) << std::endl << std::endl;
 
       
-      /* Create unknown and test functions, discretized using Bernstein interpolants */
-      int order = 3;
-      BasisFamily basis = new Bernstein(order);
-
-      double p = (double) order;
-      Expr u = new UnknownFunction(basis, "u");
-      Expr v = new TestFunction(basis, "v");
-
-      /* Create differential operator and coordinate functions */
-      Expr dx = new Derivative(0);
-      Expr dy = new Derivative(1);
-      Expr grad = List(dx, dy);
-      Expr x = new CoordExpr(0);
-      Expr y = new CoordExpr(1);
-
-      /* We need a quadrature rule for doing the integrations */
-      QuadratureFamily quad = new GaussianQuadrature(2*order);
-
-      /* Define the weak form */
-      Expr alpha = sqrt(2.0);
-      Expr z = x + alpha*y;
-      Expr exactSoln = pow(z, p);
-      Expr eqn = Integral(interior, (dx*u)*(dx*v) + (dy*u)*(dy*v)  
-                          + v*p*(p-1.0)*(1.0+alpha*alpha)*pow(z,p-2), quad);
-
-      /* Define the Dirichlet BC */
-      Expr bc = EssentialBC(bottom+top+left+right, v*(u-exactSoln), quad);
-
-
-      /* We can now set up the linear problem! */
-      LinearProblem prob(mesh, eqn, bc, v, u, vecType);
-
-
-#ifdef HAVE_CONFIG_H
-      ParameterXMLFileReader reader(searchForFile("SolverParameters/aztec.xml"));
-#else
-      ParameterXMLFileReader reader("aztec.xml");
-#endif
-      ParameterList solverParams = reader.getParameters();
-      std::cerr << "params = " << solverParams << std::endl;
-      LinearSolver<double> solver 
-        = LinearSolverBuilder::createSolver(solverParams);
-
-
-      Expr soln = prob.solve(solver);
-
-      if (soln.ptr().get() != 0)
-        {
-      /* compute the error */
-      Expr err = exactSoln - soln;
-      Expr errExpr = Integral(interior, 
-                              err*err,
-                              quad);
-
-
-      FunctionalEvaluator errInt(mesh, errExpr);
-
-      double errorSq = errInt.evaluate();
-      std::cerr << "error norm = " << sqrt(errorSq) << std::endl << std::endl;
-
-      Sundance::passFailTest(sqrt(errorSq), 1.0e-11);
-        }
-    }
-	catch(std::exception& e)
-		{
-      Sundance::handleException(e);
-		}
-  Sundance::finalize(); return Sundance::testStatus(); 
+    return SundanceGlobal::checkTest(sqrt(errorSq), 1.0e-6);
+  }
+  else return false;
 #endif
 }
