@@ -64,6 +64,8 @@ XMLObject SubsetCellFilter::toXML() const
   return rtn;
 }
 
+
+#ifdef OLD_CELL_FILTER
 bool SubsetCellFilter::lessThan(const CellFilterStub* other) const
 {
   const SubsetCellFilter* S 
@@ -78,6 +80,7 @@ bool SubsetCellFilter::lessThan(const CellFilterStub* other) const
   return OrderedPair<CellFilter, CellPredicate>(superset_, predicate_)
     < OrderedPair<CellFilter, CellPredicate>(S->superset_, S->predicate_);
 }
+#endif
 
 CellSet SubsetCellFilter::internalGetCells(const Mesh& mesh) const
 {

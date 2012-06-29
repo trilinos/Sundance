@@ -126,6 +126,9 @@ XMLObject BinaryCellFilter::toXML() const
   return rtn;
 }
 
+
+#ifdef OLD_CELL_FILTER
+
 bool BinaryCellFilter::lessThan(const CellFilterStub* other) const
 {
   const BinaryCellFilter* B 
@@ -140,3 +143,5 @@ bool BinaryCellFilter::lessThan(const CellFilterStub* other) const
   return OrderedTriple<CellFilterOpType, CellFilter, CellFilter>(op_, left_, right_) 
     < OrderedTriple<CellFilterOpType, CellFilter, CellFilter>(B->op_, B->left_, B->right_) ;
 }
+
+#endif

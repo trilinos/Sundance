@@ -60,8 +60,11 @@ public:
   /** */
   virtual XMLObject toXML() const ;
 
+
+#ifdef OLD_CELL_FILTER
   /** */
   virtual bool lessThan(const CellFilterStub* other) const ;
+#endif
 
   /** */
   virtual std::string description() const 

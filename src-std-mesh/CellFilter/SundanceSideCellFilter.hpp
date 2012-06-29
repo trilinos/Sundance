@@ -66,8 +66,11 @@ public:
   /** Describable interface */
   virtual std::string description() const {return "SideCellFilter";}
 
+
+#ifdef OLD_CELL_FILTER
   /** Compare to another object */
   virtual bool lessThan(const CellFilterStub* other) const ;
+#endif
 
   /* Handleable boilerplate */
   GET_RCP(CellFilterStub);

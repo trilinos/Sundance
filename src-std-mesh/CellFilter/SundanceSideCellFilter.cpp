@@ -61,6 +61,7 @@ XMLObject SideCellFilter::toXML() const
   return rtn;
 }
 
+#ifdef OLD_CELL_FILTER
 bool SideCellFilter::lessThan(const CellFilterStub* other) const
 {
   const SideCellFilter* S 
@@ -74,6 +75,6 @@ bool SideCellFilter::lessThan(const CellFilterStub* other) const
 
   return false;
 }
-
+#endif
 
 

@@ -1,4 +1,6 @@
 #include "SundanceMeshIOUtils.hpp"
+#include "PlayaOut.hpp"
+#include "PlayaTabs.hpp"
 
 
 namespace Sundance
@@ -10,19 +12,28 @@ using namespace Teuchos;
 
 
 Expr readNodalFields(const MeshSource& mesher, const Mesh& mesh,
-  const VectorType<double>& vecType)
+  const VectorType<double>& vecType, int verb)
 {
+  Tabs tab0(0);
+  PLAYA_ROOT_MSG1(verb, tab0 << "begin readNodalFields()");
+  Tabs tab1;
+
   /* Read the attributes */
   RCP<Array<Array<double> > > elemAttr;
   RCP<Array<Array<double> > > vertAttr;
+
+  PLAYA_ROOT_MSG2(verb, tab1 << "reading attributes");
   mesher.getAttributes(vertAttr, elemAttr);
   int nAttrs = vertAttr->size();
+  PLAYA_ROOT_MSG2(verb, tab1 << "found " << nAttrs << " attributes");
   const Array<Array<double> >& funcVals = *vertAttr;
   
   /* create an empty (zero-valued) discrete function */
   Array<BasisFamily> bas(nAttrs);
   for (int i=0; i<bas.size(); i++) bas[i] = new Lagrange(1);
+  PLAYA_ROOT_MSG2(verb, tab1 << "forming discrete space");
   DiscreteSpace discSpace(mesh, bas, vecType);
+  PLAYA_ROOT_MSG2(verb, tab1 << "forming discrete function");
   Expr u0 = new DiscreteFunction(discSpace, 0.0, "u0");
   
   /* get from the discrete function a pointer to the underlying
@@ -33,14 +44,20 @@ Expr readNodalFields(const MeshSource& mesher, const Mesh& mesh,
   
   /* run through the data, putting each entry into its correct place in
    * the vector as indexed by the dof number, NOT the node number. */
+  PLAYA_ROOT_MSG2(verb, tab1 << "filling discrete function");
   Array<int> dofs(1);
   for (int i=0; i<mesh.numCells(0); i++)
   {
+    Tabs tab2;
+    PLAYA_ROOT_MSG3(verb, tab2 << "node i=" << i);
     for (int f=0; f<nAttrs; f++)
     {
+      Tabs tab3;
       /* look up the dof for the f-th function on this node */
       dofMap->getDOFsForCell(0, i, f, dofs);
       int dof = dofs[0];
+      PLAYA_ROOT_MSG3(verb, tab3 << "f=" << f << " dof=" << dof << " val=" 
+        << funcVals[f][i]);
       loadable(vec)->setElement(dof, funcVals[f][i]);
     }
   }
@@ -48,6 +65,7 @@ Expr readNodalFields(const MeshSource& mesher, const Mesh& mesh,
   /* Reset the vector */
   DiscreteFunction::discFunc(u0)->setVector(vec);
 
+  PLAYA_ROOT_MSG1(verb, tab0 << "done readNodalFields()");
   return u0;
 }
 
@@ -122,7 +140,7 @@ Expr readSerialGridField(const std::string& gridFile,
   return u0;
 }
 
-double readbackTester(const std::string& infile, const MPIComm& comm) 
+double readbackTester(const std::string& infile, const MPIComm& comm, int verb) 
 {
   /* We will do our linear algebra using Epetra */
   VectorType<double> vecType = new EpetraVectorType();
@@ -176,7 +194,7 @@ double readbackTester(const std::string& infile, const MPIComm& comm)
   /* Read back the solution */
   MeshSource mesher2 = new ExodusMeshReader("./readbackTest-out", meshType, comm);
   Mesh mesh2 = mesher2.getMesh();
-  Expr u2 = readNodalFields(mesher2, mesh2, vecType);
+  Expr u2 = readNodalFields(mesher2, mesh2, vecType, verb);
   Out::root() << "done readback " << std::endl;
   
   /* Compute the functional using the second mesh */
