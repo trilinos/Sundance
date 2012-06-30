@@ -11,14 +11,19 @@ int main(int argc, char** argv)
   {
     int nx = 32;
     double convTol = 1.0e-8;
-    double lambda = 0.5;
+    int nSteps = 5;
+    double lambdaMax = 0.5;
     Sundance::setOption("nx", nx, "Number of elements");
     Sundance::setOption("tol", convTol, "Convergence tolerance");
-    Sundance::setOption("lambda", lambda, "Lambda (parameter in Bratu's equation)");
+    Sundance::setOption("lambda-max", lambdaMax, 
+      "final lambda (parameter in Bratu's equation)");
+    Sundance::setOption("nSteps", nSteps, 
+      "number of steps in lambda (continuation from lambda=0 to lambda=lambdaMax)");
 
     Sundance::init(&argc, &argv);
 
-    Out::root() << "Bratu problem (lambda=" << lambda << ")" << endl;
+    Out::root() << "Bratu problem with continuation (lambda=[0, " << lambdaMax << "] in " 
+                << nSteps << " steps)" << endl;
     Out::root() << "Newton's method with automated linearization" 
                 << endl << endl;
 
@@ -41,6 +46,7 @@ int main(int argc, char** argv)
 
     Expr x = new CoordExpr(0);
 
+    Expr lambda = new Sundance::Parameter(0.0);
     const double pi = 4.0*atan(1.0);
     Expr uExact = sin(pi*x);
     Expr R = pi*pi*uExact - lambda*exp(uExact);
@@ -62,21 +68,30 @@ int main(int argc, char** argv)
     NonlinearSolver<double> solver 
       = NonlinearSolverBuilder::createSolver("playa-newton-amesos.xml");
 
-    Out::root() << "Newton solve" << endl;
-
-    SolverState<double> state = prob.solve(solver);
-    
-    TEUCHOS_TEST_FOR_EXCEPTION(state.finalState() != SolveConverged,
-      std::runtime_error,
-      "Nonlinear solve failed to converge: message=" << state.finalMsg());
-    
     Expr soln = uPrev;
-    FieldWriter writer = new DSVWriter("AutoLinearizedBratu.dat");
-    writer.addMesh(mesh);
-    writer.addField("soln", new ExprFieldWrapper(soln[0]));
-    writer.write();
+    for (int n=0; n<nSteps; n++)
+    {
+      double lambdaVal = n*lambdaMax/(nSteps-1.0);
+      /* update the value of the parameter */
+      lambda.setParameterValue(lambdaVal);
+      Out::root() << "continuation step n=" << n
+                  << " of " << nSteps << ", lambda="
+                  << lambdaVal << endl;
 
-    Out::root() << "Converged!" << endl << endl;
+      SolverState<double> state = prob.solve(solver);
+    
+      TEUCHOS_TEST_FOR_EXCEPTION(state.finalState() != SolveConverged,
+        std::runtime_error,
+        "Nonlinear solve failed to converge: message=" << state.finalMsg());
+
+      Expr soln = uPrev;
+      FieldWriter writer = new DSVWriter("ContinuationBratu-" 
+        + Teuchos::toString(n) + ".dat");
+      writer.addMesh(mesh);
+      writer.addField("soln", new ExprFieldWrapper(soln[0]));
+      writer.write();
+    }
+
 
     double L2Err = L2Norm(mesh, interior, soln-uExact, quad4);
     Out::root() << "L2 Norm of error: " << L2Err << endl;
@@ -88,6 +103,5 @@ int main(int argc, char** argv)
     Sundance::handleException(e);
   }
   Sundance::finalize(); 
-  return Sundance::testStatus();
 }
 

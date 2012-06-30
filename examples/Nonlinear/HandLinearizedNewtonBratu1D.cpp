@@ -32,7 +32,7 @@ int main(int argc, char** argv)
     CellFilter right = sides.subset(new CoordinateValueCellPredicate(0, 1.0));
     
     BasisFamily basis = new Lagrange(1);
-    Expr newtStep = new UnknownFunction(basis, "du");
+    Expr w = new UnknownFunction(basis, "w");
     Expr v = new TestFunction(basis, "v");
 
     Expr grad = gradient(1);
@@ -53,13 +53,13 @@ int main(int argc, char** argv)
     Expr stepVal = copyDiscreteFunction(uPrev);
 
     Expr eqn 
-      = Integral(interior, (grad*v)*(grad*newtStep) + (grad*v)*(grad*uPrev) 
-        - v*lambda*exp(uPrev)*(1.0+newtStep) - v*R, quad4);
+      = Integral(interior, (grad*v)*(grad*w) + (grad*v)*(grad*uPrev) 
+        - v*lambda*exp(uPrev)*(1.0+w) - v*R, quad4);
 
     Expr h = new CellDiameterExpr();
-    Expr bc = EssentialBC(left+right, v*(uPrev+newtStep)/h, quad2); 
+    Expr bc = EssentialBC(left+right, v*(uPrev+w)/h, quad2); 
 
-    LinearProblem prob(mesh, eqn, bc, v, newtStep, vecType);
+    LinearProblem prob(mesh, eqn, bc, v, w, vecType);
 
     LinearSolver<double> linSolver 
       = LinearSolverBuilder::createSolver("amesos.xml");

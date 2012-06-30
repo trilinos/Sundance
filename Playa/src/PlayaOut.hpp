@@ -73,6 +73,16 @@ void writeTable(std::ostream& os, const Tabs& tab,
     } \
   }
 
+#define PLAYA_ROOT_OUT(test, msg) \
+  { \
+    if (test) \
+    { \
+      TeuchosOStringStream omsg; \
+      omsg << msg; \
+      Out::root() << omsg.str() << std::endl;                 \
+    } \
+  }
+
 
 #define PLAYA_VERB_EXTREME(msg) PLAYA_MSG4(this->verb(), msg)
 #define PLAYA_VERB_HIGH(msg) PLAYA_MSG3(this->verb(), msg)
@@ -104,30 +114,45 @@ void writeTable(std::ostream& os, const Tabs& tab,
 
 #define PLAYA_MSG5(level, msg) PLAYA_OUT(level >= 5, msg)
 
+
+
+#define PLAYA_ROOT_MSG1(level, msg) PLAYA_ROOT_OUT(level >= 1, msg)
+
+#define PLAYA_ROOT_MSG2(level, msg) PLAYA_ROOT_OUT(level >= 2, msg)
+
+#define PLAYA_ROOT_MSG3(level, msg) PLAYA_ROOT_OUT(level >= 3, msg)
+
+#define PLAYA_ROOT_MSG4(level, msg) PLAYA_ROOT_OUT(level >= 4, msg)
+
+#define PLAYA_ROOT_MSG5(level, msg) PLAYA_ROOT_OUT(level >= 5, msg)
+
+
+
+
 #define PLAYA_BANNER1(level, tab, msg) \
-  PLAYA_MSG1(level, tab \
+  PLAYA_ROOT_MSG1(level, tab \
     << "===================================================================");\
-  PLAYA_MSG1(level, tab << std::endl << tab \
+  PLAYA_ROOT_MSG1(level, tab << std::endl << tab \
     << "  " << msg); \
-  PLAYA_MSG1(level, tab << std::endl << tab\
+  PLAYA_ROOT_MSG1(level, tab << std::endl << tab\
     << "===================================================================");
 
 
 #define PLAYA_BANNER2(level, tab, msg) \
-  PLAYA_MSG2(level, tab \
+  PLAYA_ROOT_MSG2(level, tab \
     << "-------------------------------------------------------------------");\
-  PLAYA_MSG2(level, tab << msg); \
+  PLAYA_ROOT_MSG2(level, tab << msg); \
   PLAYA_MSG2(level, tab\
     << "-------------------------------------------------------------------");
 
 
 
 #define PLAYA_BANNER3(level, tab, msg) \
-  PLAYA_MSG3(level, tab \
+  PLAYA_ROOT_MSG3(level, tab \
     << "-------------------------------------------------------------------");\
-  PLAYA_MSG3(level, tab << std::endl << tab \
+  PLAYA_ROOT_MSG3(level, tab << std::endl << tab \
     << msg); \
-  PLAYA_MSG3(level, tab << std::endl << tab\
+  PLAYA_ROOT_MSG3(level, tab << std::endl << tab\
     << "-------------------------------------------------------------------");
 
 #endif

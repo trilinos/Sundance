@@ -50,7 +50,7 @@ int main(int argc, char** argv)
 
     DiscreteSpace discSpace(mesh, basis, vecType);
     Expr uPrev = new DiscreteFunction(discSpace, 0.5);
-    Expr uNext = copyDiscreteFunction(uPrev);
+    Expr uCur = copyDiscreteFunction(uPrev);
 
     Expr eqn 
       = Integral(interior, (grad*u)*(grad*v) - v*lambda*exp(uPrev) - v*R, quad4);
@@ -60,9 +60,9 @@ int main(int argc, char** argv)
 
     LinearProblem prob(mesh, eqn, bc, v, u, vecType);
 
-    Expr normExpr = Integral(interior, pow(u-uPrev, 2.0), quad2);
-    Functional normFunc(mesh, normExpr, vecType);
-    FunctionalEvaluator normEval = normFunc.evaluator(u, uNext);
+    Expr normSqExpr = Integral(interior, pow(u-uPrev, 2.0), quad2);
+    Functional normSqFunc(mesh, normSqExpr, vecType);
+    FunctionalEvaluator normSqEval = normSqFunc.evaluator(u, uCur);
 
     LinearSolver<double> linSolver 
       = LinearSolverBuilder::createSolver("amesos.xml");
@@ -75,18 +75,22 @@ int main(int argc, char** argv)
     for (int i=0; i<maxIters; i++)
     {
       /* solve for the next u */
-      prob.solve(linSolver, uNext);
-      double deltaU = sqrt(normEval.evaluate());
+      prob.solve(linSolver, uCur);
+      /* evaluate the norm of (uCur-uPrev) using 
+       * the FunctionalEvaluator defined above */
+      double deltaU = sqrt(normSqEval.evaluate());
       Out::root() << "Iter=" << setw(3) << i << " ||Delta u||=" << setw(20)
-                  << deltaU << endl;
+                  << deltaU << endl; 
+      /* check for convergence */  
       if (deltaU < convTol) 
       {
-        soln = uNext;
+        soln = uCur;
         converged = true;
         break;
       }
-      /* update the previous u */
-      Vector<double> uVec = getDiscreteFunctionVector(uNext);
+      /* get the vector from the current discrete function */
+      Vector<double> uVec = getDiscreteFunctionVector(uCur);
+      /* copy the vector into the previous discrete function */ 
       setDiscreteFunctionVector(uPrev, uVec);
     } 
     TEUCHOS_TEST_FOR_EXCEPTION(!converged, std::runtime_error, 

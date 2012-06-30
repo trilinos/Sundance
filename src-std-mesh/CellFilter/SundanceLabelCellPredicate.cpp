@@ -43,7 +43,10 @@ bool LabelCellPredicate::lessThan(const CellPredicateBase* other) const
                      << " to LabelCellPredicate::lessThan() should be "
                      "a LabelCellPredicate pointer.");
 
-  return labelIndex_ < dynamic_cast<const LabelCellPredicate*>(other)->labelIndex_;
+  const LabelCellPredicate* op 
+    = dynamic_cast<const LabelCellPredicate*>(other);
+  
+  return (labelIndices_ < op->labelIndices_);
 }
 
 void LabelCellPredicate::testBatch(const Array<int>& cellLID,
@@ -52,14 +55,15 @@ void LabelCellPredicate::testBatch(const Array<int>& cellLID,
   mesh().getLabels(cellDim(), cellLID, results);
   for (int i=0; i<cellLID.size(); i++)
     {
-      results[i] = (results[i] == labelIndex_);
+      int cellLabel = results[i];
+      results[i] = labelIndices_.contains(cellLabel);
     }
 }
 
 XMLObject LabelCellPredicate::toXML() const 
 {
   XMLObject rtn("LabelCellPredicate");
-  rtn.addAttribute("label", Teuchos::toString(labelIndex_));
+  rtn.addAttribute("label", labelIndices_.toString());
   return rtn;
 }
 

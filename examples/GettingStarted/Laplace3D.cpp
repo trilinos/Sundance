@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (2009) Kevin Long
  * Department of Mathematics and Statistics
  * Texas Tech University
@@ -20,18 +20,18 @@
  * 
  */
 
-
 #include "Sundance.hpp"
 
 // This test depends on Exodus, so skip it if Expdus hasn't been enabled. 
 #if defined(HAVE_SUNDANCE_EXODUS) && defined(Trilinos_DATA_DIR)
 
+using namespace Sundance;
 
-/* 
- * This example program sets up and solves the Laplace equation. See the
- * GettingStarted document for more information.
+/** 
+ * This example program sets up and solves the Laplace 
+ * equation \f$-\nabla^2 u=0\f$. See the
+ * document GettingStarted.pdf for more information.
  */
-
 int main(int argc, char** argv)
 {
   try
@@ -89,7 +89,7 @@ int main(int argc, char** argv)
     QuadratureFamily quad2 = new GaussianQuadrature(2);
 
 
-    /* Write the weak form */
+    /** Write the weak form */
     Expr eqn 
       = Integral(interior, (grad*u)*(grad*v), quad1)
       + Integral(east, v, quad1);

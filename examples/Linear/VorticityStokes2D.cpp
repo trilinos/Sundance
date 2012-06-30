@@ -70,8 +70,8 @@ int main(int argc, char** argv)
       CellFilter interior = new MaximalCellFilter();
       CellFilter edges = new DimensionalCellFilter(1);
 
-      CellFilter left = edges.subset(new LeftPointTest());
-      CellFilter right = edges.subset(new RightPointTest());
+      CellFilter left = edges.coordSubset(0,0.0);
+      CellFilter right = edges.coordSubset(0,1.0);
       CellFilter top = edges.subset(new TopPointTest());
       CellFilter bottom = edges.subset(new BottomPointTest());
 

@@ -29,29 +29,25 @@
 /* @HEADER@ */
 
 #include "Sundance.hpp"
-#include <unistd.h>
-#include <sys/unistd.h>
 
 using Sundance::List;
+
+
 /** 
  * Solves the coupled equations
  *
- * u_xx = v
- * v_xx = 1
- * u(0) = u(1) = 0
- * v(0) = v(1) = 0
+ * \f[\nabla^2 u_1 = u_2 \f]
+ * \f[\nabla^2 u_2 = x \f]
+ * \f[u_1 = u_2 = 0\;\;\;\mathrm{on\; east\; and\; west}\f]
+ * \f[\frac{\partial u_1}{\partial n} = \frac{\partial u_2}{\partial n} = 0\;\;\;\mathrm{on\; north\; and\; south}\f]
+ * 
  *
  * The solution is
- * v(x) = -1/2 x (1-x)
- * u(x) = 1/24 x (x^3 - 2 x^2 + 1)
+ * \f[u_1(x,y)=\frac{1}{360}(3 x^5 - 10 x^3 + 7 x)\f]
+ * \f[u_2(x,y)= \frac{1}{6} x (x^2-1)\f]
+ *
+ * 
  */
-
-
-
-CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
-CELL_PREDICATE(BottomPointTest, {return fabs(x[1]) < 1.0e-10;})
-CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;})
-CELL_PREDICATE(TopPointTest, {return fabs(x[1]-2.0) < 1.0e-10;})
 
 int main(int argc, char** argv)
 {
@@ -59,45 +55,37 @@ int main(int argc, char** argv)
   try
 		{
       Sundance::init(&argc, &argv);
-      int np = MPIComm::world().getNProc();
-      int npx = -1;
-      int npy = -1;
-      PartitionedRectangleMesher::balanceXY(np, &npx, &npy);
-      TEUCHOS_TEST_FOR_EXCEPT(npx < 1);
-      TEUCHOS_TEST_FOR_EXCEPT(npy < 1);
-      TEUCHOS_TEST_FOR_EXCEPT(npx * npy != np);
 
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
-       * be built using a PartitionedLineMesher. */
+       * be built using a PartitionedRectangleMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
       int nx = 32;
 
-      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx, npx,
-                                                         0.0, 2.0, nx, npy,
-                                                         meshType);
+      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx,
+        0.0, 2.0, nx,
+        meshType);
       Mesh mesh = mesher.getMesh();
 
       /* Create a cell filter that will identify the maximal cells
        * in the interior of the domain */
       CellFilter interior = new MaximalCellFilter();
+
+      /* Create cell filters for the boundary surfaces */
       CellFilter edges = new DimensionalCellFilter(1);
 
-      CellFilter left = edges.subset(new LeftPointTest());
-      CellFilter right = edges.subset(new RightPointTest());
-      CellFilter top = edges.subset(new TopPointTest());
-      CellFilter bottom = edges.subset(new BottomPointTest());
-
+      CellFilter west = edges.coordSubset(0, 0.0);
+      CellFilter east = edges.coordSubset(0, 1.0);
 
       
       /* Create unknown and test functions, discretized using first-order
        * Lagrange interpolants */
-      Expr u = new UnknownFunction(new Lagrange(3), "u");
-      Expr v = new UnknownFunction(new Lagrange(2), "v");
-      Expr du = new TestFunction(new Lagrange(3), "du");
-      Expr dv = new TestFunction(new Lagrange(2), "dv");
+      Expr u1 = new UnknownFunction(new Lagrange(3), "u");
+      Expr u2 = new UnknownFunction(new Lagrange(2), "v");
+      Expr du1 = new TestFunction(new Lagrange(3), "du");
+      Expr du2 = new TestFunction(new Lagrange(2), "dv");
 
       /* Create differential operator and coordinate function */
       Expr dx = new Derivative(0);
@@ -107,66 +95,46 @@ int main(int argc, char** argv)
       Expr grad = List(dx, dy);
 
       /* We need a quadrature rule for doing the integrations */
-      QuadratureFamily quad2 = new GaussianQuadrature(6);
+      QuadratureFamily quad = new GaussianQuadrature(6);
 
       
       /* Define the weak form */
       Expr eqn = Integral(interior, 
-                          (grad*du)*(grad*u) + du*v + (grad*dv)*(grad*v) + x*dv, 
-                          quad2);
+                          (grad*du1)*(grad*u1) + du1*u2 + (grad*du2)*(grad*u2) + x*du2, 
+                          quad);
       /* Define the Dirichlet BC */
-      Expr bc = EssentialBC(left, du*u + dv*v, quad2)
-        + EssentialBC(right, du*u + dv*v, quad2);
+      Expr bc = EssentialBC(east + west, du1*u1 + du2*u2, quad);
 
-      /* We can now set up the linear problem! */
-      LinearProblem prob(mesh, eqn, bc, List(dv,du), List(v,u), vecType);
+      /* We can now set up the linear problem! The order of the test functions in the
+      * list determines the order of these variables in the matrix. Liewise for
+      * the unknown functions. */
+      LinearProblem prob(mesh, eqn, bc, List(du1,du2), List(u1,u2), vecType);
 
       
 
-      /* Create an Aztec solver */
-      std::map<int,int> azOptions;
-      std::map<int,double> azParams;
-
-      azOptions[AZ_solver] = AZ_gmres;
-      azOptions[AZ_precond] = AZ_dom_decomp;
-      azOptions[AZ_subdomain_solve] = AZ_ilu;
-      azOptions[AZ_graph_fill] = 1;
-      //azOptions[AZ_ml] = 1;
-      //azOptions[AZ_ml_levels] = 4;
-      azParams[AZ_max_iter] = 1000;
-      azParams[AZ_tol] = 1.0e-8;
-
-      LinearSolver<double> solver = new AztecSolver(azOptions,azParams);
+      /* Get a solver */
+      LinearSolver<double> solver = LinearSolverBuilder::createSolver("aztec-ml.xml");
 
 
-
+      /* Solver */
       Expr soln = prob.solve(solver);
 
+      /* Check */
       Expr x2 = x*x;
       Expr x3 = x*x2;
 
-      Expr uExact = (1.0/120.0)*x2*x3 - 1.0/36.0 * x3 + 7.0/360.0 * x;
-      Expr vExact = 1.0/6.0 * x * (x2 - 1.0);
+      Expr u1Exact = (1.0/120.0)*x2*x3 - 1.0/36.0 * x3 + 7.0/360.0 * x;
+      Expr u2Exact = 1.0/6.0 * x * (x2 - 1.0);
 
-      Expr vErr = vExact - soln[0];
-      Expr uErr = uExact - soln[1];
+      Expr u1Err = u1Exact - soln[0];
+      Expr u2Err = u2Exact - soln[1];
       
-      Expr vErrExpr = Integral(interior, 
-                              vErr*vErr,
-                              new GaussianQuadrature(6));
-      
-      Expr uErrExpr = Integral(interior, 
-                              uErr*uErr,
-                              new GaussianQuadrature(6));
+      double u1ErrorNorm = L2Norm(mesh, interior, u1Err, quad);
+      std::cerr << "u1 error norm = " << u1ErrorNorm << std::endl << std::endl;
 
-      FunctionalEvaluator vErrInt(mesh, vErrExpr);
-      FunctionalEvaluator uErrInt(mesh, uErrExpr);
+      double u2ErrorNorm = L2Norm(mesh, interior, u2Err, quad);
+      std::cerr << "u2 error norm = " << u2ErrorNorm << std::endl << std::endl;
 
-      double uErrorSq = uErrInt.evaluate();
-      std::cerr << "u error norm = " << sqrt(uErrorSq) << std::endl << std::endl;
-
-      double vErrorSq = vErrInt.evaluate();
-      std::cerr << "v error norm = " << sqrt(vErrorSq) << std::endl << std::endl;
 
       
       /* Write the field in VTK format */
@@ -179,7 +147,7 @@ int main(int argc, char** argv)
 
 
       double tol = 1.0e-5;
-      Sundance::passFailTest(sqrt(uErrorSq+vErrorSq), tol);
+      Sundance::passFailTest(max(u1ErrorNorm, u2ErrorNorm), tol);
     }
 	catch(std::exception& e)
 		{

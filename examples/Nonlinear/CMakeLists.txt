@@ -10,6 +10,7 @@ SET(SerialTests
   HandLinearizedNewtonBratu1D
   AutoLinearizedNewtonBratu1D
   FullyAutomatedNewtonBratu1D
+  ContinuationBratu1D
 )
 
 ADD_TEST_BATCH(MPITests 

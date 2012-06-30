@@ -32,7 +32,7 @@ using SundanceStdFwk::CellFilter;
 using SundanceStdFwk::QuadratureFamily;
 
 
-/*! \mainpage Sundance 
+/*! \mainpage %Sundance 
 
 <H2> Introduction </H2>
 
@@ -62,19 +62,35 @@ of a problem.
 <br>
 Please send any questions or comments to 
 <A HREF="mailto:kevin.long@ttu.edu"> Kevin Long </A>
-<br><br> <b>WARNING: This documentation is sometimes
-incomplet, inackurate, and is 
-very much a work in progress trying to keep up with 
-a rapidly-evolving project.</b>
+<br><br> 
 
 <h2> Documentation </H2>
 
+The alphabetical class list produced by Doxygen is overwhelming and contains many
+items not useful to the typical applications programmer. For quick reference, go
+instead to the <A href="doc_main.html"> index of major classes and functions, organized by topic. </a>
+
 <ul>
-<li> <A href="doc_examples.html"> Documented examples </a>
+<li> For an introduction to programming with %Sundance objects and a fully annotated example of a Laplace solver, go to <A HREF="GettingStarted.pdf"/> GettingStarted </A>
+<li> Categorized listing of <A href="doc_examples.html"> examples </a>
+<li> Examples of <A HREF="LinearExamples.pdf"> linear PDE </A>
+<li> Examples of several approaches to solving <A HREF="NonlinearExamples.pdf"> nonlinear PDE </a>
+</ul>
+
+<H2> Citing %Sundance </H2>
+
+If you use %Sundance in your work, please cite the paper
+<ul>
+<li> K. R. Long, R. C. Kirby, and B. G. van Bloemen Waanders, 2010, <i>SIAM Journal on Scientific Computing</i>, <b>32</b>:6, pp. 3323-3351. 
 </ul>
 
 <H2> People </H2>
 
+<table>
+
+<tr valign="top">
+
+<td>
 <H4> Current developers </H4>
 
 <ul>
@@ -88,23 +104,28 @@ Benk </A> TU M&uuml;nchen
 -- Sandia National Laboratories, Albuquerque. 
 <li> <A HREF="http://csmr.ca.sandia.gov/~ptboggs/"> Paul Boggs </A>
 --  Sandia National Laboratories, Livermore. 
+<li> <A HREF="http://csmr.ca.sandia.gov/~ptboggs/"> Julien Cortial </A>
+--  Sandia National Laboratories, Livermore. 
 </ul>
 
+</td>
+<td>
 <H4> Alumni </H4>
 
 <ul>
 <li> <A HREF="http://www.acm.caltech.edu/people/students.shtml"> Catherine Beni </A>
--- Caltech. 
+-- Caltech (now at Eindhoven)
 <li> <A HREF="http://csmr.ca.sandia.gov/~margoli/"> Steve Margolis </A>
 --  Sandia National Laboratories, Livermore. 
 <li> <A HREF="http://www4.ncsu.edu/~jpreese/"> Jill Reese </A>
--- North Carolina State University. 
+-- North Carolina State University (now at The Math Works)
 <li> <A HREF="http://www.usc.edu/dept/civil_eng/dept/faculty-staff/student-directory/"> George Saad </A>
 -- University of Southern California. 
 <li> <A HREF="http://people.cs.uchicago.edu/~aterrel/"> Andy Terrel </A>
--- University of Chicago. 
+-- University of Chicago.(now at UT Austin)
 </ul>
-
+</td>
+</table>
 
 
 */

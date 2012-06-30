@@ -90,9 +90,11 @@ MPISession::~MPISession()
 
   if (!mpiHasBeenFinalized)
   {
+#define BROKEN_MPI_REGISTRIES
+#ifndef BROKEN_MPI_REGISTRIES
     MPIDataType::clearTypeRegistry();
     MPIOp::clearOpRegistry();
-    
+#endif
     int mpierr = ::MPI_Finalize();
     
     TEUCHOS_TEST_FOR_EXCEPTION(mpierr != 0, std::runtime_error,

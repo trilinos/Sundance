@@ -9,6 +9,7 @@ SET(SerialTests
 )
 
 SET(MPITests
+  ParameterSweep
   TaylorHoodStokes2D
   VorticityStokes2D 
 )
