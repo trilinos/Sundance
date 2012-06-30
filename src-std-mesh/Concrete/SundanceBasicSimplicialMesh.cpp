@@ -1040,7 +1040,7 @@ int BasicSimplicialMesh::addVertex(int globalIndex, const Point& x,
   int lid = points_.length();
   points_.append(x);
 
-  SUNDANCE_OUT(this->verb() > 1,
+  SUNDANCE_OUT(this->verb() > 4,
     "BSM added point " << x << " lid = " << lid);
 
   numCells_[0]++;
@@ -1437,16 +1437,16 @@ int BasicSimplicialMesh::addEdge(int v1, int v2,
 void BasicSimplicialMesh::synchronizeGIDNumbering(int dim, int localCount) 
 {
   
-  SUNDANCE_OUT(this->verb() > 2, 
+  SUNDANCE_OUT(this->verb() > 4, 
     "sharing offsets for GID numbering for dim=" << dim);
-  SUNDANCE_OUT(this->verb() > 2, 
+  SUNDANCE_OUT(this->verb() > 4, 
     "I have " << localCount << " cells");
   Array<int> gidOffsets;
   int total;
   MPIContainerComm<int>::accumulate(localCount, gidOffsets, total, comm());
   int myOffset = gidOffsets[comm().getRank()];
 
-  SUNDANCE_OUT(this->verb() > 2, 
+  SUNDANCE_OUT(this->verb() > 4, 
     "back from MPI accumulate: offset for d=" << dim
     << " on p=" << comm().getRank() << " is " << myOffset);
 
@@ -1456,7 +1456,7 @@ void BasicSimplicialMesh::synchronizeGIDNumbering(int dim, int localCount)
     LIDToGIDMap_[dim][i] += myOffset;
     GIDToLIDMap_[dim].put(LIDToGIDMap_[dim][i], i);
   }
-  SUNDANCE_OUT(this->verb() > 2, 
+  SUNDANCE_OUT(this->verb() > 4, 
     "done sharing offsets for GID numbering for dim=" << dim);
 }
 
@@ -1510,7 +1510,7 @@ void BasicSimplicialMesh::assignIntermediateCellGIDs(int cellDim)
 
   LIDToGIDMap_[cellDim].resize(numCells(cellDim));
   
-  SUNDANCE_OUT(this->verb() > 2,  
+  SUNDANCE_OUT(this->verb() > 3,  
     "starting loop over cells");
 
 
@@ -1555,7 +1555,7 @@ void BasicSimplicialMesh::assignIntermediateCellGIDs(int cellDim)
     {
       for (int i=0; i<numCells(cellDim); i++)
       {  
-        SUNDANCE_OUT(this->verb() > 3, 
+        SUNDANCE_OUT(this->verb() > 4, 
           "p=" << myRank 
           <<" cell " << i);
               
@@ -1584,7 +1584,7 @@ void BasicSimplicialMesh::assignIntermediateCellGIDs(int cellDim)
               * identify the cell on the other processor. */
         {
           LIDToGIDMap_[cellDim][i] = -1;
-          SUNDANCE_OUT(this->verb() > 3, 
+          SUNDANCE_OUT(this->verb() > 4, 
             "p=" << myRank << " adding cell LID=" << i 
             << " to req list");
           outgoingRequestLIDs[owner].append(i);
@@ -1592,7 +1592,7 @@ void BasicSimplicialMesh::assignIntermediateCellGIDs(int cellDim)
           {
             int ptLID = cellVerts->value(i, v);
             int ptGID = LIDToGIDMap_[0][ptLID];
-            SUNDANCE_OUT(this->verb() > 3, 
+            SUNDANCE_OUT(this->verb() > 4, 
               "p=" << myRank << " adding pt LID=" << ptLID
               << " GID=" << ptGID
               << " to req list");
@@ -1634,7 +1634,7 @@ void BasicSimplicialMesh::assignIntermediateCellGIDs(int cellDim)
   {
     if (numWaits > 1) comm().synchronize();
     if (numWaits > 1 && q!=myRank) continue;
-    SUNDANCE_OUT(this->verb() > 3,
+    SUNDANCE_OUT(this->verb() > 4,
       "p=" << myRank << "sending requests: " 
       << outgoingRequests);
   }
@@ -1659,7 +1659,7 @@ void BasicSimplicialMesh::assignIntermediateCellGIDs(int cellDim)
   {
     if (numWaits > 1) comm().synchronize();
     if (numWaits > 1 && q!=myRank) continue;
-    SUNDANCE_OUT(this->verb() > 3,
+    SUNDANCE_OUT(this->verb() > 4,
       "p=" << myRank << "recv'd requests: " << incomingRequests);
   }
 
@@ -1682,7 +1682,7 @@ void BasicSimplicialMesh::assignIntermediateCellGIDs(int cellDim)
               
         for (int c=0; c<requestsFromProc.size(); c+=(cellDim+1))
         {
-          SUNDANCE_OUT(this->verb() > 3,
+          SUNDANCE_OUT(this->verb() > 4,
             "p=" << myRank << "processing request c=" 
             << c/(cellDim+1));
           /* The request for each cell is a tuple of vertex GIDs. 
@@ -1749,7 +1749,7 @@ void BasicSimplicialMesh::assignIntermediateCellGIDs(int cellDim)
   {
     if (numWaits>1) comm().synchronize();
     if (numWaits>1 && q!=myRank) continue;
-    SUNDANCE_OUT(this->verb() > 3,
+    SUNDANCE_OUT(this->verb() > 4,
       "p=" << myRank << "sending GIDs: " << outgoingGIDs);
   }
 
@@ -1783,7 +1783,7 @@ void BasicSimplicialMesh::assignIntermediateCellGIDs(int cellDim)
     }
     try
     {
-      SUNDANCE_OUT(this->verb() > 3,
+      SUNDANCE_OUT(this->verb() > 4,
         "p=" << myRank << "recv'ing GIDs: " << incomingGIDs);
           
       /* Now assign the cell GIDs we've recv'd from from the other procs */
@@ -1794,7 +1794,7 @@ void BasicSimplicialMesh::assignIntermediateCellGIDs(int cellDim)
         {
           int cellLID = outgoingRequestLIDs[p][c];
           int cellGID = incomingGIDs[p][c];
-          SUNDANCE_OUT(this->verb() > 3,
+          SUNDANCE_OUT(this->verb() > 4,
             "p=" << myRank << 
             " assigning GID=" << cellGID << " to LID=" 
             << cellLID);
@@ -1804,7 +1804,7 @@ void BasicSimplicialMesh::assignIntermediateCellGIDs(int cellDim)
       }
           
 
-      SUNDANCE_OUT(this->verb() > 2,  
+      SUNDANCE_OUT(this->verb() > 3,  
         "p=" << myRank 
         << "done synchronizing cells of dimension " 
         << cellDim);

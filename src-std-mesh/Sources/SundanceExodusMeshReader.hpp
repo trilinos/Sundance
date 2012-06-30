@@ -48,8 +48,9 @@ namespace Sundance
   public:
     /** */
     ExodusMeshReader(const std::string& filename, 
-                           const MeshType& meshType,
-                           const MPIComm& comm = MPIComm::world());
+      const MeshType& meshType,
+      int verbosity=0,
+      const MPIComm& comm = MPIComm::world());
 
     /** virtual dtor */
     virtual ~ExodusMeshReader(){;}

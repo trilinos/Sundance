@@ -148,7 +148,7 @@ double readbackTester(const std::string& infile, const MPIComm& comm, int verb)
   /* Read a mesh */
   Out::root() << "starting to read mesh " << std::endl;
   MeshType meshType = new BasicSimplicialMeshType();
-  MeshSource mesher = new ExodusMeshReader(infile, meshType, comm);
+  MeshSource mesher = new ExodusMeshReader(infile, meshType, verb, comm);
   Mesh mesh = mesher.getMesh();
 
   Out::root() << "done reading mesh " << std::endl;
@@ -192,7 +192,7 @@ double readbackTester(const std::string& infile, const MPIComm& comm, int verb)
   w.write();
 
   /* Read back the solution */
-  MeshSource mesher2 = new ExodusMeshReader("./readbackTest-out", meshType, comm);
+  MeshSource mesher2 = new ExodusMeshReader("./readbackTest-out", meshType, verb, comm);
   Mesh mesh2 = mesher2.getMesh();
   Expr u2 = readNodalFields(mesher2, mesh2, vecType, verb);
   Out::root() << "done readback " << std::endl;

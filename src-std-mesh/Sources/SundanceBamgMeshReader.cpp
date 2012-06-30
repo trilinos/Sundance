@@ -9,8 +9,9 @@ using namespace Sundance;
 
 BamgMeshReader::BamgMeshReader(const std::string& fname,
                                const MeshType& meshType, bool bbAttr,
+  int verbosity,
                                const MPIComm& comm)
-  : MeshReaderBase(fname, meshType, comm),
+  : MeshReaderBase(fname, meshType, verbosity, comm),
     nodeFilename_(filename()),
     elemFilename_(filename()),
     parFilename_(filename()),
@@ -35,7 +36,6 @@ BamgMeshReader::BamgMeshReader(const std::string& fname,
   meshFilename_ = meshFilename_ + ".mesh"; //new
   bbFilename_ = bbFilename_ + ".bb"; //new
   
-  setVerb( classVerbosity() );
   SUNDANCE_OUT(this->verb() > 1,
                "node filename = " << nodeFilename_);
   
@@ -71,7 +71,6 @@ BamgMeshReader::BamgMeshReader(const ParameterList& params)
   parFilename_ = parFilename_ + ".par";
   meshFilename_ = meshFilename_ + ".mesh"; //new
   
-  setVerb( classVerbosity() );
   SUNDANCE_OUT(this->verb() > 1,
                "node filename = " << nodeFilename_);
   

@@ -64,7 +64,8 @@ Mesh unfoldPeriodicMesh(const Mesh& mesh)
   double b = mesh.nodePosition(numElems)[0];
 
   MeshType meshType = new BasicSimplicialMeshType();
-  MeshSource mesher = new PartitionedLineMesher(a, b, numElems, meshType,
+  int verb=0;
+  MeshSource mesher = new PartitionedLineMesher(a, b, numElems, meshType, verb,
     MPIComm::self());
 
   Mesh rtn = mesher.getMesh();

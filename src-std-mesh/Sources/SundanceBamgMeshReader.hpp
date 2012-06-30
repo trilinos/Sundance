@@ -97,7 +97,7 @@ class BamgMeshReader : public MeshReaderBase
 public:
   /** */
   BamgMeshReader(const std::string& filename, 
-    const MeshType& meshType, const bool bbAttr,
+    const MeshType& meshType, const bool bbAttr, int verbosity=0,
     const MPIComm& comm = MPIComm::world());
 
   /** Construct from a ParameterList */

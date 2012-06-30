@@ -91,8 +91,9 @@ namespace Sundance
   public:
     /** */
     TriangleMeshReader(const std::string& filename, 
-                       const MeshType& meshType,
-                       const MPIComm& comm = MPIComm::world());
+      const MeshType& meshType,
+      int verbosity=0,
+      const MPIComm& comm = MPIComm::world());
 
     /** Construct from a ParameterList */
     TriangleMeshReader(const ParameterList& params);

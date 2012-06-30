@@ -11,8 +11,10 @@ using namespace Sundance;
 
 
 MeshSourceBase::MeshSourceBase(const MeshType& meshType,
-                               const MPIComm& comm)
-  : cachedMesh_(),
+  int verbosity,
+  const MPIComm& comm)
+  : ObjectWithVerbosity(verbosity),
+    cachedMesh_(),
     hasCachedMesh_(),
     meshType_(meshType),
     comm_(comm),

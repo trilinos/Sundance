@@ -40,7 +40,7 @@ OneTriangleMesher::OneTriangleMesher(
   const Point& B,
   const Point& C,
   const MeshType& meshType)
-  : MeshSourceBase(meshType, MPIComm::world()),
+  : MeshSourceBase(meshType, 0, MPIComm::world()),
     A_(A), B_(B), C_(C)
 {}
 
@@ -66,7 +66,7 @@ OneTetMesher::OneTetMesher(
   const Point& C,
   const Point& D,
   const MeshType& meshType)
-  : MeshSourceBase(meshType, MPIComm::world()),
+  : MeshSourceBase(meshType, 0, MPIComm::world()),
     A_(A), B_(B), C_(C), D_(D)
 {}
 

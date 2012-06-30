@@ -10,9 +10,10 @@ using namespace Sundance;
 
 
 TriangleMeshReader::TriangleMeshReader(const std::string& fname,
-                                       const MeshType& meshType,
-                                       const MPIComm& comm)
-  : MeshReaderBase(fname, meshType, comm),
+  const MeshType& meshType,
+  int verbosity,
+  const MPIComm& comm)
+  : MeshReaderBase(fname, meshType, verbosity, comm),
     nodeFilename_(filename()),
     elemFilename_(filename()),
     parFilename_(filename()),
@@ -35,7 +36,6 @@ TriangleMeshReader::TriangleMeshReader(const std::string& fname,
   parFilename_ = parFilename_ + ".par";
   sideFilename_ = sideFilename_ + ".side";
   
-  setVerb (classVerbosity() );
   //  verbosity() = 5;
   SUNDANCE_OUT(this->verb() > 1,
                "node filename = " << nodeFilename_);
@@ -64,7 +64,6 @@ TriangleMeshReader::TriangleMeshReader(const ParameterList& params)
   elemFilename_ = elemFilename_ + ".ele";
   parFilename_ = parFilename_ + ".par";
   
-  setVerb( classVerbosity() );
   SUNDANCE_OUT(this->verb() > 1,
                "node filename = " << nodeFilename_);
   
