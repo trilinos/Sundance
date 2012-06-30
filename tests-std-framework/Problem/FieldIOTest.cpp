@@ -26,7 +26,7 @@
 /* </Ignore> */
 
 
-#if defined(HAVE_SUNDANCE_EXODUS) && defined(Trilinos_DATA_DIR)
+#if defined(HAVE_SUNDANCE_EXODUS)
 
 int main(int argc, char** argv)
 {
@@ -42,7 +42,7 @@ int main(int argc, char** argv)
     MPIComm self = world;
 #endif
 
-    std::string infile = "cyl-coarse";
+    std::string infile = "tetPrism";
 //    std::string infile = "./prism";
     int numProc = world.getNProc();
     
