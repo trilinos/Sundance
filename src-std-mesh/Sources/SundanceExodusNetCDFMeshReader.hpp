@@ -54,8 +54,9 @@ namespace Sundance
   public:
     /** */
     ExodusNetCDFMeshReader(const std::string& filename, 
-                           const MeshType& meshType,
-                           const MPIComm& comm = MPIComm::world());
+      const MeshType& meshType,
+      int verbosity=0,
+      const MPIComm& comm = MPIComm::world());
     /** */
     ExodusNetCDFMeshReader(const ParameterList& params);
 

@@ -10,7 +10,7 @@ namespace Sundance
 
 /** Read the node-based fields from a mesher */
 Expr readNodalFields(const MeshSource& mesher, const Mesh& mesh,
-  const VectorType<double>& vecType);
+  const VectorType<double>& vecType, int verb=0);
 
 
 /** Read a 2D field stored in simple ASCII format
@@ -33,7 +33,7 @@ Expr readSerialGridField(const std::string& gridFile,
  * reads it back, and computes the same functional on the new copy. 
  * The return value is the difference between the two functionals
  * which should be zero if all is running correctly. */
-double readbackTester(const std::string& infile, const MPIComm& comm) ;
+double readbackTester(const std::string& infile, const MPIComm& comm, int verb=0) ;
 
 
 /** Partition a mesh and write the parts to exodus files */

@@ -50,6 +50,7 @@ XMLObject DimensionalCellFilter::toXML() const
   return rtn;
 }
 
+
 bool DimensionalCellFilter::lessThan(const CellFilterStub* other) const
 {
   TEUCHOS_TEST_FOR_EXCEPTION(dynamic_cast<const DimensionalCellFilter*>(other) == 0,

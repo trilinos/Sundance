@@ -64,8 +64,10 @@ public:
   /** Write to XML */
   virtual XMLObject toXML() const ;
 
+#ifdef OLD_CELL_FILTER
   /** Ordering */
   virtual bool lessThan(const CellFilterStub* other) const ;
+#endif
 
   /** Return the name of the type. Used in ordering. */
   virtual std::string typeName() const {return "BinaryOpCellFilter";}

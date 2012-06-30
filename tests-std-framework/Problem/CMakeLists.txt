@@ -10,6 +10,7 @@ SET(DisabledTests
 )
 
 SET(SerialTests
+  BigCellFilterTest
   BesselTest2D 
   PCDNavierStokesCouette2D
   NonlinearPDECOTest1D

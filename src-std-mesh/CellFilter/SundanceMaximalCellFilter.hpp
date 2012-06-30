@@ -67,6 +67,7 @@ public:
   /** Describable interface */
   virtual std::string description() const {return typeName();}
 
+
   /** Compare to another object */
   virtual bool lessThan(const CellFilterStub* other) const ;
 

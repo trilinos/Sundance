@@ -15,8 +15,9 @@ bool TetQuadTransformationTest()
   MeshType meshType = new BasicSimplicialMeshType();
       
   string meshFile = "tetPrism";
+  int verb=4;
   MeshSource meshSrc
-    =  new ExodusMeshReader(meshFile, meshType);
+    =  new ExodusMeshReader(meshFile, meshType, verb);
   Mesh mesh = meshSrc.getMesh();
 
   CellFilter interior = new MaximalCellFilter();

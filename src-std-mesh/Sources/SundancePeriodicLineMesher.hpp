@@ -51,8 +51,9 @@ public:
     const double& a, 
     const double& b,
     int nx,
-    const MeshType& meshType)
-    : MeshSourceBase(meshType, MPIComm::self()),
+    const MeshType& meshType,
+    int verbosity=0)
+    : MeshSourceBase(meshType, verbosity, MPIComm::self()),
       nx_(nx),
       a_(a),
       b_(b)

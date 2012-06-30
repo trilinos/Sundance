@@ -54,12 +54,12 @@ int MaximalCellFilter::dimension(const Mesh& mesh) const
   return mesh.spatialDim();
 }
 
-
 bool MaximalCellFilter::lessThan(const CellFilterStub* /* other */) const
 {
-  /* Maximal cell sets always win a comparison */
+  /* all maximal cell filters are equivalent */
   return false;
 }
+
 
 
 

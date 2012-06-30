@@ -26,10 +26,10 @@ namespace Playa
       virtual ~ObjectWithVerbosity() {;}
 
       /** Return the verbosity */
-      virtual int verb() const {return verb_;}
+      int verb() const {return verb_;}
 
       /** Set the verbosity */
-      virtual void setVerb(int v) {verb_=v;}
+      void setVerb(int v) {verb_=v;}
     private:
       int verb_;
     };

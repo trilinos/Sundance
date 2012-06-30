@@ -65,7 +65,7 @@ class PeanoMesher3D : public MeshSourceBase
                         const MeshType& meshType,
                         const MPIComm& comm = MPIComm::world())
       :
-      MeshSourceBase(meshType, comm),
+    MeshSourceBase(meshType, 0, comm),
       _position_x(position_x), _position_y(position_y), _position_z(position_z),
       _offset_x(offset_x), _offset_y(offset_y), _offset_z(offset_z),
       _resolution(resolution) {;}

@@ -64,9 +64,10 @@ public:
   PartitionedRectangleMesher(double ax, double bx, int nx, int npx,
     double ay, double by, int ny, int npy,
     const MeshType& meshType,
+    int verbosity=0,
     const MPIComm& comm = MPIComm::world())
     : 
-    MeshSourceBase(meshType, comm),
+    MeshSourceBase(meshType, verbosity, comm),
     ax_(ax), bx_(bx), nx_(nx), npx_(npx),
     ay_(ay), by_(by), ny_(ny), npy_(npy) {;}
 
@@ -79,9 +80,10 @@ public:
   PartitionedRectangleMesher(double ax, double bx, int nx,
     double ay, double by, int ny,
     const MeshType& meshType,
+    int verbosity=0,
     const MPIComm& comm = MPIComm::world())
     : 
-    MeshSourceBase(meshType, comm),
+    MeshSourceBase(meshType, verbosity, comm),
     ax_(ax), bx_(bx), nx_(nx), npx_(-1),
     ay_(ay), by_(by), ny_(ny), npy_(-1) 
     {

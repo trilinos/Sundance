@@ -49,6 +49,7 @@ XMLObject LabeledSubsetCellFilter::toXML() const
   return rtn;
 }
 
+#ifdef OLD_CELL_FILTER
 bool LabeledSubsetCellFilter::lessThan(const CellFilterBase* other) const
 {
   const LabeledSubsetCellFilter* L 
@@ -63,3 +64,4 @@ bool LabeledSubsetCellFilter::lessThan(const CellFilterBase* other) const
   return OrderedPair<label_, superset_> 
     < OrderedPair<L->label_, L->superset_>;
 }
+#endif

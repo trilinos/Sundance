@@ -80,11 +80,12 @@ class MeshSourceBase : public Playa::Handleable<MeshSourceBase>,
                        public Playa::Printable,
                        public Teuchos::Describable,
                        public Noncopyable,
-                       public ObjectWithClassVerbosity<MeshSourceBase>
+                       public Playa::ObjectWithVerbosity
 {
 public:
   /** Construct with a mesh type and MPI communicator */
   MeshSourceBase(const MeshType& meshType,
+    int verbosity,
     const MPIComm& comm);
 
   /** Construct from a parameter list */

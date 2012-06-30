@@ -56,9 +56,10 @@ public:
   /** */
   virtual std::string typeName() const {return "LabeledSubsetCellFilter";}
 
+#ifdef OLD_CELL_FILTER
   /** */
   virtual bool lessThan(const CellFilterStub* other) const ;
-
+#endif
   /** */
   virtual RCP<CellFilterBase> getRcp() {return rcp(this);}
 

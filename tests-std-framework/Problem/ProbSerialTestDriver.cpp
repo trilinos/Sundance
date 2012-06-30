@@ -2,21 +2,23 @@
 
 #define DO_TEST(testName)\
   { \
+    Out::root() << endl << endl << "starting test " #testName << endl; \
     bool testName(); \
     bool pass = testName(); \
     if (pass) \
     {\
       numPass++; \
-      Out::root() << "test " #testName " PASSED!" << endl; \
+      Out::root() << "test " #testName " PASSED!" << endl << endl << endl; \
     } \
     else \
     { \
       numFail++; \
       failures.append(#testName); \
-      Out::root() << "test " #testName " FAILED!" << endl; \
+      Out::root() << "test " #testName " FAILED!" << endl << endl << endl; \
     }\
   }
 
+#define XDO_TEST(testName) Out::root() << "skipping " #testName << endl;
 
 int main(int argc, char** argv)
 {
@@ -30,10 +32,10 @@ int main(int argc, char** argv)
     int numFail = 0;
     Array<string> failures;
 
-    DO_TEST(NonlinearPartialDomain);
-    DO_TEST(NonlinearPeriodic1D);
-    DO_TEST(LinearPeriodic1D);
-    DO_TEST(PoissonOnDisk);
+    XDO_TEST(NonlinearPartialDomain);
+    XDO_TEST(NonlinearPeriodic1D);
+    XDO_TEST(LinearPeriodic1D);
+    XDO_TEST(PoissonOnDisk);
     DO_TEST(TetQuadTransformationTest);
 //    DO_TEST(DiscFunc3D);
     DO_TEST(Kepler);

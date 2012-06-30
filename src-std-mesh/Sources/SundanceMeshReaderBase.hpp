@@ -50,8 +50,9 @@ public:
   /** Construct with a filename */
   MeshReaderBase(const std::string& filename,
     const MeshType& meshType,
+    int verbosity,
     const MPIComm& comm)
-    : MeshSourceBase(meshType, comm), filename_(filename)
+    : MeshSourceBase(meshType, verbosity, comm), filename_(filename)
     {}
 
   /** Construct from a parameter list */

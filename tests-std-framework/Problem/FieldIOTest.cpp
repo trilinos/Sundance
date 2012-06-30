@@ -72,14 +72,14 @@ int main(int argc, char** argv)
     MPIComm::world().synchronize();
     Out::root() << "starting readback" << endl;
     MPIComm::world().synchronize();
-    double err = readbackTester(infile, world);
+    double err = readbackTester(infile, world,4);
 #else
     Out::root() << "starting readback" << endl;
     double err = 0.0;
     if (world.getRank()==0)
     {
       Out::os() << "partitioning..." << std::endl;
-      err = readbackTester(infile, self);
+      err = readbackTester(infile, self, 2);
       Out::os() << "done partitioning..." << std::endl;
     }
     else

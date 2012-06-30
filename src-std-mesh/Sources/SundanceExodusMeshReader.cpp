@@ -32,11 +32,14 @@ static Time& getExoFillTimer()
 
 ExodusMeshReader::ExodusMeshReader(const std::string& fname,
   const MeshType& meshType,
+  int verbosity,
   const MPIComm& comm)
-  : MeshReaderBase(fname, meshType, comm), 
+  : MeshReaderBase(fname, meshType, verbosity, comm), 
     exoFilename_(fname),
     parFilename_(fname)
 {
+  Tabs tab0(0);
+
   if (nProc() > 1)
     {
       std::string suffix =  "-" + Teuchos::toString(nProc()) 
@@ -47,10 +50,7 @@ ExodusMeshReader::ExodusMeshReader(const std::string& fname,
   exoFilename_ = exoFilename_ + ".exo";
   parFilename_ = parFilename_ + ".pxo";
   
-  setVerb( classVerbosity() );
-
-  SUNDANCE_OUT(this->verb() > 1,
-               "exodus filename = " << exoFilename_);
+  PLAYA_MSG1(verb(), "exodus filename = " << exoFilename_);
   
   if (nProc() > 1)
   {
@@ -66,11 +66,14 @@ ExodusMeshReader::ExodusMeshReader(const std::string& fname,
 Mesh ExodusMeshReader::fillMesh() const 
 {
   TimeMonitor fillTimer(getExoFillTimer());
+  Tabs tab0(0);
+  Tabs tab1;
   Mesh mesh;
 #ifndef HAVE_SUNDANCE_EXODUS
   TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, 
     "ExodusMeshReader called for a build without ExodusII");
 #else
+  PLAYA_ROOT_MSG1(verb(), tab0 << "in ExodusMeshReader::fillMesh()");
 
   int CPU_word_size = 8;
   int IO_word_size = 0;
@@ -85,12 +88,15 @@ Mesh ExodusMeshReader::fillMesh() const
 
   if (verb() > 2) ex_opts(EX_DEBUG | EX_VERBOSE);
 
+  PLAYA_MSG3(verb(), tab1 << "opening file");
   std::string resolvedName = searchForFile(exoFilename_);
   int exoID = ex_open(resolvedName.c_str(), EX_READ, 
     &CPU_word_size, &IO_word_size, &version);
 
   TEUCHOS_TEST_FOR_EXCEPTION(exoID < 0, std::runtime_error, "ExodusMeshReader unable to "
     "open file: " << exoFilename_);
+
+  PLAYA_MSG3(verb(), tab1 << "exoID=" << exoID);
 
   TEUCHOS_TEST_FOR_EXCEPT(IO_word_size != 8 || CPU_word_size != 8);
 
@@ -110,6 +116,9 @@ Mesh ExodusMeshReader::fillMesh() const
     << numNodes);
   TEUCHOS_TEST_FOR_EXCEPTION(numElems <= 0, std::runtime_error, "invalid numElems=" 
     << numElems);
+
+  PLAYA_MSG2(verb(), tab1 << "numNodes=" << numNodes);
+  PLAYA_MSG2(verb(), tab1 << "numElems=" << numElems);
 
   /* */
   if (nProc()==1)
@@ -138,7 +147,9 @@ Mesh ExodusMeshReader::fillMesh() const
   mesh = createMesh(dim);
 
 
+
   /* Read the points */
+  PLAYA_MSG2(verb(), tab1 << "reading vertices");
   Array<double> x(numNodes);
   Array<double> y(numNodes);
   Array<double> z(numNodes * (dim > 2));
@@ -160,7 +171,9 @@ Mesh ExodusMeshReader::fillMesh() const
       "invalid dimension=" << dim << " in ExodusMeshReader");
   }
 
+
   /* add the points to the mesh */
+  PLAYA_MSG2(verb(), tab1 << "adding vertices to mesh");
   for (int n=0; n<numNodes; n++)
   {
     Point p;
@@ -201,6 +214,7 @@ Mesh ExodusMeshReader::fillMesh() const
 
   /* Read the elements for each block */
 
+  PLAYA_MSG2(verb(), tab1 << "reading elements");
   Array<int> blockIDs(numElemBlocks);
   if (numElemBlocks > 0)
   {
@@ -208,6 +222,7 @@ Mesh ExodusMeshReader::fillMesh() const
     ierr = ex_get_elem_blk_ids(exoID, &(blockIDs[0]));
   }
   TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
+  PLAYA_MSG2(verb(), tab1 << "file contains block IDs " << blockIDs);
   int count = 0;
   Array<int> permKey;
   permKey.resize(numElems);
@@ -217,18 +232,20 @@ Mesh ExodusMeshReader::fillMesh() const
 
   for (int b=0; b<numElemBlocks; b++)
   {
+    Tabs tab2;
     char elemType[MAX_LINE_LENGTH+1];
-    int elsInBlock;
-    int nodesPerEl;
-    int numAttrs;
+    int elsInBlock=0;
+    int nodesPerEl=0;
+    int numAttrs=0;
     int bid = blockIDs[b];
-
+    PLAYA_MSG2(verb(), tab2 << "reading elems for block ID=" << bid);
     {
       TimeMonitor timer(getExoTimer());
       ierr = ex_get_elem_block(exoID, bid, elemType, &elsInBlock,
         &nodesPerEl, &numAttrs);
     }
-    TEUCHOS_TEST_FOR_EXCEPT(ierr < 0);
+    TEUCHOS_TEST_FOR_EXCEPTION(ierr < 0, std::runtime_error,
+      "ex_get_elem_block returned error code ierr=" << ierr);
 
     bool blockIsSimplicial = true;
     if (nodesPerEl != dim+1) 
@@ -237,6 +254,9 @@ Mesh ExodusMeshReader::fillMesh() const
       allBlocksAreSimplicial=false;
     }
 
+
+    /* get element connectivity */
+    PLAYA_MSG2(verb(), tab2 << "reading connectivity for block ID=" << bid);
     Array<int> connect(elsInBlock * nodesPerEl);
 
     {

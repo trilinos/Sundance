@@ -327,13 +327,23 @@ void ExodusWriter::writeFields(int exoid,
 {
 
 #ifdef HAVE_SUNDANCE_EXODUS
+  Tabs tab0(0);
+  Tabs tab1;
+  int verb=3;
+
+  
   int nNodalFuncs = omnipresentNodalFuncs().size();
   int nElemFuncs = omnipresentElemFuncs().size();
 
   int nNodesetFuncs = pointScalarFields().size() - nNodalFuncs;
 
   int nNodesets = funcsForNodeset.size();
-
+  
+  PLAYA_ROOT_MSG1(verb, tab0 << "ExodusWriter::writeFields()");
+  PLAYA_ROOT_MSG2(verb, tab1 << "nNodalFuncs = " << nNodalFuncs);
+  PLAYA_ROOT_MSG2(verb, tab1 << "nElemFuncs = " << nElemFuncs);
+  PLAYA_ROOT_MSG2(verb, tab1 << "nNodesetFuncs = " << nNodesetFuncs);
+  PLAYA_ROOT_MSG2(verb, tab1 << "nNodesets = " << nNodesets);
 
 
   Set<int> nsFuncSet;
@@ -566,7 +576,7 @@ void ExodusWriter::findNodeSets(
   ) const 
 {
 //  Out::os() << "in ExodusWriter::findNodeSets()" << endl;
-  int verb = 0;
+  int verb = 2;
 
   const Array<RCP<FieldBase> >& f = pointScalarFields();
   CellFilter maximal = new MaximalCellFilter();
@@ -628,9 +638,9 @@ void ExodusWriter::findNodeSets(
   int k=0;
   for (int i=0; i<nsID.size(); i++)
   {
-    SUNDANCE_MSG2(verb, "node set " << i << " funcs = " 
+    SUNDANCE_MSG4(verb, "node set " << i << " funcs = " 
       << *funcsForNodeset[i]);
-    SUNDANCE_MSG2(verb, "node set " << i 
+    SUNDANCE_MSG4(verb, "node set " << i 
       << " nodes = " << *nodesForNodeset[i]);
     const Array<int>& myCells = *(nodesForNodeset[i]);
     for (int c=0; c<myCells.size(); c++)
@@ -639,7 +649,7 @@ void ExodusWriter::findNodeSets(
     }
   }
 
-  SUNDANCE_MSG2(verb, "all nodes = " << *allNodes);
+  SUNDANCE_MSG4(verb, "all nodes = " << *allNodes);
 }
 
 

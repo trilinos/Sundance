@@ -52,9 +52,10 @@ public:
    */
   PartitionedLineMesher(double ax, double bx, int nx,
     const MeshType& meshType,
+    int verbosity=0,
     const MPIComm& comm = MPIComm::world())
     : 
-    MeshSourceBase(meshType, comm),
+    MeshSourceBase(meshType, verbosity, comm),
     ax_(ax), bx_(bx), nx_(nx) {;}
 
   /** Create a line mesher from a ParameterList */
