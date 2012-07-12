@@ -1,30 +1,30 @@
 /* @HEADER@ */
 // ************************************************************************
-// 
+//
 //                              Sundance
 //                 Copyright (2005) Sandia Corporation
-// 
-// Copyright (year first published) Sandia Corporation.  Under the terms 
-// of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government 
+//
+// Copyright (year first published) Sandia Corporation.  Under the terms
+// of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government
 // retains certain rights in this software.
-// 
+//
 // This library is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
 // published by the Free Software Foundation; either version 2.1 of the
 // License, or (at your option) any later version.
-//  
+//
 // This library is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-//                                                                                 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
-// USA                                                                                
-// Questions? Contact Kevin Long (krlong@sandia.gov), 
+// USA
+// Questions? Contact Kevin Long (krlong@sandia.gov),
 // Sandia National Laboratories, Livermore, California, USA
-// 
+//
 // ************************************************************************
 /* @HEADER@ */
 
@@ -41,30 +41,30 @@ namespace Sundance {
 using Teuchos::null;
 
 InhomogeneousEdgeLocalizedDOFMap::InhomogeneousEdgeLocalizedDOFMap(const Mesh& mesh,
-    const Array<Map<Set<int>, CellFilter> >& funcSetToDomainMap, 
+    const Array<Map<Set<int>, CellFilter> >& funcSetToDomainMap,
     int setupVerb) :
   DOFMapBase(mesh, setupVerb),
   funcDomains_(),
   edgeDofs_()
 {
   SUNDANCE_MSG1(setupVerb, "in InhomogeneousEdgeLocalizedDOFMap ctor");
-  
+
   TEUCHOS_TEST_FOR_EXCEPTION(mesh.comm().getNProc() != 1,
     std::runtime_error,
     "distributed inhomogeneous edge localized DOF maps not yet supported");
-  
+
   SUNDANCE_MSG4(setupVerb, "func set to domain map " << funcSetToDomainMap);
-  
+
   TEUCHOS_ASSERT(funcSetToDomainMap.size() > 1);
   TEUCHOS_ASSERT(funcSetToDomainMap[0].empty());
-  
+
   TEUCHOS_ASSERT(funcSetToDomainMap.size() <= this->meshDimension() + 1);
 
   Map<int, Array<Array<CellFilter> > > funcFilters;
   Map<CellFilter, Array<int> > filterEdges;
   for (int dim = 1; dim <= this->meshDimension(); ++dim) {
     const Map<Set<int>, CellFilter> &funcsOnDom = funcSetToDomainMap[dim];
-    for (Map<Set<int>, CellFilter>::const_iterator it = funcsOnDom.begin(), 
+    for (Map<Set<int>, CellFilter>::const_iterator it = funcsOnDom.begin(),
       it_end = funcsOnDom.end();
       it != it_end;
       ++it)
@@ -84,13 +84,13 @@ InhomogeneousEdgeLocalizedDOFMap::InhomogeneousEdgeLocalizedDOFMap(const Mesh& m
       }
     }
   }
-  
+
   SUNDANCE_MSG4(setupVerb, "subdomains to edges " << filterEdges);
   SUNDANCE_MSG4(setupVerb, "func ids to subdomains " << funcFilters);
 
   const int functionCount = funcFilters.empty() ? 0 : funcFilters.rbegin()->first + 1;
   funcDomains_.resize(functionCount);
-  
+
   for (Map<int, Array<Array<CellFilter> > >::const_iterator funcIt = funcFilters.begin(),
       funcItEnd = funcFilters.end();
       funcIt != funcItEnd;
@@ -99,7 +99,7 @@ InhomogeneousEdgeLocalizedDOFMap::InhomogeneousEdgeLocalizedDOFMap(const Mesh& m
     const Array<CellFilter> &maxDimFilters = (funcIt->second)[this->meshDimension()];
     funcDomains_[funcIt->first] = std::accumulate(maxDimFilters.begin(), maxDimFilters.end(), CellFilter());
   }
-  
+
   SUNDANCE_MSG4(setupVerb, "func ids to max dim subdomains " << funcDomains_);
 
   typedef OrderedPair<int, int> DofId; // DofId = (EdgeId, FuncId)
@@ -109,7 +109,7 @@ InhomogeneousEdgeLocalizedDOFMap::InhomogeneousEdgeLocalizedDOFMap(const Mesh& m
       funcIt !=funcItEnd;
       ++funcIt)
   {
-    const int funcId = funcIt->first; 
+    const int funcId = funcIt->first;
     Set<int> dofBearingEdges;
     for (int dim = 1; dim <= this->meshDimension(); ++dim)
     {
@@ -133,7 +133,7 @@ InhomogeneousEdgeLocalizedDOFMap::InhomogeneousEdgeLocalizedDOFMap(const Mesh& m
   }
 
   const int dofCount = dofSet.size();
-  
+
   SUNDANCE_MSG1(setupVerb, "number of degrees of freedom = " << dofCount);
   SUNDANCE_MSG4(setupVerb, "set of degrees of freedom " << dofSet);
 
@@ -151,7 +151,7 @@ InhomogeneousEdgeLocalizedDOFMap::InhomogeneousEdgeLocalizedDOFMap(const Mesh& m
     const int funcId = dofIt->second();
     edgeDofs_[edgeId][funcId] = dofRank++;
   }
-  
+
   SUNDANCE_MSG4(setupVerb, "degrees of freedom on edges " << edgeDofs_);
 
   this->setLowestLocalDOF(0);
@@ -200,9 +200,9 @@ InhomogeneousEdgeLocalizedDOFMap::getDOFsForCellBatch(int cellDim,
 
   nNodes.resize(1);
   nNodes[0] = edgesPerCell;
-  
-  const int dofsPerCell = requestedFuncSet.size() * edgesPerCell;
-  return rcp(new MapStructure(dofsPerCell, rcp(new EdgeLocalizedBasis())));
+
+  const Array<int> requestedFuncArray(requestedFuncSet.begin(), requestedFuncSet.end());
+  return rcp(new MapStructure(requestedFuncSet.size(), rcp(new EdgeLocalizedBasis()), tuple(requestedFuncArray)));
 }
 
 void
@@ -214,7 +214,7 @@ InhomogeneousEdgeLocalizedDOFMap::getDOFsForEdgeBatch(const Array<int>& edgeLIDs
   dofs.resize(1); // One basis topology only
   Array<int> &dofChunk = dofs[0];
   dofChunk.resize(edgeLIDs.size() * requestedFuncSet.size());
-  
+
   Array<int>::iterator entryIt = dofChunk.begin();
   for (Array<int>::const_iterator edgeIt = edgeLIDs.begin(),
       edgeItEnd = edgeLIDs.end();
@@ -237,7 +237,7 @@ InhomogeneousEdgeLocalizedDOFMap::allowedFuncsOnCellBatch(int cellDim,
 {
   if (cellDim == 0)
   {
-    // No functions allowed on nodes 
+    // No functions allowed on nodes
     return rcp(new Set<int>());
   }
 
@@ -357,14 +357,14 @@ Array<int>
 InhomogeneousEdgeLocalizedDOFMap::getEdgeLIDs(const CellFilter &filter) const
 {
   const int cellDim = filter.dimension(this->mesh());
-  
+
   const int nodeDim = 0;
   if (cellDim == nodeDim)
   {
     // Ignore isolated nodes
     return Array<int>();
   }
-  
+
   const CellSet cells = filter.getCells(this->mesh());
   const Array<int> cellLIDs(cells.begin(), cells.end());
 
