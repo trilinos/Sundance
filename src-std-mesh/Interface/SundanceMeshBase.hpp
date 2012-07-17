@@ -563,7 +563,7 @@ public:
    *
    * \todo Rename to something like getMaxCellZeroFacetsLIDsView(...).
    */
-  virtual const int* elemZeroFacetView(int maxCellLID) const = 0 ;
+  virtual const int* elemZeroFacetView(int maxCellLID) const ;
 
   /** \brief Return the number of maximal co-facets of the given cell.
    *
@@ -605,7 +605,8 @@ public:
                             int& facetIndex) const = 0 ;
     /** 
      * Get the LIDs of the maximal cofacets for a batch of codimension-one
-     * cells.
+     * cells. The default implementation simply loops over the cells in the
+     * cellLID array, taking no advantage of any internal data structures.
      *
      * \param cellLIDs [in] array of LIDs of the cells whose cofacets are 
      * being obtained
@@ -614,7 +615,7 @@ public:
      * into the list of its maximal cofacet's facets 
      */
   virtual void getMaxCofacetLIDs(const Array<int>& cellLIDs,
-    MaximalCofacetBatch& cofacets) const = 0 ;
+    MaximalCofacetBatch& cofacets) const ;
 
   /** \brief Return an array of the LIDs of all of the co-facets for a
    * given relative cell.
@@ -662,8 +663,8 @@ public:
    *           [out] On exit, contains an array (<tt>size=cellLIDs.size()</tt>)
    *           of the labels for each of the given cells.
    */
-  virtual void getLabels(int cellDim, const Array<int>& cellLIDs, 
-                         Array<int>& labels) const = 0 ;
+  void getLabels(int cellDim, const Array<int>& cellLIDs, 
+    Array<int>& labels) const ;
 
   /** \brief Set the label for the given cell.
    *
@@ -673,14 +674,14 @@ public:
   virtual void setLabel(int cellDim, int cellLID, int label) = 0 ;
 
   /** Get the list of all labels defined for cells of the given dimension */
-  virtual Set<int> getAllLabelsForDimension(int cellDim) const = 0 ;
+  virtual Set<int> getAllLabelsForDimension(int cellDim) const ;
 
   /** 
    * Get the cells associated with a specified label. The array 
    * cellLID will be filled with those cells of dimension cellDim
    * having the given label.
    */
-  virtual void getLIDsForLabel(int cellDim, int label, Array<int>& cellLIDs) const = 0 ;
+  virtual void getLIDsForLabel(int cellDim, int label, Array<int>& cellLIDs) const  ;
   //@}
 
   /** \name Geometric Information */

@@ -87,6 +87,8 @@ Mesh PartitionedLineMesher::fillMesh() const
                        "elem " << tuple(a,b) << " registered with LID=" << lid);
         }
 
+      mesh.freezeTopology();
+
       if (px==0) mesh.setLabel(0, 0, 1); 
       if (px==np-1) mesh.setLabel(0, mesh.mapGIDToLID(0, nx_), 2);
     

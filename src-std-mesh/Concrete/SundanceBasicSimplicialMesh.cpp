@@ -886,6 +886,8 @@ int BasicSimplicialMesh::maxCofacetLID(int cellDim, int cellLID,
 }
 
 
+
+/* --- moved to base class 
 void BasicSimplicialMesh::getMaxCofacetLIDs(
   const Array<int>& cellLIDs,
   MaximalCofacetBatch& cofacets) const
@@ -909,6 +911,7 @@ void BasicSimplicialMesh::getMaxCofacetLIDs(
     }
   }
 }
+*/
 
 void BasicSimplicialMesh::getCofacets(int cellDim, int cellLID,
   int cofacetDim, Array<int>& cofacetLIDs) const 

@@ -169,5 +169,8 @@ Mesh PartitionedRectangleMesher::fillMesh() const
           
 				}
     }
+
+  mesh.freezeTopology();
+
   return mesh;
 }

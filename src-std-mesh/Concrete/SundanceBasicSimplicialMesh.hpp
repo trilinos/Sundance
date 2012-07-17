@@ -174,6 +174,8 @@ public:
   virtual int maxCofacetLID(int cellDim, int cellLID,
     int cofacetIndex,
     int& facetIndex) const  ;
+
+#ifdef MOVED_TO_BASE_CLASS
   /** 
    * Get the LIDs of the maximal cofacets for a batch of codimension-one
    * cells.
@@ -184,7 +186,7 @@ public:
    */
   virtual void getMaxCofacetLIDs(const Array<int>& cellLIDs,
     MaximalCofacetBatch& cofacets) const ;
-        
+#endif
       
   /** 
    * Find the cofacets of the given cell

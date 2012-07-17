@@ -41,6 +41,7 @@ using namespace Teuchos;
 using namespace Sundance;
 
 
+
 MeshBase::MeshBase(int dim, const MPIComm& comm, 
   const MeshEntityOrder& order) 
   : dim_(dim), 
@@ -61,6 +62,12 @@ MeshBase::MeshBase(int dim, const MPIComm& comm,
   curveNormal_.resize(0);
 }
 
+const int* MeshBase::elemZeroFacetView(int maxCellLID) const
+{
+  TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error,
+    "MeshBase::elemZeroFacetView() is deprecated");
+  return (const int*) 0;
+}
 
 
 Point MeshBase::centroid(int cellDim, int cellLID) const
@@ -166,6 +173,55 @@ void MeshBase::getLabels(int cellDim, const Array<int>& cellLID,
   for (int i=0; i<cellLID.size(); i++) labels[i] = label(cellDim, cellLID[i]);
 }
 
+
+void MeshBase::getMaxCofacetLIDs(
+  const Array<int>& cellLIDs,
+  MaximalCofacetBatch& cofacets) const
+{
+  TEUCHOS_TEST_FOR_EXCEPT(cellLIDs.size()==0);
+  int d = spatialDim() - 1;
+  int nc = numMaxCofacets(d, cellLIDs[0]);  
+
+  cofacets.reset(cellLIDs.size(), nc);
+
+  for (int i=0; i<cellLIDs.size(); i++) 
+  {
+    int f1;
+    int cofacet1 = maxCofacetLID(d, cellLIDs[i], 0, f1);
+    if (nc==1) cofacets.addSingleCofacet(i, cofacet1, f1);
+    else
+    {
+      int f2;
+      int cofacet2 = maxCofacetLID(d, cellLIDs[i], 1, f2);
+      cofacets.addTwoCofacets(i, cofacet1, f1, cofacet2, f2);
+    }
+  }
+}
+
+void MeshBase::getLIDsForLabel(int cellDim, int labelToCheck, 
+  Array<int>& cellLIDs) const
+{
+  cellLIDs.resize(0);
+  int nc = numCells(cellDim); 
+
+  for (int c=0; c<nc; c++)
+  {
+    int lc = label(cellDim, c);
+    if (lc==labelToCheck) cellLIDs.append(c);
+  }
+}
+
+Set<int> MeshBase::getAllLabelsForDimension(int cellDim) const
+{
+  int nc = numCells(cellDim); 
+  Set<int> rtn;
+
+  for (int c=0; c<nc; c++)
+  {
+    rtn.put(label(cellDim, c));
+  }
+  return rtn;
+}
 
 // ===================== storing special weights for specfic cells  ======================
 

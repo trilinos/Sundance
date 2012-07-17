@@ -185,8 +185,6 @@ void AToCPointLocator::getGridRange(const Mesh& mesh, int cellDim, int cellLID,
 void AToCPointLocator::fillMaximalNeighbors(int cellLID, 
                                               const int* facetLID) const
 {
-  static Array<int> tmp(3);
-
   if (neighborSet_[cellLID].get()==0)
     {
       neighborSet_[cellLID] = rcp(new Set<int>());
@@ -324,6 +322,9 @@ int AToCPointLocator::findEnclosingCell(int initialGuessLID,
 {
   std::queue<int> Q;
   Set<int> repeats;
+  int d = mesh_.spatialDim();
+  Array<int> facets(mesh_.numFacets(d, 0, 0));
+  Array<int> facetOr(facets.size());
 
   Q.push(initialGuessLID);
 
@@ -333,11 +334,12 @@ int AToCPointLocator::findEnclosingCell(int initialGuessLID,
       Q.pop();
       if (repeats.contains(next)) continue;
       
-      const int* facets = mesh_.elemZeroFacetView(next);
-      if (cellContainsPoint(next, x, facets)) return next;
+//      const int* facets = mesh_.elemZeroFacetView(next);
+      mesh_.getFacetArray(d, next, 0, facets, facetOr);
+      if (cellContainsPoint(next, x, &(facets[0]))) return next;
       repeats.put(next);
       
-      fillMaximalNeighbors(next, facets);
+      fillMaximalNeighbors(next, &(facets[0]));
       
       for (Set<int>::const_iterator 
              i=neighborSet_[next]->begin(); i!=neighborSet_[next]->end(); i++)
@@ -357,6 +359,9 @@ int AToCPointLocator::findEnclosingCell(int initialGuessLID,
 {
   std::queue<int> Q;
   Set<int> repeats;
+  int d = mesh_.spatialDim();
+  Array<int> facets(mesh_.numFacets(d, 0, 0));
+  Array<int> facetOr(facets.size());
 
   Q.push(initialGuessLID);
 
@@ -366,11 +371,12 @@ int AToCPointLocator::findEnclosingCell(int initialGuessLID,
       Q.pop();
       if (repeats.contains(next)) continue;
       
-      const int* facets = mesh_.elemZeroFacetView(next);
-      if (cellContainsPoint(next, x, facets, xLocal)) return next;
+//      const int* facets = mesh_.elemZeroFacetView(next);
+      mesh_.getFacetArray(d, next, 0, facets, facetOr);
+      if (cellContainsPoint(next, x, &(facets[0]), xLocal)) return next;
       repeats.put(next);
       
-      fillMaximalNeighbors(next, facets);
+      fillMaximalNeighbors(next, &(facets[0]));
       
       for (Set<int>::const_iterator 
              i=neighborSet_[next]->begin(); i!=neighborSet_[next]->end(); i++)

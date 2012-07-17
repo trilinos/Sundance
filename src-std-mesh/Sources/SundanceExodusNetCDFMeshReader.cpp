@@ -429,7 +429,9 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
       }
     }
   }
-  
+
+  mesh.freezeTopology();
+
   /* label the side sets */
 
   for (int s=0; s<nSideSets; s++)

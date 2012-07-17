@@ -351,6 +351,10 @@ public:
     {return creatableMesh()->addElement(globalIndex, vertLID, 
         ownerProcID, label);}
 
+  /** */
+  void freezeTopology() 
+    {creatableMesh()->freezeTopology();}
+
     
   /** \name Reordering */
   //@{

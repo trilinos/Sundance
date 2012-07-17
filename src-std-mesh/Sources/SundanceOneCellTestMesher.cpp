@@ -55,6 +55,8 @@ Mesh OneTriangleMesher::fillMesh() const
 
   mesh.addElement(0, tuple(a,b,c), 0, 0);
 
+  mesh.freezeTopology();
+
   return mesh;
 }
   

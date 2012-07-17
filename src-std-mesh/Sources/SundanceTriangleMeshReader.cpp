@@ -88,9 +88,9 @@ Mesh TriangleMeshReader::fillMesh() const
 
   readElems(mesh, ptGID, cellGID, cellOwner);
 
-  readSides(mesh);
+  mesh.freezeTopology();
 
-  //  mesh.assignGlobalIndices();
+  readSides(mesh);
 
 	return mesh;
 }

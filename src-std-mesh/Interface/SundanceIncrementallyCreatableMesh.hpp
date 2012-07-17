@@ -86,8 +86,12 @@ public:
    */
   virtual int addElement(int globalIndex, const Array<int>& vertexGIDs,
     int ownerProcID, int label) = 0 ;
-  
 
+
+  /** 
+   * 
+   */
+  virtual void freezeTopology() {}
 };
 
 }

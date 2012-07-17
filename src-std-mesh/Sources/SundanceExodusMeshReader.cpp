@@ -294,6 +294,9 @@ Mesh ExodusMeshReader::fillMesh() const
     }
   }
 
+  /* The topology of the mesh is now fully defined and we can call
+   * topological functions */
+  mesh.freezeTopology();
  
 
   /* Read the node sets */
