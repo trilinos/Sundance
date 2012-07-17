@@ -114,21 +114,24 @@ private:
 
 /** \relates Functional */
 double L2Norm(const Mesh& mesh, const CellFilter& domain,
-  const Expr& expr, const QuadratureFamily& quad);
+  const Expr& expr, const QuadratureFamily& quad,
+  const WatchFlag& watch=WatchFlag());
 
 /** \relates Functional */
 double H1Seminorm(
   const Mesh& mesh,
   const CellFilter& filter,
   const Expr& f,
-  const QuadratureFamily& quad);
+  const QuadratureFamily& quad,
+  const WatchFlag& watch=WatchFlag());
 
 /** \relates Functional */
 double H1Norm(
   const Mesh& mesh,
   const CellFilter& filter,
   const Expr& f,
-  const QuadratureFamily& quad);
+  const QuadratureFamily& quad,
+  const WatchFlag& watch=WatchFlag());
 }
 
 

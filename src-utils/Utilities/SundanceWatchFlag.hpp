@@ -43,8 +43,31 @@ namespace Sundance
 {
 using Teuchos::ParameterList;
   /** 
-   * Class WatchFlag is used to mark individual expressions for possibly 
-   * increased verbosity for diagnostic output.
+   * Class WatchFlag is used to tag individual expressions for
+   * increased verbosity in certain tasks. The tasks that can be marked
+   * are listed below. Verbosity values are integers, with 0 being silent, 
+   * and typically 5 being excruciatingly detailed.
+   * 
+<ul>
+<li> evaluation
+<li> evaluator setup
+<li> discrete function evaluation
+<li> symbolic preprocessing
+<li> equation set setup
+<li> assembler setup
+<li> assembly loop
+<li> dof map setup
+<li> dof map access
+<li> eval mediator
+<li> integration
+<li> integral transformation
+<li> fill
+<li> matrix config
+<li> vector config
+<li> solve control
+</ul>
+* The verbosity level for a task is set using the setParam() function.
+* The watch can be turned on or off collectively with the deactivate function.
    */
   class WatchFlag
     {
