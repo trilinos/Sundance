@@ -84,6 +84,7 @@ TRIBITS_ADD_EXECUTABLE_AND_TEST(
        AToCDensitySample.cpp
        DuffingFloquet.cpp
        SecondOrderFloquet.cpp
+       SubmaximalDFTest.cpp
     COMM serial mpi
     NUM_MPI_PROCS 1
   )

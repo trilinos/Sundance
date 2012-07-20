@@ -44,6 +44,7 @@ int main(int argc, char** argv)
     DO_TEST(AToCDensitySample);
     DO_TEST(DuffingFloquet);
     DO_TEST(SecondOrderFloquet);
+    DO_TEST(SubmaximalDF);
 
     Out::root() 
       << "==================================================================="

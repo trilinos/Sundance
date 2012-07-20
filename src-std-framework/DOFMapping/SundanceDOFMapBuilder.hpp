@@ -101,6 +101,9 @@ public:
 
   bool hasCellBasis(const Array<RCP<BasisDOFTopologyBase> >& basis) const ;
 
+  bool filtersAreZeroDimensional(const Mesh& mesh,
+    const Array<Set<CellFilter> >& filters) const ;
+
   bool allFuncsAreOmnipresent(const Mesh& mesh,
     const Array<Set<CellFilter> >& filters) const ;
 

@@ -148,6 +148,7 @@ APPEND_SET(HEADERS
   DOFMapping/SundanceInhomogeneousDOFMapHN.hpp
   DOFMapping/SundancePartialElementDOFMap.hpp
   DOFMapping/SundanceSpatiallyHomogeneousDOFMapBase.hpp
+  DOFMapping/SundanceSubmaximalNodalDOFMap.hpp
   DOFMapping/SundanceHNDoFMapBase.hpp
   DOFMapping/SundanceHNDoFMapBaseHomogeneous.hpp
   DOFMapping/SundanceNodalDOFMapHN.hpp
@@ -167,6 +168,7 @@ APPEND_SET(SOURCES
   DOFMapping/SundanceInhomogeneousDOFMapHN.cpp
   DOFMapping/SundancePartialElementDOFMap.cpp
   DOFMapping/SundanceSpatiallyHomogeneousDOFMapBase.cpp
+  DOFMapping/SundanceSubmaximalNodalDOFMap.cpp
   DOFMapping/SundanceUnfoldPeriodicDF.cpp
   )
 

@@ -319,6 +319,13 @@ public:
    */
   virtual bool isHomogeneous() const {return false;}
 
+  /**
+   * \brief The largest dimension cell supported by this DOF map. Usually, this will
+   * be the spatial dimension of the mesh. However, for functions defined only on a surface,
+   * curve, or point set it may be lower. Such maps should override the default. 
+   */
+  virtual int cellDim() const {return mesh_.spatialDim();}
+
 
   int setupVerb() const {return setupVerb_;}
 protected:

@@ -188,6 +188,7 @@ Most users won't need to look at these
 <li> Assembler
 <li> EquationSet
 <li> CellSet
+<li> DiscreteFunctionData
 </ul>
 </td>
 

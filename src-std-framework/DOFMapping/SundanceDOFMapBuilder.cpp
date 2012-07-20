@@ -37,6 +37,7 @@
 #include "SundanceMixedDOFMap.hpp"
 #include "SundanceMixedDOFMapHN.hpp"
 #include "SundanceNodalDOFMap.hpp"
+#include "SundanceSubmaximalNodalDOFMap.hpp"
 #include "SundanceNodalDOFMapHN.hpp"
 #include "SundancePartialElementDOFMap.hpp"
 #include "SundanceMaximalCellFilter.hpp"
@@ -108,6 +109,7 @@ RCP<DOFMapBase> DOFMapBuilder::makeMap(const Mesh& mesh,
   const Array<RCP<BasisDOFTopologyBase> >& basis,
   const Array<Set<CellFilter> >& filters) 
 {
+  verb_=0;
   TimeMonitor timer(DOFBuilderCtorTimer());
   SUNDANCE_MSG1(verb_, "in DOFMapBuilder::makeMap()");
   for (int i=0; i<basis.size(); i++)
@@ -130,6 +132,13 @@ RCP<DOFMapBase> DOFMapBuilder::makeMap(const Mesh& mesh,
     else {
       rtn = rcp(new NodalDOFMap(mesh, basis.size(), maxCells, verb_));
     }
+  }
+  else if (hasNodalBasis(basis) && filtersAreZeroDimensional(mesh, filters))
+  {
+    SUNDANCE_MSG2(verb_, "creating submaximal nodal map");
+    TEUCHOS_TEST_FOR_EXCEPT(filters.size() != 1);
+    TEUCHOS_TEST_FOR_EXCEPT(filters[0].size() != 1);
+    rtn = rcp(new SubmaximalNodalDOFMap(mesh, *filters[0].begin(), basis.size(), verb_));
   }
   else if (hasCellBasis(basis) && hasCommonDomain(filters))
   {
@@ -503,6 +512,21 @@ bool DOFMapBuilder::hasCellBasis(const Array<RCP<BasisDOFTopologyBase> >& basis)
   }
   return true;
 }
+
+bool DOFMapBuilder::filtersAreZeroDimensional(const Mesh& mesh, 
+  const Array<Set<CellFilter> >& filters) const
+{
+  for (int i=0; i<filters.size(); i++)
+  {
+    for (Set<CellFilter>::const_iterator 
+           j=filters[i].begin(); j!=filters[i].end(); j++)
+    {
+      if (j->dimension(mesh) != 0) return false;
+    }
+  }
+  return true;
+}
+
 
 bool DOFMapBuilder::allFuncsAreOmnipresent(const Mesh& mesh, 
   const Array<Set<CellFilter> >& filters) const

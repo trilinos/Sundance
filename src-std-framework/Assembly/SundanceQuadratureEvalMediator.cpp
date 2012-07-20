@@ -570,6 +570,10 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
   int diffOrder = mi.order();
   CellType evalCellType = cellType();
 
+  int funcSupportDim = f->map()->cellDim();
+
+  TEUCHOS_TEST_FOR_EXCEPT(diffOrder > 0 && funcSupportDim < maxCellDim());
+
   int flops = 0;
   double jFlops = CellJacobianBatch::totalFlops();
 
@@ -588,7 +592,11 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
                     << ElementIntegral::alwaysUseCofacets() << std::endl;
           Out::os() << tab1 << "diffOrder = " << diffOrder << std::endl;
         }
-        if (ElementIntegral::alwaysUseCofacets() || diffOrder>0)
+        if (diffOrder==0 && funcSupportDim < maxCellDim())
+        {
+          evalCellType = cellType();
+        }
+        else
         {
           evalCellType = maxCellType();
         }
@@ -608,15 +616,15 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
       localValues = rcp(new Array<Array<double> >());
       if (cellDim() != maxCellDim())
       {
-        if (ElementIntegral::alwaysUseCofacets() || diffOrder>0)
+        if (diffOrder==0 && funcSupportDim < maxCellDim())
         {
-          if (!cofacetCellsAreReady()) setupFacetTransformations();
-          mapStruct = f->getLocalValues(maxCellDim(), *cofacetCellLID(), 
+           mapStruct = f->getLocalValues(cellDim(), *cellLID(), 
             *localValues);
         }
         else
         {
-          mapStruct = f->getLocalValues(cellDim(), *cellLID(), 
+          if (!cofacetCellsAreReady()) setupFacetTransformations();
+          mapStruct = f->getLocalValues(maxCellDim(), *cofacetCellLID(), 
             *localValues);
         }
       }
