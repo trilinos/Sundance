@@ -107,15 +107,25 @@ bool DiscFunc3D()
   Expr e1 = Integral(interior, du0_dx, quad);
   Expr e2 = Integral(interior, du0_dy, quad);
   Expr e3 = Integral(interior, du0_dz, quad);
+  Expr I4 = Integral(interior, grad*F, quad);
+  Expr I5 = Integral(bdry, F*n, quad);
   double err0 = fabs(evaluateIntegral(mesh, e0));
   double err1 = fabs(evaluateIntegral(mesh, e1));
   double err2 = fabs(evaluateIntegral(mesh, e2));
   double err3 = fabs(evaluateIntegral(mesh, e3));
+  double val4 = fabs(evaluateIntegral(mesh, I4));
+  double val5 = fabs(evaluateIntegral(mesh, I5));
+
+  
 
   Out::os() << "error in Green's formula = " << err0 << std::endl;
   Out::os() << "error in du/dx = " << err1 << std::endl;
   Out::os() << "error in du/dy = " << err2 << std::endl;
   Out::os() << "error in du/dz = " << err3 << std::endl;
+
+  Out::os() << "volume integral of div(F) = " << val4 << std::endl;
+  Out::os() << "surface integral of F*n = " << val5 << std::endl;
+
 
     
   return SundanceGlobal::checkTest(err0 + err1 + err2 + err3, 1.0e-10);

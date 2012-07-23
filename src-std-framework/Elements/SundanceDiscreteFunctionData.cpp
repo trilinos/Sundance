@@ -128,7 +128,7 @@ RCP<const MapStructure> DiscreteFunctionData
   updateGhosts();
 
   const RCP<DOFMapBase>& map = space_.map();
-  static Array<Array<int> > dofs;
+  Array<Array<int> > dofs;
   Array<int> nNodes;
 
   RCP<const Set<int> > requestedFuncs = map->allowedFuncsOnCellBatch(cellDim,

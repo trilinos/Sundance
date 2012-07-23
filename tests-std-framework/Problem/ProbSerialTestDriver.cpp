@@ -32,12 +32,12 @@ int main(int argc, char** argv)
     int numFail = 0;
     Array<string> failures;
 
-    XDO_TEST(NonlinearPartialDomain);
-    XDO_TEST(NonlinearPeriodic1D);
-    XDO_TEST(LinearPeriodic1D);
-    XDO_TEST(PoissonOnDisk);
+    DO_TEST(NonlinearPartialDomain);
+    DO_TEST(NonlinearPeriodic1D);
+    DO_TEST(LinearPeriodic1D);
+    DO_TEST(PoissonOnDisk);
     DO_TEST(TetQuadTransformationTest);
-//    DO_TEST(DiscFunc3D);
+    //DO_TEST(DiscFunc3D);
     DO_TEST(Kepler);
     DO_TEST(CNBugTest);
     DO_TEST(EdgeDFTest);
