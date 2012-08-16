@@ -9,7 +9,7 @@
 #include "PlayaLinearOperatorDecl.hpp"  // changed from Impl
 #include "Teuchos_Array.hpp"
 #include "PlayaMPIComm.hpp"
-#include "PlayaIfpackOperator.hpp"
+#include "PlayaIfpackILUOperator.hpp"
 #include "PlayaGenericLeftPreconditioner.hpp"
 #include "PlayaGenericRightPreconditioner.hpp"
 #include "Teuchos_dyn_cast.hpp"

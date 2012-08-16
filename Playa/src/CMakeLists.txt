@@ -93,8 +93,11 @@ APPEND_SET(HEADERS
   PlayaHandleable.hpp
   PlayaHandle.hpp
   PlayaHeatOperator1D.hpp
-  PlayaIfpackOperator.hpp
+  PlayaIfpackICCOperator.hpp  
+  PlayaIfpackILUOperator.hpp
+  PlayaICCFactorizableOp.hpp
   PlayaILUFactorizableOp.hpp
+  PlayaICCPreconditionerFactory.hpp
   PlayaILUKPreconditionerFactory.hpp
   PlayaIncrementallyConfigurableMatrixFactory.hpp
   PlayaInverseOperatorDecl.hpp
@@ -245,7 +248,8 @@ APPEND_SET(SOURCES
   PlayaExceptions.cpp
   PlayaGlobalAnd.cpp
   PlayaHeatOperator1D.cpp
-  PlayaIfpackOperator.cpp
+  PlayaIfpackICCOperator.cpp
+  PlayaIfpackILUOperator.cpp
   PlayaInverseOperator.cpp
   PlayaLinearCombination.cpp
   PlayaLinearOperator.cpp

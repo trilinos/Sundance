@@ -11,6 +11,7 @@
 #include "PlayaRowAccessibleOp.hpp"
 #include "PlayaPrintable.hpp"
 #include "PlayaILUFactorizableOp.hpp"
+#include "PlayaICCFactorizableOp.hpp"
 #include "Epetra_CrsMatrix.h"
 #include "PlayaLinearOpWithSpacesDecl.hpp"
 
@@ -25,7 +26,8 @@ class EpetraMatrix : public LinearOpWithSpaces<double>,
                      public LoadableMatrix<double>,
                      public RowAccessibleOp<double>,
                      public Printable,
-                     public ILUFactorizableOp<double>
+                     public ILUFactorizableOp<double>,
+                     public ICCFactorizableOp<double>
 {
 public:
 
@@ -105,6 +107,26 @@ public:
     LeftOrRight leftOrRight,
     Preconditioner<double>& rtn) const ;
   //@}
+
+
+   /** \name incomplete factorization preconditioning interface */
+  //@{
+  /** create an incomplete factorization. 
+   * @param fillLevels number of levels of fill on the local processor
+   * @param overlapFill number of levels of fill on remote processors
+   * @param relaxationValue fraction of dropped values to be added to the
+   * diagonal
+   * @param relativeThreshold relative diagonal perutrbation
+   * @param absoluteThreshold absolute diagonal perturbation
+   * @param rtn newly created preconditioner, returned 
+   * by reference argument.
+   */
+  virtual void getICCPreconditioner(int fillLevels,
+    int overlapFill,
+    double relaxationValue,
+    double relativeThreshold,
+    double absoluteThreshold,
+    Preconditioner<double>& rtn) const ;
 
   
   /** \name Row access interface */

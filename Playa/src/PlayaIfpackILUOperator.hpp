@@ -2,8 +2,8 @@
 //   
  /* @HEADER@ */
 
-#ifndef PLAYA_IFPACKOPERATOR_HPP
-#define PLAYA_IFPACKOPERATOR_HPP
+#ifndef PLAYA_IFPACKILUOPERATOR_HPP
+#define PLAYA_IFPACKILUOPERATOR_HPP
 
 
 #include "PlayaEpetraMatrix.hpp"
@@ -17,12 +17,12 @@ namespace Playa
 /**
  *
  */
-class IfpackOperator : 
+class IfpackILUOperator : 
   public LinearOpWithSpaces<double>
 {
 public:
   /** */
-  IfpackOperator(const EpetraMatrix* A,
+  IfpackILUOperator(const EpetraMatrix* A,
     int fillLevels,
     int overlapFill,
     double relaxationValue,
