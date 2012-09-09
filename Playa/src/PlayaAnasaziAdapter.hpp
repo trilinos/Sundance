@@ -176,6 +176,17 @@ public:
       return rtn;
     }
 
+  static RCP<_MV> 
+  CloneViewNonConst (_MV & mv, const Teuchos::Range1D& index) 
+  {
+    typedef std::vector<int>::size_type size_type;
+    std::vector<int> ind (index.size ());
+    for (size_type i = 0; i < static_cast<size_type> (index.size ()); ++i) {
+      ind[i] = index.lbound () + i;
+    }
+    return CloneViewNonConst (mv, ind);
+  }
+
   /**
    *
    */      
@@ -199,6 +210,17 @@ public:
       }
       return rtn;
     }
+
+  static RCP<const _MV> 
+  CloneView (const _MV & mv, const Teuchos::Range1D& index) 
+  {
+    typedef std::vector<int>::size_type size_type;
+    std::vector<int> ind (index.size ());
+    for (size_type i = 0; i < static_cast<size_type> (index.size ()); ++i) {
+      ind[i] = index.lbound () + i;
+    }
+    return CloneView (mv, ind);
+  }
 
   //@}
 
@@ -370,15 +392,20 @@ public:
       }
     }
 
-  /*! \brief Replace the vectors in \c mv with random vectors.
-   */
+  //! Replace the vectors in \c mv with random vectors.
   static void MvRandom(  _MV & mv )
     { 
       for (int i=0; i<mv.size(); i++) mv[i].randomize(); 
     }
 
-  /*! \brief Replace each element of the vectors in \c mv with \c alpha.
-   */
+  //! Assign (deep copy) A into mv.
+  static void Assign( const _MV& A, _MV& mv ) {
+    for (unsigned int i = 0; i < mv.size(); ++i) {
+      mv[i].acceptCopyOf (A[i]);
+    }
+  }
+
+  //! Replace each element of the vectors in \c mv with \c alpha.
   static void MvInit(  _MV & mv, double alpha = Teuchos::ScalarTraits<double>::zero() )
     { 
       //Out::os() << "MvInit()" << endl;
@@ -397,6 +424,21 @@ public:
     }
 
   //@}
+
+#ifdef HAVE_ANASAZI_TSQR
+  /// \typedef tsqr_adaptor_type
+  /// \brief TSQR adapter for the multivector type SimpleMV.
+  ///
+  /// For now, we provide a "stub" implementation.  It has the right
+  /// methods and typedefs, but its constructors and methods all throw
+  /// std::logic_error.  If you plan to use TSQR in Anasazi (e.g.,
+  /// through TsqrOrthoManager) with SimpleMV, you must implement a
+  /// functional TSQR adapter for SimpleMV.  Please refer to
+  /// Epetra::TsqrAdapter (for Epetra_MultiVector) or
+  /// Tpetra::TsqrAdaptor (for Tpetra::MultiVector) for examples of
+  /// how to implement a TSQR adapter.
+  typedef Anasazi::details::StubTsqrAdapter<SimpleMV> tsqr_adaptor_type;
+#endif // HAVE_ANASAZI_TSQR
 
   /** */
   static bool detectRepeatedIndex(const std::vector<int>& index)

@@ -27,7 +27,7 @@ LinearSolverBase<Scalar>::LinearSolverBase(const ParameterList& params)
 {
   if (this->parameters().isParameter(this->verbosityParam()))
   {
-    this->setVerb(this->parameters().get<int>(this->verbosityParam()));
+    this->setVerb(this->parameters().template get<int>(this->verbosityParam()));
   }
 }
 

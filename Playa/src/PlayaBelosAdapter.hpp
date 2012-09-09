@@ -49,8 +49,20 @@ public:
     const std::vector<int>& index )
     {return AMVT::CloneViewNonConst(mv, index);}   
 
+  /** */     
+  static RCP<_MV> 
+  CloneViewNonConst (_MV & mv, 
+		     const Teuchos::Range1D& index)
+  {
+    return AMVT::CloneViewNonConst (mv, index);
+  }
+
   /** */
   static RCP<const _MV > CloneView( const _MV & mv, const std::vector<int>& index )
+    {return AMVT::CloneView(mv, index);}
+
+  /** */
+  static RCP<const _MV > CloneView( const _MV & mv, const Teuchos::Range1D& index )
     {return AMVT::CloneView(mv, index);}
   
   /** Obtain the vector length of \c mv. */
@@ -124,6 +136,11 @@ public:
     _MV & mv )
     {AMVT::SetBlock(A, index, mv);}
 
+  //! Assign (deep copy) A into mv.
+  static void Assign( const _MV& A, _MV& mv ) {
+    AMVT::Assign (A, mv);
+  }
+
   /*! \brief Replace the vectors in \c mv with random vectors.
    */
   static void MvRandom(  _MV & mv )
@@ -139,8 +156,20 @@ public:
   static void MvPrint( const  _MV & mv, std::ostream& os )
     { AMVT::MvPrint(mv, os);}
 
-
-      
+#ifdef HAVE_BELOS_TSQR
+  /// \typedef tsqr_adaptor_type
+  /// \brief TSQR adapter for the multivector type SimpleMV.
+  ///
+  /// For now, we provide a "stub" implementation.  It has the right
+  /// methods and typedefs, but its constructors and methods all throw
+  /// std::logic_error.  If you plan to use TSQR in Belos (e.g.,
+  /// through TsqrOrthoManager) with SimpleMV, you must implement a
+  /// functional TSQR adapter for SimpleMV.  Please refer to
+  /// Epetra::TsqrAdapter (for Epetra_MultiVector) or
+  /// Tpetra::TsqrAdaptor (for Tpetra::MultiVector) for examples of
+  /// how to implement a TSQR adapter.
+  typedef Belos::details::StubTsqrAdapter<SimpleMV> tsqr_adaptor_type;
+#endif // HAVE_BELOS_TSQR
 };
 
 
