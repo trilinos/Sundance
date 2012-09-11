@@ -132,8 +132,6 @@ Assembler
   const Array<VectorType<double> >& colVectorType,
   bool partitionBCs)
   : partitionBCs_(partitionBCs),
-    matNeedsConfiguration_(true),
-    matNeedsFinalization_(true),
     numConfiguredColumns_(0),
     mesh_(mesh),
     eqn_(eqn),
@@ -170,8 +168,6 @@ Assembler
 ::Assembler(const Mesh& mesh, 
   const RCP<EquationSet>& eqn)
   : partitionBCs_(false),
-    matNeedsConfiguration_(true),
-    matNeedsFinalization_(true),
     numConfiguredColumns_(0),
     mesh_(mesh),
     eqn_(eqn),
@@ -845,7 +841,7 @@ void Assembler::configureMatrix(LinearOperator<double>& A,
   
 
   SUNDANCE_MSG1(verb,  tab << "before config: A=" << A.description());
-  if (matNeedsConfiguration_)
+  if (matNeedsConfiguration())
   {
     Tabs tab0;
 
@@ -874,13 +870,14 @@ void Assembler::configureMatrix(LinearOperator<double>& A,
       }
       A.endBlockFill();
     }
-    matNeedsConfiguration_ = false;
+    cachedAssembledMatrix_ = A;
   }
   else
   {
     Tabs tab0;
     SUNDANCE_MSG1(verb,
       tab0 << "Assembler::configureMatrix() not needed, proceeding to configure vector");
+    A = cachedAssembledMatrix_;
   }
   SUNDANCE_MSG1(verb,  tab << "after config: A=" << A.description());
   configureVector(b);
@@ -2182,12 +2179,16 @@ int Assembler::maxWatchFlagSetting(const std::string& name) const
   return eqnSet()->maxWatchFlagSetting(name);
 }
 
+bool Assembler::matNeedsConfiguration() const
+{
+  return Teuchos::is_null(cachedAssembledMatrix_.ptr());
+}
 
 
 void Assembler::flushConfiguration() const
 {
     numConfiguredColumns_ = 0;
-    matNeedsConfiguration_ = true;
+    cachedAssembledMatrix_ = LinearOperator<double>();
     mesh_.flushSpecialWeights();
     mesh_.flushCurvePoints();
 

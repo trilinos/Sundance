@@ -208,6 +208,8 @@ private:
   void assemblyLoop(const ComputationType& compType,
     RCP<AssemblyKernelBase> kernel) const ;
 
+  /** */
+  bool matNeedsConfiguration() const;
 
   /** */
   void configureMatrix(LinearOperator<double>& A,
@@ -239,10 +241,6 @@ private:
   static int defaultWorkSetSize() {static int rtn=100; return rtn;}
 
   bool partitionBCs_;
-      
-  mutable bool matNeedsConfiguration_;
-      
-  mutable bool matNeedsFinalization_;
 
   mutable int numConfiguredColumns_;
 
@@ -304,7 +302,9 @@ private:
 
   Map<ComputationType, Array<IntegrationCellSpecifier> > rqcRequiresMaximalCofacets_;
 
-
+  /** Cached reference to the previously assembled matrix
+   *  A null value signals that matrix must be assembled */
+  mutable LinearOperator<double> cachedAssembledMatrix_;
 };
 
 }
