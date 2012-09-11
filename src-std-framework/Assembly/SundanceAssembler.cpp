@@ -144,7 +144,6 @@ Assembler
     privateRowSpace_(eqn->numVarBlocks()),
     privateColSpace_(eqn->numUnkBlocks()),
     bcRows_(eqn->numVarBlocks()),
-    bcCols_(eqn->numUnkBlocks()),
     rqc_(),
     contexts_(),
     isBCRqc_(),
@@ -183,7 +182,6 @@ Assembler
     privateRowSpace_(eqn->numVarBlocks()),
     privateColSpace_(eqn->numUnkBlocks()),
     bcRows_(eqn->numVarBlocks()),
-    bcCols_(eqn->numUnkBlocks()),
     rqc_(),
     contexts_(),
     isBCRqc_(),
@@ -205,6 +203,23 @@ Assembler
 {
   TimeMonitor timer(assemblerCtorTimer());
   init(mesh, eqn);
+}
+
+// Utility function
+namespace {
+const Set<int> &
+findNonZeroIndices(const Array<int> &source, Set<int> &result)
+{
+  result.clear();
+  for (int i=0; i<source.size(); ++i)
+  {
+    if (source[i] != 0)
+    {
+      result.insert(result.end(), i);
+    }
+  }
+  return result;
+}
 }
 
 void Assembler::init(const Mesh& mesh, const RCP<EquationSet>& eqn)
@@ -244,6 +259,14 @@ void Assembler::init(const Mesh& mesh, const RCP<EquationSet>& eqn)
     rowMap_ = mapBuilder.rowMap();
     isBCRow_ = mapBuilder.isBCRow();
     isBCCol_ = mapBuilder.isBCCol();
+
+    bcRows_.resize(isBCRow_.size());
+    for (int b=0; b<isBCRow_.size(); ++b)
+    {
+      bcRows_[b] = rcp(new Set<int>);
+      findNonZeroIndices(*isBCRow_[b], *bcRows_[b]);
+    }
+
     lowestRow_.resize(eqn_->numVarBlocks());
     /* create discrete space for each block */
     for (int b=0; b<eqn_->numVarBlocks(); b++) 

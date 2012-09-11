@@ -110,7 +110,7 @@ public:
   VectorSpace<double> rowVecSpace() const ;
 
   /** */
-  const Array<RCP<Set<int> > >& bcRows() {return bcRows_;}
+  const Array<RCP<Set<int> > >& bcRows() const { return bcRows_; }
 
   /** Allocate, but do not fill, the matrix */
   Playa::LinearOperator<double> allocateMatrix() const ;
@@ -263,8 +263,6 @@ private:
   Array<RCP<DiscreteSpace> > privateColSpace_;
 
   Array<RCP<Set<int> > > bcRows_;
-
-  Array<RCP<Set<int> > > bcCols_;
 
   Array<RegionQuadCombo> rqc_;
 
