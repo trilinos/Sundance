@@ -30,6 +30,7 @@
 
 #include "SundanceEventDetector.hpp"
 #include "SundanceDiscreteFunction.hpp"
+//#include "PlayaVectorImpl.hpp"
 #include "PlayaOut.hpp"
 #include "PlayaTabs.hpp"
 
