@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
     double err = (x-ans).norm2();
     cout << "error norm = " << err << std::endl;
 
-    double tol = 1.0e-8;
+    double tol = 1.0e-6;
     if (err > tol)
     {
       cout << "User-defined preconditioner test FAILED" << std::endl;
