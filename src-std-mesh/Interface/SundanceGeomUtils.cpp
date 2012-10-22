@@ -224,5 +224,27 @@ namespace Sundance
       }
   }
 
+
+  int lookupEdgeLIDFromVerts(const Mesh& mesh, int v1, int v2)
+  {
+    Array<int> cofacetLIDs;
+    mesh.getCofacets(0, v1, 1, cofacetLIDs);
+    
+    for (int c=0; c<cofacetLIDs.size(); c++)
+      {
+	int ori;
+	for (int f=0; f<2; f++)
+	  {
+	    int v = mesh.facetLID(1, cofacetLIDs[c], 0, f, ori);
+	    if (v == v2) return cofacetLIDs[c];
+	  }
+      }
+    
+    TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error,
+			       "edge (" << v1 << ", " << v2 << ") not found in mesh");
+    return -1;
+  }
+
+  
   
 }

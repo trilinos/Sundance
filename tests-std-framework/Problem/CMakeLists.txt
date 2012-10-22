@@ -28,6 +28,7 @@ SET(SerialTests
   Stokes_Chanel_Nitsche_line_obstic
   TransientNonlinTest
   ControlledTransient1D
+  TriBdryTest
 )
 
 
@@ -136,6 +137,9 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(TestMeshCopyFiles
     diskWithHole2D-0.exo
     diskWithHole2D-1.exo
     tetPrism.exo
+    square.1.ele
+    square.1.edge
+    square.1.node
   SOURCE_DIR ${PACKAGE_SOURCE_DIR}/tests-std-framework/Problem
   EXEDEPS ${MPITests} ${SerialTests} ${SerialProbsTestBatch} ${MPIProbsTestBatch}
   )

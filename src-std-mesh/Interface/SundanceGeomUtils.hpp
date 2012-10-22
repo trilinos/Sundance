@@ -37,50 +37,51 @@
 
 namespace Sundance
 {
-/** \relates Mesh 
- * Return the LID of the maximal cell that contains the point x.
- * If the point lays on an edge between two or more
- * cells, this will return the first of the those cells encountered
- * on a breadth-first search starting at the initial guess.
- */
-int findEnclosingCell(const Mesh& mesh, 
-  int cellDim,
-  int initialGuessLID, 
-  const double* x);
+  /** \relates Mesh 
+   * Return the LID of the maximal cell that contains the point x.
+   * If the point lays on an edge between two or more
+   * cells, this will return the first of the those cells encountered
+   * on a breadth-first search starting at the initial guess.
+   */
+  int findEnclosingCell(const Mesh& mesh, 
+			int cellDim,
+			int initialGuessLID, 
+			const double* x);
 
-/** \relates Mesh
- * Test whether a point is enclosed in a cell. The cell is assumed
- * to be simplicial.
- */
-bool cellContainsPoint(const Mesh& mesh, 
-  int cellDim,
-  int cellLID, const double* x,
-  Array<int>& facetLID);
+  /** \relates Mesh
+   * Test whether a point is enclosed in a cell. The cell is assumed
+   * to be simplicial.
+   */
+  bool cellContainsPoint(const Mesh& mesh, 
+			 int cellDim,
+			 int cellLID, const double* x,
+			 Array<int>& facetLID);
 
-/** \relates Mesh
- * Tests orientation of a point relative to a line.
- */
-double orient2D(const double* a, const double* b, const double* x);
+  /** \relates Mesh
+   * Tests orientation of a point relative to a line.
+   */
+  double orient2D(const double* a, const double* b, const double* x);
 
-/** \relates Mesh 
- * Get the list of maximal neighbors of a cell 
- */
-void maximalNeighbors(const Mesh& mesh, int cellDim,
-  int cellLID, const Array<int>& facetLID,
-  std::list<int>& rtn);
+  /** \relates Mesh 
+   * Get the list of maximal neighbors of a cell 
+   */
+  void maximalNeighbors(const Mesh& mesh, int cellDim,
+			int cellLID, const Array<int>& facetLID,
+			std::list<int>& rtn);
 
-/** \relates Mesh 
- * Pullback a point to local coordinates within a cell
- */
-Point pullback(const Mesh& mesh, int cellDim, int cellLID, const double* x);
+  /** \relates Mesh 
+   * Pullback a point to local coordinates within a cell
+   */
+  Point pullback(const Mesh& mesh, int cellDim, int cellLID, const double* x);
 
-/** */
-void printCell(const Mesh& mesh, int cellLID);
+  /** */
+  void printCell(const Mesh& mesh, int cellLID);
 
-/** */
-double volume(const Mesh& mesh, int cellDim, int cellLID);
+  /** */
+  double volume(const Mesh& mesh, int cellDim, int cellLID);
   
-
+  /** \relates Mesh */
+  int lookupEdgeLIDFromVerts(const Mesh& mesh, int v1, int v2);
 }
 
 

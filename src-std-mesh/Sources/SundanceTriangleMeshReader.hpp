@@ -122,7 +122,11 @@ namespace Sundance
     Mesh readNodes(Array<int>& ptGID,
                    Array<int>& ptOwner) const ;
 
+    /** */
     void readSides(Mesh& mesh) const ;
+
+    /** */
+    void readEdges(Mesh& mesh) const ;
 
     /** */
     void readElems(Mesh& mesh,
@@ -142,6 +146,9 @@ namespace Sundance
 
     /** */
     std::string sideFilename_;
+
+    /** */
+    std::string edgeFilename_;
 
     /** */
     mutable int offset_;
