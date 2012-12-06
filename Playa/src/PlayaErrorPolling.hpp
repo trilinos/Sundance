@@ -42,7 +42,7 @@ namespace Playa
    * operations in pollForFailures() will hang because some processors cannot be 
    * contacted. 
    */
-  class TEUCHOS_LIB_DLL_EXPORT ErrorPolling
+  class ErrorPolling
   {
   public:
     /** Call this function upon catching an std::exception in order to
