@@ -36,12 +36,11 @@
 #include "SundanceDiscreteFuncElement.hpp"
 #include <queue>
 
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
+#ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
+#include "PlayaVectorImpl.hpp"
+#include "PlayaSimpleTransposedOpImpl.hpp"
+#endif
+
 using namespace Sundance;
 using namespace Teuchos;
 using namespace Playa;
