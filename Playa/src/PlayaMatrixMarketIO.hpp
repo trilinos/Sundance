@@ -10,7 +10,11 @@
 #include "PlayaEpetraMatrix.hpp"
 #include "PlayaEpetraVectorSpace.hpp"
 #include "Epetra_SerialComm.h"
+
+#ifdef HAVE_MPI
 #include "Epetra_MpiComm.h"
+#endif
+
 using namespace EpetraExt;
 
 
