@@ -20,6 +20,7 @@
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
 #include "PlayaVectorImpl.hpp"
 #include "PlayaLinearOperatorImpl.hpp"
+#include "PlayaSimpleTransposedOpImpl.hpp"
 #endif
 
 using namespace Playa;
@@ -149,24 +150,25 @@ void EpetraMatrix::getILUKPreconditioner(int fillLevels,
 }
 
 void EpetraMatrix::getICCPreconditioner(int fillLevels,
-  int overlapFill,
-  double relaxationValue,
-  double relativeThreshold,
-  double absoluteThreshold,
-  Preconditioner<double>& rtn) const
+					int overlapFill,
+					double dropTolerance,
+					double relaxationValue,
+					double relativeThreshold,
+					double absoluteThreshold,
+					Preconditioner<double>& rtn) const
 {
-  RCP<LinearOperatorBase<double> > a = rcp(new IfpackICCOperator(this,
-      fillLevels,
-      overlapFill,
-      relaxationValue,
-      relativeThreshold,
-      absoluteThreshold));
-
-  LinearOperator<double> icc = a;
-  LinearOperator<double> iccTrans=icc.transpose();
-  //Transpose call and then put in for second argument for below
-
-    rtn = new GenericTwoSidedPreconditioner<double>(icc,iccTrans);
+  RCP<LinearOperatorBase<double> > ROp
+    = rcp(new IfpackICCOperator(this,
+				fillLevels,
+				overlapFill,
+				dropTolerance,
+				relaxationValue,
+				relativeThreshold,
+				absoluteThreshold));
+  
+  LinearOperator<double> R = ROp;
+  LinearOperator<double> Rt= R.transpose();
+  rtn = new GenericTwoSidedPreconditioner<double>(Rt, R);
 }
 
 

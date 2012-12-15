@@ -24,40 +24,32 @@ namespace Playa
     : public PreconditionerFactoryBase<Scalar>
   {
   public:
+    /** Magnitude type */
+    typedef typename Teuchos::ScalarTraits<Scalar>::magnitudeType ScalarMag;
     /** Construct with a parameter list */
     //const ParameterList& params inside
     ICCPreconditionerFactory():
     	fillLevels_(1),
         overlapFill_(0),
+	dropTolerance_(1.0e-4),
         relaxationValue_(0.0),
         relativeThreshold_(1.0),
         absoluteThreshold_(0.0){;}
         
-    ICCPreconditionerFactory(int fillLevels, int overlapFill, Scalar relaxationValue, Scalar relativeThreshold, Scalar absoluteThreshold)
+    ICCPreconditionerFactory(int fillLevels, 
+			     int overlapFill, 
+			     ScalarMag dropTolerance,
+			     ScalarMag relaxationValue, 
+			     ScalarMag relativeThreshold, 
+			     ScalarMag absoluteThreshold)
     {
     	fillLevels_=fillLevels;
     	overlapFill_=overlapFill;
+	dropTolerance_ = dropTolerance;
     	relaxationValue_=relaxationValue;
     	relativeThreshold_=relativeThreshold;
     	absoluteThreshold_=absoluteThreshold;
     }
-    /*{
-      LinearSolverBase<Scalar>::template setParameter<int>(params, &fillLevels_, 
-                                                  "Graph Fill");
-
-      LinearSolverBase<Scalar>::template setParameter<int>(params, &overlapFill_, 
-                                                  "Overlap");
-
-      LinearSolverBase<Scalar>::template setParameter<double>(params, &relaxationValue_, 
-                                                     "Relaxation");
-
-      LinearSolverBase<Scalar>::template setParameter<double>(params, &absoluteThreshold_, 
-                                                     "Absolute Threshold");
-
-      LinearSolverBase<Scalar>::template setParameter<double>(params, &relativeThreshold_, 
-                                                     "Relative Threshold");
-    }*/
-
 
     /** virtual dtor */
     virtual ~ICCPreconditionerFactory(){;}
@@ -85,11 +77,12 @@ namespace Playa
       * the factorizable op. */
       Preconditioner<Scalar> P;
       fop->getICCPreconditioner(fillLevels_,
-                                 overlapFill_,
-                                 relaxationValue_,
-                                 relativeThreshold_,
-                                 absoluteThreshold_,
-                                 P);
+				overlapFill_,
+				dropTolerance_,
+				relaxationValue_,
+				relativeThreshold_,
+				absoluteThreshold_,
+				P);
       /* Return the preconditioner */
       return P;
     }
@@ -100,9 +93,10 @@ namespace Playa
 
     int fillLevels_;
     int overlapFill_;
-    Scalar relaxationValue_;
-    Scalar relativeThreshold_;
-    Scalar absoluteThreshold_;
+    ScalarMag dropTolerance_;
+    ScalarMag relaxationValue_;
+    ScalarMag relativeThreshold_;
+    ScalarMag absoluteThreshold_;
   };
 
 

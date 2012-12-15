@@ -122,11 +122,12 @@ public:
    * by reference argument.
    */
   virtual void getICCPreconditioner(int fillLevels,
-    int overlapFill,
-    double relaxationValue,
-    double relativeThreshold,
-    double absoluteThreshold,
-    Preconditioner<double>& rtn) const ;
+				    int overlapFill,
+				    double dropTolerance,
+				    double relaxationValue,
+				    double relativeThreshold,
+				    double absoluteThreshold,
+				    Preconditioner<double>& rtn) const ;
 
   
   /** \name Row access interface */

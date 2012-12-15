@@ -6,6 +6,7 @@
 #define PLAYA_ICCFACTORIZABLEOP_HPP
 
 #include "PlayaDefs.hpp"
+#include "Teuchos_ScalarTraits.hpp"
 
 
 namespace Playa
@@ -20,6 +21,9 @@ template <class Scalar>
 class ICCFactorizableOp
 {
 public:
+  /** Magnitude type */
+  typedef typename Teuchos::ScalarTraits<Scalar>::magnitudeType ScalarMag;
+
   /** Virtual dtor */
   virtual ~ICCFactorizableOp(){;}
 
@@ -29,6 +33,7 @@ public:
   /** create an incomplete factorization. 
    * @param fillLevels number of levels of fill on the local processor
    * @param overlapFill number of levels of fill on remote processors
+   * @param dropTolerance drop tolerance
    * @param relaxationValue fraction of dropped values to be added to the
    * diagonal
    * @param relativeThreshold relative diagonal perutrbation
@@ -38,9 +43,10 @@ public:
    */
   virtual void getICCPreconditioner(int fillLevels,
     int overlapFill,
-    double relaxationValue,
-    double relativeThreshold,
-    double absoluteThreshold,
+    ScalarMag dropTolerance,
+    ScalarMag relaxationValue,
+    ScalarMag relativeThreshold,
+    ScalarMag absoluteThreshold,
     Preconditioner<Scalar>& rtn) const=0;
   //@}
      

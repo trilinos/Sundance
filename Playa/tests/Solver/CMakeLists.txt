@@ -11,6 +11,7 @@ SET(MPITests
 SET(SerialOnlyTests 
              BelosPoissonTest 
              EigenTest 
+	     PCGTest
              UserDefPrecondTest)
 
 
@@ -44,5 +45,12 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(SolverTestCopyFiles
                    mlParams.xml
                    userPrecParams.xml
   SOURCE_DIR ${SolverParamPath}
-  EXEDEPS ${MPITests} ${SerialTests}
+  EXEDEPS ${MPITests} ${SerialOnlyTests}
+  )
+
+TRIBITS_COPY_FILES_TO_BINARY_DIR(SolverTestCopyMeshFiles
+  DEST_FILES 
+     nut-stiffness-n-2-p-1.mtx
+  SOURCE_DIR ${PACKAGE_SOURCE_DIR}/Playa/etc/Meshes
+  EXEDEPS ${MPITests} ${SerialOnlyTests}
   )

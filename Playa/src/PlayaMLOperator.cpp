@@ -52,5 +52,9 @@ void MLOperator::apply(
       TEUCHOS_TEST_FOR_EXCEPTION(applyType != NO_TRANS, std::runtime_error,
         "ML preconditioner does not support transposes");
     }
+  TEUCHOS_TEST_FOR_EXCEPTION(ierr < 0, std::runtime_error,
+			     "Playa::MLOperator apply: "
+			     "mlPrec_->ApplyInvers() failed with ierr="
+			     << ierr);
 }
   

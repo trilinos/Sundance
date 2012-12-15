@@ -88,6 +88,11 @@ void IfpackILUOperator::apply(Teuchos::ETransp transApplyType,
   {
     ierr = p->Solve(true, epIn, epOut);
   }
+  TEUCHOS_TEST_FOR_EXCEPTION(ierr < 0, std::runtime_error,
+			     "Playa::IfpackILUOperator apply: "
+			     "p->Solve() (transpose state="
+			     << transApplyType << ") failed with ierr="
+			     << ierr);
 }
   
 }

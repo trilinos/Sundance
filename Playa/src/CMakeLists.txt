@@ -124,6 +124,7 @@ APPEND_SET(HEADERS
   PlayaLoadableVector.hpp
   PlayaMatrixFactory.hpp
   PlayaMatrixLaplacian1D.hpp
+  PlayaMatrixMarketIO.hpp
   PlayaMatrixMatrixTester.hpp
   PlayaMLOperator.hpp
   PlayaMPIComm.hpp
@@ -151,6 +152,7 @@ APPEND_SET(HEADERS
   PlayaOptState.hpp
   PlayaOut.hpp
   PlayaParameterListPreconditionerFactory.hpp
+  PlayaPCGSolver.hpp
   PlayaPoissonBoltzmannJacobian.hpp
   PlayaPoissonBoltzmannOp.hpp
   PlayaPreconditionerBase.hpp
@@ -269,6 +271,7 @@ APPEND_SET(SOURCES
   PlayaNewtonArmijoSolver.cpp
   PlayaNonlinearSolverBuilder.cpp
   PlayaNOXSolver.cpp
+  PlayaPCGSolver.cpp
   PlayaOut.cpp
   PlayaObjectiveBase.cpp
   PlayaOptBuilder.cpp
