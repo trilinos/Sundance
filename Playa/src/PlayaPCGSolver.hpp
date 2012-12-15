@@ -14,7 +14,7 @@ namespace Playa
   public:
     PCGSolver(const ParameterList& params,
 	      const PreconditionerFactory<double>& precFactory)
-      : LinearSolverBase(params), precFactory_(precFactory) {}
+      : LinearSolverBase<double>(params), precFactory_(precFactory) {}
 
     SolverState<double> solve(const LinearOperator<double>& A,
 			      const Vector<double>& b,
