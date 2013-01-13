@@ -45,7 +45,7 @@
 
 using Sundance::List;
 
-
+using std::ofstream;
 
 
 #ifdef HAVE_SUNDANCE_EXODUS

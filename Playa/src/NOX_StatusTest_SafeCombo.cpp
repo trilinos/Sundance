@@ -51,6 +51,14 @@
 #include "NOX_StatusTest_SafeCombo.hpp"
 #include "NOX_Utils.H"
 
+using namespace Teuchos;
+using std::runtime_error;
+using std::cout;
+using std::ostream;
+using std::vector;
+
+
+
 NOX::StatusTest::SafeCombo::SafeCombo(ComboType t) :
   type(t)
 {

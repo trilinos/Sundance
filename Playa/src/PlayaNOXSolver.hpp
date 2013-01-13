@@ -56,6 +56,8 @@
 namespace Playa
 {
 using namespace Teuchos;
+using std::runtime_error;
+
 
 /**
  * Playa wrapper for NOX solver

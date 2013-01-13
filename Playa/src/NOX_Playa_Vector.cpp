@@ -58,6 +58,9 @@
 #endif
 
 using namespace Teuchos;
+using std::runtime_error;
+using std::cout;
+using std::ostream;
 
 NOX::NOXPlaya::Vector::Vector(const NOX::NOXPlaya::Vector& source, 
 			 NOX::CopyType type)

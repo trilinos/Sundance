@@ -54,6 +54,9 @@
 namespace Sundance
 {
 
+  using std::ends;
+  using std::setprecision;
+
 void
 StochBlockJacobiSolver::solve(const Array<LinearOperator<double> >& KBlock,
   const Array<Vector<double> >& fBlock,

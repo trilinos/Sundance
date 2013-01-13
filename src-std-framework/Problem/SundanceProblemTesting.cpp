@@ -61,6 +61,8 @@
 namespace Sundance
 {
 
+  using std::setprecision;
+
 bool checkErrorNorms(
   const Mesh& mesh,
   const CellFilter& filter,

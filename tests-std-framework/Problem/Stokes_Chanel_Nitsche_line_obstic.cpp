@@ -285,7 +285,7 @@ int main(int argc, char** argv)
       Sundance::passFailTest( (funcI1+funcI2-totalInt) , 1e-6); //0.196237948515625 -> the are with 0.135
       
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
       Sundance::handleException(e);
 		}

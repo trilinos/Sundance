@@ -139,7 +139,7 @@ int main(int argc, char** argv)
       Out::root() << "t=" << (i+1)*deltaT << endl;
       Expr uNext = prob.solve(solver);
       
-      ostringstream oss;
+      std::ostringstream oss;
       oss << "TransientHeat2D-" << i+1;
       FieldWriter w = new VTKWriter(oss.str());
       w.addMesh(mesh);

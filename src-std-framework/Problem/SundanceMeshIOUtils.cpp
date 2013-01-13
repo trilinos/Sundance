@@ -51,6 +51,8 @@ using namespace Sundance;
 using namespace Sundance;
 using namespace Sundance;
 using namespace Teuchos;
+  using std::ifstream;
+  using std::ofstream;
 
 
 Expr readNodalFields(const MeshSource& mesher, const Mesh& mesh,

@@ -102,7 +102,7 @@ int main(int argc, char** argv)
     Expr soln = prob.solve(linSolver);
     Out::os() << "done solving prob" << endl;
   }
-	catch(exception& e) 
+	catch(std::exception& e) 
   {
     Sundance::handleException(e);
   }

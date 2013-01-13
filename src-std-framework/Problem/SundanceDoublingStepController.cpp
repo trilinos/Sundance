@@ -48,7 +48,8 @@
 
 namespace Sundance
 {
-
+  using std::min;
+  using std::max;
 
 bool DoublingStepController::run() const
 {

@@ -476,7 +476,7 @@ int main(int argc, char** argv)
       Sundance::passFailTest( ::fabs(c_L_Om - 0.0107) , 0.2);
       
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
       Sundance::handleException(e);
 		}

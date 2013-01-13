@@ -129,7 +129,7 @@ bool AToCDensitySample()
     double fx = x0;
     double fy = y0;
     double df = ::fabs(fx - f[2*i]) + ::fabs(fy - f[2*i+1]);
-    maxForceErr = max(maxForceErr, df);
+    maxForceErr = std::max(maxForceErr, df);
   }
   cout << "max force error = " << maxForceErr << std::endl;
 

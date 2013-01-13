@@ -246,7 +246,7 @@ int main(int argc, char** argv)
       Sundance::passFailTest( vol - 0.82134 , 1e-5);
       
   }
-  catch(exception& e)
+  catch(std::exception& e)
   {
       Sundance::handleException(e);
   } 

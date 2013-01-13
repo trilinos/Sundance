@@ -137,7 +137,7 @@ namespace NOX {
 
       virtual StatusType getStatus() const;
 
-      virtual ostream& print(std::ostream& stream, int indent = 0) const;
+      virtual std::ostream& print(std::ostream& stream, int indent = 0) const;
   
     protected:
 
@@ -188,7 +188,7 @@ namespace NOX {
       const ComboType type;
 
       //! Vector of generic status tests
-      vector<Teuchos::RCP<Generic> > tests;
+      std::vector<Teuchos::RCP<Generic> > tests;
 
       //! %Status
       StatusType status;

@@ -158,7 +158,7 @@ int main(int argc, char** argv)
 
 
       double tol = 1.0e-5;
-      Sundance::passFailTest(max(u1ErrorNorm, u2ErrorNorm), tol);
+      Sundance::passFailTest(std::max(u1ErrorNorm, u2ErrorNorm), tol);
     }
 	catch(std::exception& e)
 		{

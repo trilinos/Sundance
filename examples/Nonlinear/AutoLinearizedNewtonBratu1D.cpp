@@ -146,7 +146,7 @@ int main(int argc, char** argv)
     
     Sundance::passFailTest(L2Err, 1.5/((double) nx*nx));
   }
-	catch(exception& e) 
+	catch(std::exception& e) 
   {
     Sundance::handleException(e);
   }

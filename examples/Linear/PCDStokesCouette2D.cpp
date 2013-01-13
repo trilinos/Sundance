@@ -212,7 +212,7 @@ int main( int argc , char **argv )
 
     Sundance::passFailTest(results[0][1], 0.001);
   }
-  catch (exception &e) {
+  catch (std::exception &e) {
     Out::os() << e.what() << std::endl;
   }
 

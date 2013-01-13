@@ -106,7 +106,7 @@ int main(int argc, char** argv)
       double I1Exact = 1.0/pi;
       cout << "exact: " << I1Exact << std::endl;
 
-      error = max(error, fabs(f1 - I1Exact));
+      error = std::max(error, fabs(f1 - I1Exact));
       cout << "error = " << fabs(f1 - I1Exact) << std::endl;
 
       MPIComm::world().synchronize();
@@ -118,7 +118,7 @@ int main(int argc, char** argv)
       double I2Exact = (1.0 - 4.0/pi/pi)/pi;
       cout << "exact: " << I2Exact << std::endl;
 
-      error = max(error, fabs(f2 - I2Exact));
+      error = std::max(error, fabs(f2 - I2Exact));
       cout << "error = " << fabs(f2 - I2Exact) << std::endl; 
 
       MPIComm::world().synchronize();
@@ -130,7 +130,7 @@ int main(int argc, char** argv)
       double I3Exact = 0.5;
       cout << "exact: " << I3Exact << std::endl;
 
-      error = max(error, fabs(f3 - I3Exact));
+      error = std::max(error, fabs(f3 - I3Exact));
       cout << "error = " << fabs(f3 - I3Exact) << std::endl;
 
       MPIComm::world().synchronize();
@@ -142,7 +142,7 @@ int main(int argc, char** argv)
       double I4Exact = pi*pi/3.0 - pi/2 + 1.0/5.0;
       cout << "exact: " << I4Exact << std::endl;
 
-      error = max(error, fabs(f4 - I4Exact));
+      error = std::max(error, fabs(f4 - I4Exact));
       cout << "error = " << fabs(f4 - I4Exact) << std::endl;
 
       MPIComm::world().synchronize();
@@ -155,7 +155,7 @@ int main(int argc, char** argv)
       double I5Exact = 1.0;
       cout << "exact: " << I5Exact << std::endl;
 
-      error = max(error, fabs(f5 - I5Exact));
+      error = std::max(error, fabs(f5 - I5Exact));
       cout << "error = " << fabs(f5 - I5Exact) << std::endl;
 
       MPIComm::world().synchronize();
@@ -211,7 +211,7 @@ int main(int argc, char** argv)
       double gVal = gEval.evaluate();
       cout << "integral value = " << gVal << std::endl;
       cout << "exact value = " << gExact << std::endl;
-      error = max(error, fabs(gVal - gExact));
+      error = std::max(error, fabs(gVal - gExact));
       cout << "error = " << fabs(gVal - gExact) << std::endl;
 
       MPIComm::world().synchronize();
@@ -228,7 +228,7 @@ int main(int argc, char** argv)
       cout << "grad diff = " << std::endl << dgDiff.norm2() << std::endl; 
 
       cout << "integral value = " << gVal << std::endl;
-      error = max(error, fabs(gVal - gExact));
+      error = std::max(error, fabs(gVal - gExact));
       cout << "error = " << fabs(gVal - gExact) << std::endl;
 
       MPIComm::world().synchronize();
@@ -237,7 +237,7 @@ int main(int argc, char** argv)
       double h = 1.0e-2;
       double diffErr = gEval.fdGradientCheck(h);
 
-      error = max(error, fabs(diffErr));
+      error = std::max(error, fabs(diffErr));
       cout << "max error = " << error << std::endl;
 
       double tol = 1.0e-8;

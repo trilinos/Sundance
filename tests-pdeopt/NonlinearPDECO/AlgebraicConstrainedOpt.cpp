@@ -166,7 +166,7 @@ int main(int argc, char** argv)
       
       
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
       cerr << "main() caught exception: " << e.what() << endl;
 		}

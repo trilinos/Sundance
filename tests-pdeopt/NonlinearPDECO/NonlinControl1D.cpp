@@ -182,7 +182,7 @@ int main(int argc, char** argv)
       double tol = 0.05;
       Sundance::passFailTest(uErr + lamErr + aErr, tol);
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
       cerr << "main() caught exception: " << e.what() << endl;
 		}

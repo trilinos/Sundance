@@ -67,6 +67,9 @@ using namespace NOX;
 using namespace NOX::NOXPlaya;
 using namespace Teuchos;
 using namespace Playa;
+using std::runtime_error;
+using std::cout;
+using std::ostream;
 
 
 static Time& noxSolverTimer() 

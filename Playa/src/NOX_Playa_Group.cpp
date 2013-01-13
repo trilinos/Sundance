@@ -57,6 +57,11 @@ using Playa::Out;
 using Playa::Tabs;
 using Teuchos::RCP;
 
+using std::ostream;
+using std::cout;
+using std::runtime_error;
+
+
 
 NOX::NOXPlaya::Group::Group(const Playa::Vector<double>& initcond, 
   const Playa::NonlinearOperator<double>& nonlinOp,

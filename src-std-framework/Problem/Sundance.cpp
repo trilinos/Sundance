@@ -78,8 +78,10 @@
 
 namespace Sundance
 {
-using Playa::MPIDataType;
-using Playa::MPIOp;
+  using Playa::MPIDataType;
+  using Playa::MPIOp;
+  using std::ostringstream;
+  
 
 void handleException(std::exception& e)
 {SundanceGlobal::handleException(e);}

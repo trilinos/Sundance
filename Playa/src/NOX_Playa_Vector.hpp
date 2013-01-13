@@ -52,10 +52,12 @@
 #ifndef NOX_Playa_VECTOR_H
 #define NOX_Playa_VECTOR_H
 
+#include <iostream>
 #include "NOX_Abstract_Vector.H" // base class
 #include "NOX_Common.H" // for #include<vector> 
 #include "PlayaVectorDecl.hpp" // definitions for Playa Vectors
 #include "PlayaVectorSpaceDecl.hpp"
+
 
 namespace NOX 
 {
@@ -206,7 +208,7 @@ public:
     \f[ \left[ \; 0.1 \; 2.34 \; 5 \; \right] \f] 
     It will be all on one line, with a single space between each entry, bracketed on either side.
   */
-  ostream& leftshift(std::ostream& stream) const;
+  std::ostream& leftshift(std::ostream& stream) const;
 
   // derived
   void print() const;
