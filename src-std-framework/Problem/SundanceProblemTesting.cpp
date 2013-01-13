@@ -62,6 +62,7 @@ namespace Sundance
 {
 
   using std::setprecision;
+  using std::setw;
 
 bool checkErrorNorms(
   const Mesh& mesh,
