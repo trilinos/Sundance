@@ -227,6 +227,8 @@ using namespace PlayaExprTemplates;
 using namespace Playa;
 using namespace Teuchos;
 using Sundance::List;
+  using std::setw;
+  using std::exception;
 
 
 /**
