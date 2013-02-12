@@ -75,7 +75,7 @@ StokhosBasisWrapper::StokhosBasisWrapper(
 
 void StokhosBasisWrapper::fillCijk()
 {
-  cijk_ = basis_->computeTripleProductTensor(basis_->order());
+  cijk_ = basis_->computeTripleProductTensor();
 }
 
 
