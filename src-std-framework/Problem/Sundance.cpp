@@ -249,7 +249,7 @@ int SundanceGlobal::init(int* argc, char*** argv)
       std::string debugCmd = "ddd --gdb -x ~/.gdbinit " + myCommandName
         + " " + Teuchos::toString(pid) + " &";
       cout << "launching " << debugCmd << std::endl;
-      system(debugCmd.c_str());
+      TEUCHOS_ASSERT_EQUALITY(0, system(debugCmd.c_str()));
       while (wait) {;}
     }
 
