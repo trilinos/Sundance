@@ -1,9 +1,9 @@
 /* @HEADER@ */
 // ************************************************************************
-// 
+//
 //                             Sundance
 //                 Copyright 2011 Sandia Corporation
-// 
+//
 // Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
 // the U.S. Government retains certain rights in this software.
 //
@@ -35,7 +35,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // Questions? Contact Kevin Long (kevin.long@ttu.edu)
-// 
+//
 
 /* @HEADER@ */
 
@@ -81,7 +81,7 @@ namespace Sundance
   using Playa::MPIDataType;
   using Playa::MPIOp;
   using std::ostringstream;
-  
+
 
 void handleException(std::exception& e)
 {SundanceGlobal::handleException(e);}
@@ -98,11 +98,11 @@ bool passFailTest(const std::string& statusMsg,
   bool status, double error, double tol)
 {return SundanceGlobal::passFailTest(statusMsg, status, error, tol);}
 
-int& testStatus() 
+int& testStatus()
 {return SundanceGlobal::testStatus();}
 
 
-CommandLineProcessor& clp() 
+CommandLineProcessor& clp()
 {return SundanceGlobal::clp();}
 
 
@@ -147,10 +147,10 @@ void setOption(const std::string& optionTrueName,
 }
 } // namespace Sundance
 
-static Time& totalTimer() 
+static Time& totalTimer()
 {
-  static RCP<Time> rtn 
-    = TimeMonitor::getNewTimer("total Sundance time"); 
+  static RCP<Time> rtn
+    = TimeMonitor::getNewTimer("total Sundance time");
   return *rtn;
 }
 
@@ -183,26 +183,26 @@ int SundanceGlobal::init(int* argc, char*** argv)
     Assembler::workSetSize() = defaultWorkSetSize;
 
     clp().setOption("config", &configFilename, "Configuration file");
-    clp().setOption("fpcheck", "nofpcheck", &cmdFpCheck, 
+    clp().setOption("fpcheck", "nofpcheck", &cmdFpCheck,
       "Check results of math lib calls in expr evals");
-    clp().setOption("version", "noversion", &showVersion, 
+    clp().setOption("version", "noversion", &showVersion,
       "Show Sundance version number and exit");
-    clp().setOption("banner", "nobanner", &showBanner, 
+    clp().setOption("banner", "nobanner", &showBanner,
       "Show Sundance banner on root processor at start of run");
-    clp().setOption("timings", "notimings", &showTimings, 
+    clp().setOption("timings", "notimings", &showTimings,
       "Show timings at end of run");
 
-    clp().setOption("workset", &cmdWorkSetSize, 
+    clp().setOption("workset", &cmdWorkSetSize,
       "Work set size");
 
-      
+
     clp().setOption("debug", "nodebug", &debugWait, "Whether to attach a debugger to this process, holding until 'wait' is set to 0");
 
 
     clp().throwExceptions(false);
     clp().recogniseAllOptions(false);
 
-    CommandLineProcessor::EParseCommandLineReturn rtn 
+    CommandLineProcessor::EParseCommandLineReturn rtn
       = clp().parse(*argc, (char**) *argv);
 
     TEUCHOS_TEST_FOR_EXCEPTION(rtn != CommandLineProcessor::PARSE_SUCCESSFUL,
@@ -214,8 +214,8 @@ int SundanceGlobal::init(int* argc, char*** argv)
     {
       if (MPIComm::world().getRank()==0)
       {
-        cout << "Simulation built using Sundance version " 
-             << VersionString::number() 
+        cout << "Simulation built using Sundance version "
+             << VersionString::number()
              << " (" << VersionString::date() << ")" << std::endl;
         exit(0);
       }
@@ -223,12 +223,12 @@ int SundanceGlobal::init(int* argc, char*** argv)
     if (showBanner && MPIComm::world().getRank()==0)
     {
       ostringstream oss;
-      oss << "Simulation built using Sundance version " 
-           << VersionString::number() 
+      oss << "Simulation built using Sundance version "
+           << VersionString::number()
            << " (" << VersionString::date() << ")" << std::endl;
-      
-      oss << "Sundance is copyright" 
-           << std::endl << " (C) 2005-2012 Sandia National Laboratories " 
+
+      oss << "Sundance is copyright"
+           << std::endl << " (C) 2005-2012 Sandia National Laboratories "
            << std::endl
            << " (C) 2007-2012 Texas Tech University"
            << std::endl;
@@ -246,7 +246,7 @@ int SundanceGlobal::init(int* argc, char*** argv)
       int wait=1;
       int pid = getpid();
       std::string myCommandName=((char**)(*argv))[0];
-      std::string debugCmd = "ddd --gdb -x ~/.gdbinit " + myCommandName 
+      std::string debugCmd = "ddd --gdb -x ~/.gdbinit " + myCommandName
         + " " + Teuchos::toString(pid) + " &";
       cout << "launching " << debugCmd << std::endl;
       system(debugCmd.c_str());
@@ -266,7 +266,7 @@ int SundanceGlobal::init(int* argc, char*** argv)
     return 1;
   }
   return 0;
-} 
+}
 
 
 bool& SundanceGlobal::showStartupMessage()
