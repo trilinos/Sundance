@@ -457,37 +457,56 @@ void NodalDOFMapHN::getPointLIDsForHN( int pointLID , int facetIndex ,
 		glbLIDs.resize(2);
 		nodeIndex.resize(2);
 		indexInParent = mesh().indexInParent(maxCellIndex);
-		switch (indexInParent){
-		  case 0: {facetCase = (facetIndex == 1)? 0 : 1;
-		          divRatio = (1.0/3.0);  break;}
-		  case 1: {facetCase = 0;
-		          divRatio = (facetIndex == 0)? (1.0/3.0) : (2.0/3.0);  break;}
-		  case 2: {facetCase = (facetIndex == 0)? 0 : 2;
-                  divRatio = (facetIndex == 0)? (2.0/3.0) : (1.0/3.0);  break;}
-		  case 5: {facetCase = 1;
-                  divRatio = (facetIndex == 0)? (1.0/3.0) : (2.0/3.0);  break;}
-		  case 3: {facetCase = 2;
-                  divRatio = (facetIndex == 1)? (1.0/3.0) : (2.0/3.0);  break;}
-		  case 6: {facetCase = (facetIndex == 0)? 1 : 3;
-                  divRatio = (facetIndex == 0)? (2.0/3.0) : (1.0/3.0);  break;}
-		  case 7: {facetCase = 3;
-                  divRatio = (facetIndex == 2)? (1.0/3.0) : (2.0/3.0);  break;}
-		  case 8: {facetCase = (facetIndex == 1)? 2 : 3;
-                  divRatio = (2.0/3.0);  break;}
-		}
 		mesh().returnParentFacets(maxCellIndex , 0 ,facets , parentLID );
-		switch (facetCase){
-		   case 0: {glbLIDs[0] = facets[0]; glbLIDs[1] = facets[1];
-		            nodeIndex[0] = 0;  nodeIndex[1] = 1;  break;}
-		   case 1: {glbLIDs[0] = facets[0]; glbLIDs[1] = facets[2];
-		            nodeIndex[0] = 0;  nodeIndex[1] = 2;  break;}
-		   case 2: {glbLIDs[0] = facets[1]; glbLIDs[1] = facets[3];
-		            nodeIndex[0] = 1;  nodeIndex[1] = 3;   break;}
-		   case 3: {glbLIDs[0] = facets[2]; glbLIDs[1] = facets[3];
-		            nodeIndex[0] = 2;  nodeIndex[1] = 3;  break;}
+		switch( mesh().maxChildren()) {
+		  // trisection
+		  case 9: {
+			switch (indexInParent){
+			case 0: {facetCase = (facetIndex == 1)? 0 : 1;
+					  divRatio = (1.0/3.0);  break;}
+			case 1: {facetCase = 0;
+					  divRatio = (facetIndex == 0)? (1.0/3.0) : (2.0/3.0);  break;}
+			case 2: {facetCase = (facetIndex == 0)? 0 : 2;
+					  divRatio = (facetIndex == 0)? (2.0/3.0) : (1.0/3.0);  break;}
+			case 5: {facetCase = 1;
+                  divRatio = (facetIndex == 0)? (1.0/3.0) : (2.0/3.0);  break;}
+			case 3: {facetCase = 2;
+                  divRatio = (facetIndex == 1)? (1.0/3.0) : (2.0/3.0);  break;}
+			case 6: {facetCase = (facetIndex == 0)? 1 : 3;
+                  divRatio = (facetIndex == 0)? (2.0/3.0) : (1.0/3.0);  break;}
+			case 7: {facetCase = 3;
+                  divRatio = (facetIndex == 2)? (1.0/3.0) : (2.0/3.0);  break;}
+			case 8: {facetCase = (facetIndex == 1)? 2 : 3;
+                  divRatio = (2.0/3.0);  break;}
+			}
+			break;
+		  }
+		  // bisection
+		  case 4:{
+			  divRatio = 0.5; // constant div factor
+			  switch (indexInParent){
+			  case 0: {facetCase = (facetIndex == 1)? 0 : 1; break;}
+			  case 1: {facetCase = (facetIndex == 0)? 0 : 2; break;}
+			  case 2: {facetCase = (facetIndex == 0)? 1 : 3; break;}
+			  case 3: {facetCase = (facetIndex == 1)? 2 : 3; break;}
+			}
+			break;
+		  }
+		  default: {} //error
 		}
-		 coefsArray.resize(2); coefsArray[0] = 1 - divRatio; coefsArray[1] = divRatio;
-		 SUNDANCE_MSG2(setupVerb(),"NodalDOFMapHN::getPointLIDsForHN() fc=" << facetCase << " R=" << divRatio
+		// get the facet indices
+		switch (facetCase){
+		case 0: {glbLIDs[0] = facets[0]; glbLIDs[1] = facets[1];
+	            nodeIndex[0] = 0;  nodeIndex[1] = 1;  break;}
+		case 1: {glbLIDs[0] = facets[0]; glbLIDs[1] = facets[2];
+	            nodeIndex[0] = 0;  nodeIndex[1] = 2;  break;}
+		case 2: {glbLIDs[0] = facets[1]; glbLIDs[1] = facets[3];
+	            nodeIndex[0] = 1;  nodeIndex[1] = 3;   break;}
+		case 3: {glbLIDs[0] = facets[2]; glbLIDs[1] = facets[3];
+	            nodeIndex[0] = 2;  nodeIndex[1] = 3;  break;}
+		}
+		coefsArray.resize(2); coefsArray[0] = 1 - divRatio; coefsArray[1] = divRatio;
+		SUNDANCE_MSG2(setupVerb(),"NodalDOFMapHN::getPointLIDsForHN() fc=" << facetCase << " R=" << divRatio
 		               << " facetIndex:" << facetIndex <<   " indexInParent:" << indexInParent <<" glbLIDs:"
 		               << glbLIDs << " maxCellIndex:" << maxCellIndex << " nodeIndex:" << nodeIndex);
 		break;
@@ -499,46 +518,82 @@ void NodalDOFMapHN::getPointLIDsForHN( int pointLID , int facetIndex ,
 		double values[8];
 		indexInParent = mesh().indexInParent(maxCellIndex);
 		mesh().returnParentFacets(maxCellIndex , 0 ,facets , parentLID );
-		//
-		switch (indexInParent){
-		  case 0:  { ind_x = 0.0; ind_y = 0.0; ind_z = 0.0; break;}
-		  case 1:  { ind_x = 1.0; ind_y = 0.0; ind_z = 0.0; break;}
-		  case 2:  { ind_x = 2.0; ind_y = 0.0; ind_z = 0.0; break;}
-		  case 3:  { ind_x = 0.0; ind_y = 1.0; ind_z = 0.0; break;}
-		  case 4:  { ind_x = 1.0; ind_y = 1.0; ind_z = 0.0; break;}
-		  case 5:  { ind_x = 2.0; ind_y = 1.0; ind_z = 0.0; break;}
-		  case 6:  { ind_x = 0.0; ind_y = 2.0; ind_z = 0.0; break;}
-		  case 7:  { ind_x = 1.0; ind_y = 2.0; ind_z = 0.0; break;}
-		  case 8:  { ind_x = 2.0; ind_y = 2.0; ind_z = 0.0; break;}
-		  case 9:  { ind_x = 0.0; ind_y = 0.0; ind_z = 1.0; break;}
-		  case 10: { ind_x = 1.0; ind_y = 0.0; ind_z = 1.0; break;}
-		  case 11: { ind_x = 2.0; ind_y = 0.0; ind_z = 1.0; break;}
-		  case 12: { ind_x = 0.0; ind_y = 1.0; ind_z = 1.0; break;}
-		  case 14: { ind_x = 2.0; ind_y = 1.0; ind_z = 1.0; break;}
-		  case 15: { ind_x = 0.0; ind_y = 2.0; ind_z = 1.0; break;}
-		  case 16: { ind_x = 1.0; ind_y = 2.0; ind_z = 1.0; break;}
-		  case 17: { ind_x = 2.0; ind_y = 2.0; ind_z = 1.0; break;}
-		  case 18: { ind_x = 0.0; ind_y = 0.0; ind_z = 2.0; break;}
-		  case 19: { ind_x = 1.0; ind_y = 0.0; ind_z = 2.0; break;}
-		  case 20: { ind_x = 2.0; ind_y = 0.0; ind_z = 2.0; break;}
-		  case 21: { ind_x = 0.0; ind_y = 1.0; ind_z = 2.0; break;}
-		  case 22: { ind_x = 1.0; ind_y = 1.0; ind_z = 2.0; break;}
-		  case 23: { ind_x = 2.0; ind_y = 1.0; ind_z = 2.0; break;}
-		  case 24: { ind_x = 0.0; ind_y = 2.0; ind_z = 2.0; break;}
-		  case 25: { ind_x = 1.0; ind_y = 2.0; ind_z = 2.0; break;}
-		  case 26: { ind_x = 2.0; ind_y = 2.0; ind_z = 2.0; break;}
-		  default: {}// error this should not occur
-		}
-		switch (facetIndex){
-		  case 0:  { f_x = 0.0 , f_y = 0.0 , f_z = 0.0; break;}
-		  case 1:  { f_x = 1.0 , f_y = 0.0 , f_z = 0.0; break;}
-		  case 2:  { f_x = 0.0 , f_y = 1.0 , f_z = 0.0; break;}
-		  case 3:  { f_x = 1.0 , f_y = 1.0 , f_z = 0.0; break;}
-		  case 4:  { f_x = 0.0 , f_y = 0.0 , f_z = 1.0; break;}
-		  case 5:  { f_x = 1.0 , f_y = 0.0 , f_z = 1.0; break;}
-		  case 6:  { f_x = 0.0 , f_y = 1.0 , f_z = 1.0; break;}
-		  case 7:  { f_x = 1.0 , f_y = 1.0 , f_z = 1.0; break;}
-		  default: {}// error this should not occur
+		// choose either tri- or bisectionin 3D
+		switch( mesh().maxChildren()) {
+		// trisection
+		case 27:{
+			switch (indexInParent){
+			case 0:  { ind_x = 0.0; ind_y = 0.0; ind_z = 0.0; break;}
+			case 1:  { ind_x = 1.0; ind_y = 0.0; ind_z = 0.0; break;}
+			case 2:  { ind_x = 2.0; ind_y = 0.0; ind_z = 0.0; break;}
+			case 3:  { ind_x = 0.0; ind_y = 1.0; ind_z = 0.0; break;}
+			case 4:  { ind_x = 1.0; ind_y = 1.0; ind_z = 0.0; break;}
+			case 5:  { ind_x = 2.0; ind_y = 1.0; ind_z = 0.0; break;}
+			case 6:  { ind_x = 0.0; ind_y = 2.0; ind_z = 0.0; break;}
+			case 7:  { ind_x = 1.0; ind_y = 2.0; ind_z = 0.0; break;}
+			case 8:  { ind_x = 2.0; ind_y = 2.0; ind_z = 0.0; break;}
+			case 9:  { ind_x = 0.0; ind_y = 0.0; ind_z = 1.0; break;}
+			case 10: { ind_x = 1.0; ind_y = 0.0; ind_z = 1.0; break;}
+			case 11: { ind_x = 2.0; ind_y = 0.0; ind_z = 1.0; break;}
+			case 12: { ind_x = 0.0; ind_y = 1.0; ind_z = 1.0; break;}
+			case 14: { ind_x = 2.0; ind_y = 1.0; ind_z = 1.0; break;}
+			case 15: { ind_x = 0.0; ind_y = 2.0; ind_z = 1.0; break;}
+			case 16: { ind_x = 1.0; ind_y = 2.0; ind_z = 1.0; break;}
+			case 17: { ind_x = 2.0; ind_y = 2.0; ind_z = 1.0; break;}
+			case 18: { ind_x = 0.0; ind_y = 0.0; ind_z = 2.0; break;}
+			case 19: { ind_x = 1.0; ind_y = 0.0; ind_z = 2.0; break;}
+			case 20: { ind_x = 2.0; ind_y = 0.0; ind_z = 2.0; break;}
+			case 21: { ind_x = 0.0; ind_y = 1.0; ind_z = 2.0; break;}
+			case 22: { ind_x = 1.0; ind_y = 1.0; ind_z = 2.0; break;}
+			case 23: { ind_x = 2.0; ind_y = 1.0; ind_z = 2.0; break;}
+			case 24: { ind_x = 0.0; ind_y = 2.0; ind_z = 2.0; break;}
+			case 25: { ind_x = 1.0; ind_y = 2.0; ind_z = 2.0; break;}
+			case 26: { ind_x = 2.0; ind_y = 2.0; ind_z = 2.0; break;}
+			default: {}// error this should not occur
+			}
+			// get the facet coordinates
+			switch (facetIndex){
+			case 0:  { f_x = 0.0 , f_y = 0.0 , f_z = 0.0; break;}
+			case 1:  { f_x = 1.0 , f_y = 0.0 , f_z = 0.0; break;}
+			case 2:  { f_x = 0.0 , f_y = 1.0 , f_z = 0.0; break;}
+			case 3:  { f_x = 1.0 , f_y = 1.0 , f_z = 0.0; break;}
+			case 4:  { f_x = 0.0 , f_y = 0.0 , f_z = 1.0; break;}
+			case 5:  { f_x = 1.0 , f_y = 0.0 , f_z = 1.0; break;}
+			case 6:  { f_x = 0.0 , f_y = 1.0 , f_z = 1.0; break;}
+			case 7:  { f_x = 1.0 , f_y = 1.0 , f_z = 1.0; break;}
+			default: {}// error this should not occur
+			}
+		  break;
+		  }
+		// bisection
+		case 8:{
+			// 3 is one unit ..., therefore 1.5 is half
+			switch (indexInParent){
+			case 0:  { ind_x = 0.0; ind_y = 0.0; ind_z = 0.0; break;}
+			case 1:  { ind_x = 1.5; ind_y = 0.0; ind_z = 0.0; break;}
+			case 2:  { ind_x = 0.0; ind_y = 1.5; ind_z = 0.0; break;}
+			case 3:  { ind_x = 1.5; ind_y = 1.5; ind_z = 0.0; break;}
+			case 4:  { ind_x = 0.0; ind_y = 0.0; ind_z = 1.5; break;}
+			case 5:  { ind_x = 1.5; ind_y = 0.0; ind_z = 1.5; break;}
+			case 6:  { ind_x = 0.0; ind_y = 1.5; ind_z = 1.5; break;}
+			case 7:  { ind_x = 1.5; ind_y = 1.5; ind_z = 1.5; break;}
+			default: {}// error this should not occur
+			}
+			// get the facet coordinates, 3 is one unit
+			switch (facetIndex){
+			case 0:  { f_x = 0.0 , f_y = 0.0 , f_z = 0.0; break;}
+			case 1:  { f_x = 1.5 , f_y = 0.0 , f_z = 0.0; break;}
+			case 2:  { f_x = 0.0 , f_y = 1.5 , f_z = 0.0; break;}
+			case 3:  { f_x = 1.5 , f_y = 1.5 , f_z = 0.0; break;}
+			case 4:  { f_x = 0.0 , f_y = 0.0 , f_z = 1.5; break;}
+			case 5:  { f_x = 1.5 , f_y = 0.0 , f_z = 1.5; break;}
+			case 6:  { f_x = 0.0 , f_y = 1.5 , f_z = 1.5; break;}
+			case 7:  { f_x = 1.5 , f_y = 1.5 , f_z = 1.5; break;}
+			default: {}// error this should not occur
+			}
+		  break;
+		  }
+		default: {} //error
 		}
 		// evaluate the bilinear basis function at the given point
 		  xx = (ind_x + f_x)/3.0;
