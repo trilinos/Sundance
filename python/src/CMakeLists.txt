@@ -4,7 +4,7 @@
 # to the pytrilinos library and PyTrilinos extension modules
 SET(EXTRA_LINK_ARGS "")
 IF(APPLE)
-  IF(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+  IF((CMAKE_CXX_COMPILER_ID MATCHES "GNU") OR (CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
     APPEND_SET(EXTRA_LINK_ARGS "-undefined dynamic_lookup")
   ENDIF()
 ENDIF(APPLE)
