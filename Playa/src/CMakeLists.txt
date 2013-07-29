@@ -44,6 +44,7 @@ APPEND_SET(HEADERS
   PlayaAztecSolver.hpp
   PlayaBasicLMBFGS.hpp
   PlayaBelosSolver.hpp
+  PlayaBelosAdapter.hpp
   PlayaBICGSTABSolverDecl.hpp
   PlayaBICGSTABSolverImpl.hpp
   PlayaBlockIteratorDecl.hpp
