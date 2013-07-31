@@ -61,7 +61,7 @@ int main(int argc, char** argv)
 {
   
   try
-		{
+    {
       Sundance::init(&argc, &argv);
             
       /* We will do our linear algebra using Epetra */
@@ -73,9 +73,9 @@ int main(int argc, char** argv)
       int nx = 32;
 
       MeshSource mesher = new PartitionedRectangleMesher(
-        0.0, 1.0, nx,
-        0.0, 1.0, nx,
-        meshType);
+							 0.0, 1.0, nx,
+							 0.0, 1.0, nx,
+							 meshType);
       Mesh mesh = mesher.getMesh();
 
       /* Create a cell filter that will identify the maximal cells
@@ -105,12 +105,12 @@ int main(int argc, char** argv)
        * validation purposes. This will involve the parameter. */
       Expr uEx = x*(1.0-x)*(1.0+xi*exp(x));
       Expr f = -(-20 - exp(x)*xi*(1 + 32*x + 10*x*x + 
-          exp(x)*(-1 + 2*x*(2 + x))*xi))/10.0;
+				  exp(x)*(-1 + 2*x*(2 + x))*xi))/10.0;
 
       /* Define the weak form, using the parameter expression. This weak form
        * can be used for all parameter values. */
       Expr eqn = Integral(interior, 
-        (1.0 + 0.1*xi*exp(x))*(grad*v)*(grad*u) - f*v, quad);
+			  (1.0 + 0.1*xi*exp(x))*(grad*v)*(grad*u) - f*v, quad);
 
       /* Define the Dirichlet BC */
       Expr h = new CellDiameterExpr();
@@ -139,34 +139,34 @@ int main(int argc, char** argv)
 
       /* Do the sweep */
       for (int n=0; n<nSteps; n++)
-      {
-        /* Update the parameter value */
-        double xiVal = xiMax*n/(nSteps - 1.0);
-        xi.setParameterValue(xiVal);
-        Out::root() << "step n=" << n << " of " << nSteps << " xi=" << xiVal;
+	{
+	  /* Update the parameter value */
+	  double xiVal = xiMax*n/(nSteps - 1.0);
+	  xi.setParameterValue(xiVal);
+	  Out::root() << "step n=" << n << " of " << nSteps << " xi=" << xiVal;
 
-        /* Solve the problem. The updated parameter value is automatically used. */
-        state = prob.solve(solver, soln);
+	  /* Solve the problem. The updated parameter value is automatically used. */
+	  state = prob.solve(solver, soln);
 
-        TEUCHOS_TEST_FOR_EXCEPTION(state.finalState() != SolveConverged,
-          std::runtime_error,
-          "solve failed!");
+	  TEUCHOS_TEST_FOR_EXCEPTION(state.finalState() != SolveConverged,
+				     std::runtime_error,
+				     "solve failed!");
 
-        /* Project the exact solution onto a discrrete space for viz. The updated
-         * parameter value is automatically used. */
-        Expr uEx0 = proj.project();
+	  /* Project the exact solution onto a discrrete space for viz. The updated
+	   * parameter value is automatically used. */
+	  Expr uEx0 = proj.project();
 
-        /* Write the approximate and exact solutions for viz */
-        FieldWriter w = new VTKWriter("ParameterSweep-" + Teuchos::toString(n));
-        w.addMesh(mesh);
-        w.addField("u", new ExprFieldWrapper(soln[0]));
-        w.addField("uEx", new ExprFieldWrapper(uEx0[0]));
-        w.write();
+	  /* Write the approximate and exact solutions for viz */
+	  FieldWriter w = new VTKWriter("ParameterSweep-" + Teuchos::toString(n));
+	  w.addMesh(mesh);
+	  w.addField("u", new ExprFieldWrapper(soln[0]));
+	  w.addField("uEx", new ExprFieldWrapper(uEx0[0]));
+	  w.write();
 
-        /* Compute the L2 norm of the error */
-        err[n] = L2Norm(mesh, interior, soln-uEx, quad);
-        Out::root() << " L2 error = " << err[n] << endl;
-      } 
+	  /* Compute the L2 norm of the error */
+	  err[n] = L2Norm(mesh, interior, soln-uEx, quad);
+	  Out::root() << " L2 error = " << err[n] << endl;
+	} 
 
       /* The errors are O(h^2), so use that to set a tolerance */
       double hVal = 1.0/(nx-1.0);
@@ -179,10 +179,10 @@ int main(int argc, char** argv)
       /* Check the error */
       Sundance::passFailTest(maxErr, tol);
     }
-	catch(std::exception& e)
-		{
+  catch(std::exception& e)
+    {
       Sundance::handleException(e);
-		}
+    }
   Sundance::finalize(); 
   return Sundance::testStatus(); 
 }

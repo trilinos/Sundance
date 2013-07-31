@@ -44,7 +44,7 @@
 #include "Sundance.hpp"
 
 // This test depends on Exodus, so skip it if Expdus hasn't been enabled. 
-#if defined(HAVE_SUNDANCE_EXODUS) && defined(Trilinos_DATA_DIR)
+#if defined(HAVE_SUNDANCE_EXODUS) 
 
 using namespace Sundance;
 
@@ -126,6 +126,7 @@ int main(int argc, char** argv)
 
     /* Create the solver as specified by parameters in 
      * an XML file */
+
     LinearSolver<double> solver 
       = LinearSolverBuilder::createSolver(solverFile);
 
