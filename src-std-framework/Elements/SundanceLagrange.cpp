@@ -1008,7 +1008,29 @@ void Lagrange::getConstrainsForHNDoF(
 			     deriv,  result , 4);
 
 		   break;}
-		case 4:{ //todo: bisection on quads
+		case 4:{ // bisection on quads
+			Point dofPos( 0.0 , 0.0 );
+		    // get the position of the DoF on the refCell
+			SUNDANCE_OUT(this->verb() > 3 , ",maxCellDim=" << maxCellDim << ",facetDim="
+					<< facetDim << ",facetIndex=" << facetIndex << ",nodeIndex=" << nodeIndex
+					<< ",dofPos=" << dofPos);
+			returnDoFPositionOnRef( maxCellDim,
+			  facetDim, facetIndex, nodeIndex, dofPos);
+			dofPos = dofPos/2.0;
+			SUNDANCE_OUT(this->verb() > 3 ,  "dofPos=" << dofPos );
+			// shitf the position of the DOFs according to the position of the child in the parent cell
+			switch (indexInParent){
+			  case 0: {/* nothing to add */  break;}
+			  case 1: {dofPos[0] += 1.0/2.0; break;}
+			  case 2: {dofPos[1] += 1.0/2.0; break;}
+			  case 3: {dofPos[0] += 1.0/2.0; dofPos[1] += 1.0/2.0; break;}
+			}
+
+			SUNDANCE_OUT(this->verb() > 3 , "dofPos=" << dofPos );
+			Array<Point> tmp_points(1);
+			tmp_points[0] = dofPos;
+			refEval( maximalCellType , tmp_points ,
+				     deriv,  result , 4);
 		   break;
 		   }
 		}
@@ -1024,12 +1046,12 @@ void Lagrange::getConstrainsForHNDoF(
 				<< ",dofPos=" << dofPos);
 		returnDoFPositionOnRef( maxCellDim,
 		  facetDim, facetIndex, nodeIndex, dofPos);
-		dofPos = dofPos/3.0;
-		SUNDANCE_OUT(this->verb() > 3 ,  "dofPos=" << dofPos );
 
 		// shitf the position of the DOFs according to the position of the child in the parent cell
 		switch (maxNrChild){
 		case 27:{ // tri section on bricks
+			dofPos = dofPos/3.0;
+			SUNDANCE_OUT(this->verb() > 3 ,  "dofPos=" << dofPos );
 			switch (indexInParent){
 			  case 0:  {dofPos[0] += 0.0/3.0; dofPos[1] += 0.0/3.0; dofPos[2] += 0.0/3.0; break;}
 			  case 1:  {dofPos[0] += 1.0/3.0; dofPos[1] += 0.0/3.0; dofPos[2] += 0.0/3.0; break;}
@@ -1061,7 +1083,19 @@ void Lagrange::getConstrainsForHNDoF(
 			  case 26: {dofPos[0] += 2.0/3.0; dofPos[1] += 2.0/3.0; dofPos[2] += 2.0/3.0; break;}
 			}
 		break;}
-		case 8:{ // todo: bisection on bricks
+		case 8:{ // bisection on bricks
+			dofPos = dofPos/2.0;
+			SUNDANCE_OUT(this->verb() > 3 ,  "dofPos=" << dofPos );
+			switch (indexInParent){
+			  case 0:  {dofPos[0] += 0.0/2.0; dofPos[1] += 0.0/2.0; dofPos[2] += 0.0/2.0; break;}
+			  case 1:  {dofPos[0] += 1.0/2.0; dofPos[1] += 0.0/2.0; dofPos[2] += 0.0/2.0; break;}
+			  case 2:  {dofPos[0] += 0.0/2.0; dofPos[1] += 1.0/2.0; dofPos[2] += 0.0/2.0; break;}
+			  case 3:  {dofPos[0] += 1.0/2.0; dofPos[1] += 1.0/2.0; dofPos[2] += 0.0/2.0; break;}
+			  case 4:  {dofPos[0] += 0.0/2.0; dofPos[1] += 0.0/2.0; dofPos[2] += 1.0/2.0; break;}
+			  case 5:  {dofPos[0] += 1.0/2.0; dofPos[1] += 0.0/2.0; dofPos[2] += 1.0/2.0; break;}
+			  case 6:  {dofPos[0] += 0.0/2.0; dofPos[1] += 1.0/2.0; dofPos[2] += 1.0/2.0; break;}
+			  case 7:  {dofPos[0] += 1.0/2.0; dofPos[1] += 1.0/2.0; dofPos[2] += 1.0/2.0; break;}
+			}
 		break;}
 		}
 
