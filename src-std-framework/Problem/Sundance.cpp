@@ -234,7 +234,7 @@ int SundanceGlobal::init(int* argc, char*** argv)
            << std::endl;
       oss << "and is licensed under the BSD License" << std::endl;
       oss << std::endl;
-      cout << oss.str() << flush;
+      cout << oss.str() << std::flush;
     }
 
     MPIComm::world().synchronize();

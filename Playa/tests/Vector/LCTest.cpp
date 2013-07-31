@@ -60,10 +60,13 @@
 #include "PlayaBlockIteratorImpl.hpp"
 #endif
 
+using std::endl;
+using std::cout;
 using std::setw;
 using std::ofstream;
 using namespace Playa;
 using namespace PlayaExprTemplates;
+
 
 Array<Vector<double> > vecMaker(int nVecs, int n,
   int nProc, int rank, const VectorType<double>& vecType)

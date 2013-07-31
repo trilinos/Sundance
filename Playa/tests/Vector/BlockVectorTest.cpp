@@ -61,6 +61,8 @@
 
 
 using namespace Playa;
+using std::cout;
+using std::endl;
 
 Array<Vector<double> > vecMaker(int nVecs,
   int nProc, int rank, const VectorType<double>& vecType)

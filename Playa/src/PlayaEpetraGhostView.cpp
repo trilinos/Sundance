@@ -81,9 +81,9 @@ void  EpetraGhostView::import(const Epetra_Import& importer,
 
   if (ierr < 0)
   {
-    Out::os() << "target map=" << endl;
+    Out::os() << "target map=" << std::endl;
     importer.TargetMap().Print(Out::os());
-    Out::os() << "source map=" << endl;
+    Out::os() << "source map=" << std::endl;
     srcObject.Map().Print(Out::os());
   }
   TEUCHOS_TEST_FOR_EXCEPTION(ierr < 0, std::runtime_error, "ierr=" << ierr << " in EpetraGhostView::import()");

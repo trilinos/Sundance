@@ -54,6 +54,8 @@
 
 #include "Teuchos_Time.hpp"
 #include "PlayaMPIComm.hpp"
+using std::cout;
+using std::endl;
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
 #include "PlayaVectorImpl.hpp"
