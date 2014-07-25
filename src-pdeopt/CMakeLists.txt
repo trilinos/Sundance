@@ -48,8 +48,9 @@ APPEND_SET(SOURCES
 #
 
 TRIBITS_ADD_LIBRARY(
-  pdeopt
+  sundancePdeopt
   HEADERS ${HEADERS}
   SOURCES ${SOURCES}
-  DEPLIBS sundanceStdFwk sundanceCore sundanceStdMesh sundanceInterop sundanceUtils playa
+  DEPLIBS sundanceStdFwk sundanceCore sundanceStdMesh sundanceInterop
+  sundanceUtils sundancePlaya
   )

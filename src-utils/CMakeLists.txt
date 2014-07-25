@@ -93,5 +93,5 @@ TRIBITS_ADD_LIBRARY(
   sundanceUtils
   HEADERS ${HEADERS}
   SOURCES ${SOURCES}
-  DEPLIBS playa
+  DEPLIBS sundancePlaya
   )
