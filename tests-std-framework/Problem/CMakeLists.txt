@@ -1,6 +1,8 @@
 
 
 INCLUDE(AddTestBatch)
+INCLUDE(TribitsAddExecutableAndTest)
+INCLUDE(TribitsCopyFilesToBinaryDir)
 
 SET(DisabledTests
   FunctionalTest3D 

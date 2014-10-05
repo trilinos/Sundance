@@ -1,3 +1,5 @@
+INCLUDE(TribitsCopyFilesToBinaryDir)
+INCLUDE(TribitsAddTest)
 
 SET(TEST_LIST
   Poisson1D

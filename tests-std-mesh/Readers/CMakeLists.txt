@@ -1,5 +1,6 @@
 # CMake tests specification 
 
+INCLUDE(TribitsAddExecutableAndTest)
 
 
 IF (TPL_ENABLE_ExodusII)

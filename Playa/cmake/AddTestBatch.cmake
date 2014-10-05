@@ -1,6 +1,8 @@
 
 
 
+INCLUDE(TribitsAddExecutableAndTest)
+INCLUDE(TribitsCopyFilesToBinaryDir)
 
 
 FUNCTION(ADD_TEST_BATCH TestList)

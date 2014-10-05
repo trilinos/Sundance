@@ -1,6 +1,7 @@
 # CMake tests specification for Playa/tests/Vectors
 
 
+INCLUDE(TribitsAddExecutableAndTest)
 
 TRIBITS_ADD_EXECUTABLE_AND_TEST(
         BasicVectorTest
