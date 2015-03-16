@@ -104,7 +104,7 @@ public:
   
   /** Obtain the vector length of \c mv. */
   static int GetVecLength( const  _MV & mv )
-    {return AMVT::GetVecLength(mv);}
+    {return AMVT::GetGlobalLength(mv);}
 
   /** Obtain the number of vectors in \c mv */
   static int GetNumberVecs( const  _MV & mv )
