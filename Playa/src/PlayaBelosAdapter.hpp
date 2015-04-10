@@ -103,7 +103,7 @@ public:
     {return AMVT::CloneView(mv, index);}
   
   /** Obtain the vector length of \c mv. */
-  static int GetVecLength( const  _MV & mv )
+  static ptrdiff_t GetGlobalLength( const  _MV & mv )
     {return AMVT::GetGlobalLength(mv);}
 
   /** Obtain the number of vectors in \c mv */
