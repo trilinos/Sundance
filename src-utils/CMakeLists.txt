@@ -1,5 +1,4 @@
 
-INCLUDE(TribitsLibraryMacros)
 
 #
 # A) Package-specific configuration options
@@ -21,9 +20,8 @@ SET(SOURCES "")
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
-SET(HEADERS ${HEADERS}
+APPEND_SET(HEADERS
   ${CMAKE_CURRENT_BINARY_DIR}/SundanceDefaultPath.hpp
-  ${CMAKE_CURRENT_BINARY_DIR}/SundanceConfig.h
   )
 
 #
