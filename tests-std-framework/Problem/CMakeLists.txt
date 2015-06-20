@@ -10,6 +10,7 @@ SET(DisabledTests
 )
 
 SET(SerialTests
+#  AMRTest
   BigCellFilterTest
   BesselTest2D 
   PCDNavierStokesCouette2D
@@ -19,6 +20,7 @@ SET(SerialTests
   PerforatedPlate
   PerforatedPlate_QuadInt
   Stokes2D_HN_Q1
+ # PoissonErrEst
   PoissonPeano2D
   PoissonPeano3D
   StokesPeano2D 
@@ -131,6 +133,7 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(TestMeshCopyFiles
   DEST_FILES 
     couette-2.exo
     couette-3.exo
+    disk.exo
     disk.ncdf
     disk.1.ele
     disk.1.node
