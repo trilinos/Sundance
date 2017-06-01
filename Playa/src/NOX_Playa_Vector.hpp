@@ -116,6 +116,9 @@ public:
   /** Initialize all elements to a constant */
   NOX::Abstract::Vector& init(double value);
 
+  /** Initialize all elements of this vector with a random value */
+  NOX::Abstract::Vector& random(bool useSeed = false, int seed = 1);
+
   /** Assignment operator */
   NOX::Abstract::Vector& operator=(const NOX::NOXPlaya::Vector& y);
   /** Assignment operator */
