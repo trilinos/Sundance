@@ -191,6 +191,14 @@ NOX::Abstract::Vector& NOX::NOXPlaya::Vector::init(double value)
   return *this;
 }
 
+NOX::Abstract::Vector& NOX::NOXPlaya::Vector::random(bool useSeed, int seed)
+{
+  if (useSeed)
+    Playa::Rand::setLocalSeed(x.comm(), seed);
+  x.randomize();
+  return *this;
+}
+
 
 NOX::Abstract::Vector& NOX::NOXPlaya::Vector::abs(
 					     const NOX::Abstract::Vector& base)
