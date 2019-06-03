@@ -281,21 +281,21 @@ namespace George
       delete [] mat;
     }
   inline matrix& matrix::operator=(const matrix &m)
-    {if (m.numrows != numrows || numcols != numcols)
+    {if (m.numrows != numrows || m.numcols != numcols)
         printf("error diff sizes\n");
       for(int i= 0; i< numrows; i++)
         *mat[i] = *m.mat[i];
       return *this;
     }
   inline matrix& matrix::operator+=(const matrix &m)
-    {if (m.numrows != numrows || numcols != numcols)
+    {if (m.numrows != numrows || m.numcols != numcols)
         printf("error diff sizes\n");
       for(int i= 0; i< numrows; i++)
         *mat[i] += *m.mat[i];
       return *this;
     }
   inline matrix& matrix::operator-=(const matrix &m)
-    {if (m.numrows != numrows || numcols != numcols)
+    {if (m.numrows != numrows || m.numcols != numcols)
         printf("error diff sizes\n");
       for(int i= 0; i< numrows; i++)
         *mat[i] -= *m.mat[i];
